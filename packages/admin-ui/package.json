@@ -1,6 +1,6 @@
 {
   "name": "@medusajs/admin-ui",
-  "author": "Kasper Kristensen <kasper@medusajs.com>",
+  "author": "moveon",
   "license": "MIT",
   "version": "1.8.7",
   "repository": {
@@ -21,6 +21,7 @@
   ],
   "scripts": {
     "dev": "vite -c vite.config.dev.ts --port 7001",
+    "watch": "tsc --build --watch",
     "build": "tsc --build",
     "test:ui": "vitest --config vite.config.dev.ts",
     "test:ui:once": "vitest --config vite.config.dev.ts --run",
@@ -73,6 +74,7 @@
     "react-nestable": "^2.0.0",
     "react-router-dom": "6.8.0",
     "react-select": "^5.5.4",
+    "react-simple-star-rating": "^5.1.7",
     "react-table": "^7.7.0",
     "tailwindcss": "3.2.2",
     "tailwindcss-radix": "^2.7.0",

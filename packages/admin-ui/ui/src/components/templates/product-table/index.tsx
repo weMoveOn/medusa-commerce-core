@@ -256,9 +256,9 @@ const ProductRow = ({ row, ...rest }) => {
       actions={getActions()}
       {...rest}
     >
-      {row.cells.map((cell, index) => {
+      {row.cells.map((cell: any, index: number) => {
         return (
-          <Table.Cell {...cell.getCellProps()}>
+          <Table.Cell key={index} {...cell.getCellProps()}>
             {cell.render("Cell", { index })}
           </Table.Cell>
         )

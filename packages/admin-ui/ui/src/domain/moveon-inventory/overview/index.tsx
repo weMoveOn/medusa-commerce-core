@@ -1,5 +1,5 @@
 import { useAdminCreateBatchJob, useAdminCreateCollection } from "medusa-react"
-import { useEffect, useState } from "react"
+import React, { useEffect, useMemo, useState } from "react"
 import { useLocation, useNavigate } from "react-router-dom"
 import Fade from "../../../components/atoms/fade-wrapper"
 import Spacer from "../../../components/atoms/spacer"
@@ -12,20 +12,31 @@ import TableViewHeader from "../../../components/organisms/custom-table-header"
 import ExportModal from "../../../components/organisms/export-modal"
 import AddCollectionModal from "../../../components/templates/collection-modal"
 import CollectionsTable from "../../../components/templates/collections-table"
-import ProductTable from "../../../components/templates/product-table"
+import MoveOnProduct from "../../../components/templates/moveon-product"
 import useNotification from "../../../hooks/use-notification"
 import useToggleState from "../../../hooks/use-toggle-state"
 import { usePolling } from "../../../providers/polling-provider"
 import { getErrorMessage } from "../../../utils/error-messages"
-import ImportProducts from "../batch-job/import"
-import NewProduct from "../new"
 
-const VIEWS = ["products", "collections"]
+type ViewsType = "Product List" | "Imported Products"
+
+const VIEWS: ViewsType[] = ["Product List", "Imported Products"]
 
 const Overview = () => {
   const navigate = useNavigate()
   const location = useLocation()
-  const [view, setView] = useState("products")
+
+  const url = useMemo(() => {
+    const currentUrl = new URL(window.location.href)
+    return currentUrl
+  }, [])
+
+  const searchParams = useMemo(() => {
+    const currentSearchParams = new URLSearchParams(url.search)
+    return currentSearchParams
+  }, [url])
+
+  const [view, setView] = useState<ViewsType>("Product List")
   const {
     state: createProductState,
     close: closeProductCreate,
@@ -40,19 +51,43 @@ const Overview = () => {
   const createCollection = useAdminCreateCollection()
 
   useEffect(() => {
-    if (location.search.includes("?view=collections")) {
-      setView("collections")
+    if (location.search.includes("?view=product-list")) {
+      setView("Product List")
     }
-  }, [location])
+  }, [location, view, searchParams])
 
   useEffect(() => {
-    location.search = ""
-  }, [view])
+    switch (view) {
+      case "Imported Products":
+        searchParams.set("view", "imported-product")
+        break
+      case "Product List":
+        searchParams.set("view", "product-list")
+        break
+
+      default:
+        searchParams.delete("view")
+    }
+
+    const offset = searchParams.get("offset")
+    const limit = searchParams.get("limit")
+    searchParams.delete("offset")
+    searchParams.delete("limit")
+    if (offset !== null) {
+      searchParams.set("offset", offset)
+    }
+    if (limit !== null) {
+      searchParams.set("limit", limit)
+    }
+
+    url.search = searchParams.toString()
+    window.history.replaceState(null, "", url.href)
+  }, [view, searchParams, url])
 
   const CurrentView = () => {
     switch (view) {
-      case "products":
-        return <ProductTable />
+      case "Product List":
+        return <MoveOnProduct />
       default:
         return <CollectionsTable />
     }
@@ -60,7 +95,7 @@ const Overview = () => {
 
   const CurrentAction = () => {
     switch (view) {
-      case "products":
+      case "Product List":
         return (
           <div className="flex space-x-2">
             <Button
@@ -198,13 +233,15 @@ const Overview = () => {
         />
       )}
       {importModalOpen && (
-        <ImportProducts handleClose={() => closeImportModal()} />
+        // <ImportProducts handleClose={() => closeImportModal()} />
+        <span>ImportProducts</span>
       )}
       <Fade isVisible={createProductState} isFullScreen={true}>
-        <NewProduct onClose={closeProductCreate} />
+        {/* <NewProduct onClose={closeProductCreate} /> */}
+        <span>ImportProducts</span>
       </Fade>
     </>
   )
 }
 
-export default Overview
+export default React.memo(Overview)
