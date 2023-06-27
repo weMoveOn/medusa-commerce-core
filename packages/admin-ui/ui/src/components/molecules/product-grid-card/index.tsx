@@ -1,5 +1,6 @@
 import clsx from "clsx"
 import React from "react"
+import { IInventoryProductDataType } from "../../../types/inventoryProduct"
 import Checkbox from "../../atoms/checkbox"
 import ProgressBarMoveShop from "../../atoms/progress-bar"
 import Button from "../../fundamentals/button"
@@ -10,7 +11,7 @@ import StarRatingIcon from "../../fundamentals/icons/star-rating"
 interface IProductGridCardProps {
   leftButtonOnClick?: (value: any) => void
   rightButtonOnClick?: (value: any) => void
-  productData?: any
+  productData?: IInventoryProductDataType
   leftButtonTitle?: string
   leftButtonIcon?: React.ReactNode
   rightButtonIcon?: React.ReactNode
@@ -66,7 +67,7 @@ const ProductGridCard: React.FC<IProductGridCardProps> = ({
           </span>
         )}
       </a>
-      <div className="mt-4 px-5 pb-5">
+      <div className="mt-4 px-3 pb-5">
         <a href="#">
           <h5 className="text-md font-bold tracking-tight text-slate-800">
             Nike Air MX Super 2500 - Red
@@ -105,6 +106,7 @@ const ProductGridCard: React.FC<IProductGridCardProps> = ({
                 loading={false}
                 onClick={() => leftButtonOnClick(productData)}
                 variant="secondary"
+                className="min-w-[120px]"
                 size="medium"
                 spanClassName=" text-center text-sm  font-small text-slate-700"
               >
@@ -118,11 +120,11 @@ const ProductGridCard: React.FC<IProductGridCardProps> = ({
                     <DownloadIcon style={{ marginRight: "6px" }} />
                   )
                 }
-                className="px-3"
+                className="min-w-[120px]"
                 onClick={() => rightButtonOnClick(productData)}
                 variant="secondary"
                 size="medium"
-                spanClassName=" text-center text-sm font-medium text-slate-800"
+                spanClassName=" text-center text-sm font-small text-slate-700"
               >
                 {rightButtonTitle ?? "Import"}
               </Button>

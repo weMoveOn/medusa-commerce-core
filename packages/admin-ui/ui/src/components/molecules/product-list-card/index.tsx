@@ -1,5 +1,6 @@
 import clsx from "clsx"
 import React from "react"
+import { IInventoryProductDataType } from "../../../types/inventoryProduct"
 import Checkbox from "../../atoms/checkbox"
 import ProgressBarMoveShop from "../../atoms/progress-bar"
 import Button from "../../fundamentals/button"
@@ -10,7 +11,7 @@ import StarRatingIcon from "../../fundamentals/icons/star-rating"
 interface IProductListCardProps {
   leftButtonOnClick?: (value: any) => void
   rightButtonOnClick?: (value: any) => void
-  productData?: any
+  productData?: IInventoryProductDataType
   leftButtonTitle?: string
   rightButtonTitle?: string
   leftButtonIcon?: React.ReactNode
@@ -110,11 +111,11 @@ const ProductListCard: React.FC<IProductListCardProps> = ({
                   icon={
                     leftButtonIcon ?? <EyeIcon style={{ marginRight: "6px" }} />
                   }
-                  className="mr-2"
+                  className="mr-2 min-w-[120px]"
                   onClick={() => leftButtonOnClick("darta")}
                   variant="secondary"
                   size="medium"
-                  spanClassName="text-center text-sm font-medium text-slate-800 "
+                  spanClassName="text-center text-sm font-small text-slate-700 "
                 >
                   {leftButtonTitle ?? "Quick view"}
                 </Button>
@@ -128,8 +129,9 @@ const ProductListCard: React.FC<IProductListCardProps> = ({
                   }
                   onClick={() => rightButtonOnClick("darta")}
                   variant="secondary"
+                  className="min-w-[120px]"
                   size="medium"
-                  spanClassName="text-center text-sm font-medium text-slate-800"
+                  spanClassName="text-center text-sm font-small text-slate-700"
                 >
                   {rightButtonTitle ?? "Import"}
                 </Button>

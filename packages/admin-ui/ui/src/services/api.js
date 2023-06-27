@@ -1,4 +1,9 @@
-import medusaRequest from "./request"
+import medusaRequest, { moveOnInventoryRequest } from "./request"
+
+
+
+
+
 
 const removeNullish = (obj) =>
   Object.entries(obj).reduce((a, [k, v]) => (v ? ((a[k] = v), a) : a), {})
@@ -279,6 +284,15 @@ export default {
         const path = `/admin/products/${productId}/options/${optionId}`
         return medusaRequest("POST", path, update)
       },
+    },
+  },
+  moveOnInventory: {
+    list(search = {}) {
+      const params = Object.keys(search)
+        .map((k) => `${k}=${search[k]}`)
+        .join("&")
+      const path = `/inventory/search${params && `?${params}`}`
+      return moveOnInventoryRequest("GET", path)
     },
   },
 
