@@ -20,6 +20,7 @@ interface IProductListCardProps {
   isSelect?: boolean
   footerButtonEnabled?: boolean
   footerProgressBarEnabled?: boolean
+  route: "imported-product" | "product-list"
 }
 
 const ProductListCard: React.FC<IProductListCardProps> = ({
@@ -33,6 +34,7 @@ const ProductListCard: React.FC<IProductListCardProps> = ({
   isSelect = false,
   footerButtonEnabled = true,
   footerProgressBarEnabled = true,
+  route = "product-list",
 }) => {
   const containerClasses = clsx(
     "relative flex items-center p-3 border rounded-lg border-gray-100 my-2 bg-white min-w-[80%]",
@@ -71,37 +73,58 @@ const ProductListCard: React.FC<IProductListCardProps> = ({
 
         <div className="flex flex-grow flex-row">
           <div className="">
-            <div className="mt-2 mb-3 flex items-center">
-              <StarRatingIcon
-                fillColor={"#fb923c"}
-                size={20}
-                color={"#fb923c"}
-              />
-              <StarRatingIcon
-                fillColor={"#fb923c"}
-                size={20}
-                color={"#fb923c"}
-              />
-              <StarRatingIcon size={20} color={"#fb923c"} />
-              <StarRatingIcon size={20} color={"#fb923c"} />
-              <StarRatingIcon size={20} color={"#fb923c"} />
-              <span className="mr-2 ml-3 rounded bg-yellow-200 px-2.5 py-0.5 text-xs font-semibold">
-                5.0
-              </span>
-            </div>
-
-            <div className="mb-2 flex items-center">
-              <p>
-                <span className="text-2xl font-bold text-violet-600">$449</span>
-                <span className="text-sm text-violet-500 line-through">
-                  $699
+            {route === "product-list" && (
+              <div className="mt-2 mb-3 flex items-center">
+                <StarRatingIcon
+                  fillColor={"#fb923c"}
+                  size={20}
+                  color={"#fb923c"}
+                />
+                <StarRatingIcon
+                  fillColor={"#fb923c"}
+                  size={20}
+                  color={"#fb923c"}
+                />
+                <StarRatingIcon size={20} color={"#fb923c"} />
+                <StarRatingIcon size={20} color={"#fb923c"} />
+                <StarRatingIcon size={20} color={"#fb923c"} />
+                <span className="mr-2 ml-3 rounded  px-2.5 py-0.5 text-xs font-normal">
+                  (5)
                 </span>
-              </p>
-            </div>
+              </div>
+            )}
 
-            <div className="mb-3 flex items-center">
-              <p className="text-slate-600">Total Sales: 2440633</p>
-            </div>
+            {route === "product-list" && (
+              <div className="mb-2 flex items-center">
+                <p>
+                  <span className="text-2xl font-bold text-violet-600">
+                    $449
+                  </span>
+                  <span className="text-sm text-violet-500 line-through">
+                    $699
+                  </span>
+                </p>
+              </div>
+            )}
+            {route === "product-list" && (
+              <div className="mb-3 flex items-center">
+                <p className="text-slate-600">Total Sales: 2440633</p>
+              </div>
+            )}
+
+            {route === "imported-product" && (
+              <div className=" my-3 flex items-center justify-between ">
+                <p className="rounded-sm border bg-purple-200 px-2 text-purple-600">
+                  Status: processing
+                </p>
+              </div>
+            )}
+
+            {route === "imported-product" && (
+              <div className="items-left	 my-3 flex  justify-between ">
+                <p className="">Last update: 21 June 2023 at 10:28pm</p>
+              </div>
+            )}
           </div>
 
           {footerButtonEnabled && (

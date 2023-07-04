@@ -5955,7 +5955,9 @@ __metadata:
     react-nestable: ^2.0.0
     react-router-dom: 6.8.0
     react-select: ^5.5.4
+    react-simple-star-rating: ^5.1.7
     react-table: ^7.7.0
+    swiper: ^9.2.0
     tailwindcss: 3.2.2
     tailwindcss-radix: ^2.7.0
     type-fest: ^3.6.0
@@ -36279,6 +36281,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-simple-star-rating@npm:^5.1.7":
+  version: 5.1.7
+  resolution: "react-simple-star-rating@npm:5.1.7"
+  peerDependencies:
+    react: ">=18.0.0"
+    react-dom: ">=18.0.0"
+  checksum: 4a026f767703cb47efcfe53ccbe38582b183971091befb0f71b078f654dbfcf756f7f3c5bad2bdd2db2eedb1a827d8eae729b9c8d6be5a2e1224caadf57765ca
+  languageName: node
+  linkType: hard
+
 "react-style-singleton@npm:^2.2.1":
   version: 2.2.1
   resolution: "react-style-singleton@npm:2.2.1"
@@ -38878,6 +38890,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"ssr-window@npm:^4.0.2":
+  version: 4.0.2
+  resolution: "ssr-window@npm:4.0.2"
+  checksum: e91f690f42ab2d4e36577a631a9d7b9bd20864ab99c1394481f64c5a0ae6922165ac0a06228560c2ccdd4f68338e795f2fd3cc16fbf9bfcc9c561bb89eb237cd
+  languageName: node
+  linkType: hard
+
 "ssri@npm:^6.0.1":
   version: 6.0.2
   resolution: "ssri@npm:6.0.2"
@@ -39797,6 +39816,15 @@ __metadata:
   dependencies:
     tslib: ^2.0.3
   checksum: 6a47c1926e06395ead750905e103be388aeec8c9697f20b14bc3e1e86fcb4fc78e5033197afe6cc8bbed80f0a4ee1f184b0fa22eec7f4a767bdfd278683d52eb
+  languageName: node
+  linkType: hard
+
+"swiper@npm:^9.2.0":
+  version: 9.4.1
+  resolution: "swiper@npm:9.4.1"
+  dependencies:
+    ssr-window: ^4.0.2
+  checksum: 29feb1e92c344c32d24d7c852577b8b167816ec65bb486418816abbc8e1d6f50b3fb339780392ffa8ba91582508f804bab1e1ab3bd80d9d9b66fc323b6055445
   languageName: node
   linkType: hard
 

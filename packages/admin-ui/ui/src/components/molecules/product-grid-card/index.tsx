@@ -18,8 +18,9 @@ interface IProductGridCardProps {
   rightButtonTitle?: string
   enableSelectOption?: boolean
   isSelect?: boolean
-  footerButtonEnabled?: boolean //
-  footerProgressBarEnabled?: boolean //
+  footerButtonEnabled?: boolean
+  footerProgressBarEnabled?: boolean
+  route?: "imported-product" | "product-list"
 }
 const ProductGridCard: React.FC<IProductGridCardProps> = ({
   leftButtonOnClick,
@@ -33,6 +34,7 @@ const ProductGridCard: React.FC<IProductGridCardProps> = ({
   footerProgressBarEnabled = true,
   productData,
   rightButtonIcon,
+  route = "product-list",
 }) => {
   const conatainerClassess = clsx(
     "relative m-1 flex w-full max-w-[18rem] flex-col overflow-hidden rounded-lg border border-gray-100  bg-white",
@@ -73,27 +75,56 @@ const ProductGridCard: React.FC<IProductGridCardProps> = ({
             Nike Air MX Super 2500 - Red
           </h5>
         </a>
-        <div className="mt-2 mb-3 flex items-center justify-between">
-          <div className="flex items-center">
-            <StarRatingIcon fillColor={"#fb923c"} size={20} color={"#fb923c"} />
-            <StarRatingIcon fillColor={"#fb923c"} size={20} color={"#fb923c"} />
-            <StarRatingIcon size={20} color={"#fb923c"} />
-            <StarRatingIcon size={20} color={"#fb923c"} />
-            <StarRatingIcon size={20} color={"#fb923c"} />
-            <span className="mr-2 ml-3 rounded bg-yellow-200 px-2.5 py-0.5 text-xs font-semibold">
-              5.0
-            </span>
+        {route === "product-list" && (
+          <div className="mt-2 mb-3 flex items-center justify-between">
+            <div className="flex items-center">
+              <StarRatingIcon
+                fillColor={"#fb923c"}
+                size={20}
+                color={"#fb923c"}
+              />
+              <StarRatingIcon
+                fillColor={"#fb923c"}
+                size={20}
+                color={"#fb923c"}
+              />
+              <StarRatingIcon size={20} color={"#fb923c"} />
+              <StarRatingIcon size={20} color={"#fb923c"} />
+              <StarRatingIcon size={20} color={"#fb923c"} />
+              <span className="mr-2 ml-3 rounded  px-2.5 py-0.5 text-xs font-normal">
+                (13)
+              </span>
+            </div>
           </div>
-        </div>
-        <div className=" mb-2 flex items-center justify-between">
-          <p>
-            <span className="text-2xl font-bold text-violet-600">$449</span>
-            <span className="text-sm text-violet-500 line-through">$699</span>
-          </p>
-        </div>
-        <div className=" mb-3 flex items-center justify-between">
-          <p className="text-slate-600">Total Sales: 2440633</p>
-        </div>
+        )}
+
+        {route === "product-list" && (
+          <div className=" mb-2 flex items-center justify-between">
+            <p>
+              <span className="text-2xl font-bold text-violet-600">$449</span>
+              <span className="text-sm text-violet-500 line-through">$699</span>
+            </p>
+          </div>
+        )}
+
+        {route === "product-list" && (
+          <div className=" mb-3 flex items-center justify-between">
+            <p className="text-slate-600">Total Sales: 2440633</p>
+          </div>
+        )}
+        {route === "imported-product" && (
+          <div className=" my-3 flex items-center justify-between ">
+            <p className="rounded-sm border bg-purple-200 px-2 text-purple-600">
+              Status: processing
+            </p>
+          </div>
+        )}
+        {route === "imported-product" && (
+          <div className="items-left	 my-3 flex flex-col justify-between ">
+            <p className="">Last update: </p>
+            <p className="">21 June 2023 at 10:28pm </p>
+          </div>
+        )}
 
         {footerProgressBarEnabled && <ProgressBarMoveShop progress="45%" />}
         {footerButtonEnabled && (

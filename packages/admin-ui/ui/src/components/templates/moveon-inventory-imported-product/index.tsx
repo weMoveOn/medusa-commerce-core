@@ -14,6 +14,7 @@ const MoveOnInventoryImportedProduct: React.FC<IProps> = ({ layout }) => {
           <>
             {Array.from(Array(10), (item, index) => (
               <ProductGridCard
+                route="imported-product"
                 key={index}
                 enableSelectOption={false}
                 footerProgressBarEnabled={true}
@@ -43,6 +44,7 @@ const MoveOnInventoryImportedProduct: React.FC<IProps> = ({ layout }) => {
           <>
             {Array.from(Array(10), (item, index) => (
               <ProductListCard
+                route="imported-product"
                 key={index}
                 enableSelectOption={false}
                 footerProgressBarEnabled={true}

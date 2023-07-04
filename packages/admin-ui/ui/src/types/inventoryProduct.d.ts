@@ -7,9 +7,8 @@ export interface IInventoryProductDataType {
   image: string
   thumbnail: string
   sold: number
-  stock: null
-  ratings: number[]
-  rating: number
+  stock: null | number | string
+  rating: number | null
   rating_count: null | number
   status: null | string
   countdown: null | string | number
@@ -18,14 +17,19 @@ export interface IInventoryProductDataType {
     min: number
     max: number
   } | null
+  discount_price: {
+    min: number | null
+    max: number | null
+  }
 
   meta: null
-
   wholesales: any[]
   shipping_cost: null | number
-  gallery: string[]
-  sku: any[]
-  attributes: any[]
+  slug: string
+  product_code: string
+  country_id: number
+  shop_id: number
+  fx: string
 }
 
 export interface IInventoryProductsPaginateType {
