@@ -1,13 +1,14 @@
-import React, { Children } from "react"
+import React from "react"
 
-import Spinner from "../../atoms/spinner"
 import clsx from "clsx"
+import Spinner from "../../atoms/spinner"
 
 export type ButtonProps = {
   variant: "primary" | "secondary" | "ghost" | "danger" | "nuclear"
   size?: "small" | "medium" | "large"
   loading?: boolean
   spanClassName?: string
+  icon?: React.ReactNode
 } & React.ButtonHTMLAttributes<HTMLButtonElement>
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
@@ -17,12 +18,15 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       size = "large",
       loading = false,
       spanClassName,
+      icon,
       children,
       ...attributes
     },
     ref
   ) => {
-    const handleClick = (e) => {
+    const handleClick = (
+      e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+    ) => {
       if (!loading && attributes.onClick) {
         attributes.onClick(e)
       }
@@ -56,22 +60,47 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         onClick={handleClick}
       >
         {loading ? (
-          <Spinner size={size} variant={"secondary"} />
-        ) : (
-          Children.map(children, (child, i) => {
-            return (
+          <>
+            <Spinner size={size} variant={"secondary"} />
+            {React.Children.map(children, (child, i) => (
               <span
                 key={i}
                 className={clsx("mr-xsmall last:mr-0", spanClassName)}
               >
                 {child}
               </span>
-            )
-          })
+            ))}
+          </>
+        ) : (
+          <>
+            {icon && (
+              <>
+                {icon}
+                {React.Children.map(children, (child, i) => (
+                  <span
+                    key={i}
+                    className={clsx("mr-xsmall last:mr-0", spanClassName)}
+                  >
+                    {child}
+                  </span>
+                ))}
+              </>
+            )}
+            {!icon &&
+              React.Children.map(children, (child, i) => (
+                <span
+                  key={i}
+                  className={clsx("mr-xsmall last:mr-0", spanClassName)}
+                >
+                  {child}
+                </span>
+              ))}
+          </>
         )}
       </button>
     )
   }
 )
+Button.displayName = "Button"
 
 export default Button
