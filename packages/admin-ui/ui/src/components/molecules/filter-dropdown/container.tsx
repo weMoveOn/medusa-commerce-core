@@ -8,8 +8,8 @@ import React, {
   useState,
 } from "react"
 
-import Button from "../../fundamentals/button"
 import { useWindowDimensions } from "../../../hooks/use-window-dimensions"
+import Button from "../../fundamentals/button"
 
 type FilterDropdownContainerProps = {
   submitFilters: () => void
@@ -54,7 +54,7 @@ const FilterDropdownContainer = ({
       <RadixPopover.Content
         sideOffset={8}
         style={heightStyle}
-        className="bg-grey-0 rounded-rounded shadow-dropdown z-40 max-w-[320px] overflow-y-auto pt-1"
+        className="bg-grey-0 rounded-rounded shadow-dropdown z-40 max-w-[320px] px-4 py-2 overflow-y-auto pt-1"
       >
         {React.Children.toArray(children)
           .filter(Boolean)

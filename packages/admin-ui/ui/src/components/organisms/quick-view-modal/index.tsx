@@ -36,7 +36,6 @@ const QuickViewModal: React.FC<QuickViewModalProps> = ({
       url: "https://www.whitmorerarebooks.com/pictures/medium/2465.jpg",
       id: 2,
     },
-    
   ]
 
   const skus = [
@@ -47,7 +46,6 @@ const QuickViewModal: React.FC<QuickViewModalProps> = ({
     { price: 12.568, size: 34 },
     { price: 12.568, size: 34 },
     { price: 12.568, size: 34 },
- 
   ]
 
   const handleLoadMore = () => {
@@ -291,3 +289,5 @@ const QuickViewModal: React.FC<QuickViewModalProps> = ({
 }
 
 export default QuickViewModal
+
+

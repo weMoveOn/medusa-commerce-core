@@ -4,13 +4,21 @@ import { useState } from "react"
 import Medusa from "../../../services/api"
 import { IInventoryProductPayloadType } from "../../../types/inventoryProduct"
 import Button from "../../fundamentals/button"
-import FilterIcon from "../../fundamentals/icons/filter-icon"
 import ListIcon from "../../fundamentals/icons/list-icon"
 import SortingIconMoveOn from "../../fundamentals/icons/sorting-icon-moveon"
 import TileIcon from "../../fundamentals/icons/tile-icon"
 import ProductGridCard from "../../molecules/product-grid-card"
 import ProductListCard from "../../molecules/product-list-card"
 import QuickViewModal from "../../organisms/quick-view-modal"
+
+import InventoryProductFilters from "../inventory-product-filter"
+import { useOrderFilters } from "../order-table/use-order-filters"
+
+const defaultQueryProps = {
+  expand: "customer,shipping_address",
+  fields:
+    "id,status,display_id,created_at,email,fulfillment_status,payment_status,total,currency_code",
+}
 
 const MoveOnProduct = () => {
   const [layOut, setLayOut] = useState<"grid" | "list">("grid")
@@ -21,6 +29,24 @@ const MoveOnProduct = () => {
   )
   const [isOpenModal, setIsOpenModal] = useState<boolean>(false)
 
+  const {
+    removeTab,
+    setTab,
+    saveTab,
+    availableTabs: filterTabs,
+    activeFilterTab,
+    reset,
+    paginate,
+    setFilters,
+    filters,
+    setQuery: setFreeText,
+    queryObject,
+    representationObject,
+  } = useOrderFilters(location.search, defaultQueryProps)
+
+  const filtersOnLoad = queryObject
+  const [query, setQuery] = useState(filtersOnLoad?.query)
+
   const handleProductView = (value: any) => {
     setIsOpenModal(true)
     console.log(value)
@@ -29,13 +55,27 @@ const MoveOnProduct = () => {
     setIsOpenModal(false)
   }
 
+  const clearFilters = () => {
+    reset()
+    setQuery("")
+  }
+  const submitFilter=(data:any)=>{ 
+
+    console.log(data,"Filters")
+  }
+
   return (
     <>
       <div className="container mx-auto px-2">
         <div className="  flex flex-wrap justify-between">
           <div className="px-3 py-3">
             <div className="flex justify-start">
-              <Button
+            <InventoryProductFilters
+              filters={filters}
+              submitFilters={submitFilter}
+              clearFilters={clearFilters}          
+            />
+              {/* <Button
                 icon={<FilterIcon size={20} style={{ marginTop: "4px" }} />}
                 className="mr-2 flex  flex-row items-center justify-center px-6"
                 variant="secondary"
@@ -43,7 +83,7 @@ const MoveOnProduct = () => {
                 spanClassName="text-center text-sm font-small text-slate-700"
               >
                 Filter
-              </Button>
+              </Button> */}
               <Button
                 icon={
                   <SortingIconMoveOn
@@ -133,17 +173,14 @@ const MoveOnProduct = () => {
         </div>
       </div>
 
-      { isOpenModal &&  <QuickViewModal
+      {isOpenModal && (
+        <QuickViewModal
           title="Export Orders"
           handleClose={() => onCloseModal()}
-          onSubmit={()=>{ 
-
-
-          }}
+          onSubmit={() => {}}
           loading={false}
         />
-      
-      }
+      )}
     </>
   )
 }
