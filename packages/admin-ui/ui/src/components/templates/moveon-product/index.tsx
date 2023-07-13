@@ -15,6 +15,8 @@ import InventoryProductSort from "../inventory-product-sort"
 import { useOrderFilters } from "../order-table/use-order-filters"
 
 import useInventoryProductFilters from "../../../hooks/use-inventory-product-filter"
+import { staticSorting } from "../../../utils/inventory-product-data"
+import { NextSelect } from "../../molecules/select/next-select"
 
 const defaultQueryProps = {
   expand: "customer,shipping_address",
@@ -132,6 +134,19 @@ const MoveOnProduct = () => {
                 sorter={filterForTemporal.sorter}
                 onChange={handleSorting}
               />
+
+<NextSelect
+       
+        placeholder="Sort by"
+        name="sort"
+        selectedPlaceholder=""
+       
+        onChange={(value) => {
+          console.log(value)
+                
+        }}
+        options={staticSorting}
+      />
               {/* <Button
                 icon={<FilterIcon size={20} style={{ marginTop: "4px" }} />}
                 className="mr-2 flex  flex-row items-center justify-center px-6"

@@ -41,17 +41,16 @@ const Select = forwardRef(
       <AdjacentContainer
         ref={containerRef}
         label={label}
-        htmlFor={`${name}-${label || ""}`}
+        htmlFor={name}
         helperText={helperText}
         required={required}
-        name={`${name}-${label || ""}`}
+        name={name}
         errors={errors}
       >
         <ReactSelect
-       
           aria-labelledby={`${name}_label`}
           ref={ref}
-          name={`${name}-${label || ""}`}
+          name={name}
           {...selectProps}
           menuPortalTarget={portalRef?.current?.lastChild || null}
           menuShouldBlockScroll={true}

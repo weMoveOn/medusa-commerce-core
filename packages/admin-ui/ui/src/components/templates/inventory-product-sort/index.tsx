@@ -22,7 +22,7 @@ const InventoryProductSort: React.FC<IInventoryProductSortProps> = ({
   const sortOptions = useMemo(() => {
     return (
       sortState.values.map((s) => ({
-        value: s.value,
+        value: s.value+"&"+s.title,
         label: s.title,
       })) || []
     );
@@ -34,8 +34,10 @@ const InventoryProductSort: React.FC<IInventoryProductSortProps> = ({
         value={selectedValue}
         placeholder="Sort by"
         name="sort"
+        selectedPlaceholder=""
        
         onChange={(value) => {
+          console.log(value)
           if(value){ 
              onChange(value); 
           }         
