@@ -24,7 +24,7 @@ type UseFiltersReturnType = {
   setFilters: (filters: Filters) => void;
 };
 
-const useFilters = (): UseFiltersReturnType => {
+const useInventoryProductFilters = (): UseFiltersReturnType => {
   const [filters, setFilters] = useState<Filters | null>(null);
   const [isFirstCall, setIsFirstCall] = useState(false);
   const [isFetched, setIsFetched] = useState(false);
@@ -165,4 +165,4 @@ const useFilters = (): UseFiltersReturnType => {
   };
 };
 
-export default useFilters;
+export default useInventoryProductFilters;
