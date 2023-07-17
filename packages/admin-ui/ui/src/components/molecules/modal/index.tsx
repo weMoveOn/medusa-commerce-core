@@ -72,7 +72,7 @@ const Modal: ModalType = ({
 }) => {
   const portalRef = React.useRef(null)
   return (
-    <Dialog.Root open={open} onOpenChange={handleClose}>
+    <Dialog.Root  open={open} onOpenChange={handleClose}>
       <Portal.Portal ref={portalRef}>
         <ModalContext.Provider value={{ portalRef, isLargeModal }}>
           <Overlay>

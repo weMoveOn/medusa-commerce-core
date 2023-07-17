@@ -54,3 +54,66 @@ export interface IInventoryProductPayloadType {
   paginate: IInventoryProductsPaginateType
   data: IInventoryProductDataType[]
 }
+
+
+
+// filters type declearation 
+export interface ISorterValue {
+  title: string;
+  key: string;
+  value: string;
+  selected: boolean;
+}
+
+export interface ISorter {
+  typeKey: string;
+  orderKey: string;
+  values: ISorterValue[];
+}
+
+export interface IConfiguratorPropertyValue {
+  value: string;
+  image: string | null;
+  label: string;
+  selected: boolean;
+}
+
+export interface IConfiguratorProperty<T extends string> {
+  title: string;
+  type: string;
+  key: T;
+  separator: string;
+  values: IConfiguratorPropertyValue[];
+}
+
+export interface IAttrValue {
+  value: string;
+  image: string | null;
+  label: string;
+  selected: boolean;
+  values?: IAttrValue[];
+}
+
+export interface IAttr<T extends string, U extends string> {
+  title: string;
+  type: string;
+  key: T;
+  separator: U;
+  values: IAttrValue[];
+}
+
+export type PrType = IConfiguratorProperty<"pr">;
+export type CidType = IConfiguratorProperty<"cid">;
+export type FeaturesType = IConfiguratorProperty<"features">;
+
+export interface IConfigurator {
+  pr: PrType;
+  cid?: CidType;
+  features: FeaturesType;
+  attr: IAttr<string, string>;
+}
+
+export interface IFilters {
+  sorter: ISorter;
+  configurator: IConfigurator;
+}

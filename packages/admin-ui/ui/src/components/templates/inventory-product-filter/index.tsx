@@ -1,12 +1,10 @@
-import clsx from "clsx"
 import { useAdminRegions, useAdminSalesChannels } from "medusa-react"
 import { useEffect, useState } from "react"
 import FilterDropdownContainer from "../../../components/molecules/filter-dropdown/container"
 import FilterDropdownItem from "../../../components/molecules/filter-dropdown/item"
-import SaveFilterItem from "../../../components/molecules/filter-dropdown/save-field"
-import TabFilter from "../../../components/molecules/filter-tab"
 import { useFeatureFlag } from "../../../providers/feature-flag-provider"
-import PlusIcon from "../../fundamentals/icons/plus-icon"
+import Button from "../../fundamentals/button"
+import FilterIcon from "../../fundamentals/icons/filter-icon"
 
 const REGION_PAGE_SIZE = 10
 const CHANNEL_PAGE_SIZE = 10
@@ -47,12 +45,7 @@ const dateFilters = [
   "is equal to",
 ]
 
-const OrderFilters = ({
-  tabs,
-  activeTab,
-  onTabClick,
-  onSaveTab,
-  onRemoveTab,
+const InventoryProductFilters = ({
   filters,
   submitFilters,
   clearFilters,
@@ -63,23 +56,6 @@ const OrderFilters = ({
   const { isFeatureEnabled } = useFeatureFlag()
   const isSalesChannelsEnabled = isFeatureEnabled("sales_channels")
 
-  const handleRemoveTab = (val) => {
-    if (onRemoveTab) {
-      onRemoveTab(val)
-    }
-  }
-
-  const handleSaveTab = () => {
-    if (onSaveTab) {
-      onSaveTab(name, tempState)
-    }
-  }
-
-  const handleTabClick = (tabName: string) => {
-    if (onTabClick) {
-      onTabClick(tabName)
-    }
-  }
 
   useEffect(() => {
     setTempState(filters)
@@ -147,23 +123,15 @@ const OrderFilters = ({
         submitFilters={onSubmit}
         clearFilters={onClear}
         triggerElement={
-          <button
-            className={clsx(
-              "rounded-rounded focus-visible:shadow-input focus-visible:border-violet-60 flex items-center space-x-1 focus-visible:outline-none"
-            )}
-          >
-            <div className="rounded-rounded bg-grey-5 border-grey-20 inter-small-semibold flex h-6 items-center border px-2">
-              Filters
-              <div className="text-grey-40 ml-1 flex items-center rounded">
-                <span className="text-violet-60 inter-small-semibold">
-                  {numberOfFilters ? numberOfFilters : "0"}
-                </span>
-              </div>
-            </div>
-            <div className="rounded-rounded bg-grey-5 border-grey-20 inter-small-semibold flex items-center border p-1">
-              <PlusIcon size={14} />
-            </div>
-          </button>
+          <Button
+          icon={<FilterIcon size={20} style={{ marginTop: "4px" }} />}
+          className="mr-2 flex  flex-row items-center justify-center px-6"
+          variant="secondary"
+          size="small"
+          spanClassName="text-center text-sm font-small text-slate-700"
+        >
+          Filter
+        </Button>
         }
       >
         <FilterDropdownItem
@@ -228,25 +196,9 @@ const OrderFilters = ({
           open={tempState.date.open}
           setFilter={(val) => setSingleFilter("date", val)}
         />
-        <SaveFilterItem
-          saveFilter={handleSaveTab}
-          name={name}
-          setName={setName}
-        />
       </FilterDropdownContainer>
-      {tabs &&
-        tabs.map((t) => (
-          <TabFilter
-            key={t.value}
-            onClick={() => handleTabClick(t.value)}
-            label={t.label}
-            isActive={activeTab === t.value}
-            removable={!!t.removable}
-            onRemove={() => handleRemoveTab(t.value)}
-          />
-        ))}
     </div>
   )
 }
 
-export default OrderFilters
+export default InventoryProductFilters
