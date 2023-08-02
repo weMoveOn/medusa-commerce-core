@@ -12,10 +12,12 @@
     "@medusajs/cache-inmemory": "workspace:*",
     "@medusajs/event-bus-local": "workspace:*",
     "@medusajs/medusa": "workspace:*",
+    "@medusajs/product": "workspace:^",
     "faker": "^5.5.3",
     "medusa-fulfillment-webshipper": "workspace:*",
     "medusa-interfaces": "workspace:*",
     "medusa-plugin-sendgrid": "workspace:*",
+    "pg": "^8.11.0",
     "typeorm": "^0.3.16"
   },
   "devDependencies": {

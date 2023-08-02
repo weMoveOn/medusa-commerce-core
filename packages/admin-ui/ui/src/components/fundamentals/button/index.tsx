@@ -1,14 +1,13 @@
 import React from "react"
-
 import clsx from "clsx"
-import Spinner from "../../atoms/spinner"
-
+import Spinner, { SpinnerProps } from "../../atoms/spinner"
 export type ButtonProps = {
   variant: "primary" | "secondary" | "ghost" | "danger" | "nuclear"
   size?: "small" | "medium" | "large"
   loading?: boolean
   spanClassName?: string
   icon?: React.ReactNode
+  spinnerConfig?: SpinnerProps
 } & React.ButtonHTMLAttributes<HTMLButtonElement>
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
@@ -19,6 +18,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       loading = false,
       spanClassName,
       icon,
+      spinnerConfig,
       children,
       ...attributes
     },

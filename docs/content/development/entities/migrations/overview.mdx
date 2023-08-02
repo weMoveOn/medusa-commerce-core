@@ -32,7 +32,7 @@ Migrations are used to apply changes to the database schema. However, there are 
 Using the Medusa CLI tool, you can run migrations with the following command:
 
 ```bash
-npx @medusajs/medusa-cli migrations run
+npx medusa migrations run
 ```
 
 This will check for any migrations that contain changes to your database schema that aren't applied yet and run them on your backend.
@@ -43,7 +43,7 @@ Seeding is the process of filling your database with data that is either essenti
 
 You can use the following command to seed your database:
 
-```bash npm2yarn
+```bash
 npx @medusajs/medusa-cli@latest seed -f ./data/seed.json
 ```
 

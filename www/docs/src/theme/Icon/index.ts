@@ -20,6 +20,8 @@ import IconChannels from "./Channels"
 import IconChannelsSolid from "./ChannelsSolid"
 import IconCheckCircleSolid from "./CheckCircleSolid"
 import IconChevronDoubleLeftMiniSolid from "./ChevronDoubleLeftMiniSolid"
+import IconCircleDottedLine from "./CircleDottedLine"
+import IconCircleMiniSolid from "./CircleMiniSolid"
 import IconCircleStack from "./CircleStack"
 import IconCircleStackSolid from "./CircleStackSolid"
 import IconClockSolidMini from "./ClockSolidMini"
@@ -40,6 +42,8 @@ import IconCurrencyDollarSolid from "./CurrencyDollarSolid"
 import IconDarkMode from "./DarkMode"
 import IconDiscord from "./Discord"
 import IconDocumentText from "./DocumentText"
+import IconDocumentTextSolid from "./DocumentTextSolid"
+import IconExclamationCircleSolid from "./ExclamationCircleSolid"
 import IconExternalLink from "./ExternalLink"
 import IconFlyingBox from "./FlyingBox"
 import IconFolder from "./Folder"
@@ -49,6 +53,7 @@ import IconGiftSolid from "./GiftSolid"
 import IconGitHub from "./GitHub"
 import IconGlobeEurope from "./GlobeEurope"
 import IconGlobeEuropeSolid from "./GlobeEuropeSolid"
+import IconInformationCircleSolid from "./InformationCircleSolid"
 import IconJavaScript from "./JavaScript"
 import IconKey from "./Key"
 import IconKeySolid from "./KeySolid"
@@ -56,6 +61,8 @@ import IconLightBulb from "./LightBulb"
 import IconLightBulbSolid from "./LightBulbSolid"
 import IconLightMode from "./LightMode"
 import IconLinkedIn from "./LinkedIn"
+import IconMap from "./Map"
+import IconNewspaper from "./Newspaper"
 import IconNextjs from "./Nextjs"
 import IconPencilSquareSolid from "./PencilSquareSolid"
 import IconPuzzle from "./Puzzle"
@@ -75,6 +82,7 @@ import IconSparklesSolid from "./SparklesSolid"
 import IconSquaresPlus from "./SquaresPlus"
 import IconSquaresPlusSolid from "./SquaresPlusSolid"
 import IconStar from "./Star"
+import IconStarSolid from "./StarSolid"
 import IconStripe from "./Stripe"
 import IconSwatchSolid from "./SwatchSolid"
 import IconTagSolid from "./TagSolid"
@@ -83,6 +91,7 @@ import IconToolsSolid from "./ToolsSolid"
 import IconTwitter from "./Twitter"
 import IconUser from "./User"
 import IconUsersSolid from "./UsersSolid"
+import IconXCircleSolid from "./XCircleSolid"
 
 export type IconProps = {
   width?: number
@@ -114,6 +123,8 @@ export default {
   channels: IconChannels,
   "check-circle-solid": IconCheckCircleSolid,
   "chevron-double-left-mini-solid": IconChevronDoubleLeftMiniSolid,
+  "circle-dotted-line": IconCircleDottedLine,
+  "circle-mini-solid": IconCircleMiniSolid,
   "circle-stack": IconCircleStack,
   "circle-stack-solid": IconCircleStackSolid,
   "clock-solid-mini": IconClockSolidMini,
@@ -134,6 +145,8 @@ export default {
   "dark-mode": IconDarkMode,
   discord: IconDiscord,
   "document-text": IconDocumentText,
+  "document-text-solid": IconDocumentTextSolid,
+  "exclamation-circle-solid": IconExclamationCircleSolid,
   "external-link": IconExternalLink,
   "flying-box": IconFlyingBox,
   folder: IconFolder,
@@ -143,6 +156,7 @@ export default {
   github: IconGitHub,
   "globe-europe": IconGlobeEurope,
   "globe-europe-solid": IconGlobeEuropeSolid,
+  "information-circle-solid": IconInformationCircleSolid,
   javascript: IconJavaScript,
   key: IconKey,
   "key-solid": IconKeySolid,
@@ -150,6 +164,8 @@ export default {
   "light-bulb-solid": IconLightBulbSolid,
   "light-mode": IconLightMode,
   linkedin: IconLinkedIn,
+  map: IconMap,
+  newspaper: IconNewspaper,
   nextjs: IconNextjs,
   "pencil-square-solid": IconPencilSquareSolid,
   puzzle: IconPuzzle,
@@ -169,6 +185,7 @@ export default {
   "squares-plus": IconSquaresPlus,
   "squares-plus-solid": IconSquaresPlusSolid,
   star: IconStar,
+  "star-solid": IconStarSolid,
   stripe: IconStripe,
   "swatch-solid": IconSwatchSolid,
   "tag-solid": IconTagSolid,
@@ -177,4 +194,5 @@ export default {
   twitter: IconTwitter,
   user: IconUser,
   "users-solid": IconUsersSolid,
+  "x-circle-solid": IconXCircleSolid,
 }

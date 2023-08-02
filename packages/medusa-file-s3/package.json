@@ -1,6 +1,6 @@
 {
   "name": "medusa-file-s3",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "AWS s3 file connector for Medusa",
   "main": "dist/index.js",
   "files": [
@@ -14,16 +14,17 @@
   "author": "Sebastian Mateos Nicolajsen",
   "license": "MIT",
   "devDependencies": {
-    "@medusajs/medusa": "^1.12.0",
+    "@medusajs/medusa": "^1.12.1",
     "cross-env": "^5.2.1",
     "jest": "^25.5.4",
     "medusa-test-utils": "^1.1.40",
+    "rimraf": "^5.0.1",
     "typescript": "^4.9.5"
   },
   "scripts": {
     "prepare": "cross-env NODE_ENV=production yarn run build",
     "test": "jest --passWithNoTests src",
-    "build": "tsc",
+    "build": "rimraf dist && tsc",
     "watch": "tsc --watch"
   },
   "peerDependencies": {

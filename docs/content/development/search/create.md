@@ -403,7 +403,7 @@ This section explains how to test out your implementation if the search service 
 Run your backend to test it out:
 
 ```bash npm2yarn
-npx @medusajs/medusa-cli develop
+npx medusa develop
 ```
 
 You can then send a request to the [Search Products endpoint](/api/store#tag/Products/operation/PostProductsSearch) to see if your search service returns any results.
@@ -413,4 +413,4 @@ You can then send a request to the [Search Products endpoint](/api/store#tag/Pro
 ## See Also
 
 - [How to create a plugin](../plugins/create.mdx)
-- [How to publish a plugin](../plugins/publish.md)
+- [How to publish a plugin](../plugins/publish.mdx)

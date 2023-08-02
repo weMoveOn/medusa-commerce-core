@@ -56,7 +56,7 @@ If you follow the JS Client code blocks, it’s assumed you already have [Medusa
 
 This guide also includes code snippets to send requests to your Medusa backend using Medusa React, among other methods.
 
-If you follow the Medusa React code blocks, it's assumed you already have [Medusa React installed](../../../medusa-react/overview.md) and have [used MedusaProvider higher in your component tree](../../../medusa-react/overview.md#usage).
+If you follow the Medusa React code blocks, it's assumed you already have [Medusa React installed](../../../medusa-react/overview.mdx) and have [used MedusaProvider higher in your component tree](../../../medusa-react/overview.mdx#usage).
 
 ### Authenticated Admin User
 
@@ -123,22 +123,22 @@ export default CreateReservation
 
 ```ts
 fetch(`<BACKEND_URL>/admin/reservations`, {
-    credentials: "include",
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      line_item_id,
-      location_id,
-      inventory_item_id,
-      quantity,
-    }),
-  })
-  .then((response) => response.json())
-  .then(({ reservation }) => {
-    console.log(reservation.id)
-  })
+  credentials: "include",
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({
+    line_item_id,
+    location_id,
+    inventory_item_id,
+    quantity,
+  }),
+})
+.then((response) => response.json())
+.then(({ reservation }) => {
+  console.log(reservation.id)
+})
 ```
 
 </TabItem>

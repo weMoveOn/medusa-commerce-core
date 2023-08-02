@@ -859,13 +859,17 @@ describe("CartService", () => {
           gift_cards: true,
           items: {
             variant: {
-              product: true,
+              product: {
+                profiles: true,
+              },
             },
           },
           payment_sessions: true,
           region: { countries: true },
           shipping_address: true,
-          shipping_methods: true,
+          shipping_methods: {
+            shipping_option: true,
+          },
         }),
         expect.objectContaining({
           select: undefined,

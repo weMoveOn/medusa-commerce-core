@@ -9,7 +9,7 @@ In this document, you’ll learn how to customize the Contentful integration wit
 
 :::warning
 
-This guide covers how to customize the Gatsby storefront which is now deprecated. It's recommended to integrate Contentful into either the Next.js storefront or your custom storefront.
+This guide covers how to customize the Gatsby storefront which is now deprecated. It's recommended to integrate Contentful into either the Next.js Starter Template or your custom storefront.
 
 :::
 
@@ -251,7 +251,7 @@ export const query = graphql`
 To test this out, run your Medusa backend by running this command in its directory:
 
 ```bash npm2yarn
-npx @medusajs/medusa-cli develop
+npx medusa develop
 ```
 
 Then run the Gatsby storefront by running this command in its directory:
@@ -332,5 +332,4 @@ Restart the Gatsby storefront then open a product that you added Rich Text conte
 
 ## See Also
 
-- Deploy your Medusa backend to [Heroku](../../../deployments/server/deploying-on-heroku.mdx), [Qovery](../../../deployments/server/deploying-on-qovery.md), or [DigitalOcean](../../../deployments/server/deploying-on-digital-ocean.md).
-- [How to deploy your Gatsby storefront to Netlify](../../../deployments/storefront/deploying-gatsby-on-netlify.md).
+- How to deploy your Medusa backend to [Heroku](../../../deployments/server/deploying-on-heroku.mdx), or [DigitalOcean](../../../deployments/server/deploying-on-digital-ocean.md), or [other providers](../../../deployments/server/index.mdx)

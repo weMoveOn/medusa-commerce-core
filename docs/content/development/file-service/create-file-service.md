@@ -397,7 +397,7 @@ This section explains how to test out your implementation if the file service wa
 Run your backend to test it out:
 
 ```bash npm2yarn
-npx @medusajs/medusa-cli develop
+npx medusa develop
 ```
 
 Then, try uploading a file, for example, using the [Upload File endpoint](/api/admin#tag/Uploads/operation/PostUploads). The file should be uploaded based on the logic you’ve implemented.
@@ -431,4 +431,4 @@ export default () => {
 ## See Also
 
 - [How to create a plugin](../plugins/create.mdx)
-- [How to publish a plugin](../plugins/publish.md)
+- [How to publish a plugin](../plugins/publish.mdx)

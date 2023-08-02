@@ -306,14 +306,14 @@ npm run build
 Next, start your Medusa backend:
 
 ```bash npm2yarn
-npx @medusajs/medusa-cli develop
+npx medusa develop
 ```
 
 Try now to place an order either using the [REST APIs](/api/store) or using the storefront.
 
 :::tip
 
-If you don’t have a storefront installed you can get started with the [Next.js](../../starters/nextjs-medusa-starter.mdx) starter storefront in minutes.
+If you don’t have a storefront installed you can get started with the [Next.js Starter Template](../../starters/nextjs-medusa-starter.mdx) in minutes.
 
 :::
 
