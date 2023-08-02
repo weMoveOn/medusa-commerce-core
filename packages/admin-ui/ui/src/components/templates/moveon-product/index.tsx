@@ -135,8 +135,7 @@ const MoveOnProduct = () => {
                 onChange={handleSorting}
               />
 
-<NextSelect
-       
+          <NextSelect
         placeholder="Sort by"
         name="sort"
         selectedPlaceholder=""
