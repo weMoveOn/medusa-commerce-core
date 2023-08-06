@@ -34,20 +34,21 @@ const ProductListCard: React.FC<IProductListCardProps> = ({
   isSelect = false,
   footerButtonEnabled = true,
   footerProgressBarEnabled = true,
+  productData,
   route = "product-list",
 }) => {
   const containerClasses = clsx(
-    "relative flex items-center p-3 border rounded-lg border-gray-100 my-2 bg-white min-w-[80%]",
+    "relative flex items-center gap-4 p-4 border rounded-lg border-gray-100 mb-4 bg-white w-[80%]",
     enableSelectOption && isSelect && "border-violet-600"
   )
-
+console.log(productData)
   return (
     <div className={containerClasses}>
       {enableSelectOption && (
-        <div className="mr-4 flex items-center">
+        <div className="flex items-center">
           <Checkbox
             checked={isSelect ?? false}
-            inputFiledClassName="!rounded-full shadow-md"
+            inputFiledClassName="rounded-full shadow-md"
             id="checkbox1"
             label=""
             className="mr-0 cursor-pointer"
@@ -56,24 +57,18 @@ const ProductListCard: React.FC<IProductListCardProps> = ({
       )}
 
       <img
-        className="mr-4 h-24 w-24 rounded-md object-cover"
-        src="https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8OHx8c25lYWtlcnxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=500&q=60"
+        className="h-20 w-20 rounded-md object-cover hover:scale-125 hover:duration-300 transition ease-in-out"
+        src={productData?.image}
         alt="product image"
       />
 
-      <div className="flex flex-grow flex-col">
-        <div className="">
-          <a href="#">
-            <h5 className="text-md font-bold tracking-tight text-slate-800">
-              Nike Air MX Super 2500 - Red Nike Air MX Super 2500 - Red Nike Air
-              MX Super 2500 - Red
+      <div className="flex flex-grow flex-col ">
+            <h5 className="text-large leading-base font-bold tracking-tight text-slate-800 ">
+              {productData?.title?.slice(0, 150)}
             </h5>
-          </a>
-        </div>
-
-        <div className="flex flex-grow flex-row">
+        <div className="flex flex-row">
           <div className="">
-            {route === "product-list" && (
+            {/* {route === "product-list" && (
               <div className="mt-2 mb-3 flex items-center">
                 <StarRatingIcon
                   fillColor={"#fb923c"}
@@ -92,24 +87,20 @@ const ProductListCard: React.FC<IProductListCardProps> = ({
                   (5)
                 </span>
               </div>
-            )}
+            )} */}
 
             {route === "product-list" && (
-              <div className="mb-2 flex items-center">
-                <p>
-                  <span className="text-2xl font-bold text-violet-600">
-                    $449
-                  </span>
-                  <span className="text-sm text-violet-500 line-through">
-                    $699
-                  </span>
-                </p>
-              </div>
+              <div className=" my-1 flex items-center justify-between">
+              <p>
+                <span className="text-lg font-bold text-violet-600">{productData?.price}</span>
+                {/* <span className="text-sm text-violet-500 line-through">${productData?.price}</span> */}
+              </p>
+            </div>
             )}
             {route === "product-list" && (
-              <div className="mb-3 flex items-center">
-                <p className="text-slate-600">Total Sales: 2440633</p>
-              </div>
+              <div className="my-1 flex items-center justify-between">
+              <p className="text-slate-600 text-sm font-normal">Total Sales: {productData?.orders ?? 0}</p>
+            </div>
             )}
 
             {route === "imported-product" && (
@@ -138,7 +129,7 @@ const ProductListCard: React.FC<IProductListCardProps> = ({
                   onClick={() => leftButtonOnClick("darta")}
                   variant="secondary"
                   size="medium"
-                  spanClassName="text-center text-sm font-small text-slate-700 "
+                  spanClassName="text-center text-sm font-medium text-slate-700 "
                 >
                   {leftButtonTitle ?? "Quick view"}
                 </Button>
@@ -154,7 +145,7 @@ const ProductListCard: React.FC<IProductListCardProps> = ({
                   variant="secondary"
                   className="min-w-[120px]"
                   size="medium"
-                  spanClassName="text-center text-sm font-small text-slate-700"
+                  spanClassName="text-center text-sm font-medium text-slate-700"
                 >
                   {rightButtonTitle ?? "Import"}
                 </Button>
