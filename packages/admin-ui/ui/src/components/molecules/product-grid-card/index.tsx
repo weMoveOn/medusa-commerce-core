@@ -36,20 +36,21 @@ const ProductGridCard: React.FC<IProductGridCardProps> = ({
   rightButtonIcon,
   route = "product-list",
 }) => {
-  const conatainerClassess = clsx(
+
+  console.log(productData)
+  const containerClassess = clsx(
     "relative m-1 flex w-full max-w-[18rem] flex-col overflow-hidden rounded-lg border border-gray-100  bg-white",
     enableSelectOption && isSelect && "border-violet-600"
   )
   return (
-    <div className={conatainerClassess}>
+    <div className={containerClassess}>
       {/* default   border-gray-100 */}
-      <a
-        className="relative mx-3 mt-3 flex h-60 overflow-hidden rounded-xl"
-        href="#"
+      <div
+        className="relative flex h-60 overflow-hidden rounded-xl"
       >
         <img
           className="object-cover"
-          src="https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8OHx8c25lYWtlcnxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=500&q=60"
+          src={productData?.image}
           alt="product image"
         />
 
@@ -68,14 +69,12 @@ const ProductGridCard: React.FC<IProductGridCardProps> = ({
             </div>
           </span>
         )}
-      </a>
-      <div className="mt-4 px-3 pb-5">
-        <a href="#">
-          <h5 className="text-md font-bold tracking-tight text-slate-800">
-            Nike Air MX Super 2500 - Red
+      </div>
+      <div className="mt-4 px-4 pb-4">
+          <h5 className="truncate text-large leading-base font-bold tracking-tight text-slate-800 mb-1">
+            {productData?.title}
           </h5>
-        </a>
-        {route === "product-list" && (
+        {/* {route === "product-list" && (
           <div className="mt-2 mb-3 flex items-center justify-between">
             <div className="flex items-center">
               <StarRatingIcon
@@ -96,20 +95,20 @@ const ProductGridCard: React.FC<IProductGridCardProps> = ({
               </span>
             </div>
           </div>
-        )}
+        )} */}
 
         {route === "product-list" && (
-          <div className=" mb-2 flex items-center justify-between">
+          <div className=" my-1 flex items-center justify-between">
             <p>
-              <span className="text-2xl font-bold text-violet-600">$449</span>
-              <span className="text-sm text-violet-500 line-through">$699</span>
+              <span className="text-lg font-bold text-violet-600">{productData?.price}</span>
+              {/* <span className="text-sm text-violet-500 line-through">${productData?.price}</span> */}
             </p>
           </div>
         )}
 
         {route === "product-list" && (
-          <div className=" mb-3 flex items-center justify-between">
-            <p className="text-slate-600">Total Sales: 2440633</p>
+          <div className="my-1 flex items-center justify-between">
+            <p className="text-slate-600 text-sm font-normal">Total Sales: {productData?.orders??0}</p>
           </div>
         )}
         {route === "imported-product" && (
@@ -128,7 +127,7 @@ const ProductGridCard: React.FC<IProductGridCardProps> = ({
 
         {footerProgressBarEnabled && <ProgressBarMoveShop progress="45%" />}
         {footerButtonEnabled && (
-          <div className=" mt-2 flex items-center justify-between">
+          <div className=" mt-1 flex items-center justify-between">
             {leftButtonOnClick && (
               <Button
                 icon={
@@ -139,7 +138,7 @@ const ProductGridCard: React.FC<IProductGridCardProps> = ({
                 variant="secondary"
                 className="min-w-[120px]"
                 size="medium"
-                spanClassName=" text-center text-sm  font-small text-slate-700"
+                spanClassName="text-center text-sm  font-medium text-slate-700"
               >
                 {leftButtonTitle ?? " Quick view"}
               </Button>
@@ -155,7 +154,7 @@ const ProductGridCard: React.FC<IProductGridCardProps> = ({
                 onClick={() => rightButtonOnClick(productData)}
                 variant="secondary"
                 size="medium"
-                spanClassName=" text-center text-sm font-small text-slate-700"
+                spanClassName=" text-center text-sm font-medium text-slate-700"
               >
                 {rightButtonTitle ?? "Import"}
               </Button>
