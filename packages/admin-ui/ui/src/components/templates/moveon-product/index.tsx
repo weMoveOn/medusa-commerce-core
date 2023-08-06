@@ -29,8 +29,9 @@ const MoveOnProduct = () => {
   const { isLoading, isError, data, error } = useQuery<
     AxiosResponse<IInventoryProductPayloadType>
   >(["inventory-fetch"], () =>
-    Medusa.moveOnInventory.list({ keyword: "mobile", shop_id: 11 })
+    Medusa.moveOnInventory.list({ keyword: "beg", shop_id: 4,features:"Discount:true",offset:0,limit: 10,sortType:"price",sortOrder:"desc",pr:"10-20" })
   )
+  
   const [isOpenModal, setIsOpenModal] = useState<boolean>(false)
   const [isParamsUpdated, setIsParamsUpdated] = useState(false)
   const [selectedSort, setSelectedSort] = useState<{
@@ -116,12 +117,12 @@ const MoveOnProduct = () => {
     }
   }, [inventoryFilters])
 
-  console.log(selectedSort,"s")
+  // console.log(selectedSort,"s")
 
   return (
     <>
       <div className="container mx-auto px-2">
-        <div className="  flex flex-wrap justify-between">
+        <div className="flex flex-wrap justify-between">
           <div className="px-3 py-3">
             <div className="flex justify-start">
               <InventoryProductFilters
@@ -134,7 +135,7 @@ const MoveOnProduct = () => {
                 sorter={filterForTemporal.sorter}
                 onChange={handleSorting}
               />
-
+           {/* 
           <NextSelect
         placeholder="Sort by"
         name="sort"
@@ -145,7 +146,7 @@ const MoveOnProduct = () => {
                 
         }}
         options={staticSorting}
-      />
+      /> */}
               {/* <Button
                 icon={<FilterIcon size={20} style={{ marginTop: "4px" }} />}
                 className="mr-2 flex  flex-row items-center justify-center px-6"
@@ -208,10 +209,10 @@ const MoveOnProduct = () => {
         <div className="-mx-4 flex flex-wrap justify-center">
           {layOut === "grid" ? (
             <>
-              {Array.from(Array(10), (item, index) => (
+              {data?.data?.products.map((item, index) => (
                 <ProductGridCard
                   route="product-list"
-                  productData={"click"}
+                  productData={item}
                   key={index}
                   enableSelectOption={false}
                   footerProgressBarEnabled={false}
@@ -226,10 +227,11 @@ const MoveOnProduct = () => {
             </>
           ) : (
             <>
-              {Array.from(Array(10), (item, index) => (
+              {data?.data?.products.map((item, index) => (
                 <ProductListCard
                   route="product-list"
                   key={index}
+                  productData={item}
                   enableSelectOption={false}
                   footerProgressBarEnabled={false}
                   footerButtonEnabled={true}

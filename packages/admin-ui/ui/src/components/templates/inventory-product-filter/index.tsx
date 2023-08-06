@@ -5,6 +5,7 @@ import FilterDropdownItem from "../../../components/molecules/filter-dropdown/it
 import { useFeatureFlag } from "../../../providers/feature-flag-provider"
 import Button from "../../fundamentals/button"
 import FilterIcon from "../../fundamentals/icons/filter-icon"
+import { filterForTemporal } from "../../../utils/date-utils"
 
 const REGION_PAGE_SIZE = 10
 const CHANNEL_PAGE_SIZE = 10
@@ -135,11 +136,14 @@ const InventoryProductFilters = ({
         }
       >
         <FilterDropdownItem
-          filterTitle="Status"
-          options={statusFilters}
-          filters={tempState.status.filter}
-          open={tempState.status.open}
-          setFilter={(val) => setSingleFilter("status", val)}
+          filterTitle={filterForTemporal.configurator.features.title}
+          options={ filterForTemporal.configurator.features.values?.map((f) => ({
+            value: f.value,
+            label: f.label,
+          })) || []}
+          filters={tempState.features.filter}
+          open={tempState.features.open}
+          setFilter={(val) => setSingleFilter("features", val)}
         />
         <FilterDropdownItem
           filterTitle="Payment Status"

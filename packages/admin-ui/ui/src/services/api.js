@@ -291,8 +291,10 @@ export default {
       const params = Object.keys(search)
         .map((k) => `${k}=${search[k]}`)
         .join("&")
-      const path = `/inventory/search${params && `?${params}`}`
-      return moveOnInventoryRequest("GET", path)
+      const path = `/inventory-products${params && `?${params}`}`
+      // // const path = `/admin/products`
+      // const path = `/inventory-products`
+      return medusaRequest("GET", path)
     },
   },
 

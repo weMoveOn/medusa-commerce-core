@@ -15,7 +15,7 @@ type OrderFilterAction =
   | { type: "setOffset"; payload: number }
   | { type: "setDefaults"; payload: OrderDefaultFilters | null }
   | { type: "setDate"; payload: OrderDateFilter }
-  | { type: "setStatus"; payload: null | string[] | string }
+  | { type: "setFeatures"; payload: null | string[] | string }
   | { type: "setFulfillment"; payload: null | string[] | string }
   | { type: "setPayment"; payload: null | string[] | string }
 
@@ -29,7 +29,7 @@ interface OrderFilterState {
     open: boolean
     filter: null | string[] | string
   }
-  status: {
+  features: {
     open: boolean
     filter: null | string[] | string
   }
@@ -51,7 +51,7 @@ interface OrderFilterState {
 }
 
 const allowedFilters = [
-  "status",
+  "features",
   "region",
   "fulfillment_status",
   "payment_status",
@@ -101,7 +101,7 @@ const reducer = (
         salesChannel: action.payload.salesChannel,
         fulfillment: action.payload.fulfillment,
         payment: action.payload.payment,
-        status: action.payload.status,
+        features: action.payload.features,
         date: action.payload.date,
         query: action?.payload?.query,
       }
@@ -200,8 +200,8 @@ export const useOrderFilters = (
     dispatch({ type: "setPayment", payload: filter })
   }
 
-  const setStatusFilter = (filter: string[] | string | null) => {
-    dispatch({ type: "setStatus", payload: filter })
+  const setFeaturesFilter = (filter: string[] | string | null) => {
+    dispatch({ type: "setFeatures", payload: filter })
   }
 
   const setDefaultFilters = (filters: OrderDefaultFilters | null) => {
@@ -237,7 +237,7 @@ export const useOrderFilters = (
           open: false,
           filter: null,
         },
-        status: {
+        features: {
           open: false,
           filter: null,
         },
@@ -402,7 +402,7 @@ export const useOrderFilters = (
           open: false,
           filter: null,
         },
-        status: {
+        features: {
           open: false,
           filter: null,
         },
@@ -498,13 +498,13 @@ export const useOrderFilters = (
     setDateFilter,
     setFulfillmentFilter,
     setPaymentFilter,
-    setStatusFilter,
+    setFeaturesFilter,
     reset,
   }
 }
 
 const filterStateMap = {
-  status: "status",
+  features: "features",
   fulfillment_status: "fulfillment",
   payment_status: "payment",
   created_at: "date",
@@ -515,7 +515,7 @@ const filterStateMap = {
 const stateFilterMap = {
   region: "region_id",
   salesChannel: "sales_channel_id",
-  status: "status",
+  features: "features",
   fulfillment: "fulfillment_status",
   payment: "payment_status",
   date: "created_at",
@@ -526,7 +526,7 @@ const parseQueryString = (
   additionals: OrderDefaultFilters | null = null
 ): OrderFilterState => {
   const defaultVal: OrderFilterState = {
-    status: {
+    features: {
       open: false,
       filter: null,
     },
@@ -578,9 +578,9 @@ const parseQueryString = (
             }
             break
           }
-          case "status": {
+          case "features": {
             if (typeof value === "string" || Array.isArray(value)) {
-              defaultVal.status = {
+              defaultVal.features = {
                 open: true,
                 filter: value,
               }
