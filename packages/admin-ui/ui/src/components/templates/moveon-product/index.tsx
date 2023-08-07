@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query"
 import { AxiosResponse } from "axios"
 import { useEffect, useState } from "react"
 import Medusa from "../../../services/api"
-import { IInventoryProductPayloadType } from "../../../types/inventoryProduct"
+import { IInventoryProductDataType, IInventoryProductPayloadType } from "../../../types/inventoryProduct"
 import ListIcon from "../../fundamentals/icons/list-icon"
 import TileIcon from "../../fundamentals/icons/tile-icon"
 import ProductGridCard from "../../molecules/product-grid-card"
@@ -33,6 +33,8 @@ const MoveOnProduct = () => {
   )
   
   const [isOpenModal, setIsOpenModal] = useState<boolean>(false)
+  const [openProductLink, setOpenProductLink] = useState<string>("")
+
   const [isParamsUpdated, setIsParamsUpdated] = useState(false)
   const [selectedSort, setSelectedSort] = useState<{
     label: string
@@ -67,9 +69,9 @@ const MoveOnProduct = () => {
   const filtersOnLoad = queryObject
   const [query, setQuery] = useState(filtersOnLoad?.query)
 
-  const handleProductView = (value: any) => {
+  const handleProductView = (value: IInventoryProductDataType) => {
     setIsOpenModal(true)
-    console.log(value)
+    setOpenProductLink(value.link)
   }
   const onCloseModal = () => {
     setIsOpenModal(false)
@@ -248,7 +250,8 @@ const MoveOnProduct = () => {
 
       {isOpenModal && (
         <QuickViewModal
-          title="Export Orders"
+          title="Inventory Product"
+          productLink={openProductLink}
           handleClose={() => onCloseModal()}
           onSubmit={() => {}}
           loading={false}

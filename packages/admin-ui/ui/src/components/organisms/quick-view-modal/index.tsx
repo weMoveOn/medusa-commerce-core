@@ -6,12 +6,23 @@ import CrossIcon from "../../fundamentals/icons/cross-icon"
 import ThumbnailCarousel from "../../molecules/carousel/thumbnail-carousel-bottom"
 import Modal from "../../molecules/modal"
 import ProductDetailsAccordion from "../product-details-accordion"
+import { IProductDetailsResponse } from "../../../types/inventory-product-details"
+import Medusa from "../../../services/api"
+import { AxiosResponse } from "axios"
+import { useQuery } from "@tanstack/react-query"
+import clsx from "clsx"
+import LoadingContainer from "../../atoms/loading-container"
+import { Rating } from "react-simple-star-rating"
+
+// Todo:
+// Handle Error
 
 type QuickViewModalProps = {
   handleClose: () => void
   onSubmit?: () => void
   loading: boolean
   title: string
+  productLink: string
 }
 
 const QuickViewModal: React.FC<QuickViewModalProps> = ({
@@ -19,24 +30,16 @@ const QuickViewModal: React.FC<QuickViewModalProps> = ({
   title,
   loading,
   onSubmit,
-}) => {
+  productLink}) => {
+
+  const { isLoading, isError, data, error } = useQuery<
+  AxiosResponse<IProductDetailsResponse>
+>(["inventory-single-product-fetch", productLink], () =>
+  Medusa.moveOnInventory.retrieveSingleProduct(productLink))
+
+
   const [skusToShow, setSkusToShow] = useState(3)
   const [isMinimized, setIsMinimized] = useState(false)
-
-  const images = [
-    {
-      url: "https://www.whitmorerarebooks.com/pictures/medium/2465.jpg",
-      id: 1,
-    },
-    {
-      url: "https://www.whitmorerarebooks.com/pictures/medium/2465.jpg",
-      id: 2,
-    },
-    {
-      url: "https://www.whitmorerarebooks.com/pictures/medium/2465.jpg",
-      id: 2,
-    },
-  ]
 
   const skus = [
     { price: 12.568, size: 34 },
@@ -54,103 +57,66 @@ const QuickViewModal: React.FC<QuickViewModalProps> = ({
     }
     setSkusToShow(skusToShow + 10)
   }
+  // console.log(data?.data.data)
+
+  // function checkIfSizeVariantExists(data) {
+  //   return data.some((item) => {
+  //     if (Array.isArray(item.values)) {
+  //       return item.values.every((variant) => variant.color === null && variant.image === null);
+  //     }
+  //     return false;
+  //   });
+  // }
+
+  // function getSizeForVariationId(ids, resource):string {
+  //   const names = ids
+  //     .split(",")
+  //     .map((id) => resource.values.find((value) => value.id === id))
+  //     .filter(Boolean)
+  //     .map((value) => value.name).join("");
+  
+  //   return names;
+  // }
+
+
+  const valueClasses = clsx("mb-2 p-2 mr-2 border border-gray-100 text-center rounded-md hover:bg-[#f26623] hover:text-white cursor-pointer")
 
   return (
     <Modal isLargeModal={false} handleClose={handleClose}>
       <Modal.Body className="max-w-[1000px]">
-        {/* <Modal.Header handleClose={handleClose}>
-          <span className="inter-xlarge-semibold">Product details</span>
-        </Modal.Header> */}
+      <LoadingContainer isLoading={isLoading}>
+        {data && data.data && data.data.data ?
+        <>
         <div className="flex justify-end">
-          {" "}
           <span onClick={handleClose} className="mx-4 my-2 cursor-pointer">
-            {" "}
             <CrossIcon size={20} />
           </span>
         </div>
         <div>
-          {" "}
           <p className="text-slate-950 px-8 py-1	text-[17px] font-semibold">
-            {" "}
-            Women s Slippers- Spring and Autumn Months Shoes Summer Pregnant
-            Women Slippers Bag with Thin Section Postpartum Breathable Maternity
-            Non-Slip Indoor Flat Shoes Summer
-          </p>{" "}
+            {data.data.data.title}
+          </p>
         </div>
         <Modal.Content>
           <div className="mx-auto flex  flex-wrap justify-between ">
             <ThumbnailCarousel
-              gallery={images}
+              gallery={data.data.data.gallery}
               thumbnailClassName="xl:w-[700px] 2xl:w-[850px]"
               galleryClassName="xl:w-[100px] 2xl:w-[120px]"
             />
 
             <div className="mt-6 ml-3 w-1/2">
               <h2 className="title-font text-sm tracking-widest text-gray-500">
-                BRAND NAME
+                {data.data.data.vendor}
               </h2>
               <h1 className="title-font mb-1 text-3xl font-medium text-gray-900">
-                The Catcher in the Rye
+                {data.data.data.shop.name}
               </h1>
-              <div className="mb-1 flex">
-                <span className="flex items-center">
-                  <svg
-                    fill="currentColor"
-                    stroke="currentColor"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    className="h-4 w-4 text-red-500"
-                    viewBox="0 0 24 24"
-                  >
-                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
-                  </svg>
-                  <svg
-                    fill="currentColor"
-                    stroke="currentColor"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    className="h-4 w-4 text-red-500"
-                    viewBox="0 0 24 24"
-                  >
-                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
-                  </svg>
-                  <svg
-                    fill="currentColor"
-                    stroke="currentColor"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    className="h-4 w-4 text-red-500"
-                    viewBox="0 0 24 24"
-                  >
-                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
-                  </svg>
-                  <svg
-                    fill="currentColor"
-                    stroke="currentColor"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    className="h-4 w-4 text-red-500"
-                    viewBox="0 0 24 24"
-                  >
-                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
-                  </svg>
-                  <svg
-                    fill="none"
-                    stroke="currentColor"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    className="h-4 w-4 text-red-500"
-                    viewBox="0 0 24 24"
-                  >
-                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
-                  </svg>
-                  <span className="ml-3 text-gray-600">4 Reviews</span>
-                </span>
+              <div className="mb-1 flex flex-row items-center">
+               <Rating initialValue={Number(data.data.data.ratings_average) ?? 0} SVGstyle={ { 'display':'inline' } } readonly allowFraction size={20} />
+                  <span className="ml-3 text-gray-600">{data.data.data.ratings_count ?? 0} Reviews</span>
+                
+                {/* Share icons */}
                 <span className="ml-3 flex border-l-2 border-gray-200 py-2 pl-3">
                   <a className="text-gray-500">
                     <svg
@@ -190,45 +156,55 @@ const QuickViewModal: React.FC<QuickViewModalProps> = ({
                   </a>
                 </span>
               </div>
+
+              {/* Price and Stock */}
+
               <div className="mb-3">
                 <div className="flex  h-[70px] w-[130px] items-center justify-center rounded-sm	 border-[1.5px] border-[#D9D9D9] drop-shadow-sm ">
                   <div className="my-auto flex flex-col">
                     <p className="text-center text-lg font-bold text-gray-900">
-                      {" "}
-                      ৳ 127.08
+                      {data.data.data.price.original.max}
                     </p>
-                    <p className="text-center">1-8999 Pieces</p>
+                    <p className="text-center">{data.data.data.stock===0?"No stock available.":`1-${data.data.data.stock} Pieces`}</p>
                   </div>
                 </div>
               </div>
-              {/* color or images */}
+
+              {/* Variation Props */}
 
               <div className="mt-6  items-center  border-gray-200 ">
+                {data.data.data.variation.props && data.data.data.variation.props.map(prop=>
                 <div className="flex flex-col">
-                  <div className="my-2">
-                    <p>
-                      {" "}
-                      <span className="mr-3">Color : </span>
-                    </p>
-                  </div>
-
-                  <div className="flex  flex-wrap">
-                    {images.map((x, index) => {
-                      return (
-                        <div key={index} className="h-[45px] w-[45px] m-1">
-                          <img className="object-contain rounded-lg border cursor-pointer h-[100%] w-[100%]" src={x.url} alt="" />
-                        </div>
-                      )
-                    })}
-
-                    {/* <button className="h-6 w-6 rounded-full border-2 border-gray-300 focus:outline-none"></button>
-                    <button className="ml-1 h-6 w-6 rounded-full border-2 border-gray-300 bg-gray-700 focus:outline-none"></button>
-                    <button className="ml-1 h-6 w-6 rounded-full border-2 border-gray-300 bg-red-500 focus:outline-none"></button> */}
-                  </div>
+                <div className="my-2">
+                  <p>
+                    <span className="mr-3 font-bold">{prop.name} : </span>
+                  </p>
                 </div>
+
+                {prop.name==="Sort by color" || prop.name==="Color"?
+                <div className="flex  flex-wrap">
+                    {prop.values.map((value) =>
+                        value.thumb ?
+                        <div key={value.id} className="h-[45px] w-[45px] m-1 hover:border-[#f26623] hover:border">
+                          <img className="object-cover rounded-lg border cursor-pointer h-[100%] w-[100%]" src={value.thumb} alt="" />
+                        </div>
+                        :
+                        <span className={valueClasses}>{value.name}</span>
+                      )
+                    }
+                  </div>
+                  :
+                <div className="flex  flex-wrap">
+                {prop.values.map(value=>
+                <span className={valueClasses}>{value.name}</span>
+                )}
+                </div>
+                }
+                </div>
+                )}
               </div>
 
-              {/* size */}
+              {/* Size and Price */}
               <div className="mt-6 mb-5  items-center  border-gray-200 pb-5">
                 <div className="flex flex-col">
                   <div className="flex justify-between px-3">
@@ -236,22 +212,53 @@ const QuickViewModal: React.FC<QuickViewModalProps> = ({
                     <div>Price</div>
                   </div>
 
-                  {skus.slice(0, skusToShow).map((sku, index) => (
+                  {/* {!checkIfSizeVariantExists(data.data.data.variation.props)?
+                  data.data.data.variation.skus.slice(0, skusToShow).map((sku, index) => (
                     <div
                       key={index}
                       className="my-1 flex justify-between rounded-md border border-gray-200 px-3 py-1 font-semibold text-black"
                     >
-                      <div className="flex items-center">{sku.size}</div>
+                      <div className="flex items-center">{0}</div>
                       <div className="">
-                        <p>{sku.price}</p>
-                        <p className="-mt-2 text-center !text-[12px] text-gray-500 line-through">
-                          {sku.price}
-                        </p>
+                        {sku.price.offer?
+                        <span>
+                        <span>{sku.price.offer}</span>
+                        <span className="-mt-2 text-center !text-[12px] text-gray-500 line-through">
+                          {sku.price.actual}
+                        </span>
+                        </span>
+                        :
+                        <p>{sku.price.actual}</p>
+                        }
+                      </div>
+                    </div>))
+                    : */}
+                   {data.data.data.variation.skus &&  data.data.data.variation.props?
+                  data.data.data.variation.skus.slice(0, skusToShow).map((sku, index) => (
+                    <div
+                      key={index}
+                      className="my-1 flex justify-between rounded-md border border-gray-200 px-3 py-1 font-semibold text-black"
+                    >
+                      <div className="flex items-center">{0}</div>
+                      <div className="">
+                        {sku.price.offer?
+                        <span>
+                        <span>{sku.price.offer}</span>
+                        <span className="-mt-2 text-center !text-[12px] text-gray-500 line-through">
+                          {sku.price.actual}
+                        </span>
+                        </span>
+                        :
+                        <p>{sku.price.actual}</p>
+                        }
                       </div>
                     </div>
-                  ))}
+                  ))
+                  :
+                  ""
+                  }
                   <div className="mx-auto flex">
-                    {skusToShow < skus.length && (
+                    {data.data.data.variation.skus && skusToShow < data.data.data.variation.skus.length && (
                       <Button
                         icon={<ChevronDownIcon />}
                         variant="secondary"
@@ -279,10 +286,15 @@ const QuickViewModal: React.FC<QuickViewModalProps> = ({
                   </div>
                 </div>
               </div>
-              <ProductDetailsAccordion />
+              <ProductDetailsAccordion specifications= {data.data.data.specifications} />
             </div>
           </div>
         </Modal.Content>
+        </>
+        :
+        <div>Error</div>
+        }
+        </LoadingContainer>
       </Modal.Body>
     </Modal>
   )
