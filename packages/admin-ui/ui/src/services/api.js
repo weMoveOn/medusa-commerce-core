@@ -296,6 +296,10 @@ export default {
       // const path = `/inventory-products`
       return medusaRequest("GET", path)
     },
+    retrieveSingleProduct(url){
+      const path = `/inventory-product-details?url=${url}`
+      return medusaRequest("GET", path)
+    }
   },
 
   swaps: {
