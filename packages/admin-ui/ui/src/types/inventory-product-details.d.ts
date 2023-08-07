@@ -1,3 +1,56 @@
+
+// Interface for the 'Price' object
+interface Price {
+  offer: number;
+  actual: number;
+  currency: string | null;
+  preorder: string | null;
+}
+
+// Interface for the 'Stock' object
+interface Stock {
+  min: number | null;
+  limit: number;
+  available: number;
+}
+
+// Interface for the 'Sku' object
+interface Sku {
+  id: string;
+  price: Price;
+  props: string;
+  stock: Stock;
+}
+
+// Interface for the 'Value' object inside 'Props'
+interface Value {
+  id: string;
+  name: string;
+  color: string | null;
+  image: string;
+  thumb: string;
+  title: string;
+}
+
+// Interface for the 'Props' object
+interface Props {
+  id: string;
+  name: string;
+  values: Value[];
+}
+
+interface ISpecification { 
+  label:{ 
+    id:number; 
+    name:string; 
+  }, 
+  value:{ 
+    id:number; 
+    name:string; 
+  }
+}
+
+// Interface for the entire data structure
 export interface IProductDetailsResponseData{   
     id:number; 
     shop_id:number; 
@@ -61,16 +114,12 @@ export interface IProductDetailsResponseData{
     name:string; 
     
     }[];
-    specifications:{ 
-      label:{ 
-        id:number; 
-        name:string; 
-      }, 
-      value:{ 
-        id:number; 
-        name:string; 
-      }
-    }[];
+    specifications: ISpecification[];
+    variation:{
+      skus: Sku[];
+      props: Props[];
+    }
+  
     }
     
     export interface IProductDetailsResponse{ 
