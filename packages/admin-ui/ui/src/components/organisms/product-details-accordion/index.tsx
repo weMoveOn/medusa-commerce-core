@@ -1,35 +1,30 @@
 import Accordion from "../../../components/organisms/accordion"
+import { ISpecification } from "../../../types/inventory-product-details"
 
-const ProductDetailsAccordion = () => {
+const ProductDetailsAccordion = ({specifications}:{specifications: ISpecification[]}) => {
+  // console.log(specifications)
   return (
     <Accordion type="multiple">
       <Accordion.Item title="Product information" value="Product-information">
+        
         <div className="mt-large flex">
-          <div>
-            <p className="inter-base-regular text-grey-50 ">
-              Product Code :
+        <div>
+          {specifications.length===0 ?
+          <span className="font-semibold text-lg tracking-twenty text-orange-50">Specifications Not Available</span>
+          :
+          specifications.map((specification, key)=> 
+            <p key={key} className="inter-base-regular text-grey-50 ">
+              {specification.label.name}
             </p>
-            <p className="inter-base-regular text-grey-50 ">Source :</p>
-            <p className="inter-base-regular text-grey-50 ">
-              Category :
-            </p>
-            <p className="inter-base-regular text-grey-50 ">
-              Total Sold :
-            </p>
-            <p className="inter-base-regular text-grey-50 ">
-              Seller Score :
-            </p>
-          </div>
+          )}
+        </div>
+
           <div className="ml-3">
-            <p className="inter-base-regular ">Abb-1205280701</p>
-
-            <p className="inter-base-regular ">$0.00</p>
-
-            <p className="inter-base-regular ">Shoes</p>
-
-            <p className="inter-base-regular ">10500 pieces</p>
-
-            <p className="inter-base-regular ">11/22</p>
+          {specifications.map((specification, key)=> 
+            <p key={key} className="inter-base-regular ">
+              {specification.value.name}
+            </p>
+          )}
           </div>
         </div>
       </Accordion.Item>
