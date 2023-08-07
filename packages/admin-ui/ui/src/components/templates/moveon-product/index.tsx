@@ -17,6 +17,8 @@ import { useProductFilters } from "../product-table/use-product-filters"
 import useInventoryProductFilters from "../../../hooks/use-inventory-product-filter"
 import { staticSorting } from "../../../utils/inventory-product-data"
 import { NextSelect } from "../../molecules/select/next-select"
+import { useLocation } from "react-router-dom"
+import queryString from "query-string"
 
 const defaultQueryProps = {
   expand: "customer,shipping_address",
@@ -25,8 +27,10 @@ const defaultQueryProps = {
 }
 
 const MoveOnProduct = () => {
+  const rrdLocation = useLocation();
+
   const [layOut, setLayOut] = useState<"grid" | "list">("grid")
-  const { isLoading, isError, data, error } = useQuery<
+  const { isLoading, isError, data, error, refetch } = useQuery<
     AxiosResponse<IInventoryProductPayloadType>
   >(["inventory-fetch"], () =>
     Medusa.moveOnInventory.list({ keyword: "beg", shop_id: 4,features:"Discount:true",offset:0,limit: 10,sortType:"price",sortOrder:"desc",pr:"10-20" })
@@ -34,25 +38,28 @@ const MoveOnProduct = () => {
   
   const [isOpenModal, setIsOpenModal] = useState<boolean>(false)
   const [isParamsUpdated, setIsParamsUpdated] = useState(false)
+  const [searchedQueries, setSearchedQueries] = useState('');
+
+  
   const [selectedSort, setSelectedSort] = useState<{
     label: string
     value: string
   } | null>(null)
 
-  const {
-    removeTab,
-    setTab,
-    saveTab,
-    availableTabs: filterTabs,
-    activeFilterTab,
-    reset,
-    paginate,
+  // const {
+  //   removeTab,
+  //   setTab,
+  //   saveTab,
+  //   availableTabs: filterTabs,
+  //   activeFilterTab,
+  //   reset,
+  //   paginate,
 
-    filters,
-    setQuery: setFreeText,
-    queryObject,
-    representationObject,
-  } = useProductFilters(location.search, defaultQueryProps)
+  //   filters,
+  //   setQuery: setFreeText,
+  //   queryObject,
+  //   representationObject,
+  // } = useProductFilters(location.search, defaultQueryProps)
 
   const {
     handleFilterChange,
@@ -60,12 +67,39 @@ const MoveOnProduct = () => {
     isFetched,
     initializeAvailableFilter,
     setFilters,
-    filters: inventoryFilters,
+    filters,
     updateQueryParams,
   } = useInventoryProductFilters()
 
-  const filtersOnLoad = queryObject
-  const [query, setQuery] = useState(filtersOnLoad?.query)
+
+  useEffect(() => {
+    if (!isFetched && data?.data.filters.configurator) {
+
+      initializeAvailableFilter(data?.data.filters?.configurator);
+    }
+  }, [isFetched, initializeAvailableFilter, data?.data.filters?.configurator]);
+
+  useEffect(() => {
+    const params = queryString.parse((rrdLocation.search).substring(1));
+    // @ts-ignore
+    setFilters(params)
+    setIsParamsUpdated(true);
+  }, [rrdLocation.search, setFilters])
+
+  useEffect(() => {
+    if (!data?.data && filters && isParamsUpdated) {
+      let queryStirng = queryString.stringify(filters);
+      if (searchedQueries !== queryStirng) {
+        // dispatch(getProductsSearch(filters));
+
+        refetch()
+        setSearchedQueries(queryStirng)
+      }
+    }
+  }, [data?.data, filters, isParamsUpdated, searchedQueries]);
+
+  // const filtersOnLoad = queryObject
+  // const [query, setQuery] = useState(filtersOnLoad?.query)
 
   const handleProductView = (value: any) => {
     setIsOpenModal(true)
@@ -76,11 +110,16 @@ const MoveOnProduct = () => {
   }
 
   const clearFilters = () => {
-    reset()
-    setQuery("")
+    handleFilterClear();
+    // reset()
+    // setQuery("")
   }
-  const submitFilter = (data: any) => {
-    console.log(data, "Filters")
+  const submitFilter = () => {
+    const params = queryString.stringify({ ...filters }, { encode: false }, { encodeValuesOnly: true });
+    window.history.replaceState(null, 'Searching', `/products?${params}`)
+    window.scroll(0, 0)
+    // setViewFilterList(false)
+    // dispatch(getProductsSearch(filters));
   }
 
   const handleSorting = (value: { value: string; label: string }) => {
@@ -106,18 +145,21 @@ const MoveOnProduct = () => {
       setIsParamsUpdated(true)
     }
   }
-  useEffect(() => {
-    const selected = filterForTemporal.sorter.values.find(
-      (x) =>
-        x.key === inventoryFilters?.sortType &&
-        x.value === inventoryFilters?.sortOrder
-    )
-    if (selected) {
-      setSelectedSort({ value: selected.value, label: selected.title })
-    }
-  }, [inventoryFilters])
+  // useEffect(() => {
+  //   const selected = filterForTemporal.sorter.values.find(
+  //     (x) =>
+  //       x.key === data?.data?.filters.sorter &&
+  //       x.value === data?.data?.sortOrder
+  //   )
+  //   if (selected) {
+  //     setSelectedSort({ value: selected.value, label: selected.title })
+  //   }
+  // }, [inventoryFilters])
 
   // console.log(selectedSort,"s")
+
+  console.log(data?.data.filters,"data")
+  console.log(filters,"filters")
 
   return (
     <>
@@ -129,6 +171,9 @@ const MoveOnProduct = () => {
                 filters={filters}
                 submitFilters={submitFilter}
                 clearFilters={clearFilters}
+                isFetched={isFetched}
+                filtersData={data?.data.filters.configurator}
+                handleFilterChange={handleFilterChange}
               />
               <InventoryProductSort
                 selectedValue={selectedSort}

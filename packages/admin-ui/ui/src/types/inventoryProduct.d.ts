@@ -59,12 +59,6 @@ export interface IInventoryProductsFilterType {
   page?: number
 }
 
-export interface IInventoryProductPayloadType {
-  success: boolean
-  message: string
-  paginate: IInventoryProductsPaginateType
-  data: IInventoryProductDataType[]
-}
 
 
 
@@ -127,4 +121,14 @@ export interface IConfigurator {
 export interface IFilters {
   sorter: ISorter;
   configurator: IConfigurator;
+}
+
+export interface IInventoryProductPayloadType {
+  success: boolean
+  message: string
+  count:number; 
+  limit:number; 
+  offset:number; 
+  filters:IFilters;
+  products: IInventoryProductDataType[]
 }

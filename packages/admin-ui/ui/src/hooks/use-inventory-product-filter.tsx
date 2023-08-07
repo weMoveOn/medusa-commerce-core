@@ -1,38 +1,36 @@
 import queryString from 'query-string';
 import { useEffect, useState } from 'react';
 import { NavigateFunction, useNavigate } from 'react-router-dom';
+import { IConfigurator } from '../types/inventoryProduct';
 
-type Filters = {
-  [key: string]: string | undefined;
-};
 
 type UseFiltersReturnType = {
-  filters: Filters | null;
+  filters: IConfigurator | null;
   isFirstCall: boolean;
-  handleFilterChange: (fields: Filters) => void;
+  handleFilterChange: (fields: IConfigurator) => void;
   handleFilterClear: () => void;
   isFetched: boolean;
   setIsFetched: (value: boolean) => void;
   initializeFilter: () => void;
-  initializeAvailableFilter: (data: Filters) => void;
-  initializeAvailableFilterWithoutParams: (data: Filters) => void;
+  initializeAvailableFilter: (data: IConfigurator) => void;
+  initializeAvailableFilterWithoutParams: (data: IConfigurator) => void;
   setIsLatestCollection: (value: boolean) => void;
   isLatestCollection: boolean;
   handelAllFilterClear: () => void;
-  updateQueryParams: (items: Filters) => void;
-  updateQueryWithoutParams: (items: Filters) => string;
-  setFilters: (filters: Filters) => void;
+  updateQueryParams: (items: IConfigurator) => void;
+  updateQueryWithoutParams: (items: IConfigurator) => string;
+  setFilters: (filters: IConfigurator) => void;
 };
 
 const useInventoryProductFilters = (): UseFiltersReturnType => {
-  const [filters, setFilters] = useState<Filters | null>(null);
+  const [filters, setFilters] = useState<IConfigurator | null>(null);
   const [isFirstCall, setIsFirstCall] = useState(false);
   const [isFetched, setIsFetched] = useState(false);
   const [isLatestCollection, setIsLatestCollection] = useState(false);
   const navigate: NavigateFunction = useNavigate();
 
   const initializeFilter = (): void => {
-    const params = queryString.parse((window.location.search).substring(1)) as Filters;
+    const params = queryString.parse((window.location.search).substring(1)) as any;
     setFilters(params);
     setIsFirstCall(true);
   };
@@ -43,14 +41,14 @@ const useInventoryProductFilters = (): UseFiltersReturnType => {
     }
   }, [isFirstCall]);
 
-  const initializeAvailableFilterWithoutParams = (data: Filters): void => {
+  const initializeAvailableFilterWithoutParams = (data: IConfigurator): void => {
     setFilters(data);
     setIsFetched(true);
   };
 
-  const initializeAvailableFilter = (data: Filters): void => {
-    const params = queryString.parse((window.location.search).substring(1)) as Filters;
-    const initialFilter: Filters = { ...params };
+  const initializeAvailableFilter = (data: IConfigurator): void => {
+    const params = queryString.parse((window.location.search).substring(1)) as any;
+    const initialFilter: any = { ...params };
 
     const keywordSearch = params['keyword'];
 
@@ -77,16 +75,16 @@ const useInventoryProductFilters = (): UseFiltersReturnType => {
     setIsFetched(true);
   };
 
-  const updateQueryParams = (items: Filters): void => {
+  const updateQueryParams = (items: IConfigurator): void => {
     const params = queryString.stringify({ ...filters, ...items }, { encode: false, encodeValuesOnly: true });
     navigate(`?${params}`);
   };
 
-  const updateQueryWithoutParams = (items: Filters): string => {
+  const updateQueryWithoutParams = (items: IConfigurator): string => {
     return queryString.stringify({ ...filters, ...items }, { encode: false, encodeValuesOnly: true });
   };
 
-  const handleFilterChange = (fields: Filters): void => {
+  const handleFilterChange = (fields: IConfigurator): void => {
     let newFields = fields;
 
     if (newFields?.pr) {
@@ -117,8 +115,8 @@ const useInventoryProductFilters = (): UseFiltersReturnType => {
   };
 
   const handleFilterClear = (): void => {
-    const params = queryString.parse((window.location.search).substring(1)) as Filters;
-    const initialFilter: Filters = {};
+    const params = queryString.parse((window.location.search).substring(1)) as any;
+    const initialFilter: any = {} ;
 
     const keywordSearch = params['keyword'];
 
@@ -134,12 +132,12 @@ const useInventoryProductFilters = (): UseFiltersReturnType => {
 
     const paramsValue = queryString.stringify({ ...initialFilter }, { encode: false, encodeValuesOnly: true });
 
-    navigate('/products', { search: `?${paramsValue}` });
+    navigate('/a/moveon-inventory', { search: `?${paramsValue}` });
   };
 
   const handelAllFilterClear = (): void => {
     navigate({ search: '' });
-    const newFilter: Filters = {};
+    const newFilter: IConfigurator = {} as IConfigurator;
     Object.keys(filters).forEach((el) => {
       newFilter[el] = undefined;
     });
