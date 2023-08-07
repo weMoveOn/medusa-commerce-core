@@ -3,23 +3,23 @@ import qs from "qs"
 import { useMemo, useReducer, useState } from "react"
 import { relativeDateFormatToTimestamp } from "../../../utils/time"
 
-type OrderDateFilter = null | {
+type MoveonProductDateFilter = null | {
   gt?: string
   lt?: string
 }
 
-type OrderFilterAction =
+type MoveonProductFilterAction =
   | { type: "setQuery"; payload: string | null }
-  | { type: "setFilters"; payload: OrderFilterState }
-  | { type: "reset"; payload: OrderFilterState }
+  | { type: "setFilters"; payload: MoveonProductFilterState }
+  | { type: "reset"; payload: MoveonProductFilterState }
   | { type: "setOffset"; payload: number }
-  | { type: "setDefaults"; payload: OrderDefaultFilters | null }
-  | { type: "setDate"; payload: OrderDateFilter }
-  | { type: "setStatus"; payload: null | string[] | string }
+  | { type: "setDefaults"; payload: MoveonProductDefaultFilters | null }
+  | { type: "setDate"; payload: MoveonProductDateFilter }
+  | { type: "setFeatures"; payload: null | string[] | string }
   | { type: "setFulfillment"; payload: null | string[] | string }
   | { type: "setPayment"; payload: null | string[] | string }
 
-interface OrderFilterState {
+interface MoveonProductFilterState {
   query?: string | null
   region: {
     open: boolean
@@ -29,7 +29,7 @@ interface OrderFilterState {
     open: boolean
     filter: null | string[] | string
   }
-  status: {
+  features: {
     open: boolean
     filter: null | string[] | string
   }
@@ -43,15 +43,15 @@ interface OrderFilterState {
   }
   date: {
     open: boolean
-    filter: OrderDateFilter
+    filter: MoveonProductDateFilter
   }
   limit: number
   offset: number
-  additionalFilters: OrderDefaultFilters | null
+  additionalFilters: MoveonProductDefaultFilters | null
 }
 
 const allowedFilters = [
-  "status",
+  "features",
   "region",
   "fulfillment_status",
   "payment_status",
@@ -72,7 +72,7 @@ const DefaultTabs = {
   },
 }
 
-const formatDateFilter = (filter: OrderDateFilter) => {
+const formatDateFilter = (filter: MoveonProductDateFilter) => {
   if (filter === null) {
     return filter
   }
@@ -90,9 +90,9 @@ const formatDateFilter = (filter: OrderDateFilter) => {
 }
 
 const reducer = (
-  state: OrderFilterState,
-  action: OrderFilterAction
-): OrderFilterState => {
+  state: MoveonProductFilterState,
+  action: MoveonProductFilterAction
+): MoveonProductFilterState => {
   switch (action.type) {
     case "setFilters": {
       return {
@@ -101,7 +101,7 @@ const reducer = (
         salesChannel: action.payload.salesChannel,
         fulfillment: action.payload.fulfillment,
         payment: action.payload.payment,
-        status: action.payload.status,
+        features: action.payload.features,
         date: action.payload.date,
         query: action?.payload?.query,
       }
@@ -135,7 +135,7 @@ const reducer = (
   }
 }
 
-type OrderDefaultFilters = {
+type MoveonProductDefaultFilters = {
   expand?: string
   fields?: string
 }
@@ -152,9 +152,9 @@ const eqSet = (as: Set<string>, bs: Set<string>) => {
   return true
 }
 
-export const useOrderFilters = (
+export const useMoveonProductFilters = (
   existing?: string,
-  defaultFilters: OrderDefaultFilters | null = null
+  defaultFilters: MoveonProductDefaultFilters | null = null
 ) => {
   if (existing && existing[0] === "?") {
     existing = existing.substring(1)
@@ -166,7 +166,7 @@ export const useOrderFilters = (
   )
 
   const initialTabs = useMemo(() => {
-    const storageString = localStorage.getItem("orders::filters")
+    const storageString = localStorage.getItem("moveonProducts::filters")
     if (storageString) {
       const savedTabs = JSON.parse(storageString)
 
@@ -188,7 +188,7 @@ export const useOrderFilters = (
   const [state, dispatch] = useReducer(reducer, initial)
   const [tabs, setTabs] = useState(initialTabs)
 
-  const setDateFilter = (filter: OrderDateFilter | null) => {
+  const setDateFilter = (filter: MoveonProductDateFilter | null) => {
     dispatch({ type: "setDate", payload: filter })
   }
 
@@ -200,11 +200,11 @@ export const useOrderFilters = (
     dispatch({ type: "setPayment", payload: filter })
   }
 
-  const setStatusFilter = (filter: string[] | string | null) => {
-    dispatch({ type: "setStatus", payload: filter })
+  const setFeaturesFilter = (filter: string[] | string | null) => {
+    dispatch({ type: "setFeatures", payload: filter })
   }
 
-  const setDefaultFilters = (filters: OrderDefaultFilters | null) => {
+  const setDefaultFilters = (filters: MoveonProductDefaultFilters | null) => {
     dispatch({ type: "setDefaults", payload: filters })
   }
 
@@ -237,7 +237,7 @@ export const useOrderFilters = (
           open: false,
           filter: null,
         },
-        status: {
+        features: {
           open: false,
           filter: null,
         },
@@ -254,7 +254,7 @@ export const useOrderFilters = (
     })
   }
 
-  const setFilters = (filters: OrderFilterState) => {
+  const setFilters = (filters: MoveonProductFilterState) => {
     dispatch({ type: "setFilters", payload: filters })
   }
 
@@ -274,7 +274,7 @@ export const useOrderFilters = (
       } else if (value.open) {
         if (key === "date") {
           toQuery[stateFilterMap[key]] = formatDateFilter(
-            value.filter as OrderDateFilter
+            value.filter as MoveonProductDateFilter
           )
         } else {
           toQuery[stateFilterMap[key]] = value.filter
@@ -290,7 +290,7 @@ export const useOrderFilters = (
     return qs.stringify(obj, { skipNulls: true })
   }
 
-  const getRepresentationObject = (fromObject?: OrderFilterState) => {
+  const getRepresentationObject = (fromObject?: MoveonProductFilterState) => {
     const objToUse = fromObject ?? state
 
     const toQuery: any = {}
@@ -402,7 +402,7 @@ export const useOrderFilters = (
           open: false,
           filter: null,
         },
-        status: {
+        features: {
           open: false,
           filter: null,
         },
@@ -418,13 +418,13 @@ export const useOrderFilters = (
     }
   }
 
-  const saveTab = (tabName: string, filters: OrderFilterState) => {
+  const saveTab = (tabName: string, filters: MoveonProductFilterState) => {
     const repObj = getRepresentationObject({ ...filters })
     const clean = omit(repObj, ["limit", "offset"])
     const repString = qs.stringify(clean, { skipNulls: true })
 
 
-    const storedString = localStorage.getItem("orders::filters")
+    const storedString = localStorage.getItem("moveonProducts::filters")
 
     let existing: null | object = null
 
@@ -434,11 +434,11 @@ export const useOrderFilters = (
 
     if (existing) {
       existing[tabName] = repString
-      localStorage.setItem("orders::filters", JSON.stringify(existing))
+      localStorage.setItem("moveonProducts::filters", JSON.stringify(existing))
     } else {
       const newFilters = {}
       newFilters[tabName] = repString
-      localStorage.setItem("orders::filters", JSON.stringify(newFilters))
+      localStorage.setItem("moveonProducts::filters", JSON.stringify(newFilters))
     }
 
     setTabs((prev) => {
@@ -457,7 +457,7 @@ export const useOrderFilters = (
   }
 
   const removeTab = (tabValue: string) => {
-    const storedString = localStorage.getItem("orders::filters")
+    const storedString = localStorage.getItem("moveonProducts::filters")
 
     let existing: null | object = null
 
@@ -467,7 +467,7 @@ export const useOrderFilters = (
 
     if (existing) {
       delete existing[tabValue]
-      localStorage.setItem("orders::filters", JSON.stringify(existing))
+      localStorage.setItem("moveonProducts::filters", JSON.stringify(existing))
     }
 
     setTabs((prev) => {
@@ -498,13 +498,13 @@ export const useOrderFilters = (
     setDateFilter,
     setFulfillmentFilter,
     setPaymentFilter,
-    setStatusFilter,
+    setFeaturesFilter,
     reset,
   }
 }
 
 const filterStateMap = {
-  status: "status",
+  features: "features",
   fulfillment_status: "fulfillment",
   payment_status: "payment",
   created_at: "date",
@@ -515,7 +515,7 @@ const filterStateMap = {
 const stateFilterMap = {
   region: "region_id",
   salesChannel: "sales_channel_id",
-  status: "status",
+  features: "features",
   fulfillment: "fulfillment_status",
   payment: "payment_status",
   date: "created_at",
@@ -523,10 +523,10 @@ const stateFilterMap = {
 
 const parseQueryString = (
   queryString?: string,
-  additionals: OrderDefaultFilters | null = null
-): OrderFilterState => {
-  const defaultVal: OrderFilterState = {
-    status: {
+  additionals: MoveonProductDefaultFilters | null = null
+): MoveonProductFilterState => {
+  const defaultVal: MoveonProductFilterState = {
+    features: {
       open: false,
       filter: null,
     },
@@ -578,9 +578,9 @@ const parseQueryString = (
             }
             break
           }
-          case "status": {
+          case "features": {
             if (typeof value === "string" || Array.isArray(value)) {
-              defaultVal.status = {
+              defaultVal.features = {
                 open: true,
                 filter: value,
               }

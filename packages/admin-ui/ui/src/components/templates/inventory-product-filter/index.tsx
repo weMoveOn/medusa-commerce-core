@@ -135,7 +135,7 @@ const InventoryProductFilters = ({
         </Button>
         }
       >
-        <FilterDropdownItem
+        {/* <FilterDropdownItem
           filterTitle={filterForTemporal.configurator.features.title}
           options={ filterForTemporal.configurator.features.values?.map((f) => ({
             value: f.value,
@@ -144,8 +144,8 @@ const InventoryProductFilters = ({
           filters={tempState.features.filter}
           open={tempState.features.open}
           setFilter={(val) => setSingleFilter("features", val)}
-        />
-        <FilterDropdownItem
+        /> */}
+        {/* <FilterDropdownItem
           filterTitle="Payment Status"
           options={paymentFilters}
           filters={tempState.payment.filter}
@@ -158,8 +158,8 @@ const InventoryProductFilters = ({
           filters={tempState.fulfillment.filter}
           open={tempState.fulfillment.open}
           setFilter={(val) => setSingleFilter("fulfillment", val)}
-        />
-        <FilterDropdownItem
+        /> */}
+        {/* <FilterDropdownItem
           filterTitle="Regions"
           options={
             regions?.map((region) => ({
@@ -199,7 +199,7 @@ const InventoryProductFilters = ({
           filters={tempState.date.filter}
           open={tempState.date.open}
           setFilter={(val) => setSingleFilter("date", val)}
-        />
+        /> */}
       </FilterDropdownContainer>
     </div>
   )

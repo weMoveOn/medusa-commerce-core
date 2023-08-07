@@ -12,7 +12,7 @@ import QuickViewModal from "../../organisms/quick-view-modal"
 import { filterForTemporal } from "../../../utils/date-utils"
 import InventoryProductFilters from "../inventory-product-filter"
 import InventoryProductSort from "../inventory-product-sort"
-import { useOrderFilters } from "../order-table/use-order-filters"
+import { useProductFilters } from "../product-table/use-product-filters"
 
 import useInventoryProductFilters from "../../../hooks/use-inventory-product-filter"
 import { staticSorting } from "../../../utils/inventory-product-data"
@@ -52,7 +52,7 @@ const MoveOnProduct = () => {
     setQuery: setFreeText,
     queryObject,
     representationObject,
-  } = useOrderFilters(location.search, defaultQueryProps)
+  } = useProductFilters(location.search, defaultQueryProps)
 
   const {
     handleFilterChange,
