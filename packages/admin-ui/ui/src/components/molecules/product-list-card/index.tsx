@@ -64,7 +64,7 @@ console.log(productData)
 
       <div className="flex flex-grow flex-col ">
             <h5 className="text-large leading-base font-bold tracking-tight text-slate-800 ">
-              {productData?.title?.slice(0, 150)}
+              {productData?.title?.slice(0, 150)}{productData?.title?.length && productData?.title?.length>150 && "..."}
             </h5>
         <div className="flex flex-row">
           <div className="">
