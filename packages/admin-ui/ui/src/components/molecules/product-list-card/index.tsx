@@ -125,7 +125,7 @@ const ProductListCard: React.FC<IProductListCardProps> = ({
                     leftButtonIcon ?? <EyeIcon style={{ marginRight: "6px" }} />
                   }
                   className="mr-2 min-w-[120px]"
-                  onClick={() => leftButtonOnClick("darta")}
+                  onClick={() => leftButtonOnClick(productData)}
                   variant="secondary"
                   size="medium"
                   spanClassName="text-center text-sm font-medium text-slate-700 "
@@ -140,7 +140,7 @@ const ProductListCard: React.FC<IProductListCardProps> = ({
                       <DownloadIcon style={{ marginRight: "6px" }} />
                     )
                   }
-                  onClick={() => rightButtonOnClick("darta")}
+                  onClick={() => rightButtonOnClick(productData)}
                   variant="secondary"
                   className="min-w-[120px]"
                   size="medium"
