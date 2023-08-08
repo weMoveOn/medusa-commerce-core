@@ -148,7 +148,7 @@ const QuickViewModal: React.FC<QuickViewModalProps> = ({
 
               <div className="mt-6  items-center  border-gray-200 ">
                 {data.data.data.variation.props && data.data.data.variation.props.map(prop=>
-                <div className="flex flex-col">
+                <div className="flex flex-col" key={prop.id}>
                 <div className="my-2">
                   <p>
                     <span className="mr-3 font-bold">{prop.name} : </span>
@@ -164,14 +164,14 @@ const QuickViewModal: React.FC<QuickViewModalProps> = ({
                           <img className="object-cover rounded-lg border cursor-pointer h-[100%] w-[100%]" src={value.thumb} alt="" />
                         </div>
                         :
-                        <span className={valueClasses}>{value.name}</span>
+                        <span className={valueClasses} key={value.id}>{value.name}</span>
                       )
                     }
                   </div>
                   :
                 <div className="flex  flex-wrap">
-                {prop.values.map(value=>
-                <span className={valueClasses}>{value.name}</span>
+                {prop.values.map((value)=>
+                <span className={valueClasses} key={value.id}>{value.name}</span>
                 )}
                 </div>
                 }
@@ -194,9 +194,9 @@ const QuickViewModal: React.FC<QuickViewModalProps> = ({
 
 
                   {!MoveonInventoryHelpers.checkIfSizeVariantExists(data.data.data.variation.props)?
-                  data.data.data.variation.skus.slice(0, skusToShow).map((sku, index) => (
+                  data.data.data.variation.skus.slice(0, skusToShow).map((sku) => (
                     <div
-                      key={index}
+                      key={sku.id}
                       className="my-1 flex justify-between rounded-md border border-gray-200 px-3 py-1 font-semibold text-black"
                     >
                       <div className="flex items-center">{MoveonInventoryHelpers.getNameForColorIds(sku.props, data.data.data.variation.props)}</div>
@@ -215,9 +215,9 @@ const QuickViewModal: React.FC<QuickViewModalProps> = ({
                     </div>
                     ))
                     :
-                    data.data.data.variation.skus.slice(0, skusToShow).map((sku, index) => (
+                    data.data.data.variation.skus.slice(0, skusToShow).map((sku) => (
                     <div
-                      key={index}
+                      key={sku.id}
                       className="my-1 flex justify-between rounded-md border border-gray-200 px-3 py-1 font-semibold text-black"
                     >
                       <div className="flex items-center">{MoveonInventoryHelpers.getNameForSizeIds(sku.props, data.data.data.variation.props)}</div>
