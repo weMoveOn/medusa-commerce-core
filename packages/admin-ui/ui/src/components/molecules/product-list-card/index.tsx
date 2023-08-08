@@ -41,7 +41,6 @@ const ProductListCard: React.FC<IProductListCardProps> = ({
     "relative flex items-center gap-4 p-4 border rounded-lg border-gray-100 mb-4 bg-white w-[80%]",
     enableSelectOption && isSelect && "border-violet-600"
   )
-console.log(productData)
   return (
     <div className={containerClasses}>
       {enableSelectOption && (
