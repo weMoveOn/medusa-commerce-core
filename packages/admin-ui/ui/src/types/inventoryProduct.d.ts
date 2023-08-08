@@ -1,35 +1,46 @@
 export interface IInventoryProductDataType {
-  id: null | number
-  vpid: string
-  vendor: string | null
-  title: string | null
-  link: string
-  image: string
-  thumbnail: string
-  sold: number
-  stock: null | number | string
-  rating: number | null
-  rating_count: null | number
-  status: null | string
-  countdown: null | string | number
-  badge: null | string
-  price: {
-    min: number
-    max: number
-  } | null
-  discount_price: {
-    min: number | null
-    max: number | null
-  }
+  // id: null | number
+  // vpid: string
+  // vendor: string | null
+  // title: string | null
+  // link: string
+  // image: string
+  // thumbnail: string
+  // orders: number | null
+  // stock: null | number | string
+  // rating: number | null
+  // rating_count: null | number
+  // status: null | string
+  // countdown: null | string | number
+  // badge: null | string
+  // price: number
+  // discount: number | null
+  // meta: null
+  // wholesales: any[]
+  // shipping_cost: null | number
+  // slug: string
+  // product_code: string
+  // country_id: number
+  // shop_id: number
+  // fx: string
 
-  meta: null
-  wholesales: any[]
-  shipping_cost: null | number
-  slug: string
-  product_code: string
-  country_id: number
-  shop_id: number
-  fx: string
+  id: null | number;
+  shop_id: number;
+  vpid: string;
+  vendor: string;
+  link: string;
+  title: string;
+  image: string;
+  price: number;
+  price_real: number;
+  discount: number;
+  special_price: null | number;
+  special_discount: null | number;
+  shipping_cost: null | number;
+  orders: null | number;
+  rating: null | number;
+  rating_count: null | number;
+  wholesales_price: null | number;
 }
 
 export interface IInventoryProductsPaginateType {
@@ -48,12 +59,6 @@ export interface IInventoryProductsFilterType {
   page?: number
 }
 
-export interface IInventoryProductPayloadType {
-  success: boolean
-  message: string
-  paginate: IInventoryProductsPaginateType
-  data: IInventoryProductDataType[]
-}
 
 
 
@@ -116,4 +121,14 @@ export interface IConfigurator {
 export interface IFilters {
   sorter: ISorter;
   configurator: IConfigurator;
+}
+
+export interface IInventoryProductPayloadType {
+  success: boolean
+  message: string
+  count:number; 
+  limit:number; 
+  offset:number; 
+  filters:IFilters;
+  products: IInventoryProductDataType[]
 }

@@ -12,11 +12,13 @@ import QuickViewModal from "../../organisms/quick-view-modal"
 import { filterForTemporal } from "../../../utils/date-utils"
 import InventoryProductFilters from "../inventory-product-filter"
 import InventoryProductSort from "../inventory-product-sort"
-import { useOrderFilters } from "../order-table/use-order-filters"
+import { useProductFilters } from "../product-table/use-product-filters"
 
 import useInventoryProductFilters from "../../../hooks/use-inventory-product-filter"
 import { staticSorting } from "../../../utils/inventory-product-data"
 import { NextSelect } from "../../molecules/select/next-select"
+import { useLocation } from "react-router-dom"
+import queryString from "query-string"
 
 const defaultQueryProps = {
   expand: "customer,shipping_address",
@@ -25,46 +27,65 @@ const defaultQueryProps = {
 }
 
 const MoveOnProduct = () => {
-  const [layOut, setLayOut] = useState<"grid" | "list">("grid")
-  const { isLoading, isError, data, error } = useQuery<
-    AxiosResponse<IInventoryProductPayloadType>
-  >(["inventory-fetch"], () =>
-    Medusa.moveOnInventory.list({ keyword: "mobile", shop_id: 11 })
-  )
-  const [isOpenModal, setIsOpenModal] = useState<boolean>(false)
-  const [isParamsUpdated, setIsParamsUpdated] = useState(false)
-  const [selectedSort, setSelectedSort] = useState<{
-    label: string
-    value: string
-  } | null>(null)
-
-  const {
-    removeTab,
-    setTab,
-    saveTab,
-    availableTabs: filterTabs,
-    activeFilterTab,
-    reset,
-    paginate,
-
-    filters,
-    setQuery: setFreeText,
-    queryObject,
-    representationObject,
-  } = useOrderFilters(location.search, defaultQueryProps)
-
+  const rrdLocation = useLocation();
   const {
     handleFilterChange,
     handleFilterClear,
     isFetched,
     initializeAvailableFilter,
     setFilters,
-    filters: inventoryFilters,
+    filters,
     updateQueryParams,
   } = useInventoryProductFilters()
 
-  const filtersOnLoad = queryObject
-  const [query, setQuery] = useState(filtersOnLoad?.query)
+
+  const [layOut, setLayOut] = useState<"grid" | "list">("grid")
+  const { isLoading, isError, data, error, refetch } = useQuery<
+    AxiosResponse<IInventoryProductPayloadType>
+  >(["inventory-fetch"], () =>
+    Medusa.moveOnInventory.list({ keyword: "beg", shop_id: 4,offset:0,limit: 10,...filters })
+  )
+  
+  const [isOpenModal, setIsOpenModal] = useState<boolean>(false)
+  const [isParamsUpdated, setIsParamsUpdated] = useState(false)
+  const [searchedQueries, setSearchedQueries] = useState('');
+
+  
+  const [selectedSort, setSelectedSort] = useState<{
+    label: string
+    value: string
+  } | null>(null)
+
+
+
+  useEffect(() => {
+    if (!isFetched && data?.data.filters.configurator) {
+
+      initializeAvailableFilter(data?.data.filters?.configurator);
+    }
+  }, [isFetched, initializeAvailableFilter, data?.data.filters?.configurator]);
+
+  useEffect(() => {
+    const params = queryString.parse((rrdLocation.search).substring(1));
+    // @ts-ignore
+    setFilters(params)
+    setIsParamsUpdated(true);
+  }, [rrdLocation.search, setFilters])
+
+  useEffect(() => {
+    if (!data?.data && filters && isParamsUpdated) {
+      let queryStirng = queryString.stringify(filters);
+      if (searchedQueries !== queryStirng) {
+        // dispatch(getProductsSearch(filters));
+
+        refetch()
+        setSearchedQueries(queryStirng)
+      }
+    }
+  }, [data?.data, filters, isParamsUpdated, searchedQueries]);
+
+  // const filtersOnLoad = queryObject
+  // const [query, setQuery] = useState(filtersOnLoad?.query)
 
   const handleProductView = (value: any) => {
     setIsOpenModal(true)
@@ -75,11 +96,17 @@ const MoveOnProduct = () => {
   }
 
   const clearFilters = () => {
-    reset()
-    setQuery("")
+    handleFilterClear();
+    // reset()
+    // setQuery("")
   }
-  const submitFilter = (data: any) => {
-    console.log(data, "Filters")
+  const submitFilter = () => {
+    const params = queryString.stringify({ ...filters }, { encode: false }, { encodeValuesOnly: true });
+    window.history.replaceState(null, 'Searching', `/a/moveon-inventory?${params}`)
+    window.scroll(0, 0)
+    refetch()
+    // setViewFilterList(false)
+    // dispatch(getProductsSearch(filters));
   }
 
   const handleSorting = (value: { value: string; label: string }) => {
@@ -105,36 +132,42 @@ const MoveOnProduct = () => {
       setIsParamsUpdated(true)
     }
   }
-  useEffect(() => {
-    const selected = filterForTemporal.sorter.values.find(
-      (x) =>
-        x.key === inventoryFilters?.sortType &&
-        x.value === inventoryFilters?.sortOrder
-    )
-    if (selected) {
-      setSelectedSort({ value: selected.value, label: selected.title })
-    }
-  }, [inventoryFilters])
+  // useEffect(() => {
+  //   const selected = filterForTemporal.sorter.values.find(
+  //     (x) =>
+  //       x.key === data?.data?.filters.sorter &&
+  //       x.value === data?.data?.sortOrder
+  //   )
+  //   if (selected) {
+  //     setSelectedSort({ value: selected.value, label: selected.title })
+  //   }
+  // }, [inventoryFilters])
 
-  console.log(selectedSort,"s")
+  // console.log(selectedSort,"s")
+
+
+  console.log(filters,"filters")
 
   return (
     <>
       <div className="container mx-auto px-2">
-        <div className="  flex flex-wrap justify-between">
+        <div className="flex flex-wrap justify-between">
           <div className="px-3 py-3">
             <div className="flex justify-start">
               <InventoryProductFilters
                 filters={filters}
                 submitFilters={submitFilter}
                 clearFilters={clearFilters}
+                isFetched={isFetched}
+                filtersData={data?.data.filters.configurator}
+                handleFilterChange={handleFilterChange}
               />
               <InventoryProductSort
                 selectedValue={selectedSort}
                 sorter={filterForTemporal.sorter}
                 onChange={handleSorting}
               />
-
+           {/* 
           <NextSelect
         placeholder="Sort by"
         name="sort"
@@ -145,7 +178,7 @@ const MoveOnProduct = () => {
                 
         }}
         options={staticSorting}
-      />
+      /> */}
               {/* <Button
                 icon={<FilterIcon size={20} style={{ marginTop: "4px" }} />}
                 className="mr-2 flex  flex-row items-center justify-center px-6"
@@ -208,10 +241,10 @@ const MoveOnProduct = () => {
         <div className="-mx-4 flex flex-wrap justify-center">
           {layOut === "grid" ? (
             <>
-              {Array.from(Array(10), (item, index) => (
+              {data?.data?.products.map((item, index) => (
                 <ProductGridCard
                   route="product-list"
-                  productData={"click"}
+                  productData={item}
                   key={index}
                   enableSelectOption={false}
                   footerProgressBarEnabled={false}
@@ -226,10 +259,11 @@ const MoveOnProduct = () => {
             </>
           ) : (
             <>
-              {Array.from(Array(10), (item, index) => (
+              {data?.data?.products.map((item, index) => (
                 <ProductListCard
                   route="product-list"
                   key={index}
+                  productData={item}
                   enableSelectOption={false}
                   footerProgressBarEnabled={false}
                   footerButtonEnabled={true}

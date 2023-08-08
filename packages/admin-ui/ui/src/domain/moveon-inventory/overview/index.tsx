@@ -47,24 +47,24 @@ const Overview = () => {
 
   const createCollection = useAdminCreateCollection()
 
-  useEffect(() => {
-    if (location.search.includes("?view=product-list")) {
-      setView("Product List")
-    }
-  }, [location])
+  // useEffect(() => {
+  //   if (location.search.includes("?view=product-list")) {
+  //     setView("Product List")
+  //   }
+  // }, [location])
 
   useEffect(() => {
-    switch (view) {
-      case "Imported Products":
-        searchParams.set("view", "imported-product")
-        break
-      case "Product List":
-        searchParams.set("view", "product-list")
-        break
+    // switch (view) {
+    //   case "Imported Products":
+    //     searchParams.set("view", "imported-product")
+    //     break
+    //   case "Product List":
+    //     searchParams.set("view", "product-list")
+    //     break
 
-      default:
-        searchParams.delete("view")
-    }
+    //   default:
+    //     searchParams.delete("view")
+    // }
 
     const offset = searchParams.get("offset")
     const limit = searchParams.get("limit")
