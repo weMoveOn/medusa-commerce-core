@@ -1,21 +1,20 @@
 import React, { useState } from "react"
+import { Rating } from "react-simple-star-rating"
+import { AxiosResponse } from "axios"
+import { useQuery } from "@tanstack/react-query"
+import clsx from "clsx"
+
+import Medusa from "../../../services/api"
+import ProductDetailsAccordion from "../product-details-accordion"
 import Button from "../../fundamentals/button"
 import ChevronDownIcon from "../../fundamentals/icons/chevron-down"
 import ChevronUpIcon from "../../fundamentals/icons/chevron-up"
 import CrossIcon from "../../fundamentals/icons/cross-icon"
 import ThumbnailCarousel from "../../molecules/carousel/thumbnail-carousel-bottom"
 import Modal from "../../molecules/modal"
-import ProductDetailsAccordion from "../product-details-accordion"
-import { IProductDetailsResponse } from "../../../types/inventory-product-details"
-import Medusa from "../../../services/api"
-import { AxiosResponse } from "axios"
-import { useQuery } from "@tanstack/react-query"
-import clsx from "clsx"
 import LoadingContainer from "../../atoms/loading-container"
-import { Rating } from "react-simple-star-rating"
-
-// Todo:
-// Handle Error
+import MoveonInventoryHelpers from "../../../utils/moveon-inventory-helpers"
+import { IProductDetailsResponse } from "../../../types/inventory-product-details"
 
 type QuickViewModalProps = {
   handleClose: () => void
@@ -41,57 +40,31 @@ const QuickViewModal: React.FC<QuickViewModalProps> = ({
   const [skusToShow, setSkusToShow] = useState(3)
   const [isMinimized, setIsMinimized] = useState(false)
 
-  const skus = [
-    { price: 12.568, size: 34 },
-    { price: 12.568, size: 34 },
-    { price: 12.568, size: 34 },
-    { price: 12.568, size: 34 },
-    { price: 12.568, size: 34 },
-    { price: 12.568, size: 34 },
-    { price: 12.568, size: 34 },
-  ]
-
-  const handleLoadMore = () => {
-    if (skusToShow >= 4) {
-      setIsMinimized(true)
+  const handleLoadMore = (skuLength: number) => {
+    const newSkusToShow = skusToShow + 10;
+    if (newSkusToShow >= skuLength) {
+      // If the newSkusToShow value exceeds or equals the total number of skus, set it to the maximum value (skuLength).
+      setSkusToShow(skuLength);
+      setIsMinimized(true);
+    } else {
+      // If the newSkusToShow value is less than the total number of skus, increase it by 10.
+      setSkusToShow(newSkusToShow);
     }
-    setSkusToShow(skusToShow + 10)
-  }
-  // console.log(data?.data.data)
+  };
 
-  // function checkIfSizeVariantExists(data) {
-  //   return data.some((item) => {
-  //     if (Array.isArray(item.values)) {
-  //       return item.values.every((variant) => variant.color === null && variant.image === null);
-  //     }
-  //     return false;
-  //   });
-  // }
-
-  // function getSizeForVariationId(ids, resource):string {
-  //   const names = ids
-  //     .split(",")
-  //     .map((id) => resource.values.find((value) => value.id === id))
-  //     .filter(Boolean)
-  //     .map((value) => value.name).join("");
-  
-  //   return names;
-  // }
-
-
-  const valueClasses = clsx("mb-2 p-2 mr-2 border border-gray-100 text-center rounded-md hover:bg-[#f26623] hover:text-white cursor-pointer")
+  const valueClasses = clsx("mb-2 p-2 mr-2 border border-gray-100 rounded-md hover:bg-[#f26623] hover:text-white cursor-pointer")
 
   return (
     <Modal isLargeModal={false} handleClose={handleClose}>
       <Modal.Body className="max-w-[1000px]">
-      <LoadingContainer isLoading={isLoading}>
-        {data && data.data && data.data.data ?
-        <>
         <div className="flex justify-end">
-          <span onClick={handleClose} className="mx-4 my-2 cursor-pointer">
+          <span onClick={handleClose} className="mx-4 p-1 my-2 cursor-pointer hover:bg-red-400 hover:text-white">
             <CrossIcon size={20} />
           </span>
         </div>
+        <LoadingContainer isLoading={isLoading}>
+        {data?.data?.data ?
+        <>
         <div>
           <p className="text-slate-950 px-8 py-1	text-[17px] font-semibold">
             {data.data.data.title}
@@ -99,11 +72,13 @@ const QuickViewModal: React.FC<QuickViewModalProps> = ({
         </div>
         <Modal.Content>
           <div className="mx-auto flex  flex-wrap justify-between ">
+            {Array.isArray(data.data.data.gallery) &&
             <ThumbnailCarousel
               gallery={data.data.data.gallery}
               thumbnailClassName="xl:w-[700px] 2xl:w-[850px]"
               galleryClassName="xl:w-[100px] 2xl:w-[120px]"
             />
+            }
 
             <div className="mt-6 ml-3 w-1/2">
               <h2 className="title-font text-sm tracking-widest text-gray-500">
@@ -158,7 +133,6 @@ const QuickViewModal: React.FC<QuickViewModalProps> = ({
               </div>
 
               {/* Price and Stock */}
-
               <div className="mb-3">
                 <div className="flex  h-[70px] w-[130px] items-center justify-center rounded-sm	 border-[1.5px] border-[#D9D9D9] drop-shadow-sm ">
                   <div className="my-auto flex flex-col">
@@ -180,8 +154,9 @@ const QuickViewModal: React.FC<QuickViewModalProps> = ({
                     <span className="mr-3 font-bold">{prop.name} : </span>
                   </p>
                 </div>
-
-                {prop.name==="Sort by color" || prop.name==="Color"?
+               
+                {/* if theres images available in color show it otherwise show the name */}
+                {prop.name.toLowerCase().includes("color") ?
                 <div className="flex  flex-wrap">
                     {prop.values.map((value) =>
                         value.thumb ?
@@ -204,58 +179,62 @@ const QuickViewModal: React.FC<QuickViewModalProps> = ({
                 )}
               </div>
 
-              {/* Size and Price */}
+              {/* Size/Color and Price */}
+              {data.data.data.variation.props && data.data.data.variation.skus &&
               <div className="mt-6 mb-5  items-center  border-gray-200 pb-5">
                 <div className="flex flex-col">
                   <div className="flex justify-between px-3">
-                    <div>Size</div>
+                    <div>
+                      {!MoveonInventoryHelpers.checkIfSizeVariantExists(data.data.data.variation.props)?
+                        "Color":"Size"
+                      }
+                    </div>
                     <div>Price</div>
                   </div>
 
-                  {/* {!checkIfSizeVariantExists(data.data.data.variation.props)?
+
+                  {!MoveonInventoryHelpers.checkIfSizeVariantExists(data.data.data.variation.props)?
                   data.data.data.variation.skus.slice(0, skusToShow).map((sku, index) => (
                     <div
                       key={index}
                       className="my-1 flex justify-between rounded-md border border-gray-200 px-3 py-1 font-semibold text-black"
                     >
-                      <div className="flex items-center">{0}</div>
-                      <div className="">
+                      <div className="flex items-center">{MoveonInventoryHelpers.getNameForColorIds(sku.props, data.data.data.variation.props)}</div>
+                      <div className="pl-5">
                         {sku.price.offer?
-                        <span>
+                        <p>
                         <span>{sku.price.offer}</span>
                         <span className="-mt-2 text-center !text-[12px] text-gray-500 line-through">
                           {sku.price.actual}
                         </span>
-                        </span>
-                        :
-                        <p>{sku.price.actual}</p>
-                        }
-                      </div>
-                    </div>))
-                    : */}
-                   {data.data.data.variation.skus &&  data.data.data.variation.props?
-                  data.data.data.variation.skus.slice(0, skusToShow).map((sku, index) => (
-                    <div
-                      key={index}
-                      className="my-1 flex justify-between rounded-md border border-gray-200 px-3 py-1 font-semibold text-black"
-                    >
-                      <div className="flex items-center">{0}</div>
-                      <div className="">
-                        {sku.price.offer?
-                        <span>
-                        <span>{sku.price.offer}</span>
-                        <span className="-mt-2 text-center !text-[12px] text-gray-500 line-through">
-                          {sku.price.actual}
-                        </span>
-                        </span>
+                        </p>
                         :
                         <p>{sku.price.actual}</p>
                         }
                       </div>
                     </div>
+                    ))
+                    :
+                    data.data.data.variation.skus.slice(0, skusToShow).map((sku, index) => (
+                    <div
+                      key={index}
+                      className="my-1 flex justify-between rounded-md border border-gray-200 px-3 py-1 font-semibold text-black"
+                    >
+                      <div className="flex items-center">{MoveonInventoryHelpers.getNameForSizeIds(sku.props, data.data.data.variation.props)}</div>
+                      <div className="pl-5">
+                        {sku.price.offer?
+                        <span>
+                        <span>{sku.price.offer}</span>
+                        <span className="-mt-2 text-center !text-[12px] text-gray-500 line-through">
+                          {sku.price.actual}
+                        </span>
+                        </span>
+                        :
+                        <span>{sku.price.actual}</span>
+                        }
+                      </div>
+                    </div>
                   ))
-                  :
-                  ""
                   }
                   <div className="mx-auto flex">
                     {data.data.data.variation.skus && skusToShow < data.data.data.variation.skus.length && (
@@ -264,7 +243,7 @@ const QuickViewModal: React.FC<QuickViewModalProps> = ({
                         variant="secondary"
                         size="medium"
                         className="mt-3 rounded border-none  bg-none py-2 px-4 font-semibold text-black focus:border-none"
-                        onClick={handleLoadMore}
+                        onClick={()=>handleLoadMore(data.data.data.variation.skus?.length ?? 0)}
                       >
                         View more
                       </Button>
@@ -286,13 +265,15 @@ const QuickViewModal: React.FC<QuickViewModalProps> = ({
                   </div>
                 </div>
               </div>
+              }
+
               <ProductDetailsAccordion specifications= {data.data.data.specifications} />
             </div>
           </div>
         </Modal.Content>
         </>
         :
-        <div>Error</div>
+        <div className="font-semibold text-lg tracking-twenty text-orange-50 h-[500px] flex items-center justify-center">Product Details Not Found</div>
         }
         </LoadingContainer>
       </Modal.Body>
