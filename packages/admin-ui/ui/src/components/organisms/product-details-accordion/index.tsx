@@ -1,8 +1,11 @@
 import Accordion from "../../../components/organisms/accordion"
-import { ISpecification } from "../../../types/inventory-product-details"
+import { IMoveonInventorySpecification } from "../../../types/inventory-product-details"
 
-const ProductDetailsAccordion = ({specifications}:{specifications: ISpecification[]}) => {
-  // console.log(specifications)
+interface Props {
+  specifications: IMoveonInventorySpecification[]
+}
+
+const ProductDetailsAccordion = ({specifications}: Props) => {
   return (
     <Accordion type="multiple">
       <Accordion.Item title="Product information" value="Product-information">
