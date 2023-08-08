@@ -48,7 +48,7 @@ const ProductGridCard: React.FC<IProductGridCardProps> = ({
         className="relative flex h-60 overflow-hidden rounded-xl"
       >
         <img
-          className="object-cover"
+          className="object-cover w-full h-full"
           src={productData?.image}
           alt="product image"
         />

@@ -66,28 +66,7 @@ const ProductListCard: React.FC<IProductListCardProps> = ({
               {productData?.title?.slice(0, 150)}{productData?.title?.length && productData?.title?.length>150 && "..."}
             </h5>
         <div className="flex flex-row">
-          <div className="">
-            {/* {route === "product-list" && (
-              <div className="mt-2 mb-3 flex items-center">
-                <StarRatingIcon
-                  fillColor={"#fb923c"}
-                  size={20}
-                  color={"#fb923c"}
-                />
-                <StarRatingIcon
-                  fillColor={"#fb923c"}
-                  size={20}
-                  color={"#fb923c"}
-                />
-                <StarRatingIcon size={20} color={"#fb923c"} />
-                <StarRatingIcon size={20} color={"#fb923c"} />
-                <StarRatingIcon size={20} color={"#fb923c"} />
-                <span className="mr-2 ml-3 rounded  px-2.5 py-0.5 text-xs font-normal">
-                  (5)
-                </span>
-              </div>
-            )} */}
-
+          <div>
             {route === "product-list" && (
               <div className=" my-1 flex items-center justify-between">
               <p>
