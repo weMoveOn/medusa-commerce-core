@@ -28,12 +28,22 @@ const defaultQueryProps = {
 
 const MoveOnProduct = () => {
   const rrdLocation = useLocation();
+  const {
+    handleFilterChange,
+    handleFilterClear,
+    isFetched,
+    initializeAvailableFilter,
+    setFilters,
+    filters,
+    updateQueryParams,
+  } = useInventoryProductFilters()
+
 
   const [layOut, setLayOut] = useState<"grid" | "list">("grid")
   const { isLoading, isError, data, error, refetch } = useQuery<
     AxiosResponse<IInventoryProductPayloadType>
   >(["inventory-fetch"], () =>
-    Medusa.moveOnInventory.list({ keyword: "beg", shop_id: 4,features:"Discount:true",offset:0,limit: 10,sortType:"price",sortOrder:"desc",pr:"10-20" })
+    Medusa.moveOnInventory.list({ keyword: "beg", shop_id: 4,offset:0,limit: 10,...filters })
   )
   
   const [isOpenModal, setIsOpenModal] = useState<boolean>(false)
@@ -46,30 +56,6 @@ const MoveOnProduct = () => {
     value: string
   } | null>(null)
 
-  // const {
-  //   removeTab,
-  //   setTab,
-  //   saveTab,
-  //   availableTabs: filterTabs,
-  //   activeFilterTab,
-  //   reset,
-  //   paginate,
-
-  //   filters,
-  //   setQuery: setFreeText,
-  //   queryObject,
-  //   representationObject,
-  // } = useProductFilters(location.search, defaultQueryProps)
-
-  const {
-    handleFilterChange,
-    handleFilterClear,
-    isFetched,
-    initializeAvailableFilter,
-    setFilters,
-    filters,
-    updateQueryParams,
-  } = useInventoryProductFilters()
 
 
   useEffect(() => {
@@ -116,8 +102,9 @@ const MoveOnProduct = () => {
   }
   const submitFilter = () => {
     const params = queryString.stringify({ ...filters }, { encode: false }, { encodeValuesOnly: true });
-    window.history.replaceState(null, 'Searching', `/products?${params}`)
+    window.history.replaceState(null, 'Searching', `/a/moveon-inventory?${params}`)
     window.scroll(0, 0)
+    refetch()
     // setViewFilterList(false)
     // dispatch(getProductsSearch(filters));
   }
@@ -158,7 +145,7 @@ const MoveOnProduct = () => {
 
   // console.log(selectedSort,"s")
 
-  console.log(data?.data.filters,"data")
+
   console.log(filters,"filters")
 
   return (

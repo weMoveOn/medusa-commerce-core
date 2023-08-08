@@ -28,23 +28,28 @@ const InventoryProductFilters = ({
   handleFilterChange,
   isFetched,
 }: IInventoryFilterProps) => {
+  const DisplayItem = 10
+
   const [tempState, setTempState] = useState(filtersData)
   const [name, setName] = useState("")
   const { isFeatureEnabled } = useFeatureFlag()
   const isSalesChannelsEnabled = isFeatureEnabled("sales_channels")
+  const [cidPaginate, setCidPaginate]=useState({startIndex:0, endIndex:DisplayItem})
+  const [attrValue, setAttrValue] = useState<string[]>([])
+
 
   useEffect(() => {
     if (filtersData && filtersData.features) {
-      filtersData.features = { ...filtersData.features, open: false }
+      filtersData.features = { ...filtersData.features, open: filtersData.features.values.some(x=>x.selected)  }
     }
 
     if (filtersData && filtersData.cid) {
-      filtersData.cid = { ...filtersData.cid, open: false }
+      filtersData.cid = { ...filtersData.cid, open: filtersData.cid.values.some(x=>x.selected) }
     }
     if (filtersData && filtersData.attr) {
       filtersData.attr = {
         ...filtersData.attr,
-        open: false,
+        open: filtersData.attr.values.some(x=>x.selected),
         values: filtersData.attr.values.map((x) => {
           return { ...x, open: x.selected }
         }),
@@ -53,47 +58,26 @@ const InventoryProductFilters = ({
     setTempState(filtersData)
   }, [filtersData])
 
-  const onSubmit = () => {
-    submitFilters(tempState)
-  }
+  
 
-  const onClear = () => {
-    clearFilters()
-  }
 
-  const setSingleFilter = (filterKey: string, filterVal: string) => {
-    setTempState((prevState) => ({
-      ...prevState,
-      [filterKey]: filterVal,
-    }))
+  const onShowCidNext = () =>{ 
+    if(tempState?.cid ){ 
+      setCidPaginate({startIndex:0, endIndex:tempState.cid.values.length-1})
+    }
   }
-
-  // const numberOfFilters = Object.entries(filters).reduce(
-  //   (acc, [key, value]) => {
-  //     if (value?.open) {
-  //       acc = acc + 1
-  //     }
-  //     return acc
-  //   },
-  //   0
-  // )
+  const onShowCidPrev = ()=> { 
+    if(tempState?.cid ){ 
+      setCidPaginate({startIndex:0, endIndex:10})
+    }
+  }
 
   const [regionsPagination, setRegionsPagination] = useState({
     offset: 0,
     limit: REGION_PAGE_SIZE,
   })
 
-  const {
-    regions,
-    count,
-    isLoading: isLoadingRegions,
-  } = useAdminRegions(regionsPagination)
 
-  const { sales_channels, isLoading: isLoadingSalesChannels } =
-    useAdminSalesChannels(
-      { limit: CHANNEL_PAGE_SIZE },
-      { enabled: isSalesChannelsEnabled }
-    )
 
   const handlePaginateRegions = (direction: any) => {
     if (direction > 0) {
@@ -108,11 +92,23 @@ const InventoryProductFilters = ({
       }))
     }
   }
+
+
+
+  useEffect(()=>{ 
+    if(attrValue.length>0){ 
+      handleFilterChange({attr: attrValue.join(";")})
+    }
+
+  }, [attrValue])
+
+  //   onChange={(val) => handleChange({ [name]: { val, tag: "max" } })} />
+
   return (
     <div className="flex space-x-1">
       <FilterDropdownContainer
-        submitFilters={onSubmit}
-        clearFilters={onClear}
+        submitFilters={submitFilters}
+        clearFilters={clearFilters}
         triggerElement={
           <Button
             icon={<FilterIcon size={20} style={{ marginTop: "4px" }} />}
@@ -127,9 +123,13 @@ const InventoryProductFilters = ({
       >
         {tempState?.cid && (
           <FilterDropdownItem
+            hasMore={tempState?.cid.values.length > cidPaginate.endIndex +1 }
+            hasPrev={cidPaginate.endIndex === tempState.cid.values.length-1 }
+            onShowNext={onShowCidNext}
+            onShowPrev={onShowCidPrev}
             filterTitle={tempState?.cid.title}
             options={
-              tempState?.cid.values?.map((f) => ({
+              tempState?.cid.values.slice(cidPaginate.startIndex, cidPaginate.endIndex).map((f) => ({
                 value: f.value,
                 label: f.label,
               })) || []
@@ -138,7 +138,9 @@ const InventoryProductFilters = ({
               .filter((x) => x.selected)
               .map((x) => x.value)}
             open={tempState.cid.open}
-            setFilter={(val) => {
+            setFilter={(val:{open:boolean; filter:string[]}) => {
+              
+              handleFilterChange({cid: val.filter[val.filter.length-1]})
               if (filtersData && filtersData.cid) {
                 //  @ts-ignore
                 setTempState((prevState) => ({
@@ -162,8 +164,9 @@ const InventoryProductFilters = ({
             ?.filter((x) => x.selected)
             .map((x) => x.value)}
           open={tempState?.features.open}
-          setFilter={(val) => {
+          setFilter={(val:{open:boolean; filter:string[]}) => {
             if (filtersData && filtersData.features) {
+              handleFilterChange({features: val.filter.join(',')})
               //  @ts-ignore
               setTempState((prevState) => ({
                 ...prevState,
@@ -184,8 +187,14 @@ const InventoryProductFilters = ({
               }
               filters={x.values?.filter((x) => x.selected).map((x) => x.value)}
               open={x.open}
-              setFilter={(val) => {
+              setFilter={(val:{open:boolean; filter:string[]}) => {
                 if (filtersData && filtersData.attr) {
+
+                  setAttrValue((pre)=>{ 
+                    return [...pre, ...val.filter]
+
+
+                  })
                   //  @ts-ignore
                   setTempState((prevState) => {
                     const attr = prevState?.attr
