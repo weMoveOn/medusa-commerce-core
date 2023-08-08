@@ -1,3 +1,49 @@
+interface IMoveonInventoryPrice {
+  offer: number;
+  actual: number;
+  currency: string | null;
+  preorder: string | null;
+}
+
+interface IMoveonInventoryStock {
+  min: number | null;
+  limit: number;
+  available: number;
+}
+
+interface IMoveonInventorySku {
+  id: string;
+  price: IMoveonInventoryPrice;
+  props: string;
+  stock: IMoveonInventoryStock;
+}
+
+interface IMoveonInventoryValue {
+  id: string;
+  name: string;
+  color: string | null;
+  image: string | null;
+  thumb: string | null;
+  title: string;
+}
+interface IMoveonInventoryProps {
+  id: string;
+  name: string;
+  values: IMoveonInventoryValue[];
+}
+
+interface IMoveonInventorySpecification { 
+  label:{ 
+    id:number; 
+    name:string; 
+  }, 
+  value:{ 
+    id:number; 
+    name:string; 
+  }
+}
+
+// Interface for the entire data structure
 export interface IProductDetailsResponseData{   
     id:number; 
     shop_id:number; 
@@ -61,16 +107,12 @@ export interface IProductDetailsResponseData{
     name:string; 
     
     }[];
-    specifications:{ 
-      label:{ 
-        id:number; 
-        name:string; 
-      }, 
-      value:{ 
-        id:number; 
-        name:string; 
-      }
-    }[];
+    specifications: IMoveonInventorySpecification[];
+    variation:{
+      skus: IMoveonInventorySku[] | null;
+      props: IMoveonInventoryProps[] | null;
+    }
+  
     }
     
     export interface IProductDetailsResponse{ 
@@ -79,3 +121,6 @@ export interface IProductDetailsResponseData{
       message:string; 
       data:IProductDetailsResponseData
     }
+
+
+    export {IMoveonInventoryProps, IMoveonInventorySpecification, IProductDetailsResponseData, IProductDetailsResponse}

@@ -37,7 +37,6 @@ const ProductGridCard: React.FC<IProductGridCardProps> = ({
   route = "product-list",
 }) => {
 
-  console.log(productData)
   const containerClassess = clsx(
     "relative m-1 flex w-full max-w-[18rem] flex-col overflow-hidden rounded-lg border border-gray-100  bg-white",
     enableSelectOption && isSelect && "border-violet-600"

@@ -41,7 +41,6 @@ const ProductListCard: React.FC<IProductListCardProps> = ({
     "relative flex items-center gap-4 p-4 border rounded-lg border-gray-100 mb-4 bg-white w-[80%]",
     enableSelectOption && isSelect && "border-violet-600"
   )
-console.log(productData)
   return (
     <div className={containerClasses}>
       {enableSelectOption && (
@@ -126,7 +125,7 @@ console.log(productData)
                     leftButtonIcon ?? <EyeIcon style={{ marginRight: "6px" }} />
                   }
                   className="mr-2 min-w-[120px]"
-                  onClick={() => leftButtonOnClick("darta")}
+                  onClick={() => leftButtonOnClick(productData)}
                   variant="secondary"
                   size="medium"
                   spanClassName="text-center text-sm font-medium text-slate-700 "
@@ -141,7 +140,7 @@ console.log(productData)
                       <DownloadIcon style={{ marginRight: "6px" }} />
                     )
                   }
-                  onClick={() => rightButtonOnClick("darta")}
+                  onClick={() => rightButtonOnClick(productData)}
                   variant="secondary"
                   className="min-w-[120px]"
                   size="medium"
