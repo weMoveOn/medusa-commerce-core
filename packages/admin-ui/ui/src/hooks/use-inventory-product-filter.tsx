@@ -130,18 +130,18 @@ const useInventoryProductFilters = (): UseFiltersReturnType => {
       initialFilter.shop_id = shopId;
     }
 
-    const paramsValue = queryString.stringify({ ...initialFilter }, { encode: false, encodeValuesOnly: true });
+    const paramsValue = queryString.stringify({ ...initialFilter}, { encode: false, encodeValuesOnly: true });
 
     navigate('/a/moveon-inventory', { search: `?${paramsValue}` });
   };
 
   const handelAllFilterClear = (): void => {
-    navigate({ search: '' });
     const newFilter: IConfigurator = {} as IConfigurator;
     Object.keys(filters).forEach((el) => {
       newFilter[el] = undefined;
     });
     setFilters(newFilter);
+    navigate({ search: '' });
   };
 
   return {

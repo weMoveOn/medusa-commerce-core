@@ -288,13 +288,17 @@ export default {
   },
   moveOnInventory: {
     list(search = {}) {
-      const params = Object.keys(search)
-        .map((k) => `${k}=${search[k]}`)
-        .join("&")
-      const path = `/inventory-products${params && `?${params}`}`
-      // // const path = `/admin/products`
-      // const path = `/inventory-products`
-      return medusaRequest("GET", path)
+    // Filter out undefined values from the search object
+    const filteredSearch = Object.fromEntries(
+      Object.entries(search).filter(([, value]) => value !== undefined)
+    );
+
+    const params = Object.keys(filteredSearch)
+      .map((k) => `${k}=${filteredSearch[k]}`)
+      .join("&");
+
+    const path = `/inventory-products${params ? `?${params}` : ""}`;
+    return medusaRequest("GET", path);
     },
     retrieveSingleProduct(url){
       const path = `/inventory-product-details?url=${url}`
