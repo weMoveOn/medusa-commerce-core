@@ -288,13 +288,8 @@ export default {
   },
   moveOnInventory: {
     list(search = {}) {
-    // Filter out undefined values from the search object
-    const filteredSearch = Object.fromEntries(
-      Object.entries(search).filter(([, value]) => value !== undefined)
-    );
-
-    const params = Object.keys(filteredSearch)
-      .map((k) => `${k}=${filteredSearch[k]}`)
+    const params = Object.keys(search)
+      .map((k) => `${k}=${search[k]}`)
       .join("&");
 
     const path = `/inventory-products${params ? `?${params}` : ""}`;
