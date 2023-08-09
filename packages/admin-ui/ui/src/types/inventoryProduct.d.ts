@@ -131,6 +131,6 @@ export interface IInventoryProductPayloadType {
   count:number; 
   limit:number; 
   offset:number; 
-  filters:IFilters | null;
+  filters:IFilters;
   products: IInventoryProductDataType[]
 }

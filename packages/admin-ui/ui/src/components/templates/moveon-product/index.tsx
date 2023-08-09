@@ -150,6 +150,8 @@ const MoveOnProduct = () => {
         <div className="flex flex-wrap justify-between">
           <div className="px-3 py-3">
             <div className="flex justify-start">
+            
+            {data?.data.filters?.configurator!==null &&
               <InventoryProductFilters
                 filters={filters}
                 submitFilters={submitFilter}
@@ -158,6 +160,7 @@ const MoveOnProduct = () => {
                 filtersData={data?.data.filters?.configurator}
                 handleFilterChange={handleFilterChange}
               />
+              }
               <InventoryProductSort
                 selectedValue={selectedSort}
                 sorter={filterForTemporal.sorter}

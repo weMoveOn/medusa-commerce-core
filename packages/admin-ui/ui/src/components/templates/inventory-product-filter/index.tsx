@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react"
 import FilterDropdownContainer from "../../../components/molecules/filter-dropdown/container"
-import { useFeatureFlag } from "../../../providers/feature-flag-provider"
 import Button from "../../fundamentals/button"
 import FilterIcon from "../../fundamentals/icons/filter-icon"
 import { IConfigurator } from "../../../types/inventoryProduct"
@@ -12,25 +11,20 @@ const REGION_PAGE_SIZE = 10
 interface IInventoryFilterProps {
   filters: any
   isFetched: boolean
-  filtersData: IConfigurator | undefined
+  filtersData: IConfigurator
   submitFilters: () => void
   clearFilters: () => void
-  handleFilterChange: (filter: IConfigurator) => void
+  handleFilterChange: (filter: IConfigurator) => void, 
 }
 const InventoryProductFilters = ({
-  filters,
   submitFilters,
   clearFilters,
   filtersData,
   handleFilterChange,
-  isFetched,
 }: IInventoryFilterProps) => {
   const DisplayItem = 10
 
   const [tempState, setTempState] = useState(filtersData)
-  const [name, setName] = useState("")
-  const { isFeatureEnabled } = useFeatureFlag()
-  const isSalesChannelsEnabled = isFeatureEnabled("sales_channels")
   const [cidPaginate, setCidPaginate]=useState({startIndex:0, endIndex:DisplayItem})
   const [attrValue, setAttrValue] = useState<string[]>([])
 
@@ -43,6 +37,7 @@ const InventoryProductFilters = ({
     if (filtersData && filtersData.cid) {
       filtersData.cid = { ...filtersData.cid, open: filtersData.cid.values.some(x=>x.selected) }
     }
+
     if (filtersData && filtersData.attr) {
       filtersData.attr = {
         ...filtersData.attr,
