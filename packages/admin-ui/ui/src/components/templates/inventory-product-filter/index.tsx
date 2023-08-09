@@ -99,7 +99,6 @@ const InventoryProductFilters = ({
 
   }, [attrValue])
 
-  //   onChange={(val) => handleChange({ [name]: { val, tag: "max" } })} />
 
   return (
     <div className="flex space-x-1">
