@@ -64,12 +64,10 @@ const MoveOnProduct = () => {
     // if limit and offset updates, call submit filter so it calls backend for new data and update query
     useEffect(()=>{
       submitFilter()
-      console.log(filters)
     }, [limit, offset])
     
     const submitFilter = () => {
       const params = queryString.stringify({ ...filters, offset, limit }, { encode: false, skipEmptyString: true, skipNull: true });
-      console.log(params)
       window.history.replaceState(null, 'Searching', `/a/moveon-inventory?${params}`)
       setFilersData(filters)
     }
