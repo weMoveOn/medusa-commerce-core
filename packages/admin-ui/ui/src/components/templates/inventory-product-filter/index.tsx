@@ -178,6 +178,7 @@ const InventoryProductFilters = ({
         {tempState?.attr.values.map((x, index) => {
           return (
             <FilterDropdownItem
+            key={index}
               filterTitle={x.label}
               options={
                 x.values?.map((f) => ({
