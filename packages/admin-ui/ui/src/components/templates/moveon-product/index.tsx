@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query"
+import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { AxiosResponse } from "axios"
 import { useEffect, useState } from "react"
 import Medusa from "../../../services/api"
@@ -16,8 +16,12 @@ import { useLocation } from "react-router-dom"
 import queryString from "query-string"
 import ArrowLeftIcon from "../../fundamentals/icons/arrow-left-icon"
 import LoadingContainer from "../../atoms/loading-container"
+import { TablePagination } from "../../organisms/table-container/pagination"
+
+const DEFAULT_PAGE_LIMIT = 20;
 
 const MoveOnProduct = () => {
+  const queryClient = useQueryClient();
   const rrdLocation = useLocation();
   const {
     handleFilterChange,
@@ -40,17 +44,25 @@ const MoveOnProduct = () => {
   } | null>(null)
   const [newFiltersData, setFilersData] = useState<null | {[key:string]:string}>(filters)
 
+  const [limit, setLimit] = useState(DEFAULT_PAGE_LIMIT);
+  const [offset, setOffset] = useState(0);
+  const [count, setCount] = useState(0);
+
   
 
   const { isLoading, isError, data, error, refetch } = useQuery<
     AxiosResponse<IInventoryProductPayloadType>
-  >(["inventory-fetch",newFiltersData], () =>
-    Medusa.moveOnInventory.list({ keyword: "beg", shop_id: 4,offset:0,limit: 10, ...newFiltersData })
+  >(["inventory-fetch",newFiltersData, offset], () =>
+    Medusa.moveOnInventory.list({ keyword: "beg", shop_id: 4, offset: offset, limit: limit, ...newFiltersData })
   )
   
-
-
-
+  useEffect(()=>{
+    if(data?.data){
+      setCount(data?.data.count);
+      setLimit(data?.data.limit);
+      setOffset(data?.data.offset);
+    }
+    }, [data?.data])
 
 
   useEffect(() => {
@@ -90,6 +102,7 @@ const MoveOnProduct = () => {
     setFilersData(null)
     refetch({});
   }
+
   const submitFilter = () => {
     const params = queryString.stringify({ ...filters }, { encode: false }, { encodeValuesOnly: true });
     window.history.replaceState(null, 'Searching', `/a/moveon-inventory?${params}`)
@@ -121,6 +134,16 @@ const MoveOnProduct = () => {
     }
   }
 
+  const handleNextPage = () => {
+     setOffset(offset + 1);
+  }
+
+  
+  const handlePreviousPage = () => {
+    setOffset(offset - 1);
+  }
+
+  
 
   return (
     <>
@@ -224,6 +247,24 @@ const MoveOnProduct = () => {
               ))}
             </>
           )}
+
+         <div className="w-full pt-8" style={{ bottom: 100 }}>
+          <TablePagination
+            pagingState={{
+              count: count,
+              offset: offset,
+              title: "Products",
+              pageSize: limit,
+              currentPage: offset+1,
+              pageCount: Math.ceil(count/limit),
+              nextPage: ()=>handleNextPage(),
+              prevPage: ()=>handlePreviousPage(),
+              hasNext: offset*limit<=count,
+              hasPrev: offset>0,
+            }}
+            isLoading={isLoading}
+          />
+        </div>
           </LoadingContainer>
         </div>
       </div>
