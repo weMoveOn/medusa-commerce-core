@@ -112,10 +112,12 @@ export type CidType = IConfiguratorProperty<"cid">;
 export type FeaturesType = IConfiguratorProperty<"features">;
 
 export interface IConfigurator {
-  pr: PrType;
+  pr?: PrType;
   cid?: CidType;
-  features: FeaturesType;
-  attr: IAttr<string, string>;
+  features?: FeaturesType;
+  attr?: IAttr<string, string>;
+  limit?: number;
+  offset?: number;
 }
 
 export interface IFilters {

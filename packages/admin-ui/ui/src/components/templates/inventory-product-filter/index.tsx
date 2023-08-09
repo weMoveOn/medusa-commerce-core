@@ -1,16 +1,13 @@
-import { useAdminRegions, useAdminSalesChannels } from "medusa-react"
 import { useEffect, useState } from "react"
 import FilterDropdownContainer from "../../../components/molecules/filter-dropdown/container"
 import { useFeatureFlag } from "../../../providers/feature-flag-provider"
 import Button from "../../fundamentals/button"
 import FilterIcon from "../../fundamentals/icons/filter-icon"
-import { filterForTemporal } from "../../../utils/date-utils"
 import { IConfigurator } from "../../../types/inventoryProduct"
-import CustomFormElement from "../moveOn-custom-from-for-filter"
 import FilterDropdownItem from "../../molecules/filter-dropdown/item"
 
 const REGION_PAGE_SIZE = 10
-const CHANNEL_PAGE_SIZE = 10
+
 
 interface IInventoryFilterProps {
   filters: any

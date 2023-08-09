@@ -1,8 +1,8 @@
-import { useQuery, useQueryClient } from "@tanstack/react-query"
+import { useQuery } from "@tanstack/react-query"
 import { AxiosResponse } from "axios"
 import { useEffect, useState } from "react"
 import Medusa from "../../../services/api"
-import { IInventoryProductDataType, IInventoryProductPayloadType } from "../../../types/inventoryProduct"
+import { IConfigurator, IInventoryProductDataType, IInventoryProductPayloadType } from "../../../types/inventoryProduct"
 import ListIcon from "../../fundamentals/icons/list-icon"
 import TileIcon from "../../fundamentals/icons/tile-icon"
 import ProductGridCard from "../../molecules/product-grid-card"
@@ -17,11 +17,9 @@ import queryString from "query-string"
 import ArrowLeftIcon from "../../fundamentals/icons/arrow-left-icon"
 import LoadingContainer from "../../atoms/loading-container"
 import { TablePagination } from "../../organisms/table-container/pagination"
-
-const DEFAULT_PAGE_LIMIT = 20;
+import { defaultMoveonInventoryFilter } from "../../../utils/filters"
 
 const MoveOnProduct = () => {
-  const queryClient = useQueryClient();
   const rrdLocation = useLocation();
   const {
     handleFilterChange,
@@ -42,20 +40,19 @@ const MoveOnProduct = () => {
     label: string
     value: string
   } | null>(null)
-  const [newFiltersData, setFilersData] = useState<null | {[key:string]:string}>(filters)
+  const [newFiltersData, setFilersData] = useState<IConfigurator>(filters)
 
-  const [limit, setLimit] = useState(DEFAULT_PAGE_LIMIT);
-  const [offset, setOffset] = useState(0);
+  const [limit, setLimit] = useState(newFiltersData.limit ?? defaultMoveonInventoryFilter.limit);
+  const [offset, setOffset] = useState(newFiltersData.offset ?? 0);
   const [count, setCount] = useState(0);
-
-  
 
   const { isLoading, isError, data, error, refetch } = useQuery<
     AxiosResponse<IInventoryProductPayloadType>
-  >(["inventory-fetch",newFiltersData, offset], () =>
-    Medusa.moveOnInventory.list({ keyword: "beg", shop_id: 4, offset: offset, limit: limit, ...newFiltersData })
+  >(["inventory-fetch",newFiltersData], () =>
+    Medusa.moveOnInventory.list({ keyword: "beg", shop_id: 4, ...newFiltersData })
   )
   
+  // if data is fetched from backend set new count and limit
   useEffect(()=>{
     if(data?.data){
       setCount(data?.data.count);
@@ -64,18 +61,29 @@ const MoveOnProduct = () => {
     }
     }, [data?.data])
 
+    // if limit and offset updates, call submit filter so it calls backend for new data and update query
+    useEffect(()=>{
+      submitFilter()
+      console.log(filters)
+    }, [limit, offset])
+    
+    const submitFilter = () => {
+      const params = queryString.stringify({ ...filters, offset, limit }, { encode: false, skipEmptyString: true, skipNull: true });
+      console.log(params)
+      window.history.replaceState(null, 'Searching', `/a/moveon-inventory?${params}`)
+      setFilersData(filters)
+    }
 
   useEffect(() => {
     if (!isFetched && data?.data.filters?.configurator) {
-
       initializeAvailableFilter(data?.data.filters?.configurator);
     }
   }, [isFetched, initializeAvailableFilter, data?.data.filters?.configurator]);
 
   useEffect(() => {
     const params = queryString.parse((rrdLocation.search).substring(1));
-    // @ts-ignore
     setFilters(params)
+    setFilersData(params)
     setIsParamsUpdated(true);
   }, [rrdLocation.search, setFilters])
 
@@ -99,15 +107,8 @@ const MoveOnProduct = () => {
 
   const clearFilters = () => {
     handelAllFilterClear();
-    setFilersData(null)
+    setFilersData(defaultMoveonInventoryFilter)
     refetch({});
-  }
-
-  const submitFilter = () => {
-    const params = queryString.stringify({ ...filters }, { encode: false }, { encodeValuesOnly: true });
-    window.history.replaceState(null, 'Searching', `/a/moveon-inventory?${params}`)
-    setFilersData(filters)
-    refetch()
   }
 
   const handleSorting = (value: { value: string; label: string }) => {
@@ -115,8 +116,6 @@ const MoveOnProduct = () => {
     const selectedSortData = filterForTemporal.sorter.values.find(
       (x) => x.title === value.label
     )
-
-  
     if (selectedSortData) {
       let key = "sortType"
       let orderValue = "sortOrder"
@@ -135,12 +134,14 @@ const MoveOnProduct = () => {
   }
 
   const handleNextPage = () => {
-     setOffset(offset + 1);
+     setOffset(offset + limit);
+     handleFilterChange({offset: offset+limit, limit:limit})
   }
 
   
   const handlePreviousPage = () => {
-    setOffset(offset - 1);
+    setOffset(offset - limit);
+    handleFilterChange({offset: offset-limit, limit:limit})
   }
 
   
@@ -254,7 +255,7 @@ const MoveOnProduct = () => {
               count: count,
               offset: offset,
               title: "Products",
-              pageSize: limit,
+              pageSize: limit+offset,
               currentPage: offset+1,
               pageCount: Math.ceil(count/limit),
               nextPage: ()=>handleNextPage(),

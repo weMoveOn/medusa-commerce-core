@@ -2,10 +2,14 @@ import queryString from 'query-string';
 import { useEffect, useState } from 'react';
 import { NavigateFunction, useNavigate } from 'react-router-dom';
 import { IConfigurator } from '../types/inventoryProduct';
+import { defaultMoveonInventoryFilter } from '../utils/filters';
+
+const DEFAULT_PAGE_LIMIT = 20;
+
 
 
 type UseFiltersReturnType = {
-  filters: IConfigurator | null;
+  filters: IConfigurator;
   isFirstCall: boolean;
   handleFilterChange: (fields: IConfigurator) => void;
   handleFilterClear: () => void;
@@ -23,7 +27,7 @@ type UseFiltersReturnType = {
 };
 
 const useInventoryProductFilters = (): UseFiltersReturnType => {
-  const [filters, setFilters] = useState<IConfigurator | null>(null);
+  const [filters, setFilters] = useState<IConfigurator>(defaultMoveonInventoryFilter);
   const [isFirstCall, setIsFirstCall] = useState(false);
   const [isFetched, setIsFetched] = useState(false);
   const [isLatestCollection, setIsLatestCollection] = useState(false);
@@ -68,8 +72,22 @@ const useInventoryProductFilters = (): UseFiltersReturnType => {
       initialFilter.item_id = itemId;
     }
 
+    const offset = params['offset'];
+
+    if (offset) {
+      initialFilter.offset = offset;
+    } else initialFilter.offset = 0;
+
+    const limit = params['limit'];
+
+    if (limit) {
+      initialFilter.limit = limit;
+    } else initialFilter.limit = DEFAULT_PAGE_LIMIT;
+
+
+
     Object.keys(data).forEach((key) => {
-      initialFilter[key] = params[key] ? params[key] : undefined;
+     if(params[key])initialFilter[key] = params[key];
     });
     setFilters(initialFilter);
     setIsFetched(true);
@@ -129,7 +147,11 @@ const useInventoryProductFilters = (): UseFiltersReturnType => {
     if (shopId) {
       initialFilter.shop_id = shopId;
     }
+    
+    initialFilter.limit = DEFAULT_PAGE_LIMIT;
 
+    initialFilter.offset = 0;
+  
     const paramsValue = queryString.stringify({ ...initialFilter}, { encode: false, encodeValuesOnly: true });
 
     navigate('/a/moveon-inventory', { search: `?${paramsValue}` });
