@@ -68,7 +68,7 @@ const ProductListCard: React.FC<IProductListCardProps> = ({
         <div className="flex flex-row">
           <div>
             {route === "product-list" && (
-              <div className=" my-1 flex items-center justify-between">
+              <div className="my-1 flex items-center justify-between">
               <p>
                 <span className="text-lg font-bold text-violet-600">{productData?.price}</span>
                 {/* <span className="text-sm text-violet-500 line-through">${productData?.price}</span> */}
@@ -97,7 +97,7 @@ const ProductListCard: React.FC<IProductListCardProps> = ({
           </div>
 
           {footerButtonEnabled && (
-            <div className="ml-auto flex flex-row  items-center gap-2">
+            <div className="ml-auto flex flex-row  items-center">
               {leftButtonOnClick && (
                 <Button
                   icon={
@@ -132,7 +132,7 @@ const ProductListCard: React.FC<IProductListCardProps> = ({
           )}
         </div>
 
-        <div className=" w-[50%]">
+        <div className="w-[50%]">
           {footerProgressBarEnabled && <ProgressBarMoveShop progress="45%" />}
         </div>
       </div>

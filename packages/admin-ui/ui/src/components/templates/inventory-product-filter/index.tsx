@@ -5,9 +5,6 @@ import FilterIcon from "../../fundamentals/icons/filter-icon"
 import { IConfigurator } from "../../../types/inventoryProduct"
 import FilterDropdownItem from "../../molecules/filter-dropdown/item"
 
-const REGION_PAGE_SIZE = 10
-
-
 interface IInventoryFilterProps {
   filtersData: IConfigurator | null
   submitFilters: () => void
@@ -25,7 +22,6 @@ const InventoryProductFilters = ({
   const [tempState, setTempState] = useState(filtersData)
   const [cidPaginate, setCidPaginate]=useState({startIndex:0, endIndex:DisplayItem})
   const [attrValue, setAttrValue] = useState<string[]>([])
-
 
   useEffect(() => {
     if (filtersData && filtersData.features) {
@@ -47,9 +43,6 @@ const InventoryProductFilters = ({
     }
     setTempState(filtersData)
   }, [filtersData])
-
-  
-
 
   const onShowCidNext = () =>{ 
     if(tempState?.cid ){ 
@@ -101,7 +94,6 @@ const InventoryProductFilters = ({
               .map((x) => x.value)}
             open={tempState.cid.open}
             setFilter={(val: { open: boolean; filter: string[]} ) => {
-
               handleFilterChange({ cid: val.filter[val.filter.length - 1] })
               if (filtersData && filtersData.cid) {
                 //  @ts-ignore

@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useEffect, useMemo, useState } from "react"
 import Spacer from "../../../components/atoms/spacer"
 import ListIcon from "../../../components/fundamentals/icons/list-icon"
 import TileIcon from "../../../components/fundamentals/icons/tile-icon"
@@ -7,7 +7,6 @@ import TableViewHeader from "../../../components/organisms/custom-table-header"
 import MoveOnInventoryImportedProduct from "../../../components/templates/moveon-inventory-imported-product"
 import MoveOnProduct from "../../../components/templates/moveon-product"
 import { defaultMoveonInventoryFilter } from "../../../utils/filters"
-import { useSearchParams } from "react-router-dom"
 
 export type ViewsType = "Product List" | "Imported Products"
 
@@ -16,19 +15,32 @@ export type ProductLayoutType = "grid" | "list"
 
 const Overview = () => {
   const [view, setView] = useState<ViewsType>("Product List")
-  const [importedProductLayout, setImportedProductLayOut] =
-    useState<ProductLayoutType>("grid")
-  const [searchParams] = useSearchParams();
+  const [importedProductLayout, setImportedProductLayOut] = useState<ProductLayoutType>("grid")
 
-  // Check if the "limit" and "offset" query parameters are missing
-  if (!searchParams.get("limit") || !searchParams.get("offset")) {
-    // Set default values for "limit" and "offset"
-    searchParams.set("limit", defaultMoveonInventoryFilter.limit.toString());
-    searchParams.set("offset", "0");
+  const url = useMemo(() => {
+    const currentUrl = new URL(window.location.href)
+    return currentUrl
+  }, [])
 
-    // Update the URL with the modified query parameters
-    window.history.replaceState(null, "", `?${searchParams.toString()}`);
-  }
+  const searchParams = useMemo(() => {
+    const currentSearchParams = new URLSearchParams(url.search)
+    return currentSearchParams
+  }, [url])
+
+  useEffect(() => {
+    const offset = searchParams.get("offset")
+    const limit = searchParams.get("limit")
+    console.log(offset, limit)
+    if (offset === null) {
+      searchParams.set("offset", "0")
+    }
+    if (limit === null) {
+      searchParams.set("limit", defaultMoveonInventoryFilter.limit.toString())
+    }
+    url.search = searchParams.toString()
+    window.history.replaceState(null, "", url.href)
+    console.log(url.href)
+  }, [searchParams, url])
 
   const CurrentView = () => {
     switch (view) {

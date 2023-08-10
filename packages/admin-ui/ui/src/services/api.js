@@ -289,14 +289,8 @@ export default {
   },
   moveOnInventory: {
     list(search = {}) {
-    // Set default values for offset and limit if not provided in search
-    const { offset = 0, limit = defaultMoveonInventoryFilter.limit, ...rest } = search;
-    // Add offset and limit to the search object with default values
-    const updatedSearch = { ...rest, offset, limit };
-
-    const params = Object.keys(updatedSearch)
-      .map((k) => `${k}=${updatedSearch[k]}`)
-      .join("&");
+      const params = Object.keys(search)
+      .map((k) => `${k}=${search[k]}`) .join("&");
 
     const path = `/inventory-products${params ? `?${params}` : ""}`;
     return medusaRequest("GET", path);

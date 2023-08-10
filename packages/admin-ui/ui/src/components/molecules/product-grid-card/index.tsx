@@ -36,25 +36,21 @@ const ProductGridCard: React.FC<IProductGridCardProps> = ({
   rightButtonIcon,
   route = "product-list",
 }) => {
-
   const containerClassess = clsx(
     "relative m-1 flex w-full max-w-[18rem] flex-col overflow-hidden rounded-lg border border-gray-100  bg-white",
     enableSelectOption && isSelect && "border-violet-600"
   )
   return (
     <div className={containerClassess}>
-      {/* default   border-gray-100 */}
       <div
         className="relative flex h-60 overflow-hidden rounded-xl"
       >
+      {/* <ImagePlaceholder /> */}
         <img
           className="object-cover w-full h-full"
           src={productData?.image}
           alt="product image"
         />
-
-        {/* <ImagePlaceholder /> */}
-
         {enableSelectOption && (
           <span className="absolute top-0 left-0 m-2 rounded-full text-center text-sm font-medium text-white">
             <div className="mr-4 flex items-center">
@@ -73,29 +69,6 @@ const ProductGridCard: React.FC<IProductGridCardProps> = ({
           <h5 className="truncate text-large leading-base font-bold tracking-tight text-slate-800 mb-1">
             {productData?.title}
           </h5>
-        {/* {route === "product-list" && (
-          <div className="mt-2 mb-3 flex items-center justify-between">
-            <div className="flex items-center">
-              <StarRatingIcon
-                fillColor={"#fb923c"}
-                size={20}
-                color={"#fb923c"}
-              />
-              <StarRatingIcon
-                fillColor={"#fb923c"}
-                size={20}
-                color={"#fb923c"}
-              />
-              <StarRatingIcon size={20} color={"#fb923c"} />
-              <StarRatingIcon size={20} color={"#fb923c"} />
-              <StarRatingIcon size={20} color={"#fb923c"} />
-              <span className="mr-2 ml-3 rounded  px-2.5 py-0.5 text-xs font-normal">
-                (13)
-              </span>
-            </div>
-          </div>
-        )} */}
-
         {route === "product-list" && (
           <div className=" my-1 flex items-center justify-between">
             <p>
@@ -139,7 +112,7 @@ const ProductGridCard: React.FC<IProductGridCardProps> = ({
                 size="medium"
                 spanClassName="text-center text-sm  font-medium text-slate-700"
               >
-                {leftButtonTitle ?? " Quick view"}
+                {leftButtonTitle ?? "Quick view"}
               </Button>
             )}
             {rightButtonOnClick && (
@@ -153,7 +126,7 @@ const ProductGridCard: React.FC<IProductGridCardProps> = ({
                 onClick={() => rightButtonOnClick(productData)}
                 variant="secondary"
                 size="medium"
-                spanClassName=" text-center text-sm font-medium text-slate-700"
+                spanClassName="text-center text-sm font-medium text-slate-700"
               >
                 {rightButtonTitle ?? "Import"}
               </Button>

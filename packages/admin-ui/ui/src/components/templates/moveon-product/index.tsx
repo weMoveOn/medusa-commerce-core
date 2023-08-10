@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query"
 import { AxiosResponse } from "axios"
-import { useEffect, useState } from "react"
+import React, { useEffect, useState } from "react"
 import Medusa from "../../../services/api"
 import { IConfigurator, IInventoryProductDataType, IInventoryProductPayloadType } from "../../../types/inventoryProduct"
 import ListIcon from "../../fundamentals/icons/list-icon"
@@ -42,8 +42,8 @@ const MoveOnProduct = () => {
   } | null>(null)
   const [newFiltersData, setFilersData] = useState<IConfigurator>(filters)
 
-  const [limit, setLimit] = useState(newFiltersData.limit ?? defaultMoveonInventoryFilter.limit);
-  const [offset, setOffset] = useState(newFiltersData.offset ?? 0);
+  const [limit, setLimit] = useState(defaultMoveonInventoryFilter.limit);
+  const [offset, setOffset] = useState(0);
   const [count, setCount] = useState(0);
 
   const { isLoading, isError, data, error, refetch } = useQuery<
@@ -52,6 +52,7 @@ const MoveOnProduct = () => {
     Medusa.moveOnInventory.list({ keyword: "beg", shop_id: 4, ...newFiltersData })
   )
   
+  // console.log(newFiltersData)
   // if data is fetched from backend set new count and limit
   useEffect(()=>{
     if(data?.data){
@@ -83,17 +84,17 @@ const MoveOnProduct = () => {
     setFilters(params)
     setFilersData(params)
     setIsParamsUpdated(true);
-  }, [rrdLocation.search, setFilters])
+  }, [rrdLocation.search])
 
   useEffect(() => {
-    if (!data?.data && filters && isParamsUpdated) {
-      let queryStirng = queryString.stringify(filters);
+    if (!data?.data && newFiltersData && isParamsUpdated) {
+      let queryStirng = queryString.stringify(newFiltersData);
       if (searchedQueries !== queryStirng) {
         refetch()
         setSearchedQueries(queryStirng)
       }
     }
-  }, [data?.data, filters, isParamsUpdated, searchedQueries]);
+  }, [data?.data, newFiltersData, isParamsUpdated, searchedQueries]);
 
   const handleProductView = (value: IInventoryProductDataType) => {
     setIsOpenModal(true)
@@ -155,7 +156,7 @@ const MoveOnProduct = () => {
         </button>
      </div>
       :
-      <div className="container mx-auto px-2">
+      <div className="container">
         <div className="flex flex-wrap justify-between">
           <div className="px-3 py-3">
             <div className="flex justify-start">
@@ -278,4 +279,4 @@ const MoveOnProduct = () => {
   )
 }
 
-export default MoveOnProduct
+export default React.memo(MoveOnProduct)
