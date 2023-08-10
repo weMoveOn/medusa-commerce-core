@@ -63,8 +63,6 @@ const OrderFilters = ({
   const { isFeatureEnabled } = useFeatureFlag()
   const isSalesChannelsEnabled = isFeatureEnabled("sales_channels")
 
-  console.log(tempState,'tempState order',tabs)
-
   const handleRemoveTab = (val) => {
     if (onRemoveTab) {
       onRemoveTab(val)

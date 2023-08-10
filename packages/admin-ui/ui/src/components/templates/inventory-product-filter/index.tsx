@@ -9,17 +9,15 @@ const REGION_PAGE_SIZE = 10
 
 
 interface IInventoryFilterProps {
-  filters: any
-  isFetched: boolean
-  filtersData: IConfigurator
+  filtersData: IConfigurator | null
   submitFilters: () => void
   clearFilters: () => void
   handleFilterChange: (filter: IConfigurator) => void, 
 }
 const InventoryProductFilters = ({
+  filtersData,
   submitFilters,
   clearFilters,
-  filtersData,
   handleFilterChange,
 }: IInventoryFilterProps) => {
   const DisplayItem = 10
@@ -64,36 +62,11 @@ const InventoryProductFilters = ({
     }
   }
 
-  const [regionsPagination, setRegionsPagination] = useState({
-    offset: 0,
-    limit: REGION_PAGE_SIZE,
-  })
-
-
-
-  const handlePaginateRegions = (direction: any) => {
-    if (direction > 0) {
-      setRegionsPagination((prev) => ({
-        ...prev,
-        offset: prev.offset + prev.limit,
-      }))
-    } else if (direction < 0) {
-      setRegionsPagination((prev) => ({
-        ...prev,
-        offset: Math.max(prev.offset - prev.limit, 0),
-      }))
-    }
-  }
-
-
-
   useEffect(()=>{ 
     if(attrValue.length>0){ 
       handleFilterChange({attr: attrValue.join(";")})
     }
-
   }, [attrValue])
-
 
   return (
     <div className="flex space-x-1">
@@ -114,24 +87,22 @@ const InventoryProductFilters = ({
       >
         {tempState?.cid && (
           <FilterDropdownItem
-            hasMore={tempState?.cid.values.length > cidPaginate.endIndex +1 }
-            hasPrev={cidPaginate.endIndex === tempState.cid.values.length-1 }
+            hasMore={tempState?.cid.values.length > cidPaginate.endIndex + 1}
+            hasPrev={cidPaginate.endIndex === tempState.cid.values.length - 1}
             onShowNext={onShowCidNext}
             onShowPrev={onShowCidPrev}
             filterTitle={tempState?.cid.title}
-            options={
-              tempState?.cid.values.slice(cidPaginate.startIndex, cidPaginate.endIndex).map((f) => ({
-                value: f.value,
-                label: f.label,
-              })) || []
-            }
+            options={tempState?.cid.values.slice(cidPaginate.startIndex, cidPaginate.endIndex).map((f) => ({
+              value: f.value,
+              label: f.label,
+            })) || []}
             filters={tempState?.cid.values
               .filter((x) => x.selected)
               .map((x) => x.value)}
             open={tempState.cid.open}
-            setFilter={(val:{open:boolean; filter:string[]}) => {
-              
-              handleFilterChange({cid: val.filter[val.filter.length-1]})
+            setFilter={(val: { open: boolean; filter: string[]} ) => {
+
+              handleFilterChange({ cid: val.filter[val.filter.length - 1] })
               if (filtersData && filtersData.cid) {
                 //  @ts-ignore
                 setTempState((prevState) => ({
@@ -139,50 +110,44 @@ const InventoryProductFilters = ({
                   cid: { ...prevState?.cid, open: val.open },
                 }))
               }
-            }}
-          />
+            } } isLoading={undefined}          />
         )}
 
         <FilterDropdownItem
           filterTitle={tempState?.features.title}
-          options={
-            tempState?.features.values?.map((f) => ({
-              value: f.value,
-              label: f.label,
-            })) || []
-          }
+          options={tempState?.features.values?.map((f) => ({
+            value: f.value,
+            label: f.label,
+          })) || []}
           filters={tempState?.features.values
             ?.filter((x) => x.selected)
             .map((x) => x.value)}
           open={tempState?.features.open}
-          setFilter={(val:{open:boolean; filter:string[]}) => {
+          setFilter={(val: { open: boolean; filter: string[]} ) => {
             if (filtersData && filtersData.features) {
-              handleFilterChange({features: val.filter.join(',')})
+              handleFilterChange({ features: val.filter.join(',') })
               //  @ts-ignore
               setTempState((prevState) => ({
                 ...prevState,
                 features: { ...prevState?.features, open: val.open },
               }))
             }
-          }}
-        />
+          } } isLoading={undefined} hasMore={undefined} hasPrev={undefined} onShowNext={undefined} onShowPrev={undefined}        />
         {tempState?.attr.values.map((x, index) => {
           return (
             <FilterDropdownItem
-            key={index}
+              key={index}
               filterTitle={x.label}
-              options={
-                x.values?.map((f) => ({
-                  value: f.value,
-                  label: f.label,
-                })) || []
-              }
+              options={x.values?.map((f) => ({
+                value: f.value,
+                label: f.label,
+              })) || []}
               filters={x.values?.filter((x) => x.selected).map((x) => x.value)}
               open={x.open}
-              setFilter={(val:{open:boolean; filter:string[]}) => {
+              setFilter={(val: { open: boolean; filter: string[]} ) => {
                 if (filtersData && filtersData.attr) {
 
-                  setAttrValue((pre)=>{ 
+                  setAttrValue((pre) => {
                     return [...pre, ...val.filter]
 
 
@@ -212,8 +177,7 @@ const InventoryProductFilters = ({
                     }
                   })
                 }
-              }}
-            />
+              } } isLoading={undefined} hasMore={undefined} hasPrev={undefined} onShowNext={undefined} onShowPrev={undefined}            />
           )
         })}
       </FilterDropdownContainer>

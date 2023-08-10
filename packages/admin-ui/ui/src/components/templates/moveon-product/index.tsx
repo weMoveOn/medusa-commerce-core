@@ -136,31 +136,35 @@ const MoveOnProduct = () => {
      handleFilterChange({offset: offset+limit, limit:limit})
   }
 
-  
   const handlePreviousPage = () => {
     setOffset(offset - limit);
     handleFilterChange({offset: offset-limit, limit:limit})
   }
 
-  
-
   return (
     <>
+     <LoadingContainer isLoading={isLoading}>
+     {data?.data.products.length===0 ?
+      <div className="flex flex-col justify-center items-center h-[500px] gap-6">
+       <div className="font-semibold text-lg tracking-twenty text-orange-50">Product Not Found</div>
+        <button onClick={clearFilters} className="px-small py-xsmall">
+          <div className="gap-x-xsmall text-grey-50 inter-grey-40 inter-small-semibold flex items-center">
+            <ArrowLeftIcon size={20} />
+             <span className="ml-1">Go back</span>
+          </div>
+        </button>
+     </div>
+      :
       <div className="container mx-auto px-2">
         <div className="flex flex-wrap justify-between">
           <div className="px-3 py-3">
             <div className="flex justify-start">
-            
-            {data?.data.filters?.configurator!==null &&
               <InventoryProductFilters
-                filters={filters}
                 submitFilters={submitFilter}
                 clearFilters={clearFilters}
-                isFetched={isFetched}
-                filtersData={data?.data.filters?.configurator}
+                filtersData={data?.data.filters?.configurator ?? null}
                 handleFilterChange={handleFilterChange}
               />
-              }
               <InventoryProductSort
                 selectedValue={selectedSort}
                 sorter={filterForTemporal.sorter}
@@ -201,19 +205,7 @@ const MoveOnProduct = () => {
         </div>
 
         <div className="-mx-4 flex flex-wrap justify-center">
-        <LoadingContainer isLoading={isLoading}>
-        {data?.data.products.length===0 ?
-         <div className="flex flex-col justify-center items-center h-[500px] gap-6">
-          <div className="font-semibold text-lg tracking-twenty text-orange-50">Product Not Found</div>
-            <button onClick={clearFilters} className="px-small py-xsmall">
-              <div className="gap-x-xsmall text-grey-50 inter-grey-40 inter-small-semibold flex items-center">
-               <ArrowLeftIcon size={20} />
-                <span className="ml-1">Go back</span>
-               </div>
-               </button>
-        </div>
-             :
-          layOut === "grid" ? (
+         {layOut === "grid" ? (
             <>
               {data?.data?.products.map((item, index) => (
                 <ProductGridCard
@@ -225,13 +217,15 @@ const MoveOnProduct = () => {
                   footerButtonEnabled={true}
                   isSelect={false}
                   leftButtonOnClick={handleProductView}
-                  rightButtonOnClick={function (value: any): void {
+                  rightButtonOnClick={function (): void {
                     throw new Error("Function not implemented.")
                   }}
                 />
               ))}
             </>
-          ) : (
+            )
+            :
+            (
             <>
               {data?.data?.products.map((item, index) => (
                 <ProductListCard
@@ -242,7 +236,7 @@ const MoveOnProduct = () => {
                   footerProgressBarEnabled={false}
                   footerButtonEnabled={true}
                   leftButtonOnClick={handleProductView}
-                  rightButtonOnClick={function (value: any): void {
+                  rightButtonOnClick={function (): void {
                     throw new Error("Function not implemented.")
                   }}
                 />
@@ -257,7 +251,7 @@ const MoveOnProduct = () => {
               offset: offset,
               title: "Products",
               pageSize: limit+offset,
-              currentPage: offset+1,
+              currentPage: (offset/limit)+1,
               pageCount: Math.ceil(count/limit),
               nextPage: ()=>handleNextPage(),
               prevPage: ()=>handlePreviousPage(),
@@ -266,11 +260,11 @@ const MoveOnProduct = () => {
             }}
             isLoading={isLoading}
           />
-        </div>
-          </LoadingContainer>
+         </div>
         </div>
       </div>
-
+      }
+      </LoadingContainer>
       {isOpenModal && (
         <QuickViewModal
           title="Inventory Product"
