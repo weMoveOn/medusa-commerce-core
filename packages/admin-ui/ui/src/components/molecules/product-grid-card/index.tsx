@@ -135,7 +135,7 @@ const ProductGridCard: React.FC<IProductGridCardProps> = ({
                 loading={false}
                 onClick={() => leftButtonOnClick(productData)}
                 variant="secondary"
-                className="min-w-[120px]"
+                className="min-w-[114px]"
                 size="medium"
                 spanClassName="text-center text-sm  font-medium text-slate-700"
               >
@@ -149,7 +149,7 @@ const ProductGridCard: React.FC<IProductGridCardProps> = ({
                     <DownloadIcon style={{ marginRight: "6px" }} />
                   )
                 }
-                className="min-w-[120px]"
+                className="min-w-[114px]"
                 onClick={() => rightButtonOnClick(productData)}
                 variant="secondary"
                 size="medium"

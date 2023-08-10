@@ -38,7 +38,7 @@ const ProductListCard: React.FC<IProductListCardProps> = ({
   route = "product-list",
 }) => {
   const containerClasses = clsx(
-    "relative flex items-center gap-4 p-4 border rounded-lg border-gray-100 mb-4 bg-white w-[80%]",
+    "relative flex items-center gap-4 p-4 border rounded-lg border-gray-100 mb-4 bg-white w-[85%]",
     enableSelectOption && isSelect && "border-violet-600"
   )
   return (
@@ -97,13 +97,13 @@ const ProductListCard: React.FC<IProductListCardProps> = ({
           </div>
 
           {footerButtonEnabled && (
-            <div className="ml-auto flex flex-row  items-center">
+            <div className="ml-auto flex flex-row  items-center gap-2">
               {leftButtonOnClick && (
                 <Button
                   icon={
                     leftButtonIcon ?? <EyeIcon style={{ marginRight: "6px" }} />
                   }
-                  className="mr-2 min-w-[120px]"
+                  className="mr-2 min-w-[114px]"
                   onClick={() => leftButtonOnClick(productData)}
                   variant="secondary"
                   size="medium"
@@ -121,7 +121,7 @@ const ProductListCard: React.FC<IProductListCardProps> = ({
                   }
                   onClick={() => rightButtonOnClick(productData)}
                   variant="secondary"
-                  className="min-w-[120px]"
+                  className="min-w-[114px]"
                   size="medium"
                   spanClassName="text-center text-sm font-medium text-slate-700"
                 >
