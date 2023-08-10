@@ -52,7 +52,6 @@ const MoveOnProduct = () => {
     Medusa.moveOnInventory.list({ keyword: "beg", shop_id: 4, ...newFiltersData })
   )
   
-  // console.log(newFiltersData)
   // if data is fetched from backend set new count and limit
   useEffect(()=>{
     if(data?.data){
@@ -67,7 +66,7 @@ const MoveOnProduct = () => {
       submitFilter()
     }, [limit, offset])
     
-    const submitFilter = () => {
+ const submitFilter = () => {
       const params = queryString.stringify({ ...filters, offset, limit }, { encode: false, skipEmptyString: true, skipNull: true });
       window.history.replaceState(null, 'Searching', `/a/moveon-inventory?${params}`)
       setFilersData(filters)
@@ -81,10 +80,20 @@ const MoveOnProduct = () => {
 
   useEffect(() => {
     const params = queryString.parse((rrdLocation.search).substring(1));
+      if (!params.offset) {
+        params.offset = "0";
+        setOffset(0)
+      }
+      if (!params.limit) {
+        params.limit = "20";
+        setLimit(20)
+      }
+      const newParams = queryString.stringify({ ...filters, ...params }, { encode: false, skipEmptyString: true, skipNull: true });
+      window.history.replaceState(null, 'Searching', `/a/moveon-inventory?${newParams}`)
     setFilters(params)
     setFilersData(params)
-    setIsParamsUpdated(true);
-  }, [rrdLocation.search])
+  }, [rrdLocation])
+
 
   useEffect(() => {
     if (!data?.data && newFiltersData && isParamsUpdated) {

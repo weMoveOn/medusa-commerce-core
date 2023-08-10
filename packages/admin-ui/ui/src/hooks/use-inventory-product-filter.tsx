@@ -94,12 +94,12 @@ const useInventoryProductFilters = (): UseFiltersReturnType => {
   };
 
   const updateQueryParams = (items: IConfigurator): void => {
-    const params = queryString.stringify({ ...filters, ...items }, { encode: false, encodeValuesOnly: true });
+    const params = queryString.stringify({ ...filters, ...items },  { encode: false, skipEmptyString: true, skipNull: true });
     navigate(`?${params}`);
   };
 
   const updateQueryWithoutParams = (items: IConfigurator): string => {
-    return queryString.stringify({ ...filters, ...items }, { encode: false, encodeValuesOnly: true });
+    return queryString.stringify({ ...filters, ...items },  { encode: false, skipEmptyString: true, skipNull: true });
   };
 
   const handleFilterChange = (fields: IConfigurator): void => {
@@ -152,7 +152,7 @@ const useInventoryProductFilters = (): UseFiltersReturnType => {
 
     initialFilter.offset = 0;
   
-    const paramsValue = queryString.stringify({ ...initialFilter}, { encode: false, encodeValuesOnly: true });
+    const paramsValue = queryString.stringify({ ...initialFilter},  { encode: false, skipEmptyString: true, skipNull: true });
 
     navigate('/a/moveon-inventory', { search: `?${paramsValue}` });
   };
