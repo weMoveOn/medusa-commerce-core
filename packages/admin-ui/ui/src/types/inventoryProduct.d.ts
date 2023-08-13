@@ -34,6 +34,11 @@ export interface IInventoryProductsFilterType {
   page?: number;
 }
 
+export interface IInventoryProductSelectType {
+  vpid: string;
+  link: string;
+}
+
 // filters type declearation 
 export interface ISorterValue {
   title: string;

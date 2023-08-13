@@ -1,6 +1,6 @@
 import clsx from "clsx"
 import React from "react"
-import { IInventoryProductDataType } from "../../../types/inventoryProduct"
+import { IInventoryProductDataType, IInventoryProductSelectType } from "../../../types/inventoryProduct"
 import Checkbox from "../../atoms/checkbox"
 import ProgressBarMoveShop from "../../atoms/progress-bar"
 import Button from "../../fundamentals/button"
@@ -11,16 +11,17 @@ import StarRatingIcon from "../../fundamentals/icons/star-rating"
 interface IProductListCardProps {
   leftButtonOnClick?: (value: any) => void
   rightButtonOnClick?: (value: any) => void
-  productData?: IInventoryProductDataType
+  productData: IInventoryProductDataType
   leftButtonTitle?: string
   rightButtonTitle?: string
   leftButtonIcon?: React.ReactNode
   rightButtonIcon?: React.ReactNode
   enableSelectOption?: boolean
-  isSelect?: boolean
+  isSelect: boolean
   footerButtonEnabled?: boolean
   footerProgressBarEnabled?: boolean
   route: "imported-product" | "product-list"
+  handleSelect: ({link, vpid}:IInventoryProductSelectType) => void
 }
 
 const ProductListCard: React.FC<IProductListCardProps> = ({
@@ -36,6 +37,7 @@ const ProductListCard: React.FC<IProductListCardProps> = ({
   footerProgressBarEnabled = true,
   productData,
   route = "product-list",
+  handleSelect
 }) => {
   const containerClasses = clsx(
     "relative flex items-center gap-4 p-4 border rounded-lg border-gray-100 mb-4 bg-white w-[85%]",
@@ -51,6 +53,7 @@ const ProductListCard: React.FC<IProductListCardProps> = ({
             id="checkbox1"
             label=""
             className="mr-0 cursor-pointer"
+            onChange={()=>handleSelect({vpid: productData.vpid, link: productData.link})}
           />
         </div>
       )}

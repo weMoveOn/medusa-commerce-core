@@ -1,17 +1,16 @@
 import clsx from "clsx"
 import React from "react"
-import { IInventoryProductDataType } from "../../../types/inventoryProduct"
+import { IInventoryProductDataType, IInventoryProductSelectType } from "../../../types/inventoryProduct"
 import Checkbox from "../../atoms/checkbox"
 import ProgressBarMoveShop from "../../atoms/progress-bar"
 import Button from "../../fundamentals/button"
 import DownloadIcon from "../../fundamentals/icons/download-icon"
 import EyeIcon from "../../fundamentals/icons/eye-icon"
-import StarRatingIcon from "../../fundamentals/icons/star-rating"
 
 interface IProductGridCardProps {
   leftButtonOnClick?: (value: any) => void
   rightButtonOnClick?: (value: any) => void
-  productData?: IInventoryProductDataType
+  productData: IInventoryProductDataType
   leftButtonTitle?: string
   leftButtonIcon?: React.ReactNode
   rightButtonIcon?: React.ReactNode
@@ -21,7 +20,9 @@ interface IProductGridCardProps {
   footerButtonEnabled?: boolean
   footerProgressBarEnabled?: boolean
   route?: "imported-product" | "product-list"
+  handleSelect: ({link, vpid}:IInventoryProductSelectType) => void
 }
+
 const ProductGridCard: React.FC<IProductGridCardProps> = ({
   leftButtonOnClick,
   rightButtonOnClick,
@@ -35,7 +36,9 @@ const ProductGridCard: React.FC<IProductGridCardProps> = ({
   productData,
   rightButtonIcon,
   route = "product-list",
+  handleSelect
 }) => {
+
   const containerClassess = clsx(
     "relative m-1 flex w-full max-w-[18rem] flex-col overflow-hidden rounded-lg border border-gray-100  bg-white",
     enableSelectOption && isSelect && "border-violet-600"
@@ -59,7 +62,8 @@ const ProductGridCard: React.FC<IProductGridCardProps> = ({
                 inputFiledClassName="!rounded-full shadow-md"
                 id="checkbox1"
                 label=""
-                className="mr-0 cursor-pointer "
+                className="mr-0 cursor-pointer"
+                onChange={()=>handleSelect({vpid: productData.vpid, link: productData.link})}
               />
             </div>
           </span>

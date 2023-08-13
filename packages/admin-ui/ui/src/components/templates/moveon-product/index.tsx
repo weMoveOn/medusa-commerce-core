@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query"
 import { AxiosResponse } from "axios"
 import React, { useEffect, useState } from "react"
 import Medusa from "../../../services/api"
-import { IInventoryProductDataType, IInventoryProductPayloadType, IInventoryQuery } from "../../../types/inventoryProduct"
+import { IInventoryProductDataType, IInventoryProductPayloadType, IInventoryProductSelectType, IInventoryQuery } from "../../../types/inventoryProduct"
 import ListIcon from "../../fundamentals/icons/list-icon"
 import TileIcon from "../../fundamentals/icons/tile-icon"
 import ProductGridCard from "../../molecules/product-grid-card"
@@ -18,6 +18,9 @@ import ArrowLeftIcon from "../../fundamentals/icons/arrow-left-icon"
 import LoadingContainer from "../../atoms/loading-container"
 import { TablePagination } from "../../organisms/table-container/pagination"
 import { defaultMoveonInventoryFilter } from "../../../utils/filters"
+import Button from "../../fundamentals/button"
+import DownloadIcon from "../../fundamentals/icons/download-icon"
+import CrossIcon from "../../fundamentals/icons/cross-icon"
 
 const MoveOnProduct = () => {
   const location = useLocation();
@@ -41,10 +44,11 @@ const MoveOnProduct = () => {
     value: string
   } | null>(null)
   const [newFiltersData, setNewFilersData] = useState<IInventoryQuery>(defaultMoveonInventoryFilter)
-
   const [limit, setLimit] = useState(defaultMoveonInventoryFilter.limit);
   const [offset, setOffset] = useState(0);
   const [count, setCount] = useState(0);
+  const [selectedProducts, setSelectedProducts] = useState(new Set<IInventoryProductSelectType>());
+  const [multipleImport, setMultipleImport] = useState(false);
 
   const { isLoading, isError, data, error, refetch } = useQuery<
     AxiosResponse<IInventoryProductPayloadType>
@@ -152,6 +156,19 @@ const MoveOnProduct = () => {
     handleFilterChange({offset: offset-limit, limit:limit})
   }
 
+  const handleSelect = ({ vpid, link }: IInventoryProductSelectType) => {
+    setSelectedProducts((prevSelected) => {
+      const updatedSet = new Set(prevSelected);
+      const matchingProduct = [...updatedSet].find((product) => product.vpid === vpid && product.link === link);
+      if (matchingProduct) {
+        updatedSet.delete(matchingProduct);
+      } else {
+        updatedSet.add({ vpid, link });
+      }
+      return updatedSet;
+    });
+  };
+  
   return (
     <>
      <LoadingContainer isLoading={isLoading}>
@@ -183,7 +200,15 @@ const MoveOnProduct = () => {
               />
             </div>
           </div>
-          <div className="px-3 py-3">
+          <div className="px-3 py-3 flex gap-4 items-center">
+          <Button
+            variant={multipleImport?"primary":"secondary"}
+            size="small"
+            onClick={() => setMultipleImport(!multipleImport)}
+            >
+              <DownloadIcon size={20} />
+              Multiple Import
+          </Button>
             <div className="flex space-x-2">
               <>
                 <span
@@ -215,23 +240,35 @@ const MoveOnProduct = () => {
           </div>
         </div>
 
+       {selectedProducts.size?
+       <div className="bg-violet-10 flex items-center rounded-sm py-xsmall px-base text-grey-90 text-sm mb-4 justify-between">
+        <div>{selectedProducts.size} Products Are Selected</div>
+       <button className="cursor-pointer hover:bg-red-500" onClick={()=>setSelectedProducts(new Set())}>
+       <CrossIcon />
+      </button>
+      </div>
+      :
+      ""
+      }
+
         <div className="-mx-4 flex flex-wrap justify-center">
          {layOut === "grid" ? (
             <>
               {data?.data?.products.map((item, index) => (
                 <ProductGridCard
-                  route="product-list"
-                  productData={item}
-                  key={index}
-                  enableSelectOption={false}
-                  footerProgressBarEnabled={false}
-                  footerButtonEnabled={true}
-                  isSelect={false}
-                  leftButtonOnClick={handleProductView}
-                  rightButtonOnClick={function (): void {
-                    throw new Error("Function not implemented.")
-                  }}
-                />
+                route="product-list"
+                productData={item}
+                key={index}
+                enableSelectOption={multipleImport}
+                footerProgressBarEnabled={false}
+                footerButtonEnabled={true}
+                isSelect={Array.from(selectedProducts).some((product) => product.vpid === item.vpid && product.link === item.link)}
+                handleSelect={handleSelect}
+                leftButtonOnClick={handleProductView}
+                rightButtonOnClick={function (): void {
+                  throw new Error("Function not implemented.")
+                }}
+              />              
               ))}
             </>
             )
@@ -243,9 +280,11 @@ const MoveOnProduct = () => {
                   route="product-list"
                   key={index}
                   productData={item}
-                  enableSelectOption={false}
+                  enableSelectOption={multipleImport}
                   footerProgressBarEnabled={false}
                   footerButtonEnabled={true}
+                  isSelect={Array.from(selectedProducts).some((product) => product.vpid === item.vpid && product.link === item.link)}
+                  handleSelect={handleSelect}
                   leftButtonOnClick={handleProductView}
                   rightButtonOnClick={function (): void {
                     throw new Error("Function not implemented.")

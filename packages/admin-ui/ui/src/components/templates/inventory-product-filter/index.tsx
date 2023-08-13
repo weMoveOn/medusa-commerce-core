@@ -81,7 +81,7 @@ const InventoryProductFilters = ({
         clearFilters={clearFilters}
         triggerElement={
           <Button
-            icon={<FilterIcon size={20} style={{ marginTop: "4px" }} />}
+            icon={<FilterIcon size={20} />}
             className="mr-2 flex  flex-row items-center justify-center px-6"
             variant="secondary"
             size="small"

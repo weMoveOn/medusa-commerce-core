@@ -30,7 +30,7 @@ const InventoryProductSort: React.FC<IInventoryProductSortProps> = ({
   }, [sortState]);
 
   return (
-    <div className="w-[200px]">
+    <div className="w-[200px] cursor-pointer">
       <NextSelect
         value={selectedValue}
         placeholder="Sort by"
