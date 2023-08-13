@@ -96,10 +96,16 @@ export interface IInventoryProductPayloadType {
   products: IInventoryProductDataType[];
 }
 
+type prTypeValues = { 
+  tag: 'max' | 'min'
+  val: string
+}
 
-interface IStringifiedConfigurator {
-  pr?: string;
+export interface IInventoryQuery {
+  pr?: string | prTypeValues;
   cid?: string;
   attr?: string;
   features?: string;
+  limit?: number;
+  offset?: number;
 }

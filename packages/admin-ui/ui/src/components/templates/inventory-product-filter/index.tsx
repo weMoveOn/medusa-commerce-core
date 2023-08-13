@@ -2,14 +2,14 @@ import { useEffect, useState } from "react"
 import FilterDropdownContainer from "../../../components/molecules/filter-dropdown/container"
 import Button from "../../fundamentals/button"
 import FilterIcon from "../../fundamentals/icons/filter-icon"
-import { IConfigurator } from "../../../types/inventoryProduct"
+import { IConfigurator, IInventoryQuery, PrType } from "../../../types/inventoryProduct"
 import FilterDropdownItem from "../../molecules/filter-dropdown/item"
 
 interface IInventoryFilterProps {
   filtersData: IConfigurator | null
   submitFilters: () => void
   clearFilters: () => void
-  handleFilterChange: (filter: IConfigurator) => void, 
+  handleFilterChange: (filter: IInventoryQuery) => void, 
 }
 const InventoryProductFilters = ({
   filtersData,
@@ -22,6 +22,11 @@ const InventoryProductFilters = ({
   const [tempState, setTempState] = useState(filtersData)
   const [cidPaginate, setCidPaginate]=useState({startIndex:0, endIndex:DisplayItem})
   const [attrValue, setAttrValue] = useState<string[]>([])
+  const [minValue, setMinValue] = useState<number>()
+  const [maxValue, setMaxValue] = useState<number>()
+
+
+  console.log(tempState)
 
   useEffect(() => {
     if (filtersData && filtersData.features) {
@@ -41,6 +46,7 @@ const InventoryProductFilters = ({
         }),
       }
     }
+
     setTempState(filtersData)
   }, [filtersData])
 
@@ -78,6 +84,24 @@ const InventoryProductFilters = ({
           </Button>
         }
       >
+      <div className="flex">
+      <input type="number"
+      value={minValue}
+      onChange={(e) =>{
+        const value = e.target.valueAsNumber;
+        setMinValue(e.target.valueAsNumber);
+        // if (filtersData && filtersData.pr) {
+        //   setTempState((prevState) => ({
+        //     ...prevState, pr : {
+        //       ...filtersData.pr, 
+        //     }
+        //   }))
+        // }
+        // handleFilterChange({pr: `${value+"-"+maxValue}`})
+        }}
+       className="border-4 border-red-400" />
+       </div> 
+
         {tempState?.cid && (
           <FilterDropdownItem
             hasMore={tempState?.cid.values.length > cidPaginate.endIndex + 1}
@@ -105,7 +129,8 @@ const InventoryProductFilters = ({
             } } isLoading={undefined}          />
         )}
 
-        <FilterDropdownItem
+        {tempState?.features &&
+          <FilterDropdownItem
           filterTitle={tempState?.features.title}
           options={tempState?.features.values?.map((f) => ({
             value: f.value,
@@ -125,7 +150,10 @@ const InventoryProductFilters = ({
               }))
             }
           } } isLoading={undefined} hasMore={undefined} hasPrev={undefined} onShowNext={undefined} onShowPrev={undefined}        />
-        {tempState?.attr.values.map((x, index) => {
+        }
+
+
+        {tempState?.attr && tempState?.attr.values.map((x, index) => {
           return (
             <FilterDropdownItem
               key={index}

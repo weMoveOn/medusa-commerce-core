@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query"
 import { AxiosResponse } from "axios"
 import React, { useEffect, useState } from "react"
 import Medusa from "../../../services/api"
-import { IConfigurator, IInventoryProductDataType, IInventoryProductPayloadType } from "../../../types/inventoryProduct"
+import { IInventoryProductDataType, IInventoryProductPayloadType, IInventoryQuery } from "../../../types/inventoryProduct"
 import ListIcon from "../../fundamentals/icons/list-icon"
 import TileIcon from "../../fundamentals/icons/tile-icon"
 import ProductGridCard from "../../molecules/product-grid-card"
@@ -40,7 +40,7 @@ const MoveOnProduct = () => {
     label: string
     value: string
   } | null>(null)
-  const [newFiltersData, setFilersData] = useState<IConfigurator>(filters)
+  const [newFiltersData, setNewFilersData] = useState<IInventoryQuery>(defaultMoveonInventoryFilter)
 
   const [limit, setLimit] = useState(defaultMoveonInventoryFilter.limit);
   const [offset, setOffset] = useState(0);
@@ -69,7 +69,7 @@ const MoveOnProduct = () => {
  const submitFilter = () => {
       const params = queryString.stringify({ ...filters, offset, limit }, { encode: false, skipEmptyString: true, skipNull: true });
       window.history.replaceState(null, 'Searching', `/a/moveon-inventory?${params}`)
-      setFilersData(filters)
+      setNewFilersData(filters)
     }
 
   useEffect(() => {
@@ -91,7 +91,7 @@ const MoveOnProduct = () => {
       const newParams = queryString.stringify({ ...filters, ...params }, { encode: false, skipEmptyString: true, skipNull: true });
       window.history.replaceState(null, 'Searching', `/a/moveon-inventory?${newParams}`)
     setFilters(params)
-    setFilersData(params)
+    setNewFilersData(params)
   }, [rrdLocation])
 
 
@@ -115,8 +115,8 @@ const MoveOnProduct = () => {
 
   const clearFilters = () => {
     handelAllFilterClear();
-    setFilersData(defaultMoveonInventoryFilter)
-    refetch({});
+    setFilters(defaultMoveonInventoryFilter)
+    setNewFilersData(defaultMoveonInventoryFilter)
   }
 
   const handleSorting = (value: { value: string; label: string }) => {
