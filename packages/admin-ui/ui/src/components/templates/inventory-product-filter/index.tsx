@@ -2,8 +2,11 @@ import { useEffect, useState } from "react"
 import FilterDropdownContainer from "../../../components/molecules/filter-dropdown/container"
 import Button from "../../fundamentals/button"
 import FilterIcon from "../../fundamentals/icons/filter-icon"
-import { IConfigurator, IInventoryQuery, PrType } from "../../../types/inventoryProduct"
+import { IConfigurator, IInventoryQuery } from "../../../types/inventoryProduct"
 import FilterDropdownItem from "../../molecules/filter-dropdown/item"
+import InputField from "../../molecules/input"
+import { useLocation } from "react-router-dom"
+import queryString from "query-string"
 
 interface IInventoryFilterProps {
   filtersData: IConfigurator | null
@@ -18,15 +21,19 @@ const InventoryProductFilters = ({
   handleFilterChange,
 }: IInventoryFilterProps) => {
   const DisplayItem = 10
+  const params = queryString.parse((window.location.search).substring(1)) as any;
+  const range = params.pr;
+  let minPrice = "";
+  let maxPrice = "";
+  if(range){
+    [minPrice, maxPrice] = range.split('-');
+  }
 
   const [tempState, setTempState] = useState(filtersData)
   const [cidPaginate, setCidPaginate]=useState({startIndex:0, endIndex:DisplayItem})
   const [attrValue, setAttrValue] = useState<string[]>([])
-  const [minValue, setMinValue] = useState<number>()
-  const [maxValue, setMaxValue] = useState<number>()
-
-
-  console.log(tempState)
+  const [minValue, setMinValue] = useState<string>(minPrice)
+  const [maxValue, setMaxValue] = useState<string>(maxPrice)
 
   useEffect(() => {
     if (filtersData && filtersData.features) {
@@ -84,23 +91,35 @@ const InventoryProductFilters = ({
           </Button>
         }
       >
-      <div className="flex">
-      <input type="number"
+
+    <div className="mb-2 mt-2 p-2 flex justify-between gap-6">
+     <InputField
+      label="Min Price"
+      type="number"
+      name="minPrice"
       value={minValue}
+      className="w-[338px]"
+      placeholder="Min Price"
       onChange={(e) =>{
-        const value = e.target.valueAsNumber;
-        setMinValue(e.target.valueAsNumber);
-        // if (filtersData && filtersData.pr) {
-        //   setTempState((prevState) => ({
-        //     ...prevState, pr : {
-        //       ...filtersData.pr, 
-        //     }
-        //   }))
-        // }
-        // handleFilterChange({pr: `${value+"-"+maxValue}`})
+       const val = e.target.value;
+       setMinValue(val);
+       handleFilterChange({pr: {val, tag:"min"}})
+       }}
+      /> 
+      <InputField
+       label="Max Price"
+       type="number"
+       name="maxPrice"
+       value={maxValue}
+       className="w-[338px]"
+       placeholder="Min Price"
+       onChange={(e) =>{
+        const val = e.target.value;
+        setMaxValue(val);
+        handleFilterChange({pr: {val, tag:"max"}})
         }}
-       className="border-4 border-red-400" />
-       </div> 
+       />  
+     </div> 
 
         {tempState?.cid && (
           <FilterDropdownItem
@@ -126,9 +145,10 @@ const InventoryProductFilters = ({
                   cid: { ...prevState?.cid, open: val.open },
                 }))
               }
-            } } isLoading={undefined}          />
-        )}
-
+            }}
+            isLoading={undefined} />
+         )}
+ 
         {tempState?.features &&
           <FilterDropdownItem
           filterTitle={tempState?.features.title}
@@ -149,7 +169,8 @@ const InventoryProductFilters = ({
                 features: { ...prevState?.features, open: val.open },
               }))
             }
-          } } isLoading={undefined} hasMore={undefined} hasPrev={undefined} onShowNext={undefined} onShowPrev={undefined}        />
+          }}
+          isLoading={undefined} hasMore={undefined} hasPrev={undefined} onShowNext={undefined} onShowPrev={undefined} />
         }
 
 
@@ -166,19 +187,14 @@ const InventoryProductFilters = ({
               open={x.open}
               setFilter={(val: { open: boolean; filter: string[]} ) => {
                 if (filtersData && filtersData.attr) {
-
                   setAttrValue((pre) => {
                     return [...pre, ...val.filter]
-
-
                   })
-                  //  @ts-ignore
                   setTempState((prevState) => {
                     const attr = prevState?.attr
                     if (!attr) {
                       return prevState // Return the unchanged state if 'attr' is undefined
                     }
-
                     const values = attr.values || []
                     const updatedValues = [...values] // Create a copy of the values array
                     if (index >= 0 && index < updatedValues.length) {
@@ -187,7 +203,6 @@ const InventoryProductFilters = ({
                         open: val.open, // Update the 'open' field of the object at the specified index
                       }
                     }
-
                     return {
                       ...prevState,
                       attr: {

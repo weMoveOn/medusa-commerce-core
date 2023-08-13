@@ -20,7 +20,7 @@ import { TablePagination } from "../../organisms/table-container/pagination"
 import { defaultMoveonInventoryFilter } from "../../../utils/filters"
 
 const MoveOnProduct = () => {
-  const rrdLocation = useLocation();
+  const location = useLocation();
   const {
     handleFilterChange,
     handelAllFilterClear,
@@ -79,7 +79,7 @@ const MoveOnProduct = () => {
   }, [isFetched, initializeAvailableFilter, data?.data.filters?.configurator]);
 
   useEffect(() => {
-    const params = queryString.parse((rrdLocation.search).substring(1));
+    const params = queryString.parse((location.search).substring(1));
       if (!params.offset) {
         params.offset = "0";
         setOffset(0)
@@ -92,7 +92,7 @@ const MoveOnProduct = () => {
       window.history.replaceState(null, 'Searching', `/a/moveon-inventory?${newParams}`)
     setFilters(params)
     setNewFilersData(params)
-  }, [rrdLocation])
+  }, [location])
 
 
   useEffect(() => {
