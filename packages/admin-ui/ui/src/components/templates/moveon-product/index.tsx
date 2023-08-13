@@ -117,6 +117,7 @@ const MoveOnProduct = () => {
     handelAllFilterClear();
     setFilters(defaultMoveonInventoryFilter)
     setNewFilersData(defaultMoveonInventoryFilter)
+    setSelectedSort(null)
   }
 
   const handleSorting = (value: { value: string; label: string }) => {
