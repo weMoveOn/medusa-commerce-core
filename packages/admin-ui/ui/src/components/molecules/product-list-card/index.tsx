@@ -1,26 +1,26 @@
 import clsx from "clsx"
 import React from "react"
-import { IInventoryProductDataType } from "../../../types/inventoryProduct"
+import { IInventoryProductDataType, IInventoryProductSelectType } from "../../../types/inventoryProduct"
 import Checkbox from "../../atoms/checkbox"
 import ProgressBarMoveShop from "../../atoms/progress-bar"
 import Button from "../../fundamentals/button"
 import DownloadIcon from "../../fundamentals/icons/download-icon"
 import EyeIcon from "../../fundamentals/icons/eye-icon"
-import StarRatingIcon from "../../fundamentals/icons/star-rating"
 
 interface IProductListCardProps {
   leftButtonOnClick?: (value: any) => void
   rightButtonOnClick?: (value: any) => void
-  productData?: IInventoryProductDataType
+  productData: IInventoryProductDataType
   leftButtonTitle?: string
   rightButtonTitle?: string
   leftButtonIcon?: React.ReactNode
   rightButtonIcon?: React.ReactNode
   enableSelectOption?: boolean
-  isSelect?: boolean
+  isSelect: boolean
   footerButtonEnabled?: boolean
   footerProgressBarEnabled?: boolean
   route: "imported-product" | "product-list"
+  handleSelect: ({link, vpid}:IInventoryProductSelectType) => void
 }
 
 const ProductListCard: React.FC<IProductListCardProps> = ({
@@ -36,9 +36,10 @@ const ProductListCard: React.FC<IProductListCardProps> = ({
   footerProgressBarEnabled = true,
   productData,
   route = "product-list",
+  handleSelect
 }) => {
   const containerClasses = clsx(
-    "relative flex items-center gap-4 p-4 border rounded-lg border-gray-100 mb-4 bg-white w-[80%]",
+    "relative flex items-center gap-4 p-4 border rounded-lg border-gray-100 mb-4 bg-white w-[85%]",
     enableSelectOption && isSelect && "border-violet-600"
   )
   return (
@@ -51,6 +52,7 @@ const ProductListCard: React.FC<IProductListCardProps> = ({
             id="checkbox1"
             label=""
             className="mr-0 cursor-pointer"
+            onChange={()=>handleSelect({vpid: productData.vpid, link: productData.link})}
           />
         </div>
       )}
@@ -66,30 +68,9 @@ const ProductListCard: React.FC<IProductListCardProps> = ({
               {productData?.title?.slice(0, 150)}{productData?.title?.length && productData?.title?.length>150 && "..."}
             </h5>
         <div className="flex flex-row">
-          <div className="">
-            {/* {route === "product-list" && (
-              <div className="mt-2 mb-3 flex items-center">
-                <StarRatingIcon
-                  fillColor={"#fb923c"}
-                  size={20}
-                  color={"#fb923c"}
-                />
-                <StarRatingIcon
-                  fillColor={"#fb923c"}
-                  size={20}
-                  color={"#fb923c"}
-                />
-                <StarRatingIcon size={20} color={"#fb923c"} />
-                <StarRatingIcon size={20} color={"#fb923c"} />
-                <StarRatingIcon size={20} color={"#fb923c"} />
-                <span className="mr-2 ml-3 rounded  px-2.5 py-0.5 text-xs font-normal">
-                  (5)
-                </span>
-              </div>
-            )} */}
-
+          <div>
             {route === "product-list" && (
-              <div className=" my-1 flex items-center justify-between">
+              <div className="my-1 flex items-center justify-between">
               <p>
                 <span className="text-lg font-bold text-violet-600">{productData?.price}</span>
                 {/* <span className="text-sm text-violet-500 line-through">${productData?.price}</span> */}
@@ -124,7 +105,7 @@ const ProductListCard: React.FC<IProductListCardProps> = ({
                   icon={
                     leftButtonIcon ?? <EyeIcon style={{ marginRight: "6px" }} />
                   }
-                  className="mr-2 min-w-[120px]"
+                  className="mr-2 min-w-[114px]"
                   onClick={() => leftButtonOnClick(productData)}
                   variant="secondary"
                   size="medium"
@@ -135,14 +116,15 @@ const ProductListCard: React.FC<IProductListCardProps> = ({
               )}
               {rightButtonOnClick && (
                 <Button
+                disabled={enableSelectOption}
                   icon={
                     rightButtonIcon ?? (
                       <DownloadIcon style={{ marginRight: "6px" }} />
                     )
                   }
                   onClick={() => rightButtonOnClick(productData)}
-                  variant="secondary"
-                  className="min-w-[120px]"
+                  variant={enableSelectOption?"ghost":"secondary"}
+                  className="min-w-[114px]"
                   size="medium"
                   spanClassName="text-center text-sm font-medium text-slate-700"
                 >
@@ -153,7 +135,7 @@ const ProductListCard: React.FC<IProductListCardProps> = ({
           )}
         </div>
 
-        <div className=" w-[50%]">
+        <div className="w-[50%]">
           {footerProgressBarEnabled && <ProgressBarMoveShop progress="45%" />}
         </div>
       </div>

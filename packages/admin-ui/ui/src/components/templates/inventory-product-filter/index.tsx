@@ -1,42 +1,39 @@
-import { useAdminRegions, useAdminSalesChannels } from "medusa-react"
 import { useEffect, useState } from "react"
 import FilterDropdownContainer from "../../../components/molecules/filter-dropdown/container"
-import { useFeatureFlag } from "../../../providers/feature-flag-provider"
 import Button from "../../fundamentals/button"
 import FilterIcon from "../../fundamentals/icons/filter-icon"
-import { filterForTemporal } from "../../../utils/date-utils"
-import { IConfigurator } from "../../../types/inventoryProduct"
-import CustomFormElement from "../moveOn-custom-from-for-filter"
+import { IConfigurator, IInventoryQuery } from "../../../types/inventoryProduct"
 import FilterDropdownItem from "../../molecules/filter-dropdown/item"
-
-const REGION_PAGE_SIZE = 10
-const CHANNEL_PAGE_SIZE = 10
+import InputField from "../../molecules/input"
+import { useLocation } from "react-router-dom"
+import queryString from "query-string"
 
 interface IInventoryFilterProps {
-  filters: any
-  isFetched: boolean
-  filtersData: IConfigurator | undefined
+  filtersData: IConfigurator | null
   submitFilters: () => void
   clearFilters: () => void
-  handleFilterChange: (filter: IConfigurator) => void
+  handleFilterChange: (filter: IInventoryQuery) => void, 
 }
 const InventoryProductFilters = ({
-  filters,
+  filtersData,
   submitFilters,
   clearFilters,
-  filtersData,
   handleFilterChange,
-  isFetched,
 }: IInventoryFilterProps) => {
   const DisplayItem = 10
+  const params = queryString.parse((window.location.search).substring(1)) as any;
+  const range = params.pr;
+  let minPrice = "";
+  let maxPrice = "";
+  if(range){
+    [minPrice, maxPrice] = range.split('-');
+  }
 
   const [tempState, setTempState] = useState(filtersData)
-  const [name, setName] = useState("")
-  const { isFeatureEnabled } = useFeatureFlag()
-  const isSalesChannelsEnabled = isFeatureEnabled("sales_channels")
   const [cidPaginate, setCidPaginate]=useState({startIndex:0, endIndex:DisplayItem})
   const [attrValue, setAttrValue] = useState<string[]>([])
-
+  const [minValue, setMinValue] = useState<string>(minPrice)
+  const [maxValue, setMaxValue] = useState<string>(maxPrice)
 
   useEffect(() => {
     if (filtersData && filtersData.features) {
@@ -46,6 +43,7 @@ const InventoryProductFilters = ({
     if (filtersData && filtersData.cid) {
       filtersData.cid = { ...filtersData.cid, open: filtersData.cid.values.some(x=>x.selected) }
     }
+
     if (filtersData && filtersData.attr) {
       filtersData.attr = {
         ...filtersData.attr,
@@ -55,11 +53,9 @@ const InventoryProductFilters = ({
         }),
       }
     }
+
     setTempState(filtersData)
   }, [filtersData])
-
-  
-
 
   const onShowCidNext = () =>{ 
     if(tempState?.cid ){ 
@@ -72,37 +68,11 @@ const InventoryProductFilters = ({
     }
   }
 
-  const [regionsPagination, setRegionsPagination] = useState({
-    offset: 0,
-    limit: REGION_PAGE_SIZE,
-  })
-
-
-
-  const handlePaginateRegions = (direction: any) => {
-    if (direction > 0) {
-      setRegionsPagination((prev) => ({
-        ...prev,
-        offset: prev.offset + prev.limit,
-      }))
-    } else if (direction < 0) {
-      setRegionsPagination((prev) => ({
-        ...prev,
-        offset: Math.max(prev.offset - prev.limit, 0),
-      }))
-    }
-  }
-
-
-
   useEffect(()=>{ 
     if(attrValue.length>0){ 
       handleFilterChange({attr: attrValue.join(";")})
     }
-
   }, [attrValue])
-
-  //   onChange={(val) => handleChange({ [name]: { val, tag: "max" } })} />
 
   return (
     <div className="flex space-x-1">
@@ -111,7 +81,7 @@ const InventoryProductFilters = ({
         clearFilters={clearFilters}
         triggerElement={
           <Button
-            icon={<FilterIcon size={20} style={{ marginTop: "4px" }} />}
+            icon={<FilterIcon size={20} />}
             className="mr-2 flex  flex-row items-center justify-center px-6"
             variant="secondary"
             size="small"
@@ -121,26 +91,53 @@ const InventoryProductFilters = ({
           </Button>
         }
       >
+
+    <div className="mb-2 mt-2 p-2 flex justify-between gap-6">
+     <InputField
+      label="Min Price"
+      type="number"
+      name="minPrice"
+      value={minValue}
+      className="w-[338px]"
+      placeholder="Min Price"
+      onChange={(e) =>{
+       const val = e.target.value;
+       setMinValue(val);
+       handleFilterChange({pr: {val, tag:"min"}})
+       }}
+      /> 
+      <InputField
+       label="Max Price"
+       type="number"
+       name="maxPrice"
+       value={maxValue}
+       className="w-[338px]"
+       placeholder="Min Price"
+       onChange={(e) =>{
+        const val = e.target.value;
+        setMaxValue(val);
+        handleFilterChange({pr: {val, tag:"max"}})
+        }}
+       />  
+     </div> 
+
         {tempState?.cid && (
           <FilterDropdownItem
-            hasMore={tempState?.cid.values.length > cidPaginate.endIndex +1 }
-            hasPrev={cidPaginate.endIndex === tempState.cid.values.length-1 }
+            hasMore={tempState?.cid.values.length > cidPaginate.endIndex + 1}
+            hasPrev={cidPaginate.endIndex === tempState.cid.values.length - 1}
             onShowNext={onShowCidNext}
             onShowPrev={onShowCidPrev}
             filterTitle={tempState?.cid.title}
-            options={
-              tempState?.cid.values.slice(cidPaginate.startIndex, cidPaginate.endIndex).map((f) => ({
-                value: f.value,
-                label: f.label,
-              })) || []
-            }
+            options={tempState?.cid.values.slice(cidPaginate.startIndex, cidPaginate.endIndex).map((f) => ({
+              value: f.value,
+              label: f.label,
+            })) || []}
             filters={tempState?.cid.values
               .filter((x) => x.selected)
               .map((x) => x.value)}
             open={tempState.cid.open}
-            setFilter={(val:{open:boolean; filter:string[]}) => {
-              
-              handleFilterChange({cid: val.filter[val.filter.length-1]})
+            setFilter={(val: { open: boolean; filter: string[]} ) => {
+              handleFilterChange({ cid: val.filter[val.filter.length - 1] })
               if (filtersData && filtersData.cid) {
                 //  @ts-ignore
                 setTempState((prevState) => ({
@@ -149,24 +146,23 @@ const InventoryProductFilters = ({
                 }))
               }
             }}
-          />
-        )}
-
-        <FilterDropdownItem
+            isLoading={undefined} />
+         )}
+ 
+        {tempState?.features &&
+          <FilterDropdownItem
           filterTitle={tempState?.features.title}
-          options={
-            tempState?.features.values?.map((f) => ({
-              value: f.value,
-              label: f.label,
-            })) || []
-          }
+          options={tempState?.features.values?.map((f) => ({
+            value: f.value,
+            label: f.label,
+          })) || []}
           filters={tempState?.features.values
             ?.filter((x) => x.selected)
             .map((x) => x.value)}
           open={tempState?.features.open}
-          setFilter={(val:{open:boolean; filter:string[]}) => {
+          setFilter={(val: { open: boolean; filter: string[]} ) => {
             if (filtersData && filtersData.features) {
-              handleFilterChange({features: val.filter.join(',')})
+              handleFilterChange({ features: val.filter.join(',') })
               //  @ts-ignore
               setTempState((prevState) => ({
                 ...prevState,
@@ -174,34 +170,31 @@ const InventoryProductFilters = ({
               }))
             }
           }}
-        />
-        {tempState?.attr.values.map((x, index) => {
+          isLoading={undefined} hasMore={undefined} hasPrev={undefined} onShowNext={undefined} onShowPrev={undefined} />
+        }
+
+
+        {tempState?.attr && tempState?.attr.values.map((x, index) => {
           return (
             <FilterDropdownItem
+              key={index}
               filterTitle={x.label}
-              options={
-                x.values?.map((f) => ({
-                  value: f.value,
-                  label: f.label,
-                })) || []
-              }
+              options={x.values?.map((f) => ({
+                value: f.value,
+                label: f.label,
+              })) || []}
               filters={x.values?.filter((x) => x.selected).map((x) => x.value)}
               open={x.open}
-              setFilter={(val:{open:boolean; filter:string[]}) => {
+              setFilter={(val: { open: boolean; filter: string[]} ) => {
                 if (filtersData && filtersData.attr) {
-
-                  setAttrValue((pre)=>{ 
+                  setAttrValue((pre) => {
                     return [...pre, ...val.filter]
-
-
                   })
-                  //  @ts-ignore
                   setTempState((prevState) => {
                     const attr = prevState?.attr
                     if (!attr) {
                       return prevState // Return the unchanged state if 'attr' is undefined
                     }
-
                     const values = attr.values || []
                     const updatedValues = [...values] // Create a copy of the values array
                     if (index >= 0 && index < updatedValues.length) {
@@ -210,7 +203,6 @@ const InventoryProductFilters = ({
                         open: val.open, // Update the 'open' field of the object at the specified index
                       }
                     }
-
                     return {
                       ...prevState,
                       attr: {
@@ -220,8 +212,7 @@ const InventoryProductFilters = ({
                     }
                   })
                 }
-              }}
-            />
+              } } isLoading={undefined} hasMore={undefined} hasPrev={undefined} onShowNext={undefined} onShowPrev={undefined}            />
           )
         })}
       </FilterDropdownContainer>

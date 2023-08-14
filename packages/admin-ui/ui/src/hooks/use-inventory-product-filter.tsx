@@ -1,29 +1,29 @@
 import queryString from 'query-string';
 import { useEffect, useState } from 'react';
 import { NavigateFunction, useNavigate } from 'react-router-dom';
-import { IConfigurator } from '../types/inventoryProduct';
-
+import { IConfigurator, IInventoryQuery } from '../types/inventoryProduct';
+import { defaultMoveonInventoryFilter } from '../utils/filters';
 
 type UseFiltersReturnType = {
-  filters: IConfigurator | null;
+  filters: IInventoryQuery;
   isFirstCall: boolean;
-  handleFilterChange: (fields: IConfigurator) => void;
+  handleFilterChange: (fields: IInventoryQuery) => void;
   handleFilterClear: () => void;
   isFetched: boolean;
   setIsFetched: (value: boolean) => void;
   initializeFilter: () => void;
   initializeAvailableFilter: (data: IConfigurator) => void;
-  initializeAvailableFilterWithoutParams: (data: IConfigurator) => void;
+  initializeAvailableFilterWithoutParams: (data: IInventoryQuery) => void;
   setIsLatestCollection: (value: boolean) => void;
   isLatestCollection: boolean;
   handelAllFilterClear: () => void;
-  updateQueryParams: (items: IConfigurator) => void;
-  updateQueryWithoutParams: (items: IConfigurator) => string;
-  setFilters: (filters: IConfigurator) => void;
+  updateQueryParams: (items: IInventoryQuery) => void;
+  updateQueryWithoutParams: (items: IInventoryQuery) => string;
+  setFilters: (filters: IInventoryQuery) => void;
 };
 
 const useInventoryProductFilters = (): UseFiltersReturnType => {
-  const [filters, setFilters] = useState<IConfigurator | null>(null);
+  const [filters, setFilters] = useState<IInventoryQuery>(defaultMoveonInventoryFilter);
   const [isFirstCall, setIsFirstCall] = useState(false);
   const [isFetched, setIsFetched] = useState(false);
   const [isLatestCollection, setIsLatestCollection] = useState(false);
@@ -41,7 +41,7 @@ const useInventoryProductFilters = (): UseFiltersReturnType => {
     }
   }, [isFirstCall]);
 
-  const initializeAvailableFilterWithoutParams = (data: IConfigurator): void => {
+  const initializeAvailableFilterWithoutParams = (data: IInventoryQuery): void => {
     setFilters(data);
     setIsFetched(true);
   };
@@ -68,51 +68,69 @@ const useInventoryProductFilters = (): UseFiltersReturnType => {
       initialFilter.item_id = itemId;
     }
 
+    const offset = params['offset'];
+
+    if (offset) {
+      initialFilter.offset = offset;
+    } else initialFilter.offset = 0;
+
+    const limit = params['limit'];
+
+    if (limit) {
+      initialFilter.limit = limit;
+    } else initialFilter.limit = defaultMoveonInventoryFilter.limit;
+
+
+
     Object.keys(data).forEach((key) => {
-      initialFilter[key] = params[key] ? params[key] : undefined;
+     if(params[key])initialFilter[key] = params[key];
     });
     setFilters(initialFilter);
     setIsFetched(true);
   };
 
-  const updateQueryParams = (items: IConfigurator): void => {
-    const params = queryString.stringify({ ...filters, ...items }, { encode: false, encodeValuesOnly: true });
+  const updateQueryParams = (items: IInventoryQuery): void => {
+    const params = queryString.stringify({ ...filters, ...items },  { encode: false, skipEmptyString: true, skipNull: true });
     navigate(`?${params}`);
   };
 
-  const updateQueryWithoutParams = (items: IConfigurator): string => {
-    return queryString.stringify({ ...filters, ...items }, { encode: false, encodeValuesOnly: true });
+  const updateQueryWithoutParams = (items: IInventoryQuery): string => {
+    return queryString.stringify({ ...filters, ...items },  { encode: false, skipEmptyString: true, skipNull: true });
   };
 
-  const handleFilterChange = (fields: IConfigurator): void => {
+  const handleFilterChange = (fields: IInventoryQuery): void => {
     let newFields = fields;
-
-    if (newFields?.pr) {
+  
+    if (newFields?.pr ) {
       if (filters?.pr) {
-        const prevPr = filters['pr'];
+        const prevPr = filters['pr'] as string;
         const [min, max] = prevPr.split('-');
-        if (newFields['pr']?.tag === 'min') {
+        
+        if (typeof newFields['pr'] === 'object' && newFields['pr']?.tag === 'min') {
           newFields = { ...newFields, pr: newFields['pr'].val + '-' + max };
         }
-        if (newFields['pr']?.tag === 'max') {
+        
+        if (typeof newFields['pr'] === 'object' && newFields['pr']?.tag === 'max') {
           newFields = { ...newFields, pr: min + '-' + newFields['pr'].val };
         }
       } else {
-        if (newFields['pr'].tag === 'min') {
+        if (typeof newFields['pr'] === 'object' && newFields['pr'].tag === 'min') {
           newFields = { ...newFields, pr: newFields['pr'].val + '-' };
         }
-        if (newFields['pr']?.tag === 'max') {
+        
+        if (typeof newFields['pr'] === 'object' && newFields['pr']?.tag === 'max') {
           newFields = { ...newFields, pr: '-' + newFields['pr'].val };
         }
       }
     }
-
+  
     setFilters({
       ...filters,
       ...newFields,
     });
     updateQueryWithoutParams(newFields);
   };
+  
 
   const handleFilterClear = (): void => {
     const params = queryString.parse((window.location.search).substring(1)) as any;
@@ -129,19 +147,25 @@ const useInventoryProductFilters = (): UseFiltersReturnType => {
     if (shopId) {
       initialFilter.shop_id = shopId;
     }
+    
+    initialFilter.limit = defaultMoveonInventoryFilter.limit;
 
-    const paramsValue = queryString.stringify({ ...initialFilter }, { encode: false, encodeValuesOnly: true });
+    initialFilter.offset = 0;
+  
+    const paramsValue = queryString.stringify({ ...initialFilter},  { encode: false, skipEmptyString: true, skipNull: true });
 
-    navigate('/a/moveon-inventory', { search: `?${paramsValue}` });
+    const queryParams = new URLSearchParams(paramsValue).toString();
+
+    navigate(`/a/moveon-inventory?${queryParams}`);
   };
 
   const handelAllFilterClear = (): void => {
-    navigate({ search: '' });
-    const newFilter: IConfigurator = {} as IConfigurator;
+    const newFilter: IInventoryQuery = {};
     Object.keys(filters).forEach((el) => {
-      newFilter[el] = undefined;
+      newFilter[el as keyof IInventoryQuery] = undefined;
     });
     setFilters(newFilter);
+    navigate({ search: '' });
   };
 
   return {

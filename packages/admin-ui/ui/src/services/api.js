@@ -1,3 +1,4 @@
+import { defaultMoveonInventoryFilter } from "../utils/filters"
 import medusaRequest, { moveOnInventoryRequest } from "./request"
 
 
@@ -289,12 +290,10 @@ export default {
   moveOnInventory: {
     list(search = {}) {
       const params = Object.keys(search)
-        .map((k) => `${k}=${search[k]}`)
-        .join("&")
-      const path = `/inventory-products${params && `?${params}`}`
-      // // const path = `/admin/products`
-      // const path = `/inventory-products`
-      return medusaRequest("GET", path)
+      .map((k) => `${k}=${search[k]}`) .join("&");
+
+    const path = `/inventory-products${params ? `?${params}` : ""}`;
+    return medusaRequest("GET", path);
     },
     retrieveSingleProduct(url){
       const path = `/inventory-product-details?url=${url}`

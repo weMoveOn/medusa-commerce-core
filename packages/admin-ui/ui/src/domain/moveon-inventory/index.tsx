@@ -1,5 +1,4 @@
 import { Route, Routes } from "react-router-dom"
-
 import Overview from "./overview"
 
 const MoveOnInventoryRoute = () => {

@@ -3,6 +3,7 @@ import { ISorter } from "../../../types/inventoryProduct";
 import { filterForTemporal } from "../../../utils/date-utils";
 import { NextSelect } from "../../molecules/select/next-select";
 
+
 interface IInventoryProductSortProps {
   sorter: ISorter;
   onChange: (value: { value: string; label: string }) => void;
@@ -29,7 +30,7 @@ const InventoryProductSort: React.FC<IInventoryProductSortProps> = ({
   }, [sortState]);
 
   return (
-    <div className="w-[200px]">
+    <div className="w-[200px] cursor-pointer">
       <NextSelect
         value={selectedValue}
         placeholder="Sort by"
@@ -37,7 +38,6 @@ const InventoryProductSort: React.FC<IInventoryProductSortProps> = ({
         selectedPlaceholder=""
        
         onChange={(value) => {
-          console.log(value)
           if(value){ 
              onChange(value); 
           }         

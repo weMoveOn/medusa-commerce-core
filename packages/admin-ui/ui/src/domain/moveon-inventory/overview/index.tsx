@@ -1,6 +1,4 @@
-import { useAdminCreateBatchJob, useAdminCreateCollection } from "medusa-react"
-import React, { useEffect, useMemo, useState } from "react"
-import { useLocation, useNavigate } from "react-router-dom"
+import React, { useState } from "react"
 import Spacer from "../../../components/atoms/spacer"
 import ListIcon from "../../../components/fundamentals/icons/list-icon"
 import TileIcon from "../../../components/fundamentals/icons/tile-icon"
@@ -8,9 +6,6 @@ import BodyCard from "../../../components/organisms/body-card"
 import TableViewHeader from "../../../components/organisms/custom-table-header"
 import MoveOnInventoryImportedProduct from "../../../components/templates/moveon-inventory-imported-product"
 import MoveOnProduct from "../../../components/templates/moveon-product"
-import useNotification from "../../../hooks/use-notification"
-import useToggleState from "../../../hooks/use-toggle-state"
-import { usePolling } from "../../../providers/polling-provider"
 
 export type ViewsType = "Product List" | "Imported Products"
 
@@ -18,69 +13,8 @@ const VIEWS: ViewsType[] = ["Product List", "Imported Products"]
 export type ProductLayoutType = "grid" | "list"
 
 const Overview = () => {
-  const navigate = useNavigate()
-  const location = useLocation()
-
-  const url = useMemo(() => {
-    const currentUrl = new URL(window.location.href)
-    return currentUrl
-  }, [])
-
-  const searchParams = useMemo(() => {
-    const currentSearchParams = new URLSearchParams(url.search)
-    return currentSearchParams
-  }, [url])
-
   const [view, setView] = useState<ViewsType>("Product List")
-  const [importedProductLayout, setImportedProductLayOut] =
-    useState<ProductLayoutType>("grid")
-  const {
-    state: createProductState,
-    close: closeProductCreate,
-    open: openProductCreate,
-  } = useToggleState()
-
-  const { resetInterval } = usePolling()
-  const createBatchJob = useAdminCreateBatchJob()
-
-  const notification = useNotification()
-
-  const createCollection = useAdminCreateCollection()
-
-  // useEffect(() => {
-  //   if (location.search.includes("?view=product-list")) {
-  //     setView("Product List")
-  //   }
-  // }, [location])
-
-  useEffect(() => {
-    // switch (view) {
-    //   case "Imported Products":
-    //     searchParams.set("view", "imported-product")
-    //     break
-    //   case "Product List":
-    //     searchParams.set("view", "product-list")
-    //     break
-
-    //   default:
-    //     searchParams.delete("view")
-    // }
-
-    const offset = searchParams.get("offset")
-    const limit = searchParams.get("limit")
-    searchParams.delete("offset")
-    searchParams.delete("limit")
-    if (offset !== null) {
-      searchParams.set("offset", offset)
-    }
-    if (limit !== null) {
-      searchParams.set("limit", limit)
-    }
-
-    url.search = searchParams.toString()
-    window.history.replaceState(null, "", url.href)
-  }, [view, searchParams, url])
-
+  const [importedProductLayout, setImportedProductLayOut] = useState<ProductLayoutType>("grid")
   const CurrentView = () => {
     switch (view) {
       case "Product List":
@@ -89,19 +23,6 @@ const Overview = () => {
         return <MoveOnInventoryImportedProduct layout={importedProductLayout} />
     }
   }
-
-  const [showNewCollection, setShowNewCollection] = useState(false)
-  const {
-    open: openExportModal,
-    close: closeExportModal,
-    state: exportModalOpen,
-  } = useToggleState(false)
-
-  const {
-    open: openImportModal,
-    close: closeImportModal,
-    state: importModalOpen,
-  } = useToggleState(false)
 
   return (
     <>
@@ -160,5 +81,3 @@ const Overview = () => {
 }
 
 export default React.memo(Overview)
-
-// 138.48

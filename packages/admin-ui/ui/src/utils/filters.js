@@ -1,4 +1,5 @@
 export const DateFilterIsInTheLast = "is in the last"
+const DEFAULT_PAGE_LIMIT = 20;
 
 export const DateFilters = {
   InTheLast: "is in the last",
@@ -37,4 +38,8 @@ export const StatusFilters = {
   Canceled: "canceled",
   Archived: "archived",
   RequiresAction: "requires_action",
+}
+
+export const defaultMoveonInventoryFilter = {
+    limit: DEFAULT_PAGE_LIMIT, offset: 0
 }

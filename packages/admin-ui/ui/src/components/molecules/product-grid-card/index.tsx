@@ -1,17 +1,16 @@
 import clsx from "clsx"
 import React from "react"
-import { IInventoryProductDataType } from "../../../types/inventoryProduct"
+import { IInventoryProductDataType, IInventoryProductSelectType } from "../../../types/inventoryProduct"
 import Checkbox from "../../atoms/checkbox"
 import ProgressBarMoveShop from "../../atoms/progress-bar"
 import Button from "../../fundamentals/button"
 import DownloadIcon from "../../fundamentals/icons/download-icon"
 import EyeIcon from "../../fundamentals/icons/eye-icon"
-import StarRatingIcon from "../../fundamentals/icons/star-rating"
 
 interface IProductGridCardProps {
   leftButtonOnClick?: (value: any) => void
   rightButtonOnClick?: (value: any) => void
-  productData?: IInventoryProductDataType
+  productData: IInventoryProductDataType
   leftButtonTitle?: string
   leftButtonIcon?: React.ReactNode
   rightButtonIcon?: React.ReactNode
@@ -21,7 +20,9 @@ interface IProductGridCardProps {
   footerButtonEnabled?: boolean
   footerProgressBarEnabled?: boolean
   route?: "imported-product" | "product-list"
+  handleSelect: ({link, vpid}:IInventoryProductSelectType) => void
 }
+
 const ProductGridCard: React.FC<IProductGridCardProps> = ({
   leftButtonOnClick,
   rightButtonOnClick,
@@ -35,6 +36,7 @@ const ProductGridCard: React.FC<IProductGridCardProps> = ({
   productData,
   rightButtonIcon,
   route = "product-list",
+  handleSelect
 }) => {
 
   const containerClassess = clsx(
@@ -43,18 +45,15 @@ const ProductGridCard: React.FC<IProductGridCardProps> = ({
   )
   return (
     <div className={containerClassess}>
-      {/* default   border-gray-100 */}
       <div
-        className="relative flex h-60 overflow-hidden rounded-xl"
+        className="relative flex h-60 overflow-hidden rounded-lg"
       >
+      {/* <ImagePlaceholder /> */}
         <img
-          className="object-cover"
+          className="object-cover w-full h-full"
           src={productData?.image}
           alt="product image"
         />
-
-        {/* <ImagePlaceholder /> */}
-
         {enableSelectOption && (
           <span className="absolute top-0 left-0 m-2 rounded-full text-center text-sm font-medium text-white">
             <div className="mr-4 flex items-center">
@@ -63,7 +62,8 @@ const ProductGridCard: React.FC<IProductGridCardProps> = ({
                 inputFiledClassName="!rounded-full shadow-md"
                 id="checkbox1"
                 label=""
-                className="mr-0 cursor-pointer "
+                className="mr-0 cursor-pointer"
+                onChange={()=>handleSelect({vpid: productData.vpid, link: productData.link})}
               />
             </div>
           </span>
@@ -73,29 +73,6 @@ const ProductGridCard: React.FC<IProductGridCardProps> = ({
           <h5 className="truncate text-large leading-base font-bold tracking-tight text-slate-800 mb-1">
             {productData?.title}
           </h5>
-        {/* {route === "product-list" && (
-          <div className="mt-2 mb-3 flex items-center justify-between">
-            <div className="flex items-center">
-              <StarRatingIcon
-                fillColor={"#fb923c"}
-                size={20}
-                color={"#fb923c"}
-              />
-              <StarRatingIcon
-                fillColor={"#fb923c"}
-                size={20}
-                color={"#fb923c"}
-              />
-              <StarRatingIcon size={20} color={"#fb923c"} />
-              <StarRatingIcon size={20} color={"#fb923c"} />
-              <StarRatingIcon size={20} color={"#fb923c"} />
-              <span className="mr-2 ml-3 rounded  px-2.5 py-0.5 text-xs font-normal">
-                (13)
-              </span>
-            </div>
-          </div>
-        )} */}
-
         {route === "product-list" && (
           <div className=" my-1 flex items-center justify-between">
             <p>
@@ -135,25 +112,27 @@ const ProductGridCard: React.FC<IProductGridCardProps> = ({
                 loading={false}
                 onClick={() => leftButtonOnClick(productData)}
                 variant="secondary"
-                className="min-w-[120px]"
+                className="min-w-[114px]"
                 size="medium"
                 spanClassName="text-center text-sm  font-medium text-slate-700"
               >
-                {leftButtonTitle ?? " Quick view"}
+                {leftButtonTitle ?? "Quick view"}
               </Button>
             )}
             {rightButtonOnClick && (
               <Button
+              
+              disabled={enableSelectOption}
                 icon={
                   rightButtonIcon ?? (
                     <DownloadIcon style={{ marginRight: "6px" }} />
                   )
                 }
-                className="min-w-[120px]"
+                className="min-w-[114px]"
                 onClick={() => rightButtonOnClick(productData)}
-                variant="secondary"
+                variant={enableSelectOption?"ghost":"secondary"}
                 size="medium"
-                spanClassName=" text-center text-sm font-medium text-slate-700"
+                spanClassName="text-center text-sm font-medium text-slate-700"
               >
                 {rightButtonTitle ?? "Import"}
               </Button>
