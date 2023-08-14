@@ -46,7 +46,7 @@ const ProductGridCard: React.FC<IProductGridCardProps> = ({
   return (
     <div className={containerClassess}>
       <div
-        className="relative flex h-60 overflow-hidden rounded-xl"
+        className="relative flex h-60 overflow-hidden rounded-lg"
       >
       {/* <ImagePlaceholder /> */}
         <img
@@ -121,6 +121,8 @@ const ProductGridCard: React.FC<IProductGridCardProps> = ({
             )}
             {rightButtonOnClick && (
               <Button
+              
+              disabled={enableSelectOption}
                 icon={
                   rightButtonIcon ?? (
                     <DownloadIcon style={{ marginRight: "6px" }} />
@@ -128,7 +130,7 @@ const ProductGridCard: React.FC<IProductGridCardProps> = ({
                 }
                 className="min-w-[114px]"
                 onClick={() => rightButtonOnClick(productData)}
-                variant="secondary"
+                variant={enableSelectOption?"ghost":"secondary"}
                 size="medium"
                 spanClassName="text-center text-sm font-medium text-slate-700"
               >

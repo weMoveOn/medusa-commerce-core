@@ -19,8 +19,9 @@ import LoadingContainer from "../../atoms/loading-container"
 import { TablePagination } from "../../organisms/table-container/pagination"
 import { defaultMoveonInventoryFilter } from "../../../utils/filters"
 import Button from "../../fundamentals/button"
-import DownloadIcon from "../../fundamentals/icons/download-icon"
 import CrossIcon from "../../fundamentals/icons/cross-icon"
+import Tooltip from "../../atoms/tooltip"
+import DownloadIcon from "../../fundamentals/icons/download-icon"
 
 const MoveOnProduct = () => {
   const location = useLocation();
@@ -47,7 +48,7 @@ const MoveOnProduct = () => {
   const [limit, setLimit] = useState(defaultMoveonInventoryFilter.limit);
   const [offset, setOffset] = useState(0);
   const [count, setCount] = useState(0);
-  const [selectedProducts, setSelectedProducts] = useState(new Set<IInventoryProductSelectType>());
+  const [selectedProducts, setSelectedProducts] = useState<IInventoryProductSelectType[]>([]);
   const [multipleImport, setMultipleImport] = useState(false);
 
   const { isLoading, isError, data, error, refetch } = useQuery<
@@ -157,16 +158,21 @@ const MoveOnProduct = () => {
   }
 
   const handleSelect = ({ vpid, link }: IInventoryProductSelectType) => {
-    setSelectedProducts((prevSelected) => {
-      const updatedSet = new Set(prevSelected);
-      const matchingProduct = [...updatedSet].find((product) => product.vpid === vpid && product.link === link);
-      if (matchingProduct) {
-        updatedSet.delete(matchingProduct);
-      } else {
-        updatedSet.add({ vpid, link });
-      }
-      return updatedSet;
+    const productKey = `${vpid}_${link}`;
+    const updatedSet = new Set(selectedProducts.map(product => `${product.vpid}_${product.link}`));
+  
+    if (updatedSet.has(productKey)) {
+      updatedSet.delete(productKey);
+    } else {
+      updatedSet.add(productKey);
+    }
+  
+    const updatedArray = Array.from(updatedSet).map(key => {
+      const [updatedVpid, updatedLink] = key.split('_');
+      return { vpid: updatedVpid, link: updatedLink };
     });
+  
+    setSelectedProducts(updatedArray);
   };
   
   return (
@@ -206,7 +212,7 @@ const MoveOnProduct = () => {
             size="small"
             onClick={() => setMultipleImport(!multipleImport)}
             >
-              <DownloadIcon size={20} />
+             <DownloadIcon size={20} />
               Multiple Import
           </Button>
             <div className="flex space-x-2">
@@ -240,11 +246,24 @@ const MoveOnProduct = () => {
           </div>
         </div>
 
-       {selectedProducts.size?
-       <div className="bg-violet-10 flex items-center rounded-sm py-xsmall px-base text-grey-90 text-sm mb-4 justify-between">
-        <div>{selectedProducts.size} Products Are Selected</div>
-       <button className="cursor-pointer hover:bg-red-500" onClick={()=>setSelectedProducts(new Set())}>
-       <CrossIcon />
+       {multipleImport?
+       <div className="bg-violet-10 flex items-center rounded-sm py-xsmall px-base text-grey-90 text-sm mb-4 justify-between relative">
+        <div>{selectedProducts.length} Products are selected</div>
+      
+       <Button
+         variant="primary"
+         size="small"
+         disabled={!selectedProducts.length}
+         onClick={function (): void {
+          throw new Error("Function not implemented.")
+        }}
+         >
+         Import Now
+        </Button>      
+       <button className="cursor-pointer hover:text-red-700  absolute top-[-10px] right-[-5px]" onClick={()=>setSelectedProducts([])}>
+       <Tooltip content="Deselect All">
+        <CrossIcon />
+      </Tooltip>
       </button>
       </div>
       :

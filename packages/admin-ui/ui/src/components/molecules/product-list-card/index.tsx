@@ -6,7 +6,6 @@ import ProgressBarMoveShop from "../../atoms/progress-bar"
 import Button from "../../fundamentals/button"
 import DownloadIcon from "../../fundamentals/icons/download-icon"
 import EyeIcon from "../../fundamentals/icons/eye-icon"
-import StarRatingIcon from "../../fundamentals/icons/star-rating"
 
 interface IProductListCardProps {
   leftButtonOnClick?: (value: any) => void
@@ -117,13 +116,14 @@ const ProductListCard: React.FC<IProductListCardProps> = ({
               )}
               {rightButtonOnClick && (
                 <Button
+                disabled={enableSelectOption}
                   icon={
                     rightButtonIcon ?? (
                       <DownloadIcon style={{ marginRight: "6px" }} />
                     )
                   }
                   onClick={() => rightButtonOnClick(productData)}
-                  variant="secondary"
+                  variant={enableSelectOption?"ghost":"secondary"}
                   className="min-w-[114px]"
                   size="medium"
                   spanClassName="text-center text-sm font-medium text-slate-700"
