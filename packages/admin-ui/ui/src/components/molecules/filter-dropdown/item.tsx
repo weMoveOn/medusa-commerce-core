@@ -40,6 +40,7 @@ const FilterDropdownItem = ({
     }
   }, [filters])
 
+
   const [checked, setChecked] = useState(prefilled)
 
   const handlePrev = () => {
@@ -83,7 +84,6 @@ const FilterDropdownItem = ({
 
     setFilter({ open: open, filter: newFilter })
   }
-
   return (
     <div
       className={clsx("w-full cursor-pointer py-2 px-4 ", {

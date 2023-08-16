@@ -1,6 +1,7 @@
 import clsx from "clsx"
 import { capitalize } from "lodash"
 import React from "react"
+import { ViewsType } from "../../../domain/moveon-inventory/overview"
 
 type TableViewHeaderProps<T = string> = {
   views: T[]
@@ -8,7 +9,7 @@ type TableViewHeaderProps<T = string> = {
   setActiveView?: (view: T) => void
 }
 
-const TableViewHeader: React.FC<TableViewHeaderProps> = ({
+const TableViewHeader: React.FC<TableViewHeaderProps<ViewsType>> = ({
   views,
   activeView = views[0],
   setActiveView,

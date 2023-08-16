@@ -12,7 +12,7 @@ const PricingIndex = () => {
 
   const actionables = [
     {
-      label: "Add price list",
+      label: "Add price list saimon",
       onClick: () => navigate(`/a/pricing/new`),
       icon: <PlusIcon size={20} />,
     },
@@ -23,7 +23,7 @@ const PricingIndex = () => {
       <div className="flex w-full grow flex-col">
         <BodyCard
           actionables={actionables}
-          customHeader={<TableViewHeader views={["Price lists"]} />}
+          customHeader={<TableViewHeader views={["Price lists saimon"]} />}
           className="h-fit"
         >
           <PricingTable />

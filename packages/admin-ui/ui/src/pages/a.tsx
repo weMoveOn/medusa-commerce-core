@@ -11,16 +11,17 @@ import Customers from "../domain/customers"
 import Discounts from "../domain/discounts"
 import GiftCards from "../domain/gift-cards"
 import Inventory from "../domain/inventory"
+import MoveOnInventoryRoute from "../domain/moveon-inventory"
 import Oauth from "../domain/oauth"
 import Orders from "../domain/orders"
 import DraftOrders from "../domain/orders/draft-orders"
 import Pricing from "../domain/pricing"
+import ProductCategories from "../domain/product-categories"
 import ProductsRoute from "../domain/products"
 import PublishableApiKeys from "../domain/publishable-api-keys"
 import SalesChannels from "../domain/sales-channels"
 import Settings from "../domain/settings"
 import { AnalyticsProvider } from "../providers/analytics-provider"
-import ProductCategories from "../domain/product-categories"
 
 const IndexPage = () => {
   const navigate = useNavigate()
@@ -39,7 +40,7 @@ const DashboardRoutes = () => {
     <AnalyticsProvider writeKey={WRITE_KEY}>
       <DndProvider backend={HTML5Backend}>
         <Layout>
-          <SEO title="Medusa" />
+          <SEO title="moveShop " />
           <Routes>
             <Route path="oauth/:app_name" element={<Oauth />} />
             <Route path="products/*" element={<ProductsRoute />} />
@@ -55,6 +56,10 @@ const DashboardRoutes = () => {
             <Route path="customers/*" element={<Customers />} />
             <Route path="pricing/*" element={<Pricing />} />
             <Route path="settings/*" element={<Settings />} />
+            <Route
+              path="moveon-inventory/*"
+              element={<MoveOnInventoryRoute />}
+            />
             <Route path="sales-channels/*" element={<SalesChannels />} />
             <Route
               path="publishable-api-keys/*"

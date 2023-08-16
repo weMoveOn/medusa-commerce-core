@@ -1,4 +1,10 @@
-import medusaRequest from "./request"
+import { defaultMoveonInventoryFilter } from "../utils/filters"
+import medusaRequest, { moveOnInventoryRequest } from "./request"
+
+
+
+
+
 
 const removeNullish = (obj) =>
   Object.entries(obj).reduce((a, [k, v]) => (v ? ((a[k] = v), a) : a), {})
@@ -280,6 +286,19 @@ export default {
         return medusaRequest("POST", path, update)
       },
     },
+  },
+  moveOnInventory: {
+    list(search = {}) {
+      const params = Object.keys(search)
+      .map((k) => `${k}=${search[k]}`) .join("&");
+
+    const path = `/inventory-products${params ? `?${params}` : ""}`;
+    return medusaRequest("GET", path);
+    },
+    retrieveSingleProduct(url){
+      const path = `/inventory-product-details?url=${url}`
+      return medusaRequest("GET", path)
+    }
   },
 
   swaps: {
