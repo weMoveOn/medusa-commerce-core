@@ -320,11 +320,11 @@ const MoveOnProduct = () => {
               offset: offset,
               title: "Products",
               pageSize: limit+offset,
-              currentPage: (offset/limit)+1,
+              currentPage: Math.floor(offset/limit)+1,
               pageCount: Math.ceil(count/limit),
               nextPage: ()=>handleNextPage(),
               prevPage: ()=>handlePreviousPage(),
-              hasNext: offset*limit<=count,
+              hasNext: offset+limit<=count,
               hasPrev: offset>0,
             }}
             isLoading={isLoading}
