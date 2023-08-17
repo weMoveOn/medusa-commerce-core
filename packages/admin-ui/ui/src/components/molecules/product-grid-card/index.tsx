@@ -6,22 +6,25 @@ import ProgressBarMoveShop from "../../atoms/progress-bar"
 import Button from "../../fundamentals/button"
 import DownloadIcon from "../../fundamentals/icons/download-icon"
 import EyeIcon from "../../fundamentals/icons/eye-icon"
+import { IMedusaProductType } from "../../../types/medusaProduct"
+import { formatDate } from "../../../utils/formatDate"
 
 interface IProductGridCardProps {
-  leftButtonOnClick?: (value: any) => void
-  rightButtonOnClick?: (value: any) => void
-  productData: IInventoryProductDataType
-  leftButtonTitle?: string
-  leftButtonIcon?: React.ReactNode
-  rightButtonIcon?: React.ReactNode
-  rightButtonTitle?: string
-  enableSelectOption?: boolean
-  isSelect?: boolean
-  footerButtonEnabled?: boolean
-  footerProgressBarEnabled?: boolean
-  route?: "imported-product" | "product-list"
-  handleSelect: ({link, vpid}:IInventoryProductSelectType) => void
+  leftButtonOnClick?: (value: any) => void;
+  rightButtonOnClick?: (value: any) => void;
+  leftButtonTitle?: string;
+  rightButtonTitle?: string;
+  leftButtonIcon?: React.ReactNode;
+  rightButtonIcon?: React.ReactNode;
+  enableSelectOption?: boolean;
+  isSelect: boolean;
+  footerButtonEnabled?: boolean;
+  footerProgressBarEnabled?: boolean;
+  handleSelect?: ({ link, vpid }: IInventoryProductSelectType) => void;
+  productData: IInventoryProductDataType;
+  route: "product-list" | 'imported-product'
 }
+
 
 const ProductGridCard: React.FC<IProductGridCardProps> = ({
   leftButtonOnClick,
@@ -54,7 +57,7 @@ const ProductGridCard: React.FC<IProductGridCardProps> = ({
           src={productData?.image}
           alt="product image"
         />
-        {enableSelectOption && (
+        {enableSelectOption && handleSelect && (
           <span className="absolute top-0 left-0 m-2 rounded-full text-center text-sm font-medium text-white">
             <div className="mr-4 flex items-center">
               <Checkbox
@@ -88,17 +91,17 @@ const ProductGridCard: React.FC<IProductGridCardProps> = ({
           </div>
         )}
         {route === "imported-product" && (
+          <>
           <div className=" my-3 flex items-center justify-between ">
             <p className="rounded-sm border bg-purple-200 px-2 text-purple-600">
               Status: processing
             </p>
           </div>
-        )}
-        {route === "imported-product" && (
           <div className="items-left	 my-3 flex flex-col justify-between ">
             <p className="">Last update: </p>
-            <p className="">21 June 2023 at 10:28pm </p>
+            <p className="">{formatDate(productData.updated_at!)}</p>
           </div>
+          </>
         )}
 
         {footerProgressBarEnabled && <ProgressBarMoveShop progress="45%" />}

@@ -8,20 +8,21 @@ import DownloadIcon from "../../fundamentals/icons/download-icon"
 import EyeIcon from "../../fundamentals/icons/eye-icon"
 
 interface IProductListCardProps {
-  leftButtonOnClick?: (value: any) => void
-  rightButtonOnClick?: (value: any) => void
-  productData: IInventoryProductDataType
-  leftButtonTitle?: string
-  rightButtonTitle?: string
-  leftButtonIcon?: React.ReactNode
-  rightButtonIcon?: React.ReactNode
-  enableSelectOption?: boolean
-  isSelect: boolean
-  footerButtonEnabled?: boolean
-  footerProgressBarEnabled?: boolean
-  route: "imported-product" | "product-list"
-  handleSelect: ({link, vpid}:IInventoryProductSelectType) => void
+  leftButtonOnClick?: (value: any) => void;
+  rightButtonOnClick?: (value: any) => void;
+  leftButtonTitle?: string;
+  rightButtonTitle?: string;
+  leftButtonIcon?: React.ReactNode;
+  rightButtonIcon?: React.ReactNode;
+  enableSelectOption?: boolean;
+  isSelect: boolean;
+  footerButtonEnabled?: boolean;
+  footerProgressBarEnabled?: boolean;
+  handleSelect?: ({ link, vpid }: IInventoryProductSelectType) => void;
+  productData: IInventoryProductDataType;
+  route: "product-list" | 'imported-product'
 }
+
 
 const ProductListCard: React.FC<IProductListCardProps> = ({
   leftButtonOnClick,
@@ -41,10 +42,10 @@ const ProductListCard: React.FC<IProductListCardProps> = ({
   const containerClasses = clsx(
     "relative flex items-center gap-4 p-4 border rounded-lg border-gray-100 mb-4 bg-white w-[85%]",
     enableSelectOption && isSelect && "border-violet-600"
-  )
+  )  
   return (
     <div className={containerClasses}>
-      {enableSelectOption && (
+      {enableSelectOption && handleSelect && route==="product-list" && (
         <div className="flex items-center">
           <Checkbox
             checked={isSelect ?? false}
@@ -52,7 +53,9 @@ const ProductListCard: React.FC<IProductListCardProps> = ({
             id="checkbox1"
             label=""
             className="mr-0 cursor-pointer"
-            onChange={()=>handleSelect({vpid: productData.vpid, link: productData.link})}
+            onChange={()=>{
+                handleSelect({vpid: productData.vpid, link: productData.link})
+          }}
           />
         </div>
       )}
