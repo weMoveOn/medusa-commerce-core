@@ -18,8 +18,10 @@ import { removeFalsy } from "../utils/remove-nullish"
 import useImperativeDialog from "./use-imperative-dialog"
 import { useNavigate } from "react-router-dom"
 import useNotification from "./use-notification"
+import { useQueryClient } from "@tanstack/react-query"
 
 const useEditProductActions = (productId: string) => {
+    const queryClient = useQueryClient()
   const dialog = useImperativeDialog()
   const navigate = useNavigate()
   const notification = useNotification()
@@ -120,6 +122,7 @@ const useEditProductActions = (productId: string) => {
       payload,
       {
         onSuccess: () => {
+          queryClient.invalidateQueries({ queryKey: ['inventory-retrive'] })
           notification("Success", successMessage, "success")
           onSuccess()
         },
