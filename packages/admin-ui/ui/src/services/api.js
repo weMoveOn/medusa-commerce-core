@@ -298,6 +298,10 @@ export default {
     retrieveSingleProduct(url){
       const path = `/inventory-product-details?url=${url}`
       return medusaRequest("GET", path)
+    },
+    retrieveCollectionProduct({limit, offset}){
+      const path = `/retrive-inventory-product?limit=${limit}&offset=${offset}`
+      return medusaRequest("GET", path)
     }
   },
 
