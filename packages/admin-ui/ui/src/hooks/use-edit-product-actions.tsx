@@ -122,7 +122,7 @@ const useEditProductActions = (productId: string) => {
       payload,
       {
         onSuccess: () => {
-          queryClient.invalidateQueries({ queryKey: ['inventory-retrive'] })
+          queryClient.invalidateQueries({ queryKey: ['inventory-retrieve'] })
           notification("Success", successMessage, "success")
           onSuccess()
         },

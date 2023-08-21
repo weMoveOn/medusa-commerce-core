@@ -10,7 +10,7 @@ import { defaultMoveonInventoryFilter } from "../../../utils/filters"
 import LoadingContainer from "../../atoms/loading-container"
 import { TablePagination } from "../../organisms/table-container/pagination"
 import { useNavigate } from "react-router-dom"
-import { IRetriveInventoryProductReturnType } from "../../../types/medusaProduct"
+import { IRetrieveInventoryProductReturnType } from "../../../types/medusaProduct"
 
 interface IProps {
   layout: ProductLayoutType
@@ -24,8 +24,8 @@ const MoveOnInventoryImportedProduct: React.FC<IProps> = ({ layout }) => {
   const [count, setCount] = useState(0);
 
   const { isLoading, isError, data, error } = useQuery<
-  AxiosResponse<IRetriveInventoryProductReturnType>
->(["inventory-retrive", limit, offset], () =>
+  AxiosResponse<IRetrieveInventoryProductReturnType>
+>(["inventory-retrieve", limit, offset], () =>
   Medusa.moveOnInventory.retrieveCollectionProduct({limit, offset})
 )
 
@@ -44,7 +44,6 @@ const MoveOnInventoryImportedProduct: React.FC<IProps> = ({ layout }) => {
    const handlePreviousPage = () => {
      setOffset(offset - limit);
    }
-
 
   return (
     <>

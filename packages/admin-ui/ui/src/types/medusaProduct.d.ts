@@ -79,7 +79,7 @@ interface Tag {
   }
   
 
-  export interface IRetriveInventoryProductReturnType {
+  export interface IRetrieveInventoryProductReturnType {
     products: IMedusaProductType[];
     offset: number;
     limit: number;

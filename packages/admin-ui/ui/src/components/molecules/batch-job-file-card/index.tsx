@@ -25,8 +25,6 @@ const BatchJobFileCard = ({
 }: Props) => {
   const preparedOnClick = onClick ?? (() => void 0)
 
-  console.log(fileName, fileSize, operation)
-
   return (
     <div
       className="mt-4 flex w-full cursor-pointer items-center"

@@ -300,7 +300,7 @@ export default {
       return medusaRequest("GET", path)
     },
     retrieveCollectionProduct({limit, offset}){
-      const path = `/retrive-inventory-product?limit=${limit}&offset=${offset}`
+      const path = `/retrieve-inventory-product?limit=${limit}&offset=${offset}`
       return medusaRequest("GET", path)
     }
   },
