@@ -130,7 +130,7 @@ const ProductGridCard: React.FC<IProductGridCardProps> = ({
                   )
                 }
                 className="min-w-[114px]"
-                onClick={() => rightButtonOnClick(productData)}
+                onClick={() => rightButtonOnClick(productData.link)}
                 variant={enableSelectOption?"ghost":"secondary"}
                 size="medium"
                 spanClassName="text-center text-sm font-medium text-slate-700"

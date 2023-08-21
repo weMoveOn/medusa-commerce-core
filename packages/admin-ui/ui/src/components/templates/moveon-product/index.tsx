@@ -189,33 +189,31 @@ const MoveOnProduct = () => {
     setSelectedProducts(updatedArray);
   };
 
-  const handleImport = () =>{
+  const handleImport = (product?: IInventoryProductSelectType) =>{
+    const productsToImport = product ? [product] : selectedProducts;
+
+    if(selectedProducts.length===0 && !product){
+      notification("Error", "You must select at least one product to import", "warning")
+    }
+    else {
       const reqObj = {
         dry_run: false,
         type: "product-import-manual",
         context: {
-          products: selectedProducts
+          products: productsToImport
         },
       }
   
       createBatchJob.mutate(reqObj, {
         onSuccess: () => {
           resetInterval()
-          notification("Success", "Successfully initiated multiple import products", "success")
+          notification("Success", "Successfully initiated import products", "success")
         },
         onError: (err) => {
           notification("Error", getErrorMessage(err), "error")
         },
       })
-    // medusa.admin.batchJobs.create({
-    //   type: 'product-import-manual',
-    //   context: {
-    //     products: selectedProducts
-    //   },
-    //   dry_run: false
-    // }).then(({ batch_job }) => {
-    //   console.log(batch_job.id);
-    // })
+    }
   }
   
   return (
@@ -232,7 +230,7 @@ const MoveOnProduct = () => {
         </button>
      </div>
       :
-      <div className="container">
+      <div className="container"> 
         <div className="flex flex-wrap justify-between">
           <div className="px-3 py-3">
             <div className="flex justify-start">
@@ -327,8 +325,8 @@ const MoveOnProduct = () => {
                 isSelect={Array.from(selectedProducts).some((product) => product.vpid === item.vpid && product.link === item.link)}
                 handleSelect={handleSelect}
                 leftButtonOnClick={handleProductView}
-                rightButtonOnClick={function (): void {
-                  throw new Error("Function not implemented.")
+                rightButtonOnClick={()=>{
+                  handleImport({link:item.link, vpid: item.vpid})
                 }}
               />              
               ))}
@@ -348,8 +346,8 @@ const MoveOnProduct = () => {
                   isSelect={Array.from(selectedProducts).some((product) => product.vpid === item.vpid && product.link === item.link)}
                   handleSelect={handleSelect}
                   leftButtonOnClick={handleProductView}
-                  rightButtonOnClick={function (): void {
-                    throw new Error("Function not implemented.")
+                  rightButtonOnClick={()=>{
+                    handleImport({link:item.link, vpid: item.vpid})
                   }}
                 />
               ))}
