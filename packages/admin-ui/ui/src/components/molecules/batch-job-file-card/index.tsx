@@ -2,8 +2,10 @@ import { ReactNode } from "react"
 import clsx from "clsx"
 
 import Tooltip from "../../atoms/tooltip"
+import { BatchJobOperation } from "../../organisms/batch-jobs-activity-list/utils"
 
 type Props = {
+  operation: BatchJobOperation
   fileName: string
   fileSize?: string
   errorMessage?: string
@@ -13,6 +15,7 @@ type Props = {
 }
 
 const BatchJobFileCard = ({
+  operation,
   fileName,
   fileSize,
   icon,
@@ -21,6 +24,8 @@ const BatchJobFileCard = ({
   errorMessage,
 }: Props) => {
   const preparedOnClick = onClick ?? (() => void 0)
+
+  console.log(fileName, fileSize, operation)
 
   return (
     <div
@@ -36,7 +41,7 @@ const BatchJobFileCard = ({
 
       <div className="relative w-full pl-4 text-left">
         <div className="inter-small-regular max-w-[80%] overflow-hidden truncate">
-          {fileName}
+          {operation !== BatchJobOperation.Manual ? fileName : fileName.replace(/\.csv$/, '')}
         </div>
 
         <Tooltip

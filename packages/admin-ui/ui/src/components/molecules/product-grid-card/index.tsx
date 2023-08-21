@@ -6,7 +6,6 @@ import ProgressBarMoveShop from "../../atoms/progress-bar"
 import Button from "../../fundamentals/button"
 import DownloadIcon from "../../fundamentals/icons/download-icon"
 import EyeIcon from "../../fundamentals/icons/eye-icon"
-import { IMedusaProductType } from "../../../types/medusaProduct"
 import { formatDate } from "../../../utils/formatDate"
 
 interface IProductGridCardProps {
@@ -124,7 +123,6 @@ const ProductGridCard: React.FC<IProductGridCardProps> = ({
             )}
             {rightButtonOnClick && (
               <Button
-              
               disabled={enableSelectOption}
                 icon={
                   rightButtonIcon ?? (

@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query"
 import { AxiosResponse } from "axios"
-import React, { useEffect, useState } from "react"
-import Medusa from "../../../services/api"
+import React, { useEffect, useMemo, useState } from "react"
+import MedusaAPI from "../../../services/api"
 import { IInventoryProductDataType, IInventoryProductPayloadType, IInventoryProductSelectType, IInventoryQuery } from "../../../types/inventoryProduct"
 import ListIcon from "../../fundamentals/icons/list-icon"
 import TileIcon from "../../fundamentals/icons/tile-icon"
@@ -22,8 +22,20 @@ import Button from "../../fundamentals/button"
 import CrossIcon from "../../fundamentals/icons/cross-icon"
 import Tooltip from "../../atoms/tooltip"
 import DownloadIcon from "../../fundamentals/icons/download-icon"
+import Medusa from "@medusajs/medusa-js"
+import { MEDUSA_BACKEND_URL } from "../../../constants/medusa-backend-url"
+import { useAdminCreateBatchJob } from "medusa-react"
+import useNotification from "../../../hooks/use-notification"
+import { usePolling } from "../../../providers/polling-provider"
+import { getErrorMessage } from "../../../utils/error-messages"
+import useToggleState from "../../../hooks/use-toggle-state"
+import ExportIcon from "../../fundamentals/icons/export-icon"
 
 const MoveOnProduct = () => {
+  const { resetInterval } = usePolling()
+  const createBatchJob = useAdminCreateBatchJob()
+  const notification = useNotification()
+  const medusa = new Medusa({ baseUrl: MEDUSA_BACKEND_URL, maxRetries: 3 })
   const location = useLocation();
   const {
     handleFilterChange,
@@ -54,7 +66,7 @@ const MoveOnProduct = () => {
   const { isLoading, isError, data, error, refetch } = useQuery<
     AxiosResponse<IInventoryProductPayloadType>
   >(["inventory-fetch",newFiltersData], () =>
-    Medusa.moveOnInventory.list({ keyword: "beg", shop_id: 4, ...newFiltersData })
+    MedusaAPI.moveOnInventory.list({ keyword: "beg", shop_id: 4, ...newFiltersData })
   )
   
   // if data is fetched from backend set new count and limit
@@ -71,11 +83,6 @@ const MoveOnProduct = () => {
       submitFilter()
     }, [limit, offset])
     
- const submitFilter = () => {
-      const params = queryString.stringify({ ...filters, offset, limit }, { encode: false, skipEmptyString: true, skipNull: true });
-      window.history.replaceState(null, 'Searching', `/a/moveon-inventory?${params}`)
-      setNewFilersData(filters)
-    }
 
   useEffect(() => {
     if (!isFetched && data?.data.filters?.configurator) {
@@ -109,6 +116,13 @@ const MoveOnProduct = () => {
       }
     }
   }, [data?.data, newFiltersData, isParamsUpdated, searchedQueries]);
+
+  const submitFilter = () => {
+    const params = queryString.stringify({ ...filters, offset, limit }, { encode: false, skipEmptyString: true, skipNull: true });
+    window.history.replaceState(null, 'Searching', `/a/moveon-inventory?${params}`)
+    setNewFilersData(filters)
+  }
+
 
   const handleProductView = (value: IInventoryProductDataType) => {
     setIsOpenModal(true)
@@ -174,6 +188,35 @@ const MoveOnProduct = () => {
   
     setSelectedProducts(updatedArray);
   };
+
+  const handleImport = () =>{
+      const reqObj = {
+        dry_run: false,
+        type: "product-import-manual",
+        context: {
+          products: selectedProducts
+        },
+      }
+  
+      createBatchJob.mutate(reqObj, {
+        onSuccess: () => {
+          resetInterval()
+          notification("Success", "Successfully initiated multiple import products", "success")
+        },
+        onError: (err) => {
+          notification("Error", getErrorMessage(err), "error")
+        },
+      })
+    // medusa.admin.batchJobs.create({
+    //   type: 'product-import-manual',
+    //   context: {
+    //     products: selectedProducts
+    //   },
+    //   dry_run: false
+    // }).then(({ batch_job }) => {
+    //   console.log(batch_job.id);
+    // })
+  }
   
   return (
     <>
@@ -249,17 +292,17 @@ const MoveOnProduct = () => {
        {multipleImport?
        <div className="bg-violet-10 flex items-center rounded-sm py-xsmall px-base text-grey-90 text-sm mb-4 justify-between relative">
         <div>{selectedProducts.length} Products are selected</div>
-      
-       <Button
-         variant="primary"
-         size="small"
-         disabled={!selectedProducts.length}
-         onClick={function (): void {
-          throw new Error("Function not implemented.")
-        }}
-         >
-         Import Now
-        </Button>      
+
+        <Button
+        key="import"
+        variant="secondary"
+        size="small"
+        onClick={() => handleImport()}
+      >
+         <DownloadIcon size={20} />
+        Import
+      </Button>
+     
        <button className="cursor-pointer hover:text-red-700  absolute top-[-10px] right-[-5px]" onClick={()=>setSelectedProducts([])}>
        <Tooltip content="Deselect All">
         <CrossIcon />

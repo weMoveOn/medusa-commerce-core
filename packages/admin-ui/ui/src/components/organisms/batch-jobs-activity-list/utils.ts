@@ -3,6 +3,7 @@ import { BatchJob } from "@medusajs/medusa/dist"
 export enum BatchJobOperation {
   Import = "Import",
   Export = "Export",
+  Manual = "Manual Import",
 }
 
 export function batchJobDescriptionBuilder(

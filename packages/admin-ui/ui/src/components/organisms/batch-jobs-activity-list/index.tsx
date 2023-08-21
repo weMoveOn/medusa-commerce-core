@@ -82,6 +82,7 @@ const BatchJobActivityCard = (props: { batchJob: BatchJob }) => {
 
   const operation = {
     "product-import": BatchJobOperation.Import,
+    "product-import-manual": BatchJobOperation.Manual,
     "price-list-import": BatchJobOperation.Import,
     "product-export": BatchJobOperation.Export,
     "order-export": BatchJobOperation.Export,
@@ -188,6 +189,7 @@ const BatchJobActivityCard = (props: { batchJob: BatchJob }) => {
 
     return (
       <BatchJobFileCard
+        operation={operation}
         onClick={onDownloadFile}
         fileName={fileName}
         icon={icon}
