@@ -5,7 +5,7 @@ import Tooltip from "../../atoms/tooltip"
 import { BatchJobOperation } from "../../organisms/batch-jobs-activity-list/utils"
 
 type Props = {
-  operation: BatchJobOperation
+  operation?: BatchJobOperation
   fileName: string
   fileSize?: string
   errorMessage?: string

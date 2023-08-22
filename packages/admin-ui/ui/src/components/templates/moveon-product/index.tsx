@@ -198,7 +198,7 @@ const MoveOnProduct = () => {
     else {
       const reqObj = {
         dry_run: false,
-        type: "product-import-manual",
+        type: "moveOn-inventory-product-import",
         context: {
           products: productsToImport
         },
