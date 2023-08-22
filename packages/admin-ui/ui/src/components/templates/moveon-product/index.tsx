@@ -22,21 +22,16 @@ import Button from "../../fundamentals/button"
 import CrossIcon from "../../fundamentals/icons/cross-icon"
 import Tooltip from "../../atoms/tooltip"
 import DownloadIcon from "../../fundamentals/icons/download-icon"
-import Medusa from "@medusajs/medusa-js"
-import { MEDUSA_BACKEND_URL } from "../../../constants/medusa-backend-url"
 import { useAdminCreateBatchJob } from "medusa-react"
 import useNotification from "../../../hooks/use-notification"
 import { usePolling } from "../../../providers/polling-provider"
 import { getErrorMessage } from "../../../utils/error-messages"
-import useToggleState from "../../../hooks/use-toggle-state"
-import ExportIcon from "../../fundamentals/icons/export-icon"
 import { queryClient } from "../../../constants/query-client"
 
 const MoveOnProduct = () => {
   const { resetInterval } = usePolling()
   const createBatchJob = useAdminCreateBatchJob()
   const notification = useNotification()
-  const medusa = new Medusa({ baseUrl: MEDUSA_BACKEND_URL, maxRetries: 3 })
   const location = useLocation();
   const {
     handleFilterChange,
