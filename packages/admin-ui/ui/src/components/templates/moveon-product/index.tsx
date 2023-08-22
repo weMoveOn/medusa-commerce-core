@@ -30,6 +30,7 @@ import { usePolling } from "../../../providers/polling-provider"
 import { getErrorMessage } from "../../../utils/error-messages"
 import useToggleState from "../../../hooks/use-toggle-state"
 import ExportIcon from "../../fundamentals/icons/export-icon"
+import { queryClient } from "../../../constants/query-client"
 
 const MoveOnProduct = () => {
   const { resetInterval } = usePolling()
@@ -207,6 +208,7 @@ const MoveOnProduct = () => {
       createBatchJob.mutate(reqObj, {
         onSuccess: () => {
           resetInterval()
+          queryClient.invalidateQueries({ queryKey: ['inventory-retrive'] })
           notification("Success", "Successfully initiated import products", "success")
         },
         onError: (err) => {

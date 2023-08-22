@@ -18,10 +18,9 @@ import { removeFalsy } from "../utils/remove-nullish"
 import useImperativeDialog from "./use-imperative-dialog"
 import { useNavigate } from "react-router-dom"
 import useNotification from "./use-notification"
-import { useQueryClient } from "@tanstack/react-query"
+import { queryClient } from "../constants/query-client"
 
 const useEditProductActions = (productId: string) => {
-    const queryClient = useQueryClient()
   const dialog = useImperativeDialog()
   const navigate = useNavigate()
   const notification = useNotification()
