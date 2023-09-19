@@ -2,25 +2,12 @@ import { Controller, UseFormReturn } from "react-hook-form"
 import InputField from "../../../../../components/molecules/input"
 import { NextSelect } from "../../../../../components/molecules/select/next-select"
 import FormValidator from "../../../../../utils/form-validator"
-import { IInventoryStore } from "../../../../../types/inventory-store"
 import { useMemo } from "react"
 import { ExtendedStoreDTO } from "@medusajs/medusa/dist/types/store"
-
-export enum ProfitOperation {
-  Addition = "Addition",
-  Multiplier = "Multiplier",
-}
-
-export type PricingOptionFormType = {
-  store_slug: string
-  currency_code: string
-  conversion_rate: number
-  profit_amount: number
-  shipping_charge: number
-  profit_operation: ProfitOperation
-}
+import { IInventoryStore, PricingOptionFormType, ProfitOperation } from "../../../../../types/inventory-price-setting.d"
 
 type Props = {
+  
   form: UseFormReturn<PricingOptionFormType, any>
   store: IInventoryStore
   medusaStore: ExtendedStoreDTO
@@ -101,10 +88,13 @@ const PriceSettingForm = ({ form, store, medusaStore, isEdit = false }: Props) =
             onBlur={onBlur}
             options={[
                 {
-                  label: ProfitOperation.Addition, value: ProfitOperation.Addition
+                  label: "Addition", value: ProfitOperation.ADDITION
                 },
                 {
-                  label: ProfitOperation.Multiplier, value: ProfitOperation.Multiplier
+                  label: "Multiplication", value: ProfitOperation.MULTIPLICATION
+                },
+                {
+                  label: "Percent", value: ProfitOperation.PERCENT
                 }
             ]}
             placeholder="Choose a profit operation"

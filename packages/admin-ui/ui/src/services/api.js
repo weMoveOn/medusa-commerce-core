@@ -305,6 +305,17 @@ export default {
     }
   },
 
+  InventoryPriceSettings: {
+    list(search = {}) {
+    const path = `/price-role-settings${search ? `?store_slug=${search}` : ""}`;
+    return medusaRequest("GET", path);
+    },
+    add(add) {
+      const path = `/price-role-settings`;
+      return medusaRequest("POST", path, add);
+      },
+  },
+
   swaps: {
     retrieve(swapId) {
       const path = `/admin/swaps/${swapId}`

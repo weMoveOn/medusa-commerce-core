@@ -1,13 +1,14 @@
-import { Region } from "@medusajs/medusa"
-import { useAdminCreateShippingOption, useAdminStore } from "medusa-react"
+import { useAdminStore } from "medusa-react"
 import { useForm } from "react-hook-form"
-import { getSubmittableMetadata } from "../../../../../components/forms/general/metadata-form"
 import Button from "../../../../../components/fundamentals/button"
 import Modal from "../../../../../components/molecules/modal"
 import useNotification from "../../../../../hooks/use-notification"
-import { useShippingOptionFormData } from "../../components/price-setting-form/use-pricing-option-form-data"
-import { IInventoryStore } from "../../../../../types/inventory-store"
-import PricingOptionForm, { PricingOptionFormType } from "../../components/price-setting-form"
+import { CreatePricingOptionFormType, ICreatePriceSettingReturnType, IInventoryStore, PricingOptionFormType } from "../../../../../types/inventory-price-setting"
+import PricingOptionForm from "../../components/price-setting-form"
+import { AxiosResponse } from "axios"
+import Medusa from "../../../../../services/api"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import { getErrorMessage } from "../../../../../utils/error-messages"
 
 type Props = {
   open: boolean
@@ -16,49 +17,49 @@ type Props = {
 }
 
 const CreatePricingOptionModal = ({ open, onClose, store }: Props) => {
+  console.log("🚀 ~ file: create-pricing-setting-modal.tsx:20 ~ CreatePricingOptionModal ~ store:", store)
   const form = useForm<PricingOptionFormType>()
-  const { store : medusaStore, status, error } = useAdminStore({})
+  const { store : medusaStore, status, isLoading } = useAdminStore({})
+  console.log("🚀 ~ file: create-pricing-setting-modal.tsx:23 ~ CreatePricingOptionModal ~ medusaStore:", medusaStore)
 
   const {
     formState: { isDirty },
     handleSubmit,
     reset,
   } = form
-  const { mutate, isLoading } = useAdminCreateShippingOption()
   const notifcation = useNotification()
+  const queryClient = useQueryClient()
 
   const closeAndReset = () => {
     reset()
     onClose()
   }
 
+  const createPriceSettingMutation = useMutation(
+    (data: CreatePricingOptionFormType) => Medusa.InventoryPriceSettings.add({ ...data, store_slug: store.slug }),
+    {
+      onSuccess: () => {
+        notifcation("Success", "New price role created", "success");
+        closeAndReset();
+        
+       queryClient.invalidateQueries({ queryKey: ['single-price-setting-retrieve'] })
+      },
+      onError: (error) => {
+        notifcation("Error", getErrorMessage(error), "error");
+      },
+    }
+  );
+
   const onSubmit = handleSubmit((data) => {
-    console.log(data)
-    console.log(store)
-    // mutate(
-    //   {
-    //     is_return: false,
-    //     region_id: region.id,
-    //     profile_id: data.shipping_profile?.value,
-    //     name: data.name!,
-    //     data: fData,
-    //     price_type: data.price_type!.value,
-    //     provider_id,
-    //     admin_only: !data.store_option,
-    //     amount: data.amount!,
-    //     requirements: getRequirementsData(data),
-    //     metadata: getSubmittableMetadata(data.metadata),
-    //   },
-    //   {
-    //     onSuccess: () => {
-    //       notifcation("Success", "Shipping option created", "success")
-    //       closeAndReset()
-    //     },
-    //     onError: (error) => {
-    //       notifcation("Error", getErrorMessage(error), "error")
-    //     },
-    //   }
-    // )
+    const newData: CreatePricingOptionFormType = {
+      conversion_rate: data.conversion_rate,
+      currency_code: data.currency_code.value,
+      profit_amount: data.profit_amount,
+      profit_operation: data.profit_operation.value,
+      shipping_charge: data.shipping_charge,
+      store_slug: store.slug
+    };
+    createPriceSettingMutation.mutate(newData)
   })
 
   return (

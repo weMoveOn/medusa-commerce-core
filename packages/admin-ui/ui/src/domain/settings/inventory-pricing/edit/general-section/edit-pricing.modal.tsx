@@ -22,9 +22,10 @@ import RegionDetailsForm, {
 import RegionProvidersForm, {
   RegionProvidersFormType,
 } from "../../components/region-form/region-providers-form"
+import { IPriceSetting } from "../../../../../types/inventory-price-setting"
 
 type Props = {
-  region: Region
+  data: IPriceSetting
   open: boolean
   onClose: () => void
 }
@@ -35,7 +36,7 @@ type RegionEditFormType = {
   metadata: MetadataFormType
 }
 
-const EditRegionModal = ({ region, onClose, open }: Props) => {
+const EditPricingModal = ({ data, onClose, open }: Props) => {
   const form = useForm<RegionEditFormType>({
     defaultValues: getDefaultValues(region),
   })
@@ -168,4 +169,4 @@ const getDefaultValues = (region: Region): RegionEditFormType => {
   }
 }
 
-export default EditRegionModal
+export default EditPricingModal

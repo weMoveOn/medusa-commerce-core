@@ -1,5 +1,5 @@
 import RadioGroup from "../../../../components/organisms/radio-group"
-import { IInventoryStore } from "../../../../types/inventory-store"
+import { IInventoryStore } from "../../../../types/inventory-price-setting"
 
 type Props = {
   store: IInventoryStore

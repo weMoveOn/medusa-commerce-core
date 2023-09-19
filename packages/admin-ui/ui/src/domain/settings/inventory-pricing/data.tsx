@@ -1,4 +1,4 @@
-import { IInventoryStore } from "../../../types/inventory-store";
+import { IInventoryStore } from "../../../types/inventory-price-setting";
 
 export const storeData: IInventoryStore[] = [
     {

@@ -1,7 +1,7 @@
 import Section from "../../../../../components/organisms/section"
 import useToggleState from "../../../../../hooks/use-toggle-state"
 import CreatePricingOptionModal from "./create-pricing-setting-modal"
-import { IInventoryStore } from "../../../../../types/inventory-store"
+import { IInventoryStore } from "../../../../../types/inventory-price-setting"
 
 type Props = {
   store: IInventoryStore
