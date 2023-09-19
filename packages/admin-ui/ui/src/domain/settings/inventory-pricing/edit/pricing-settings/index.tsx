@@ -1,35 +1,30 @@
 import Section from "../../../../../components/organisms/section"
 import useToggleState from "../../../../../hooks/use-toggle-state"
-import CreatePricingOptionModal from "./create-pricing-option-modal"
+import CreatePricingOptionModal from "./create-pricing-setting-modal"
 import { IInventoryStore } from "../../../../../types/inventory-store"
 
 type Props = {
   store: IInventoryStore
 }
 
-const PricingOptions = ({ store }: Props) => {
+const PricingSettings = ({ store }: Props) => {
   const { state, toggle, close } = useToggleState()
 
   return (
     <>
       <Section
-        title="Pricing Options"
+        title={`Price Settings for ${store.name}`}
         actions={[
           {
-            label: "Add Option",
+            label: "Set Price",
             onClick: toggle,
           },
         ]}
       >
         <div className="gap-y-large flex flex-col">
           <p className="inter-base-regular text-grey-50">
-            Enter pricing about available store options.
+            Enter pricing about available store.
           </p>
-          {/* <div className="gap-y-small flex flex-col">
-            {shippingOptions?.map((option) => {
-              return <ShippingOptionCard option={option} key={option.id} />
-            })}
-          </div> */}
         </div>
       </Section>
       <CreatePricingOptionModal open={state} onClose={close} store={store} />
@@ -37,4 +32,4 @@ const PricingOptions = ({ store }: Props) => {
   )
 }
 
-export default PricingOptions
+export default PricingSettings

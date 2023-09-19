@@ -8,8 +8,8 @@ import useNotification from "../../../../../hooks/use-notification"
 import { getErrorMessage } from "../../../../../utils/error-messages"
 import ShippingOptionForm, {
   ShippingOptionFormType,
-} from "../../components/shipping-option-form"
-import { useShippingOptionFormData } from "../../components/shipping-option-form/use-shipping-option-form-data"
+} from "../../components/price-setting-form"
+import { useShippingOptionFormData } from "../../components/price-setting-form/use-pricing-option-form-data"
 
 type Props = {
   open: boolean

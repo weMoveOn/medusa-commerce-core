@@ -12,8 +12,8 @@ import useNotification from "../../../../../hooks/use-notification"
 import { getErrorMessage } from "../../../../../utils/error-messages"
 import ShippingOptionForm, {
   ShippingOptionFormType,
-} from "../shipping-option-form"
-import { useShippingOptionFormData } from "../shipping-option-form/use-shipping-option-form-data"
+} from "../price-setting-form"
+import { useShippingOptionFormData } from "../price-setting-form/use-pricing-option-form-data"
 
 type Props = {
   open: boolean

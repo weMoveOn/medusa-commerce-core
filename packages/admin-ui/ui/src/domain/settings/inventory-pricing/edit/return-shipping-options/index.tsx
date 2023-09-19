@@ -2,7 +2,7 @@ import { Region } from "@medusajs/medusa"
 import { useAdminShippingOptions } from "medusa-react"
 import Section from "../../../../../components/organisms/section"
 import useToggleState from "../../../../../hooks/use-toggle-state"
-import ShippingOptionCard from "../../components/shipping-option-card"
+import ShippingOptionCard from "../../components/pricing-setting-card"
 import CreateReturnShippingOptionModal from "./create-return-shipping-option.modal"
 
 type Props = {

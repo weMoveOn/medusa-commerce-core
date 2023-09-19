@@ -1,17 +1,13 @@
 import { Region } from "@medusajs/medusa"
-import { useAdminCreateShippingOption } from "medusa-react"
+import { useAdminCreateShippingOption, useAdminStore } from "medusa-react"
 import { useForm } from "react-hook-form"
 import { getSubmittableMetadata } from "../../../../../components/forms/general/metadata-form"
 import Button from "../../../../../components/fundamentals/button"
 import Modal from "../../../../../components/molecules/modal"
 import useNotification from "../../../../../hooks/use-notification"
-import { getErrorMessage } from "../../../../../utils/error-messages"
-import ShippingOptionForm, {
-  ShippingOptionFormType,
-} from "../../components/shipping-option-form"
-import { useShippingOptionFormData } from "../../components/shipping-option-form/use-shipping-option-form-data"
+import { useShippingOptionFormData } from "../../components/price-setting-form/use-pricing-option-form-data"
 import { IInventoryStore } from "../../../../../types/inventory-store"
-import PricingOptionForm from "../../components/shipping-option-form"
+import PricingOptionForm, { PricingOptionFormType } from "../../components/price-setting-form"
 
 type Props = {
   open: boolean
@@ -20,7 +16,9 @@ type Props = {
 }
 
 const CreatePricingOptionModal = ({ open, onClose, store }: Props) => {
-  const form = useForm<ShippingOptionFormType>()
+  const form = useForm<PricingOptionFormType>()
+  const { store : medusaStore, status, error } = useAdminStore({})
+
   const {
     formState: { isDirty },
     handleSubmit,
@@ -35,6 +33,8 @@ const CreatePricingOptionModal = ({ open, onClose, store }: Props) => {
   }
 
   const onSubmit = handleSubmit((data) => {
+    console.log(data)
+    console.log(store)
     // mutate(
     //   {
     //     is_return: false,
@@ -65,11 +65,11 @@ const CreatePricingOptionModal = ({ open, onClose, store }: Props) => {
     <Modal open={open} handleClose={closeAndReset}>
       <Modal.Body>
         <Modal.Header handleClose={closeAndReset}>
-          <h1 className="inter-xlarge-semibold">Add Pricing Option</h1>
+          <h1 className="inter-xlarge-semibold">Set Price</h1>
         </Modal.Header>
         <form onSubmit={onSubmit}>
           <Modal.Content>
-            <PricingOptionForm form={form} store={store} />
+            {medusaStore && <PricingOptionForm form={form} store={store} medusaStore={medusaStore} />}
           </Modal.Content>
           <Modal.Footer>
             <div className="gap-x-xsmall flex w-full items-center justify-end">

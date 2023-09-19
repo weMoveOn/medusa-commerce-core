@@ -2,7 +2,7 @@ import { useAdminRegion } from "medusa-react"
 import Spinner from "../../../../components/atoms/spinner"
 import GeneralSection from "./general-section"
 import { storeData } from "../data"
-import PricingOptions from "./pricing-options"
+import PricingOptions from "./pricing-settings"
 
 type Props = {
   id: string
@@ -37,7 +37,6 @@ const EditInventoryPricing = ({ id }: Props) => {
     <div className="gap-y-xsmall flex flex-col">
       <PricingOptions store={store} />
       <GeneralSection store={store} />
-      {/* <ReturnShippingOptions region={region} /> */}
     </div>
   )
 }
