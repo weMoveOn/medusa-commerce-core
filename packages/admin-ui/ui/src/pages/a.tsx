@@ -22,6 +22,7 @@ import PublishableApiKeys from "../domain/publishable-api-keys"
 import SalesChannels from "../domain/sales-channels"
 import Settings from "../domain/settings"
 import { AnalyticsProvider } from "../providers/analytics-provider"
+import InventoryPricing from "../domain/settings/inventory-pricing"
 
 const IndexPage = () => {
   const navigate = useNavigate()
