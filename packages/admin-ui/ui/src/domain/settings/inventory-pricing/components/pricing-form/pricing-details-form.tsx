@@ -53,7 +53,6 @@ const PricingDetailsForm = ({ form, availableCurrencyOptions, allCurrencyOptions
               control={control}
               name="currency_code"
               render={({ field: { onChange, value, onBlur } }) => {
-                console.log(findOptionByValue(allCurrencyOptions, value))
                 return (
             <NextSelect
             label="Currency Type"
