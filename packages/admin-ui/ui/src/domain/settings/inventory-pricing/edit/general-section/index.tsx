@@ -7,6 +7,12 @@ import { ExtendedStoreDTO } from "@medusajs/medusa/dist/types/store";
 import EditPricingModal from "./edit-pricing.modal";
 import { CrossIcon } from "react-select/dist/declarations/src/components/indicators";
 import TrashIcon from "../../../../../components/fundamentals/icons/trash-icon";
+import DeletePricingModal from "./delete-pricing.modal";
+import useImperativeDialog from "../../../../../hooks/use-imperative-dialog";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import useNotification from "../../../../../hooks/use-notification";
+import Medusa from "../../../../../services/api"
+import { getErrorMessage } from "../../../../../utils/error-messages";
 
 type Props = {
   store: IInventoryStore;
@@ -15,8 +21,39 @@ type Props = {
 };
 
 const GeneralSection = ({ store, data, medusaStore }: Props) => {
-  const { state, toggle, close } = useToggleState();
+  const dialog = useImperativeDialog()
+  const { state, toggle, close,  } = useToggleState();
   const [editData, setEditData] = useState<IUpdatePriceSetting>()
+  const [deleteData, setDeleteData] = useState<string>()
+
+  const queryClient = useQueryClient()
+  const notification = useNotification()
+
+  const deletePriceSettingMutation = useMutation(
+    () => Medusa.InventoryPriceSettings.delete(deleteData),
+    {
+      onSuccess: () => {
+        notification("Success", "Price role deleted", "success");
+        queryClient.invalidateQueries({ queryKey: ['single-price-setting-retrieve'] })
+      },
+      onError: (error) => {
+        notification("Error", getErrorMessage(error), "error");
+      },
+    }
+  );
+
+  const handleDelete = async () => {
+    const shouldDelete = await dialog({
+      heading: "Delete price role",
+      text: "Are you sure you want to delete the price role?",
+    })
+
+    if (!shouldDelete) {
+      return
+    }
+
+    return deletePriceSettingMutation.mutate(undefined)
+  }
 
   const getCurrencyDetails = (code: string) => {
     const currency = medusaStore?.currencies.find((c) => c.code === code);
@@ -33,7 +70,7 @@ const GeneralSection = ({ store, data, medusaStore }: Props) => {
             {
               label: "Edit",
               onClick: ()=>{
-                toggle();
+                toggle()
                 setEditData(d)
               },
               icon: <EditIcon size={20} className="text-grey-50" />,
@@ -41,7 +78,10 @@ const GeneralSection = ({ store, data, medusaStore }: Props) => {
             {
               label: "Delete",
               variant: "danger",
-              onClick: ()=>{},
+              onClick: ()=>{
+                setDeleteData(d.id)
+                handleDelete()
+              },
               icon: <TrashIcon size={20} />,
             }
           ]}

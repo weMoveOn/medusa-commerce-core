@@ -4,7 +4,7 @@ import Button from "../../../../../components/fundamentals/button"
 import Modal from "../../../../../components/molecules/modal"
 import useNotification from "../../../../../hooks/use-notification"
 import { getErrorMessage } from "../../../../../utils/error-messages"
-import { CreatePricingOptionFormType, IPriceSetting, IPriceSettingReturnType, IUpdatePriceOptionFormType, IUpdatePriceSetting } from "../../../../../types/inventory-price-setting"
+import { IPriceSetting, IPriceSettingReturnType, IUpdatePriceOptionFormType, IUpdatePriceSetting } from "../../../../../types/inventory-price-setting"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import Medusa from "../../../../../services/api"
 import PricingDetailsForm from "../../components/pricing-form/pricing-details-form"
@@ -67,6 +67,7 @@ const EditPricingModal = ({ data, editData, medusaStore, onClose, open }: Props)
       store_slug: updatedData.store_slug,
       id: updatedData.id
     } ;
+    console.log(formattedData)
     updatePriceSettingMutation.mutate(formattedData)
   })
 
