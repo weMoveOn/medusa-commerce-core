@@ -314,6 +314,10 @@ export default {
       const path = `/price-role-settings`;
       return medusaRequest("POST", path, add);
       },
+    update(id, update) {  
+      const path = `/price-role-settings/${id}`;
+      return medusaRequest("PATCH", path, update);
+      },
   },
 
   swaps: {

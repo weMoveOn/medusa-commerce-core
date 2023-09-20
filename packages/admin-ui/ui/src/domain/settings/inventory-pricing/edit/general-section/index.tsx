@@ -1,9 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
 import EditIcon from "../../../../../components/fundamentals/icons/edit-icon";
 import Section from "../../../../../components/organisms/section";
 import useToggleState from "../../../../../hooks/use-toggle-state";
-import { IInventoryStore, IPriceSettingReturnType } from "../../../../../types/inventory-price-setting";
+import { IPriceSetting, IInventoryStore, IPriceSettingReturnType } from "../../../../../types/inventory-price-setting";
 import { ExtendedStoreDTO } from "@medusajs/medusa/dist/types/store";
+import EditPricingModal from "./edit-pricing.modal";
+import CreatePricingOptionModal from "../pricing-settings/create-pricing.modal";
 
 type Props = {
   store: IInventoryStore;
@@ -13,6 +15,7 @@ type Props = {
 
 const GeneralSection = ({ store, data, medusaStore }: Props) => {
   const { state, toggle, close } = useToggleState();
+  const [editData, setEditData] = useState<IPriceSetting>()
 
   const getCurrencyDetails = (code: string) => {
     const currency = medusaStore?.currencies.find((c) => c.code === code);
@@ -28,7 +31,10 @@ const GeneralSection = ({ store, data, medusaStore }: Props) => {
           actions={[
             {
               label: "Edit Price Settings",
-              onClick: toggle,
+              onClick: ()=>{
+                toggle();
+                setEditData(d)
+              },
               icon: <EditIcon size={20} className="text-grey-50" />,
             },
           ]}
@@ -68,7 +74,7 @@ const GeneralSection = ({ store, data, medusaStore }: Props) => {
           </div>
         </Section>
       ))}
-       {/* <EditPricingModal data={data} onClose={close} open={state} /> */}
+       {editData && <CreatePricingOptionModal editData={editData} onClose={close} open={state} />}
     </>
   );
 };

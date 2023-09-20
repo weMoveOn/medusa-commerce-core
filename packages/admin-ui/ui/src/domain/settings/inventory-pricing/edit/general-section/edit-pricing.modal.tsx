@@ -23,6 +23,8 @@ import RegionProvidersForm, {
   RegionProvidersFormType,
 } from "../../components/region-form/region-providers-form"
 import { IPriceSetting } from "../../../../../types/inventory-price-setting"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
+import Medusa from "../../../../../services/api"
 
 type Props = {
   data: IPriceSetting
@@ -30,15 +32,10 @@ type Props = {
   onClose: () => void
 }
 
-type RegionEditFormType = {
-  details: RegionDetailsFormType
-  providers: RegionProvidersFormType
-  metadata: MetadataFormType
-}
-
 const EditPricingModal = ({ data, onClose, open }: Props) => {
-  const form = useForm<RegionEditFormType>({
-    defaultValues: getDefaultValues(region),
+  const queryClient = useQueryClient()
+  const form = useForm<IPriceSetting>({
+    defaultValues: getDefaultValues(data),
   })
   const { isFeatureEnabled } = useFeatureFlag()
 
@@ -49,42 +46,41 @@ const EditPricingModal = ({ data, onClose, open }: Props) => {
   } = form
 
   const closeAndReset = () => {
-    reset(getDefaultValues(region))
+    reset(getDefaultValues(data))
     onClose()
   }
 
   useEffect(() => {
-    reset(getDefaultValues(region))
-  }, [region, reset])
+    reset(getDefaultValues(data))
+  }, [data, reset])
 
-  const { mutate, isLoading } = useAdminUpdateRegion(region.id)
   const notifcation = useNotification()
 
-  const onSubmit = handleSubmit((data) => {
-    const payload: AdminPostRegionsRegionReq = {
-      name: data.details.name,
-      currency_code: data.details.currency_code?.value,
-      payment_providers: data.providers.payment_providers.map((pp) => pp.value),
-      fulfillment_providers: data.providers.fulfillment_providers.map(
-        (fp) => fp.value
-      ),
-      countries: data.details.countries.map((c) => c.value),
-      metadata: getSubmittableMetadata(data.metadata),
-    }
-
-    if (isFeatureEnabled("tax_inclusive_pricing")) {
-      payload.includes_tax = data.details.includes_tax
-    }
-
-    mutate(payload, {
+  const updatePriceSettingMutation = useMutation(
+    (data: IPriceSetting) => Medusa.InventoryPriceSettings.update(data.id, { ...data }),
+    {
       onSuccess: () => {
-        notifcation("Success", "Region was successfully updated", "success")
-        closeAndReset()
+        notifcation("Success", "Price role updated", "success");
+        queryClient.invalidateQueries({ queryKey: ['single-price-setting-retrieve'] })
+        closeAndReset();
       },
-      onError: (err) => {
-        notifcation("Error", getErrorMessage(err), "error")
+      onError: (error) => {
+        notifcation("Error", getErrorMessage(error), "error");
       },
-    })
+    }
+  );
+
+  const onSubmit = handleSubmit((data) => {
+    console.log(data)
+    // const newData: CreatePricingOptionFormType = {
+    //   conversion_rate: data.conversion_rate,
+    //   currency_code: data.currency_code.value,
+    //   profit_amount: data.profit_amount,
+    //   profit_operation: data.profit_operation.value,
+    //   shipping_charge: data.shipping_charge,
+    //   store_slug: store.slug
+    // };
+    // createPriceSettingMutation.mutate(newData)
   })
 
   return (
@@ -97,17 +93,6 @@ const EditPricingModal = ({ data, onClose, open }: Props) => {
           <Modal.Content>
             <div>
               <h3 className="inter-base-semibold mb-base">Details</h3>
-              <RegionDetailsForm form={nestedForm(form, "details")} />
-            </div>
-            <div className="bg-grey-20 my-xlarge h-px w-full" />
-            <div>
-              <h3 className="inter-base-semibold mb-base">Providers</h3>
-              <RegionProvidersForm form={nestedForm(form, "providers")} />
-            </div>
-            <div className="bg-grey-20 my-xlarge h-px w-full" />
-            <div>
-              <h3 className="inter-base-semibold mb-base">Metadata</h3>
-              <MetadataForm form={nestedForm(form, "metadata")} />
             </div>
           </Modal.Content>
           <Modal.Footer>
@@ -124,8 +109,8 @@ const EditPricingModal = ({ data, onClose, open }: Props) => {
                 variant="primary"
                 size="small"
                 type="submit"
-                loading={isLoading}
-                disabled={isLoading || !isDirty}
+                // loading={isLoading}
+                // disabled={isLoading || !isDirty}
               >
                 Save and close
               </Button>
@@ -137,36 +122,9 @@ const EditPricingModal = ({ data, onClose, open }: Props) => {
   )
 }
 
-const getDefaultValues = (region: Region): RegionEditFormType => {
-  return {
-    details: {
-      countries: region.countries
-        ? region.countries.map((c) => ({
-            value: c.iso_2,
-            label: c.display_name,
-          }))
-        : [],
-      currency_code: {
-        value: region.currency_code,
-        label: currencies[region.currency_code.toUpperCase()].name,
-      },
-      name: region.name,
-      tax_code: null,
-      tax_rate: null,
-      includes_tax: region.includes_tax,
-    },
-    providers: {
-      fulfillment_providers: region.fulfillment_providers
-        ? region.fulfillment_providers.map((p) =>
-            fulfillmentProvidersMapper(p.id)
-          )
-        : [],
-      payment_providers: region.payment_providers
-        ? region.payment_providers.map((p) => paymentProvidersMapper(p.id))
-        : [],
-    },
-    metadata: getMetadataFormValues(region.metadata),
-  }
+const getDefaultValues = (editData: IPriceSetting): IPriceSetting => {
+  return editData;
 }
+
 
 export default EditPricingModal

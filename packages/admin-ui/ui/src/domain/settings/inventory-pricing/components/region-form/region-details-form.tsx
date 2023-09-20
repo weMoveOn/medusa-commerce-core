@@ -7,19 +7,11 @@ import { Option } from "../../../../../types/shared"
 import FormValidator from "../../../../../utils/form-validator"
 import { NestedForm } from "../../../../../utils/nested-form"
 import { useStoreData } from "./use-store-data"
-
-export type RegionDetailsFormType = {
-  name: string
-  countries: Option[]
-  currency_code: Option
-  tax_rate: number | null
-  tax_code: string | null
-  includes_tax?: boolean
-}
+import { IPriceSetting } from "../../../../../types/inventory-price-setting"
 
 type Props = {
   isCreate?: boolean
-  form: NestedForm<RegionDetailsFormType>
+  form: NestedForm<IPriceSetting>
 }
 
 const RegionDetailsForm = ({ form, isCreate = false }: Props) => {
@@ -29,7 +21,6 @@ const RegionDetailsForm = ({ form, isCreate = false }: Props) => {
     path,
     formState: { errors },
   } = form
-  const { currencyOptions, countryOptions } = useStoreData()
 
   return (
     <div>

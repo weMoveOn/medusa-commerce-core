@@ -1,22 +1,20 @@
-import { useAdminStore } from "medusa-react"
 import { useForm } from "react-hook-form"
 import Button from "../../../../../components/fundamentals/button"
 import Modal from "../../../../../components/molecules/modal"
 import useNotification from "../../../../../hooks/use-notification"
-import { CreatePricingOptionFormType, ICreatePriceSettingReturnType, ICurrencyOptions, IInventoryStore, IPriceSettingReturnType, PricingOptionFormType } from "../../../../../types/inventory-price-setting"
-import PricingOptionForm from "../../components/price-setting-form"
-import { AxiosResponse } from "axios"
+import { CreatePricingOptionFormType, ICurrencyOptions, IInventoryStore, IPriceSettingReturnType, PricingOptionFormType } from "../../../../../types/inventory-price-setting"
+import PriceSettingForm from "../../components/price-setting-form"
 import Medusa from "../../../../../services/api"
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { getErrorMessage } from "../../../../../utils/error-messages"
-import { ExtendedStoreDTO } from "@medusajs/medusa/dist/types/store"
 
 type Props = {
   open: boolean
   onClose: () => void
   store: IInventoryStore
   data?: IPriceSettingReturnType
-  currencyOptions: ICurrencyOptions[]}
+  currencyOptions: ICurrencyOptions[]
+}
 
 const CreatePricingOptionModal = ({ open, onClose, store, data, currencyOptions }: Props) => {
   const form = useForm<PricingOptionFormType>()
@@ -67,7 +65,7 @@ const CreatePricingOptionModal = ({ open, onClose, store, data, currencyOptions 
         </Modal.Header>
         <form onSubmit={onSubmit}>
           <Modal.Content>
-           <PricingOptionForm form={form} store={store} currencyOptions={currencyOptions} data={data} />
+           <PriceSettingForm form={form} currencyOptions={currencyOptions} />
           </Modal.Content>
           <Modal.Footer>
             <div className="gap-x-xsmall flex w-full items-center justify-end">

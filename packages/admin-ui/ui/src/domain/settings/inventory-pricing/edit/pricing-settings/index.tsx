@@ -1,8 +1,7 @@
 import Section from "../../../../../components/organisms/section"
 import useToggleState from "../../../../../hooks/use-toggle-state"
-import CreatePricingOptionModal from "./create-pricing-setting-modal"
+import CreatePricingOptionModal from "./create-pricing.modal"
 import { IInventoryStore, IPriceSettingReturnType } from "../../../../../types/inventory-price-setting"
-import { useAdminStore } from "medusa-react"
 import { useMemo } from "react"
 import { Currency } from "@medusajs/medusa"
 import { ExtendedStoreDTO } from "@medusajs/medusa/dist/types/store"
@@ -52,7 +51,7 @@ const handleAddCurrencyClick = ()=>{
   return (
     <>
       <Section
-        title={`Price Settings for ${store.name}`}
+        title={`${store.name}`}
         actions={[
           {
             label: currencyOptions.length===0 ? "Add More Currency" : "Set Price Role",

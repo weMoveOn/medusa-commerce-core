@@ -2,20 +2,14 @@ import { Controller, UseFormReturn } from "react-hook-form"
 import InputField from "../../../../../components/molecules/input"
 import { NextSelect } from "../../../../../components/molecules/select/next-select"
 import FormValidator from "../../../../../utils/form-validator"
-import { useMemo } from "react"
-import { ExtendedStoreDTO } from "@medusajs/medusa/dist/types/store"
 import { ICurrencyOptions, IInventoryStore, IPriceSettingReturnType, PricingOptionFormType, ProfitOperation } from "../../../../../types/inventory-price-setting.d"
-import { Currency } from "@medusajs/medusa"
 
 type Props = {
   form: UseFormReturn<PricingOptionFormType, any>
-  store: IInventoryStore
-  isEdit?: boolean
-  data?: IPriceSettingReturnType
   currencyOptions: ICurrencyOptions[]
 }
 
-const PriceSettingForm = ({ form, store, currencyOptions, isEdit = false, data }: Props) => {
+const PriceSettingForm = ({ form, currencyOptions }: Props) => {
   const {
     register,
     watch,
