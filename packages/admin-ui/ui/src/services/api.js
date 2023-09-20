@@ -315,6 +315,7 @@ export default {
       return medusaRequest("POST", path, add);
       },
     update(id, update) {  
+      console.log(update, "jj")
       const path = `/price-role-settings/${id}`;
       return medusaRequest("PATCH", path, update);
       },

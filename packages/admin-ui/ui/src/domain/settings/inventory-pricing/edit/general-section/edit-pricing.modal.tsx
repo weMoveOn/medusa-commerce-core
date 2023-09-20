@@ -1,43 +1,29 @@
-import { AdminPostRegionsRegionReq, Region } from "@medusajs/medusa"
-import { useAdminUpdateRegion } from "medusa-react"
-import { useEffect } from "react"
+import { useEffect, useMemo } from "react"
 import { useForm } from "react-hook-form"
-import MetadataForm, {
-  getMetadataFormValues,
-  getSubmittableMetadata,
-  MetadataFormType,
-} from "../../../../../components/forms/general/metadata-form"
 import Button from "../../../../../components/fundamentals/button"
 import Modal from "../../../../../components/molecules/modal"
 import useNotification from "../../../../../hooks/use-notification"
-import { useFeatureFlag } from "../../../../../providers/feature-flag-provider"
-import { currencies } from "../../../../../utils/currencies"
 import { getErrorMessage } from "../../../../../utils/error-messages"
-import fulfillmentProvidersMapper from "../../../../../utils/fulfillment-providers.mapper"
-import { nestedForm } from "../../../../../utils/nested-form"
-import paymentProvidersMapper from "../../../../../utils/payment-providers-mapper"
-import RegionDetailsForm, {
-  RegionDetailsFormType,
-} from "../../components/region-form/region-details-form"
-import RegionProvidersForm, {
-  RegionProvidersFormType,
-} from "../../components/region-form/region-providers-form"
-import { IPriceSetting } from "../../../../../types/inventory-price-setting"
+import { CreatePricingOptionFormType, IPriceSetting, IPriceSettingReturnType, IUpdatePriceOptionFormType, IUpdatePriceSetting } from "../../../../../types/inventory-price-setting"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import Medusa from "../../../../../services/api"
+import PricingDetailsForm from "../../components/pricing-form/pricing-details-form"
+import { Currency } from "@medusajs/medusa"
+import { ExtendedStoreDTO } from "@medusajs/medusa/dist/types/store"
 
 type Props = {
-  data: IPriceSetting
+  data: IPriceSettingReturnType
+  editData: IUpdatePriceSetting
+  medusaStore: ExtendedStoreDTO
   open: boolean
   onClose: () => void
 }
 
-const EditPricingModal = ({ data, onClose, open }: Props) => {
+const EditPricingModal = ({ data, editData, medusaStore, onClose, open }: Props) => {
   const queryClient = useQueryClient()
-  const form = useForm<IPriceSetting>({
-    defaultValues: getDefaultValues(data),
+  const form = useForm<IUpdatePriceSetting>({
+    defaultValues: getDefaultValues(editData),
   })
-  const { isFeatureEnabled } = useFeatureFlag()
 
   const {
     reset,
@@ -46,18 +32,18 @@ const EditPricingModal = ({ data, onClose, open }: Props) => {
   } = form
 
   const closeAndReset = () => {
-    reset(getDefaultValues(data))
+    reset(getDefaultValues(editData))
     onClose()
   }
 
   useEffect(() => {
-    reset(getDefaultValues(data))
-  }, [data, reset])
+    reset(getDefaultValues(editData))
+  }, [editData, reset])
 
   const notifcation = useNotification()
 
   const updatePriceSettingMutation = useMutation(
-    (data: IPriceSetting) => Medusa.InventoryPriceSettings.update(data.id, { ...data }),
+    (data: IUpdatePriceSetting) => Medusa.InventoryPriceSettings.update(data.id, { ...data }),
     {
       onSuccess: () => {
         notifcation("Success", "Price role updated", "success");
@@ -71,28 +57,56 @@ const EditPricingModal = ({ data, onClose, open }: Props) => {
   );
 
   const onSubmit = handleSubmit((data) => {
-    console.log(data)
-    // const newData: CreatePricingOptionFormType = {
-    //   conversion_rate: data.conversion_rate,
-    //   currency_code: data.currency_code.value,
-    //   profit_amount: data.profit_amount,
-    //   profit_operation: data.profit_operation.value,
-    //   shipping_charge: data.shipping_charge,
-    //   store_slug: store.slug
-    // };
-    // createPriceSettingMutation.mutate(newData)
+    const updatedData : IUpdatePriceOptionFormType = data as any;
+    const formattedData = {
+      conversion_rate: Number(updatedData.conversion_rate),
+      currency_code: updatedData.currency_code.value ,
+      profit_amount: Number(updatedData.profit_amount),
+      profit_operation: updatedData.profit_operation.value,
+      shipping_charge: Number(updatedData.shipping_charge),
+      store_slug: updatedData.store_slug,
+      id: updatedData.id
+    } ;
+    updatePriceSettingMutation.mutate(formattedData)
   })
+
+  const availableCurrencyOptions = useMemo(() => {
+    let currencyCodesInData : Array<string> = [];
+    let filteredCurrencies: Currency[] = [];
+    currencyCodesInData = data.result.map((item) => item.currency_code);
+    filteredCurrencies = medusaStore.currencies.filter((currency) =>
+    !currencyCodesInData.includes(currency.code)
+  );
+  return filteredCurrencies && filteredCurrencies.map((currency) => {
+    return {
+      value: currency.code,
+      label: currency.name,
+      prefix: currency.symbol
+    }
+  })
+}, [data, medusaStore])
+
+const allCurrencyOptions = useMemo(() => {
+  const currencies = medusaStore.currencies.map((currency) => {
+  return {
+    value: currency.code,
+    label: currency.name,
+    prefix: currency.symbol
+  }
+})
+return currencies
+}, [medusaStore])
 
   return (
     <Modal handleClose={closeAndReset} open={open}>
       <Modal.Body>
         <Modal.Header handleClose={closeAndReset}>
-          <h1 className="inter-xlarge-semibold">Edit Region Details</h1>
+          <h1 className="inter-xlarge-semibold">Edit Price Role</h1>
         </Modal.Header>
         <form onSubmit={onSubmit}>
           <Modal.Content>
             <div>
-              <h3 className="inter-base-semibold mb-base">Details</h3>
+              <PricingDetailsForm form={form} availableCurrencyOptions={availableCurrencyOptions} allCurrencyOptions={allCurrencyOptions} />
             </div>
           </Modal.Content>
           <Modal.Footer>

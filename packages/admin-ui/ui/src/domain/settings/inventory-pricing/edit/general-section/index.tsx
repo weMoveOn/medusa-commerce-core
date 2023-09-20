@@ -2,10 +2,11 @@ import React, { useState } from "react";
 import EditIcon from "../../../../../components/fundamentals/icons/edit-icon";
 import Section from "../../../../../components/organisms/section";
 import useToggleState from "../../../../../hooks/use-toggle-state";
-import { IPriceSetting, IInventoryStore, IPriceSettingReturnType } from "../../../../../types/inventory-price-setting";
+import { IPriceSetting, IInventoryStore, IPriceSettingReturnType, IUpdatePriceSetting } from "../../../../../types/inventory-price-setting";
 import { ExtendedStoreDTO } from "@medusajs/medusa/dist/types/store";
 import EditPricingModal from "./edit-pricing.modal";
-import CreatePricingOptionModal from "../pricing-settings/create-pricing.modal";
+import { CrossIcon } from "react-select/dist/declarations/src/components/indicators";
+import TrashIcon from "../../../../../components/fundamentals/icons/trash-icon";
 
 type Props = {
   store: IInventoryStore;
@@ -15,7 +16,7 @@ type Props = {
 
 const GeneralSection = ({ store, data, medusaStore }: Props) => {
   const { state, toggle, close } = useToggleState();
-  const [editData, setEditData] = useState<IPriceSetting>()
+  const [editData, setEditData] = useState<IUpdatePriceSetting>()
 
   const getCurrencyDetails = (code: string) => {
     const currency = medusaStore?.currencies.find((c) => c.code === code);
@@ -30,13 +31,19 @@ const GeneralSection = ({ store, data, medusaStore }: Props) => {
           title={getCurrencyDetails(d.currency_code)?.name}
           actions={[
             {
-              label: "Edit Price Settings",
+              label: "Edit",
               onClick: ()=>{
                 toggle();
                 setEditData(d)
               },
               icon: <EditIcon size={20} className="text-grey-50" />,
             },
+            {
+              label: "Delete",
+              variant: "danger",
+              onClick: ()=>{},
+              icon: <TrashIcon size={20} />,
+            }
           ]}
         >
           <div className="gap-y-xsmall mt-large flex flex-col">
@@ -70,11 +77,18 @@ const GeneralSection = ({ store, data, medusaStore }: Props) => {
                   </span>
                 </div>
               </PriceDetail>
+              <PriceDetail title={"Delivery Fee"}>
+                <div className="gap-x-xsmall flex items-center">
+                  <span className=" text-grey-90">
+                    {d.shipping_charge}
+                  </span>
+                </div>
+              </PriceDetail>
             </div>
           </div>
         </Section>
       ))}
-       {editData && <CreatePricingOptionModal editData={editData} onClose={close} open={state} />}
+       {data && editData && medusaStore && <EditPricingModal data={data} editData={editData} medusaStore={medusaStore} onClose={close} open={state} />}
     </>
   );
 };

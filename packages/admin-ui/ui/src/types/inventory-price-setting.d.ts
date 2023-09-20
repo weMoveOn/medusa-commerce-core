@@ -16,11 +16,6 @@ type ProfitOperationSelectOption = {
   value: ProfitOperation
 }
 
-type ProfitOperationSelectOption = {
-  label: string;
-  value: ProfitOperation
-}
-
 type CurrencyCodeSelectOption = {
   label: string;
   value: string;
@@ -36,6 +31,10 @@ export type PricingOptionFormType = {
     profit_operation: ProfitOperationSelectOption
 }
 
+export interface IUpdatePriceOptionFormType extends PricingOptionFormType {
+  id: string
+}
+
 export type CreatePricingOptionFormType = {
   store_slug: string
   currency_code: string
@@ -43,6 +42,10 @@ export type CreatePricingOptionFormType = {
   profit_amount: number
   shipping_charge: number
   profit_operation: ProfitOperation
+}
+
+export interface IUpdatePriceSetting extends IPriceSetting {
+  id: string;
 }
 
 export interface IPriceSetting {

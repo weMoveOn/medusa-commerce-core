@@ -2,22 +2,47 @@ import { Controller, UseFormReturn } from "react-hook-form"
 import InputField from "../../../../../components/molecules/input"
 import { NextSelect } from "../../../../../components/molecules/select/next-select"
 import FormValidator from "../../../../../utils/form-validator"
-import { ICurrencyOptions, IInventoryStore, IPriceSettingReturnType, PricingOptionFormType, ProfitOperation } from "../../../../../types/inventory-price-setting.d"
+import { CurrencyCodeSelectOption, ICurrencyOptions, IPriceSetting, ProfitOperation, ProfitOperationSelectOption } from "../../../../../types/inventory-price-setting.d"
+import { useMemo } from "react"
 
 type Props = {
-  form: UseFormReturn<PricingOptionFormType, any>
-  currencyOptions: ICurrencyOptions[]
+  form: UseFormReturn<IPriceSetting, any>
+  availableCurrencyOptions: CurrencyCodeSelectOption[]
+  allCurrencyOptions: CurrencyCodeSelectOption[]
 }
 
-const PriceSettingForm = ({ form, currencyOptions }: Props) => {
+const profitOperationOptions: ProfitOperationSelectOption[] = [
+  {
+    label: "Addition", value: ProfitOperation.ADDITION
+  },
+  {
+    label: "Multiplication", value: ProfitOperation.MULTIPLICATION
+  },
+  {
+    label: "Percent", value: ProfitOperation.PERCENT
+  }
+]
+
+const PricingDetailsForm = ({ form, availableCurrencyOptions, allCurrencyOptions }: Props) => {
   const {
-    register,
-    watch,
     control,
+    register,
     formState: { errors },
   } = form
 
+  function findOptionByValue(arr: ProfitOperationSelectOption[] | ICurrencyOptions[], targetValue: ProfitOperation | string) {
+    return arr.find(obj => obj.value === targetValue);
+  }
 
+  function findAvilableCurrencyOptions(targetValue: string): CurrencyCodeSelectOption[] {
+    const currentlyActiveCurrencyOption = useMemo(() => {
+      return allCurrencyOptions.find(option => option.value === targetValue) as CurrencyCodeSelectOption;
+    }, []);
+  
+    return useMemo(() => {
+      return [...availableCurrencyOptions, currentlyActiveCurrencyOption];
+    }, [availableCurrencyOptions, currentlyActiveCurrencyOption]);
+  }
 
   return (
     <div>
@@ -28,20 +53,21 @@ const PriceSettingForm = ({ form, currencyOptions }: Props) => {
               control={control}
               name="currency_code"
               render={({ field: { onChange, value, onBlur } }) => {
+                console.log(findOptionByValue(allCurrencyOptions, value))
                 return (
             <NextSelect
             label="Currency Type"
             required
-            value={value}
+            defaultValue={findOptionByValue(allCurrencyOptions, value)}
             onChange={onChange}
             onBlur={onBlur}
-            options={currencyOptions}
+            options={findAvilableCurrencyOptions(value)}
             placeholder="Choose a currency type"
             errors={errors}
           />
           )
-              }}
-            />
+         }}
+      />
          </div> 
          
          <InputField
@@ -72,20 +98,10 @@ const PriceSettingForm = ({ form, currencyOptions }: Props) => {
             <NextSelect
             label="Profit Operation"
             required
-            value={value}
             onChange={onChange}
             onBlur={onBlur}
-            options={[
-                {
-                  label: "Addition", value: ProfitOperation.ADDITION
-                },
-                {
-                  label: "Multiplication", value: ProfitOperation.MULTIPLICATION
-                },
-                {
-                  label: "Percent", value: ProfitOperation.PERCENT
-                }
-            ]}
+            defaultValue={findOptionByValue(profitOperationOptions, value as ProfitOperation)}
+            options={profitOperationOptions}
             placeholder="Choose a profit operation"
             errors={errors}
           />
@@ -130,4 +146,4 @@ const PriceSettingForm = ({ form, currencyOptions }: Props) => {
   )
 }
 
-export default PriceSettingForm
+export default PricingDetailsForm
