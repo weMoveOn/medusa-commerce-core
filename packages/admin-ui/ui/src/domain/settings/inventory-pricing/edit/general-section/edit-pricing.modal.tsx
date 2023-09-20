@@ -21,6 +21,7 @@ type Props = {
 
 const EditPricingModal = ({ data, editData, medusaStore, onClose, open }: Props) => {
   const queryClient = useQueryClient()
+  const notifcation = useNotification()
   const form = useForm<IUpdatePriceSetting>({
     defaultValues: getDefaultValues(editData),
   })
@@ -39,8 +40,6 @@ const EditPricingModal = ({ data, editData, medusaStore, onClose, open }: Props)
   useEffect(() => {
     reset(getDefaultValues(editData))
   }, [editData, reset])
-
-  const notifcation = useNotification()
 
   const updatePriceSettingMutation = useMutation(
     (data: IUpdatePriceSetting) => Medusa.InventoryPriceSettings.update(data.id, { ...data }),
@@ -67,7 +66,6 @@ const EditPricingModal = ({ data, editData, medusaStore, onClose, open }: Props)
       store_slug: updatedData.store_slug,
       id: updatedData.id
     } ;
-    console.log(formattedData)
     updatePriceSettingMutation.mutate(formattedData)
   })
 
@@ -125,7 +123,7 @@ return currencies
                 size="small"
                 type="submit"
                 // loading={isLoading}
-                // disabled={isLoading || !isDirty}
+                disabled={!isDirty}
               >
                 Save and close
               </Button>

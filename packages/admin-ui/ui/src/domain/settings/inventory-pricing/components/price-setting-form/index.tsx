@@ -48,9 +48,9 @@ const PriceSettingForm = ({ form, currencyOptions }: Props) => {
             label="Conversion Rate"
             required
             {...register("conversion_rate", {
-              pattern: {
-                value: /^[0-9]+$/,
-                message: "Enter a valid number",
+                pattern: {
+                value: /^\d+(\.\d{1,2})?$/,
+                message: "Enter a valid number with up to 2 decimal places",
               },
               minLength: FormValidator.minOneCharRule("Conversion rate"),
             })}
@@ -98,9 +98,9 @@ const PriceSettingForm = ({ form, currencyOptions }: Props) => {
             label="Profit Value"
             required
             {...register("profit_amount", {
-              pattern: {
-                value: /^[0-9]+$/,
-                message: "Enter a valid number",
+                pattern: {
+                value: /^\d+(\.\d{1,2})?$/,
+                message: "Enter a valid number with up to 2 decimal places",
               },
               minLength: FormValidator.minOneCharRule("Profit Value"),
             })}
@@ -115,9 +115,9 @@ const PriceSettingForm = ({ form, currencyOptions }: Props) => {
             label="Shipping Charge"
             required
             {...register("shipping_charge", {
-              pattern: {
-                value: /^[0-9]+$/,
-                message: "Enter a valid number",
+                pattern: {
+                value: /^\d+(\.\d{1,2})?$/,
+                message: "Enter a valid number with up to 2 decimal places",
               },
               minLength: FormValidator.minOneCharRule("Shipping Charge"),
             })}

@@ -47,11 +47,11 @@ const CreatePricingOptionModal = ({ open, onClose, store, data, currencyOptions 
 
   const onSubmit = handleSubmit((data) => {
     const newData: CreatePricingOptionFormType = {
-      conversion_rate: data.conversion_rate,
+      conversion_rate: Number(data.conversion_rate),
       currency_code: data.currency_code.value,
-      profit_amount: data.profit_amount,
+      profit_amount: Number(data.profit_amount),
       profit_operation: data.profit_operation.value,
-      shipping_charge: data.shipping_charge,
+      shipping_charge: Number(data.shipping_charge),
       store_slug: store.slug
     };
     createPriceSettingMutation.mutate(newData)
