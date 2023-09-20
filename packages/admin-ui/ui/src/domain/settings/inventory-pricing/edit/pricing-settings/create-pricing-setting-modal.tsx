@@ -3,25 +3,23 @@ import { useForm } from "react-hook-form"
 import Button from "../../../../../components/fundamentals/button"
 import Modal from "../../../../../components/molecules/modal"
 import useNotification from "../../../../../hooks/use-notification"
-import { CreatePricingOptionFormType, ICreatePriceSettingReturnType, IInventoryStore, PricingOptionFormType } from "../../../../../types/inventory-price-setting"
+import { CreatePricingOptionFormType, ICreatePriceSettingReturnType, ICurrencyOptions, IInventoryStore, IPriceSettingReturnType, PricingOptionFormType } from "../../../../../types/inventory-price-setting"
 import PricingOptionForm from "../../components/price-setting-form"
 import { AxiosResponse } from "axios"
 import Medusa from "../../../../../services/api"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { getErrorMessage } from "../../../../../utils/error-messages"
+import { ExtendedStoreDTO } from "@medusajs/medusa/dist/types/store"
 
 type Props = {
   open: boolean
   onClose: () => void
   store: IInventoryStore
-}
+  data?: IPriceSettingReturnType
+  currencyOptions: ICurrencyOptions[]}
 
-const CreatePricingOptionModal = ({ open, onClose, store }: Props) => {
-  console.log("🚀 ~ file: create-pricing-setting-modal.tsx:20 ~ CreatePricingOptionModal ~ store:", store)
+const CreatePricingOptionModal = ({ open, onClose, store, data, currencyOptions }: Props) => {
   const form = useForm<PricingOptionFormType>()
-  const { store : medusaStore, status, isLoading } = useAdminStore({})
-  console.log("🚀 ~ file: create-pricing-setting-modal.tsx:23 ~ CreatePricingOptionModal ~ medusaStore:", medusaStore)
-
   const {
     formState: { isDirty },
     handleSubmit,
@@ -40,9 +38,8 @@ const CreatePricingOptionModal = ({ open, onClose, store }: Props) => {
     {
       onSuccess: () => {
         notifcation("Success", "New price role created", "success");
+        queryClient.invalidateQueries({ queryKey: ['single-price-setting-retrieve'] })
         closeAndReset();
-        
-       queryClient.invalidateQueries({ queryKey: ['single-price-setting-retrieve'] })
       },
       onError: (error) => {
         notifcation("Error", getErrorMessage(error), "error");
@@ -70,7 +67,7 @@ const CreatePricingOptionModal = ({ open, onClose, store }: Props) => {
         </Modal.Header>
         <form onSubmit={onSubmit}>
           <Modal.Content>
-            {medusaStore && <PricingOptionForm form={form} store={store} medusaStore={medusaStore} />}
+           <PricingOptionForm form={form} store={store} currencyOptions={currencyOptions} data={data} />
           </Modal.Content>
           <Modal.Footer>
             <div className="gap-x-xsmall flex w-full items-center justify-end">
@@ -86,8 +83,7 @@ const CreatePricingOptionModal = ({ open, onClose, store }: Props) => {
                 variant="primary"
                 size="small"
                 type="submit"
-                loading={isLoading}
-                disabled={isLoading || !isDirty}
+                disabled={!isDirty}
               >
                 Save and close
               </Button>

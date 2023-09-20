@@ -4,17 +4,18 @@ import { NextSelect } from "../../../../../components/molecules/select/next-sele
 import FormValidator from "../../../../../utils/form-validator"
 import { useMemo } from "react"
 import { ExtendedStoreDTO } from "@medusajs/medusa/dist/types/store"
-import { IInventoryStore, PricingOptionFormType, ProfitOperation } from "../../../../../types/inventory-price-setting.d"
+import { ICurrencyOptions, IInventoryStore, IPriceSettingReturnType, PricingOptionFormType, ProfitOperation } from "../../../../../types/inventory-price-setting.d"
+import { Currency } from "@medusajs/medusa"
 
 type Props = {
-  
   form: UseFormReturn<PricingOptionFormType, any>
   store: IInventoryStore
-  medusaStore: ExtendedStoreDTO
   isEdit?: boolean
+  data?: IPriceSettingReturnType
+  currencyOptions: ICurrencyOptions[]
 }
 
-const PriceSettingForm = ({ form, store, medusaStore, isEdit = false }: Props) => {
+const PriceSettingForm = ({ form, store, currencyOptions, isEdit = false, data }: Props) => {
   const {
     register,
     watch,
@@ -22,15 +23,7 @@ const PriceSettingForm = ({ form, store, medusaStore, isEdit = false }: Props) =
     formState: { errors },
   } = form
 
-  const currencyOptions = useMemo(() => {
-    return medusaStore.currencies.map((currency) => {
-      return {
-        value: currency.code,
-        label: currency.name,
-        prefix: currency.code.toUpperCase(),
-      }
-    })
-  }, [store])
+
 
   return (
     <div>
@@ -62,7 +55,10 @@ const PriceSettingForm = ({ form, store, medusaStore, isEdit = false }: Props) =
             label="Conversion Rate"
             required
             {...register("conversion_rate", {
-              pattern: FormValidator.whiteSpaceRule("Conversion rate"),
+              pattern: {
+                value: /^[0-9]+$/,
+                message: "Enter a valid number",
+              },
               minLength: FormValidator.minOneCharRule("Conversion rate"),
             })}
             errors={errors}
@@ -109,7 +105,10 @@ const PriceSettingForm = ({ form, store, medusaStore, isEdit = false }: Props) =
             label="Profit Value"
             required
             {...register("profit_amount", {
-              pattern: FormValidator.whiteSpaceRule("Profit Value"),
+              pattern: {
+                value: /^[0-9]+$/,
+                message: "Enter a valid number",
+              },
               minLength: FormValidator.minOneCharRule("Profit Value"),
             })}
             errors={errors}
@@ -123,7 +122,10 @@ const PriceSettingForm = ({ form, store, medusaStore, isEdit = false }: Props) =
             label="Shipping Charge"
             required
             {...register("shipping_charge", {
-              pattern: FormValidator.whiteSpaceRule("Shipping Charge"),
+              pattern: {
+                value: /^[0-9]+$/,
+                message: "Enter a valid number",
+              },
               minLength: FormValidator.minOneCharRule("Shipping Charge"),
             })}
             errors={errors}

@@ -306,7 +306,7 @@ export default {
   },
 
   InventoryPriceSettings: {
-    list(search = {}) {
+    list(search = "") {
     const path = `/price-role-settings${search ? `?store_slug=${search}` : ""}`;
     return medusaRequest("GET", path);
     },

@@ -1,21 +1,30 @@
-import { useAdminRegion } from "medusa-react"
+import { useAdminStore } from "medusa-react"
 import Spinner from "../../../../components/atoms/spinner"
 import GeneralSection from "./general-section"
 import { storeData } from "../data"
-import PricingOptions from "./pricing-settings"
+import PricingSettings from "./pricing-settings"
 import { useQuery } from "@tanstack/react-query"
-import { IPriceSettingReturnType } from "../../../../types/inventory-price-setting"
+import { IInventoryStore, IPriceSettingReturnType } from "../../../../types/inventory-price-setting"
 import { AxiosResponse } from "axios"
 import Medusa from "../../../../services/api"
 import { useEffect } from "react"
 
 type Props = {
-  id: string
+  store: IInventoryStore
 }
 
-const EditInventoryPricing = ({ id }: Props) => {
-  const store = storeData.find(store => store.id === id);
-  
+const EditInventoryPricing = ({ store }: Props) => { 
+  const { isLoading, isError, data, error, refetch } = useQuery<
+  AxiosResponse<IPriceSettingReturnType>
+  >(["single-price-setting-retrieve"], () =>
+  Medusa.InventoryPriceSettings.list(store.slug))
+
+  const { store : medusaStore, isLoading: medusaStoreLoading } = useAdminStore({})
+
+  useEffect(() => {
+    refetch();
+  }, [store]);
+
   if (!store) {
     return (
       <div className="bg-grey-0 rounded-rounded border-grey-20 gap-y-xsmall flex h-full w-full flex-col items-center justify-center border text-center ">
@@ -27,17 +36,9 @@ const EditInventoryPricing = ({ id }: Props) => {
       </div>
     )
   }
-
-  const { isLoading, isError, data, error, refetch } = useQuery<
-  AxiosResponse<IPriceSettingReturnType>
->(["single-price-setting-retrieve"], () =>
-  Medusa.InventoryPriceSettings.list(store.slug))
   
-  useEffect(() => {
-    refetch();
-  }, [id]);
 
-  if (isLoading) {
+  if (isLoading || medusaStoreLoading) {
     return (
       <div className="flex h-full w-full items-center justify-center">
         <Spinner variant="secondary" />
@@ -47,18 +48,18 @@ const EditInventoryPricing = ({ id }: Props) => {
 
   return (
     <div className="gap-y-xsmall flex flex-col">
-      <PricingOptions store={store} />
+      <PricingSettings store={store} data={data?.data} medusaStore={medusaStore} />
 
       {!data?.data.count && 
       <div className="bg-grey-0 rounded-rounded border-grey-20 gap-y-xsmall flex h-full w-full flex-col items-center justify-center border text-center p-20">
         <h1 className="inter-large-semibold">No price role found...</h1>
         <p className="inter-base-regular text-grey-50">
-          We can't find any price role with this store, use set price button above to set price.
+          We can't find any price role with this store, use set price role button above to set price.
         </p>
       </div>
       }
 
-       {data?.data && <GeneralSection store={store} data={data?.data} />}
+       {data?.data && <GeneralSection store={store} data={data?.data} medusaStore={medusaStore} />}
     </div>
   )
 }

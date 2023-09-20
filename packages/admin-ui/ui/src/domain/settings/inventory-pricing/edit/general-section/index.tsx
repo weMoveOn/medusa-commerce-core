@@ -3,22 +3,28 @@ import EditIcon from "../../../../../components/fundamentals/icons/edit-icon";
 import Section from "../../../../../components/organisms/section";
 import useToggleState from "../../../../../hooks/use-toggle-state";
 import { IInventoryStore, IPriceSettingReturnType } from "../../../../../types/inventory-price-setting";
-import EditPricingModal from "./edit-pricing.modal";
+import { ExtendedStoreDTO } from "@medusajs/medusa/dist/types/store";
 
 type Props = {
   store: IInventoryStore;
   data: IPriceSettingReturnType;
+  medusaStore?: ExtendedStoreDTO
 };
 
-const GeneralSection = ({ store, data }: Props) => {
+const GeneralSection = ({ store, data, medusaStore }: Props) => {
   const { state, toggle, close } = useToggleState();
+
+  const getCurrencyDetails = (code: string) => {
+    const currency = medusaStore?.currencies.find((c) => c.code === code);
+    return currency;
+  }
 
   return (
     <>
       {data.result.map((d, index) => (
         <Section
           key={index}
-          title={store.name}
+          title={getCurrencyDetails(d.currency_code)?.name}
           actions={[
             {
               label: "Edit Price Settings",
@@ -33,7 +39,7 @@ const GeneralSection = ({ store, data }: Props) => {
               <PriceDetail title={"Currency"}>
                 <div className="gap-x-xsmall flex items-center">
                   <span className="inter-base-semibold text-grey-90">
-                    {d.currency_code.toUpperCase()}
+                    {d.currency_code.toUpperCase()} ({getCurrencyDetails(d.currency_code)?.symbol})
                   </span>
                 </div>
               </PriceDetail>

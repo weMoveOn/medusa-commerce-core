@@ -33,14 +33,14 @@ export const storeData: IInventoryStore[] = [
     },
     {
         id: "6",
-        name: "flipkart",
-        slug: "Flipkart",
+        name: "Flipkart",
+        slug: "flipkart",
         website: "https://flipkart.com",
     },
     {
         id: "7",
-        name: "gearbest",
-        slug: "Gearbest",
+        name: "Gearbest",
+        slug: "gearbest",
         website: "https://gearbest.com",
     },
     {

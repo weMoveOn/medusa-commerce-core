@@ -71,3 +71,8 @@ export interface IPriceSetting {
     statusCode: number
   }
   
+  export interface ICurrencyOptions {
+    value: string
+    label: string
+    prefix: string
+  }

@@ -1,14 +1,53 @@
 import Section from "../../../../../components/organisms/section"
 import useToggleState from "../../../../../hooks/use-toggle-state"
 import CreatePricingOptionModal from "./create-pricing-setting-modal"
-import { IInventoryStore } from "../../../../../types/inventory-price-setting"
+import { IInventoryStore, IPriceSettingReturnType } from "../../../../../types/inventory-price-setting"
+import { useAdminStore } from "medusa-react"
+import { useMemo } from "react"
+import { Currency } from "@medusajs/medusa"
+import { ExtendedStoreDTO } from "@medusajs/medusa/dist/types/store"
+import { useNavigate } from "react-router-dom"
 
 type Props = {
   store: IInventoryStore
+  data?: IPriceSettingReturnType
+  medusaStore?: ExtendedStoreDTO
 }
 
-const PricingSettings = ({ store }: Props) => {
+const PricingSettings = ({ store, data, medusaStore }: Props) => {
+  const navigate = useNavigate()
   const { state, toggle, close } = useToggleState()
+
+    const currencyOptions = useMemo(() => {
+    let currencyCodesInData : Array<string> = [];
+    let filteredCurrencies: Currency[] = [];
+    if(data && medusaStore){
+    currencyCodesInData = data.result.map((item) => item.currency_code);
+    filteredCurrencies = medusaStore.currencies.filter((currency) =>
+    !currencyCodesInData.includes(currency.code)
+  );
+  return filteredCurrencies && filteredCurrencies.map((currency) => {
+    return {
+      value: currency.code,
+      label: currency.name,
+      prefix: currency.code.toUpperCase(),
+    }
+  })  
+} else if(medusaStore) {
+    return medusaStore.currencies.map((currency) => {
+      return {
+        value: currency.code,
+        label: currency.name,
+        prefix: currency.code.toUpperCase(),
+      }
+    })
+  } else return []
+}, [data, medusaStore])
+
+
+const handleAddCurrencyClick = ()=>{
+  navigate(`/a/settings/currencies`)
+}
 
   return (
     <>
@@ -16,18 +55,18 @@ const PricingSettings = ({ store }: Props) => {
         title={`Price Settings for ${store.name}`}
         actions={[
           {
-            label: "Set Price",
-            onClick: toggle,
+            label: currencyOptions.length===0 ? "Add More Currency" : "Set Price Role",
+            onClick: currencyOptions.length===0 ? handleAddCurrencyClick : toggle,
           },
         ]}
       >
         <div className="gap-y-large flex flex-col">
           <p className="inter-base-regular text-grey-50">
-            Enter pricing about available store.
+            {currencyOptions.length===0 ? "Update price role or add more currency." : "Set price role for available currency."}
           </p>
         </div>
       </Section>
-      <CreatePricingOptionModal open={state} onClose={close} store={store} />
+      <CreatePricingOptionModal open={state} onClose={close} store={store} currencyOptions={currencyOptions} data={data} />
     </>
   )
 }
