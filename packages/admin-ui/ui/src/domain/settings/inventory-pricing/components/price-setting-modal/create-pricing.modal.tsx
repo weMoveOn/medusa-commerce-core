@@ -3,7 +3,7 @@ import Button from "../../../../../components/fundamentals/button"
 import Modal from "../../../../../components/molecules/modal"
 import useNotification from "../../../../../hooks/use-notification"
 import { CreatePricingOptionFormType, ICurrencyOptions, IInventoryStore, IPriceSettingReturnType, PricingOptionFormType, ProfitOperation } from "../../../../../types/inventory-price-setting.d"
-import PriceSettingForm from "../price-setting-form/add_price_role_form"
+import AddPriceRoleForm from "../price-setting-form/add_price_role_form"
 import Medusa from "../../../../../services/api"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { getErrorMessage } from "../../../../../utils/error-messages"
@@ -71,7 +71,7 @@ const CreatePricingOptionModal = ({ open, onClose, store, currencyOptions }: Pro
         </Modal.Header>
         <form onSubmit={onSubmit}>
           <Modal.Content>
-           <PriceSettingForm form={form} currencyOptions={currencyOptions} />
+           <AddPriceRoleForm form={form} currencyOptions={currencyOptions} />
           </Modal.Content>
           <Modal.Footer>
             <div className="gap-x-xsmall flex w-full items-center justify-end">

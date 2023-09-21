@@ -10,7 +10,7 @@ type Props = {
   currencyOptions: ICurrencyOptions[]
 }
 
-const PriceSettingForm = ({ form, currencyOptions }: Props) => {
+const AddPriceRoleForm = ({ form, currencyOptions }: Props) => {
   const {
     register,
     watch,
@@ -155,4 +155,4 @@ const PriceSettingForm = ({ form, currencyOptions }: Props) => {
   )
 }
 
-export default PriceSettingForm
+export default AddPriceRoleForm

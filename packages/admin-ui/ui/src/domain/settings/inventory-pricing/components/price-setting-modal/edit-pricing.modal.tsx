@@ -7,7 +7,7 @@ import { getErrorMessage } from "../../../../../utils/error-messages"
 import { IPriceSetting, IPriceSettingReturnType, IUpdatePriceOptionFormType, IUpdatePriceSetting, ProfitOperation } from "../../../../../types/inventory-price-setting.d"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import Medusa from "../../../../../services/api"
-import PricingDetailsForm from "../price-setting-form/edit_price-role-form"
+import EditPriceRoleForm from "../price-setting-form/edit_price-role-form"
 import { Currency } from "@medusajs/medusa"
 import { ExtendedStoreDTO } from "@medusajs/medusa/dist/types/store"
 
@@ -105,7 +105,7 @@ return currencies
         <form onSubmit={onSubmit}>
           <Modal.Content>
             <div>
-              <PricingDetailsForm form={form} availableCurrencyOptions={availableCurrencyOptions} allCurrencyOptions={allCurrencyOptions} />
+              <EditPriceRoleForm form={form} availableCurrencyOptions={availableCurrencyOptions} allCurrencyOptions={allCurrencyOptions} />
             </div>
           </Modal.Content>
           <Modal.Footer>

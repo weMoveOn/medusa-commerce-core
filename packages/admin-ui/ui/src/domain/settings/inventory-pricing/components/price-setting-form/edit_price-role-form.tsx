@@ -23,7 +23,7 @@ const profitOperationOptions: ProfitOperationSelectOption[] = [
   }
 ]
 
-const PricingDetailsForm = ({ form, availableCurrencyOptions, allCurrencyOptions }: Props) => {
+const EditPriceRoleForm = ({ form, availableCurrencyOptions, allCurrencyOptions }: Props) => {
   const {
     control,
     register,
@@ -168,4 +168,4 @@ const PricingDetailsForm = ({ form, availableCurrencyOptions, allCurrencyOptions
   )
 }
 
-export default PricingDetailsForm
+export default EditPriceRoleForm
