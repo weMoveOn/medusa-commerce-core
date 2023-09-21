@@ -307,19 +307,19 @@ export default {
 
   InventoryPriceSettings: {
     list(search = "") {
-    const path = `/price-role-settings${search ? `?store_slug=${search}` : ""}`;
+    const path = `/admin/price-role-settings${search ? `?store_slug=${search}` : ""}`;
     return medusaRequest("GET", path);
     },
     add(add) {
-      const path = `/price-role-settings`;
+      const path = `/admin/price-role-settings`;
       return medusaRequest("POST", path, add);
       },
     update(id, update) {  
-      const path = `/price-role-settings/${id}`;
+      const path = `/admin/price-role-settings/${id}`;
       return medusaRequest("PATCH", path, update);
       },
     delete(id) {  
-       const path = `/price-role-settings/${id}`;
+       const path = `/admin/price-role-settings/${id}`;
         return medusaRequest("DELETE", path);
       },
   },
