@@ -305,6 +305,25 @@ export default {
     }
   },
 
+  InventoryPriceSettings: {
+    list(search = "") {
+    const path = `/admin/price-role-settings${search ? `?store_slug=${search}` : ""}`;
+    return medusaRequest("GET", path);
+    },
+    add(add) {
+      const path = `/admin/price-role-settings`;
+      return medusaRequest("POST", path, add);
+      },
+    update(id, update) {  
+      const path = `/admin/price-role-settings/${id}`;
+      return medusaRequest("PATCH", path, update);
+      },
+    delete(id) {  
+       const path = `/admin/price-role-settings/${id}`;
+        return medusaRequest("DELETE", path);
+      },
+  },
+
   swaps: {
     retrieve(swapId) {
       const path = `/admin/swaps/${swapId}`

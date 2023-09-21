@@ -20,6 +20,7 @@ import Regions from "./regions"
 import ReturnReasons from "./return-reasons"
 import Taxes from "./taxes"
 import Users from "./users"
+import InventoryPricing from "./inventory-pricing"
 
 const SettingsIndex = () => {
   return (
@@ -29,6 +30,12 @@ const SettingsIndex = () => {
         description={"Manage the markets you will operate within"}
         icon={<MapPinIcon />}
         to={`/a/settings/regions`}
+      />
+      <SettingsCard
+        heading={"Inventory Pricing"}
+        description={"Manage the pricing of the inventory products"}
+        icon={<MapPinIcon />}
+        to={`/a/settings/inventory-pricing`}
       />
       <SettingsCard
         heading={"Currencies"}
@@ -104,6 +111,7 @@ const Settings = () => (
     <Route index element={<SettingsIndex />} />
     <Route path="/details" element={<Details />} />
     <Route path="/regions/*" element={<Regions />} />
+    <Route path="/inventory-pricing/*" element={<InventoryPricing />} />
     <Route path="/currencies" element={<CurrencySettings />} />
     <Route path="/return-reasons" element={<ReturnReasons />} />
     <Route path="/team" element={<Users />} />

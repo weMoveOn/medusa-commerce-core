@@ -15,7 +15,7 @@ import { useNavigate } from "react-router-dom"
 const CurrencySettings = () => {
   const navigate = useNavigate()
   const { trackCurrencies } = useAnalytics()
-  const { store, status, error } = useAdminStore({
+   const { store, status, error } = useAdminStore({
     onSuccess: (data) => {
       trackCurrencies({
         used_currencies: data.store.currencies.map((c) => c.code),
