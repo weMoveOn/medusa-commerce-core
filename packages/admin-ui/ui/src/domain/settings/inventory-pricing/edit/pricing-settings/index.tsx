@@ -1,6 +1,6 @@
 import Section from "../../../../../components/organisms/section"
 import useToggleState from "../../../../../hooks/use-toggle-state"
-import CreatePricingOptionModal from "./create-pricing.modal"
+import CreatePricingOptionModal from "../../components/price-setting-modal/create-pricing.modal"
 import { IInventoryStore, IPriceSettingReturnType } from "../../../../../types/inventory-price-setting"
 import { useMemo } from "react"
 import { Currency } from "@medusajs/medusa"

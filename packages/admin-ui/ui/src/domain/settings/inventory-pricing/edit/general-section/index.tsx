@@ -2,9 +2,9 @@ import React, { useState } from "react";
 import EditIcon from "../../../../../components/fundamentals/icons/edit-icon";
 import Section from "../../../../../components/organisms/section";
 import useToggleState from "../../../../../hooks/use-toggle-state";
-import { IInventoryStore, IPriceSettingReturnType, IUpdatePriceSetting } from "../../../../../types/inventory-price-setting";
+import { IPriceSettingReturnType, IUpdatePriceSetting } from "../../../../../types/inventory-price-setting";
 import { ExtendedStoreDTO } from "@medusajs/medusa/dist/types/store";
-import EditPricingModal from "./edit-pricing.modal";
+import EditPricingModal from "../../components/price-setting-modal/edit-pricing.modal";
 import TrashIcon from "../../../../../components/fundamentals/icons/trash-icon";
 import useImperativeDialog from "../../../../../hooks/use-imperative-dialog";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -13,12 +13,11 @@ import Medusa from "../../../../../services/api"
 import { getErrorMessage } from "../../../../../utils/error-messages";
 
 type Props = {
-  store: IInventoryStore;
   data: IPriceSettingReturnType;
   medusaStore?: ExtendedStoreDTO
 };
 
-const GeneralSection = ({ store, data, medusaStore }: Props) => {
+const GeneralSection = ({ data, medusaStore }: Props) => {
   const dialog = useImperativeDialog()
   const { state, toggle, close,  } = useToggleState();
   const [editData, setEditData] = useState<IUpdatePriceSetting>()
@@ -42,7 +41,7 @@ const GeneralSection = ({ store, data, medusaStore }: Props) => {
 
   const handleDelete = async () => {
     const shouldDelete = await dialog({
-      heading: "Delete price role",
+      heading: "Delete Price Role",
       text: "Are you sure you want to delete the price role?",
     })
 
@@ -94,7 +93,7 @@ const GeneralSection = ({ store, data, medusaStore }: Props) => {
                   </span>
                 </div>
               </PriceDetail>
-              <PriceDetail title={"Coversion Rate"}>
+              <PriceDetail title={"Conversion Rate"}>
                 <div className="gap-x-xsmall flex items-center">
                   <span className=" text-grey-90">
                     {d.conversion_rate}

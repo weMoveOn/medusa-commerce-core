@@ -10,10 +10,10 @@ const StoreCard = ({ store }: Props) => {
     <RadioGroup.Item
       value={store.id}
       label={store.name}
-      sublabel={
-        store.website? store.website
-          : undefined
-      }
+      // sublabel={
+      //   store.website? store.website
+      //     : undefined
+      // }
     />
   )
 }

@@ -1,8 +1,9 @@
 import { Controller, UseFormReturn } from "react-hook-form"
-import InputField from "../../../../../components/molecules/input"
+import { ICurrencyOptions, PricingOptionFormType, ProfitOperation } from "../../../../../types/inventory-price-setting.d"
 import { NextSelect } from "../../../../../components/molecules/select/next-select"
+import { AppConst } from "../../../../../utils/app_const"
+import InputField from "../../../../../components/molecules/input"
 import FormValidator from "../../../../../utils/form-validator"
-import { ICurrencyOptions, IInventoryStore, IPriceSettingReturnType, PricingOptionFormType, ProfitOperation } from "../../../../../types/inventory-price-setting.d"
 
 type Props = {
   form: UseFormReturn<PricingOptionFormType, any>
@@ -30,6 +31,7 @@ const PriceSettingForm = ({ form, currencyOptions }: Props) => {
               render={({ field: { onChange, value, onBlur } }) => {
                 return (
             <NextSelect
+            helperText={AppConst.FORM_CURRENCY_TYPE_HELPER_TEXT as string}
             label="Currency Type"
             required
             value={value}
@@ -45,6 +47,7 @@ const PriceSettingForm = ({ form, currencyOptions }: Props) => {
          </div> 
          
          <InputField
+            tooltipContent={AppConst.FORM_CONVERSION_RATE_TOOLTIP_CONTENT as string}
             label="Conversion Rate"
             required
             {...register("conversion_rate", {
@@ -70,6 +73,7 @@ const PriceSettingForm = ({ form, currencyOptions }: Props) => {
               render={({ field: { onChange, value, onBlur } }) => {
                 return (
             <NextSelect
+            helperText={AppConst.FORM_PROFIT_OPERATION_HELPER_TEXT as string}
             label="Profit Operation"
             required
             value={value}
@@ -96,6 +100,7 @@ const PriceSettingForm = ({ form, currencyOptions }: Props) => {
          
          <InputField
             label="Profit Value"
+            tooltipContent={AppConst.FORM_PROFIT_AMOUNT_TOOLTIP_CONTENT as string}
             required
             {...register("profit_amount", {
                 pattern: {
@@ -113,6 +118,7 @@ const PriceSettingForm = ({ form, currencyOptions }: Props) => {
         <div className="gap-large grid grid-cols-2">
         <InputField
             label="Shipping Charge"
+            tooltipContent={AppConst.FORM_SHIPPING_CHARGE_TOOLTIP_CONTENT as string}
             required
             {...register("shipping_charge", {
                 pattern: {

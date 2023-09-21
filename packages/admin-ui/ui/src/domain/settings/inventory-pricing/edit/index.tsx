@@ -13,7 +13,7 @@ type Props = {
 }
 
 const EditInventoryPricing = ({ store }: Props) => { 
-  const { isLoading, isError, data, error, refetch } = useQuery<
+  const { isLoading, data, refetch } = useQuery<
   AxiosResponse<IPriceSettingReturnType>
   >(["single-price-setting-retrieve"], () =>
   Medusa.InventoryPriceSettings.list(store.slug))
@@ -58,7 +58,7 @@ const EditInventoryPricing = ({ store }: Props) => {
       </div>
       }
 
-       {data?.data && <GeneralSection store={store} data={data?.data} medusaStore={medusaStore} />}
+       {data?.data && <GeneralSection data={data?.data} medusaStore={medusaStore} />}
     </div>
   )
 }

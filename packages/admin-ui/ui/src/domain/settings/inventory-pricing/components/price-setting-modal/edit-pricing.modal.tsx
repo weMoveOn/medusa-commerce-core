@@ -7,7 +7,7 @@ import { getErrorMessage } from "../../../../../utils/error-messages"
 import { IPriceSetting, IPriceSettingReturnType, IUpdatePriceOptionFormType, IUpdatePriceSetting } from "../../../../../types/inventory-price-setting"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import Medusa from "../../../../../services/api"
-import PricingDetailsForm from "../../components/pricing-form/pricing-details-form"
+import PricingDetailsForm from "../price-setting-form/edit_price-role-form"
 import { Currency } from "@medusajs/medusa"
 import { ExtendedStoreDTO } from "@medusajs/medusa/dist/types/store"
 

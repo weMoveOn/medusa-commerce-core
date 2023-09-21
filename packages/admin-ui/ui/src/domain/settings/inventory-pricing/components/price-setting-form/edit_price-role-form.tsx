@@ -1,9 +1,10 @@
 import { Controller, UseFormReturn } from "react-hook-form"
-import InputField from "../../../../../components/molecules/input"
-import { NextSelect } from "../../../../../components/molecules/select/next-select"
-import FormValidator from "../../../../../utils/form-validator"
-import { CurrencyCodeSelectOption, ICurrencyOptions, IPriceSetting, ProfitOperation, ProfitOperationSelectOption } from "../../../../../types/inventory-price-setting.d"
 import { useMemo } from "react"
+import { CurrencyCodeSelectOption, ICurrencyOptions, IPriceSetting, ProfitOperation, ProfitOperationSelectOption } from "../../../../../types/inventory-price-setting.d"
+import { NextSelect } from "../../../../../components/molecules/select/next-select"
+import InputField from "../../../../../components/molecules/input"
+import FormValidator from "../../../../../utils/form-validator"
+import { AppConst } from "../../../../../utils/app_const"
 
 type Props = {
   form: UseFormReturn<IPriceSetting, any>
@@ -55,6 +56,7 @@ const PricingDetailsForm = ({ form, availableCurrencyOptions, allCurrencyOptions
               render={({ field: { onChange, value, onBlur } }) => {
                 return (
             <NextSelect
+            helperText={AppConst.FORM_CURRENCY_TYPE_HELPER_TEXT as string}
             label="Currency Type"
             required
             defaultValue={findOptionByValue(allCurrencyOptions, value)}
@@ -70,6 +72,7 @@ const PricingDetailsForm = ({ form, availableCurrencyOptions, allCurrencyOptions
          </div> 
          
          <InputField
+            tooltipContent={AppConst.FORM_CONVERSION_RATE_TOOLTIP_CONTENT as string}
             label="Conversion Rate"
             required
             {...register("conversion_rate", {
@@ -95,6 +98,7 @@ const PricingDetailsForm = ({ form, availableCurrencyOptions, allCurrencyOptions
               render={({ field: { onChange, value, onBlur } }) => {
                 return (
             <NextSelect
+            helperText={AppConst.FORM_PROFIT_OPERATION_HELPER_TEXT as string}
             label="Profit Operation"
             required
             onChange={onChange}
@@ -110,6 +114,7 @@ const PricingDetailsForm = ({ form, availableCurrencyOptions, allCurrencyOptions
          </div> 
          
          <InputField
+            tooltipContent={AppConst.FORM_PROFIT_AMOUNT_TOOLTIP_CONTENT as string}
             label="Profit Value"
             required
             {...register("profit_amount", {
@@ -127,6 +132,7 @@ const PricingDetailsForm = ({ form, availableCurrencyOptions, allCurrencyOptions
       <div>
         <div className="gap-large grid grid-cols-2">
         <InputField
+            tooltipContent={AppConst.FORM_SHIPPING_CHARGE_TOOLTIP_CONTENT as string}
             label="Shipping Charge"
             required
             {...register("shipping_charge", {
