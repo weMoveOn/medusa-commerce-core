@@ -32,7 +32,8 @@ const PricingSettings = ({ store, data, medusaStore }: Props) => {
       prefix: currency.symbol.toUpperCase(),
     }
   })  
-} else if(medusaStore) {
+} else 
+if(medusaStore) {
     return medusaStore.currencies.map((currency) => {
       return {
         value: currency.code,

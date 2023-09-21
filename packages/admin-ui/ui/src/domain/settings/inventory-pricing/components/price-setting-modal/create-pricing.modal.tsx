@@ -6,7 +6,7 @@ import { CreatePricingOptionFormType, ICurrencyOptions, IInventoryStore, IPriceS
 import AddPriceRoleForm from "../price-setting-form/add_price_role_form"
 import Medusa from "../../../../../services/api"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
-import { getErrorMessage } from "../../../../../utils/error-messages"
+import { getCustomErrorMessage, getErrorMessage } from "../../../../../utils/error-messages"
 
 type Props = {
   open: boolean
@@ -28,6 +28,7 @@ const CreatePricingOptionModal = ({ open, onClose, store, currencyOptions }: Pro
     formState: { isDirty },
     handleSubmit,
     reset,
+    setError,
   } = form
   const notifcation = useNotification()
   const queryClient = useQueryClient()
@@ -46,12 +47,24 @@ const CreatePricingOptionModal = ({ open, onClose, store, currencyOptions }: Pro
         closeAndReset();
       },
       onError: (error) => {
-        notifcation("Error", getErrorMessage(error), "error");
-      },
+        const errors = getCustomErrorMessage(error);
+        if(typeof errors === "string")
+        notifcation("Error", errors, "error")
+        else errors.forEach(
+          (err : { key: "store_slug" | "currency_code" | "conversion_rate" | "profit_amount" | "shipping_charge" | "profit_operation",
+           message: string
+          }) => {
+            if(err.key!=="store_slug")
+          setError(err.key, {
+            type: "manual",
+            message: err.message,
+          })})
     }
-  );
+  }
+);
 
   const onSubmit = handleSubmit((data) => {
+    console.log("first")
     const newData: CreatePricingOptionFormType = {
       conversion_rate: Number(data.conversion_rate ?? 1),
       currency_code: data.currency_code?.value,

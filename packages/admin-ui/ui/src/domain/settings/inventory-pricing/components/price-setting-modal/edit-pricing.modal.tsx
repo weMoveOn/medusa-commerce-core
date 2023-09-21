@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form"
 import Button from "../../../../../components/fundamentals/button"
 import Modal from "../../../../../components/molecules/modal"
 import useNotification from "../../../../../hooks/use-notification"
-import { getErrorMessage } from "../../../../../utils/error-messages"
+import { getCustomErrorMessage, getErrorMessage } from "../../../../../utils/error-messages"
 import { IPriceSetting, IPriceSettingReturnType, IUpdatePriceOptionFormType, IUpdatePriceSetting, ProfitOperation } from "../../../../../types/inventory-price-setting.d"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import Medusa from "../../../../../services/api"
@@ -29,6 +29,7 @@ const EditPricingModal = ({ data, editData, medusaStore, onClose, open }: Props)
   const {
     reset,
     handleSubmit,
+    setError,
     formState: { isDirty },
   } = form
 
@@ -50,8 +51,20 @@ const EditPricingModal = ({ data, editData, medusaStore, onClose, open }: Props)
         closeAndReset();
       },
       onError: (error) => {
-        notifcation("Error", getErrorMessage(error), "error");
-      },
+        const errors = getCustomErrorMessage(error);
+        if(typeof errors === "string")
+        notifcation("Error", errors, "error")
+        else errors.forEach(
+          (err : { key:"store_slug" | "currency_code" | "conversion_rate" | "profit_amount" | "shipping_charge" |
+          "profit_operation",
+           message: string
+          }) => {
+            if(err.key!=="store_slug")
+          setError(err.key, {
+            type: "manual",
+            message: err.message,
+          })})
+    }
     }
   );
 

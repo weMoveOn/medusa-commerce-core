@@ -22,7 +22,6 @@ const GeneralSection = ({ data, medusaStore }: Props) => {
   const { state, toggle, close,  } = useToggleState();
   const [editData, setEditData] = useState<IUpdatePriceSetting>()
   const [deleteData, setDeleteData] = useState<string>()
-
   const queryClient = useQueryClient()
   const notification = useNotification()
 

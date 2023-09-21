@@ -18,6 +18,7 @@ const AddPriceRoleForm = ({ form, currencyOptions }: Props) => {
     formState: { errors },
   } = form
 
+  console.log(errors)
   return (
     <div>
       <div>
@@ -29,6 +30,7 @@ const AddPriceRoleForm = ({ form, currencyOptions }: Props) => {
             render={({ field: { onChange, value, onBlur } }) => {
             return (
             <NextSelect
+            name="currency_code"
             helperText={!watch('currency_code') ? AppConst.FORM_CURRENCY_TYPE_HELPER_TEXT as string : ""}
             label="Currency Type"
             required
@@ -77,6 +79,7 @@ const AddPriceRoleForm = ({ form, currencyOptions }: Props) => {
               render={({ field: { onChange, value, onBlur } }) => {
                 return (
             <NextSelect
+            name="profit_operation"
             helperText={!watch('profit_operation') ? AppConst.FORM_PROFIT_OPERATION_HELPER_TEXT as string : ""}
             label="Profit Operation"
             value={value}
