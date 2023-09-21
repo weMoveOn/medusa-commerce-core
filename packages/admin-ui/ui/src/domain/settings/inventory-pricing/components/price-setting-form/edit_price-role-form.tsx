@@ -3,7 +3,6 @@ import { useMemo } from "react"
 import { CurrencyCodeSelectOption, ICurrencyOptions, IPriceSetting, ProfitOperation, ProfitOperationSelectOption } from "../../../../../types/inventory-price-setting.d"
 import { NextSelect } from "../../../../../components/molecules/select/next-select"
 import InputField from "../../../../../components/molecules/input"
-import FormValidator from "../../../../../utils/form-validator"
 import { AppConst } from "../../../../../utils/app_const"
 
 type Props = {
@@ -28,6 +27,7 @@ const PricingDetailsForm = ({ form, availableCurrencyOptions, allCurrencyOptions
   const {
     control,
     register,
+    watch,
     formState: { errors },
   } = form
 
@@ -56,7 +56,7 @@ const PricingDetailsForm = ({ form, availableCurrencyOptions, allCurrencyOptions
               render={({ field: { onChange, value, onBlur } }) => {
                 return (
             <NextSelect
-            helperText={AppConst.FORM_CURRENCY_TYPE_HELPER_TEXT as string}
+            helperText={!watch('currency_code') ? AppConst.FORM_CURRENCY_TYPE_HELPER_TEXT as string : ""}
             label="Currency Type"
             required
             defaultValue={findOptionByValue(allCurrencyOptions, value)}
@@ -76,15 +76,19 @@ const PricingDetailsForm = ({ form, availableCurrencyOptions, allCurrencyOptions
             label="Conversion Rate"
             required
             {...register("conversion_rate", {
-                pattern: {
-                value: /^\d+(\.\d{1,2})?$/,
-                message: "Enter a valid number with up to 2 decimal places",
-              },
-              minLength: FormValidator.minOneCharRule("Conversion rate"),
+            validate: (value) => {
+              const pattern = /^(\d+(\.\d{1,2})?|\.\d{1,2})$/;
+              if (!pattern.test(value.toString())) {
+                return "Enter a valid number with up to 2 decimal places";
+              }
+             if (value < 1) {
+              return "Conversion rate must be at least 1";
+             }
+             return true;
+             },
             })}
             errors={errors}
           />
-      
         </div>
       </div>
 
@@ -98,9 +102,8 @@ const PricingDetailsForm = ({ form, availableCurrencyOptions, allCurrencyOptions
               render={({ field: { onChange, value, onBlur } }) => {
                 return (
             <NextSelect
-            helperText={AppConst.FORM_PROFIT_OPERATION_HELPER_TEXT as string}
+            helperText={!watch('profit_operation') ? AppConst.FORM_PROFIT_OPERATION_HELPER_TEXT as string : ""}
             label="Profit Operation"
-            required
             onChange={onChange}
             onBlur={onBlur}
             defaultValue={findOptionByValue(profitOperationOptions, value as ProfitOperation)}
@@ -114,18 +117,32 @@ const PricingDetailsForm = ({ form, availableCurrencyOptions, allCurrencyOptions
          </div> 
          
          <InputField
-            tooltipContent={AppConst.FORM_PROFIT_AMOUNT_TOOLTIP_CONTENT as string}
-            label="Profit Value"
-            required
-            {...register("profit_amount", {
-                pattern: {
-      value: /^\d+(\.\d{1,2})?$/,
-      message: "Enter a valid number with up to 2 decimal places",
+  label="Profit Amount"
+  tooltipContent={AppConst.FORM_PROFIT_AMOUNT_TOOLTIP_CONTENT as string}
+  {...register("profit_amount", {
+    validate: (value) => {
+      const pattern = /^(\d+(\.\d{1,2})?|\.\d{1,2})$/;
+      if (!pattern.test(value.toString())) {
+        return "Enter a valid number with up to 2 decimal places";
+      }
+      const selectedProfitOperation: any = watch("profit_operation");
+      if (selectedProfitOperation && (selectedProfitOperation?.value === ProfitOperation.MULTIPLICATION || selectedProfitOperation === ProfitOperation.MULTIPLICATION)) {
+        // If profit operation is Multiplication, require the amount to be at least 1
+        if (parseFloat(value.toString()) < 1) {
+          return "Profit Amount must be at least 1 when Profit Operation is Multiplication.";
+        }
+      } else {
+        // For other profit operations, require the amount to be at least 0
+        if (parseFloat(value.toString()) < 0) {
+          return "Profit Amount must be at least 0.";
+        }
+      }
+      return true;
     },
-              minLength: FormValidator.minOneCharRule("Profit Value"),
-            })}
-            errors={errors}
-          />
+  })}
+  errors={errors}
+/>
+
         </div>
 
         <div className="bg-grey-20 my-xlarge h-px w-full" />
@@ -134,13 +151,13 @@ const PricingDetailsForm = ({ form, availableCurrencyOptions, allCurrencyOptions
         <InputField
             tooltipContent={AppConst.FORM_SHIPPING_CHARGE_TOOLTIP_CONTENT as string}
             label="Shipping Charge"
-            required
             {...register("shipping_charge", {
-                pattern: {
-      value: /^\d+(\.\d{1,2})?$/,
-      message: "Enter a valid number with up to 2 decimal places",
-    },
-              minLength: FormValidator.minOneCharRule("Shipping Charge"),
+              validate: (value) => {
+                const pattern = /^(\d+(\.\d{1,2})?|\.\d{1,2})$/;
+                if (!pattern.test(value.toString())) {
+                  return "Enter a valid number with up to 2 decimal places";
+                }
+              }
             })}
             errors={errors}
           />

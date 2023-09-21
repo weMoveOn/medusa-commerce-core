@@ -29,7 +29,7 @@ const PricingSettings = ({ store, data, medusaStore }: Props) => {
     return {
       value: currency.code,
       label: currency.name,
-      prefix: currency.code.toUpperCase(),
+      prefix: currency.symbol.toUpperCase(),
     }
   })  
 } else if(medusaStore) {
@@ -37,7 +37,7 @@ const PricingSettings = ({ store, data, medusaStore }: Props) => {
       return {
         value: currency.code,
         label: currency.name,
-        prefix: currency.code.toUpperCase(),
+        prefix: currency.symbol.toUpperCase(),
       }
     })
   } else return []
@@ -65,7 +65,7 @@ const handleAddCurrencyClick = ()=>{
           </p>
         </div>
       </Section>
-      <CreatePricingOptionModal open={state} onClose={close} store={store} currencyOptions={currencyOptions} data={data} />
+      <CreatePricingOptionModal open={state} onClose={close} store={store} currencyOptions={currencyOptions} />
     </>
   )
 }

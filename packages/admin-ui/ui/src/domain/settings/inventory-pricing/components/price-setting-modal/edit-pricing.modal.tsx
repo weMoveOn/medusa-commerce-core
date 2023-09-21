@@ -4,7 +4,7 @@ import Button from "../../../../../components/fundamentals/button"
 import Modal from "../../../../../components/molecules/modal"
 import useNotification from "../../../../../hooks/use-notification"
 import { getErrorMessage } from "../../../../../utils/error-messages"
-import { IPriceSetting, IPriceSettingReturnType, IUpdatePriceOptionFormType, IUpdatePriceSetting } from "../../../../../types/inventory-price-setting"
+import { IPriceSetting, IPriceSettingReturnType, IUpdatePriceOptionFormType, IUpdatePriceSetting, ProfitOperation } from "../../../../../types/inventory-price-setting.d"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import Medusa from "../../../../../services/api"
 import PricingDetailsForm from "../price-setting-form/edit_price-role-form"
@@ -58,11 +58,11 @@ const EditPricingModal = ({ data, editData, medusaStore, onClose, open }: Props)
   const onSubmit = handleSubmit((data) => {
     const updatedData : IUpdatePriceOptionFormType = data as any;
     const formattedData = {
-      conversion_rate: Number(updatedData.conversion_rate),
-      currency_code: updatedData.currency_code.value ,
-      profit_amount: Number(updatedData.profit_amount),
-      profit_operation: updatedData.profit_operation.value,
-      shipping_charge: Number(updatedData.shipping_charge),
+      conversion_rate: Number(updatedData.conversion_rate ?? 1),
+      currency_code: updatedData.currency_code?.value,
+      profit_amount: Number(updatedData.profit_amount ?? 0),
+      profit_operation: updatedData.profit_operation.value ?? ProfitOperation.ADDITION,
+      shipping_charge: Number(updatedData.shipping_charge ?? 0),
       store_slug: updatedData.store_slug,
       id: updatedData.id
     } ;

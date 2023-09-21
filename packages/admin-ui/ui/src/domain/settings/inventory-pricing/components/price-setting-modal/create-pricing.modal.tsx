@@ -2,7 +2,7 @@ import { useForm } from "react-hook-form"
 import Button from "../../../../../components/fundamentals/button"
 import Modal from "../../../../../components/molecules/modal"
 import useNotification from "../../../../../hooks/use-notification"
-import { CreatePricingOptionFormType, ICurrencyOptions, IInventoryStore, IPriceSettingReturnType, PricingOptionFormType } from "../../../../../types/inventory-price-setting"
+import { CreatePricingOptionFormType, ICurrencyOptions, IInventoryStore, IPriceSettingReturnType, PricingOptionFormType, ProfitOperation } from "../../../../../types/inventory-price-setting.d"
 import PriceSettingForm from "../price-setting-form/add_price_role_form"
 import Medusa from "../../../../../services/api"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
@@ -12,12 +12,18 @@ type Props = {
   open: boolean
   onClose: () => void
   store: IInventoryStore
-  data?: IPriceSettingReturnType
   currencyOptions: ICurrencyOptions[]
 }
 
-const CreatePricingOptionModal = ({ open, onClose, store, data, currencyOptions }: Props) => {
-  const form = useForm<PricingOptionFormType>()
+const CreatePricingOptionModal = ({ open, onClose, store, currencyOptions }: Props) => {
+  const form = useForm<PricingOptionFormType>({
+    defaultValues: {
+      profit_operation: {
+        label: "Addition", 
+        value: ProfitOperation.ADDITION
+      }
+    }
+  })
   const {
     formState: { isDirty },
     handleSubmit,
@@ -47,11 +53,11 @@ const CreatePricingOptionModal = ({ open, onClose, store, data, currencyOptions 
 
   const onSubmit = handleSubmit((data) => {
     const newData: CreatePricingOptionFormType = {
-      conversion_rate: Number(data.conversion_rate),
-      currency_code: data.currency_code.value,
-      profit_amount: Number(data.profit_amount),
-      profit_operation: data.profit_operation.value,
-      shipping_charge: Number(data.shipping_charge),
+      conversion_rate: Number(data.conversion_rate ?? 1),
+      currency_code: data.currency_code?.value,
+      profit_amount: Number(data.profit_amount ?? 0),
+      profit_operation: data.profit_operation?.value ?? ProfitOperation.ADDITION,
+      shipping_charge: Number(data.shipping_charge ?? 0),
       store_slug: store.slug
     };
     createPriceSettingMutation.mutate(newData)

@@ -107,14 +107,14 @@ const GeneralSection = ({ data, medusaStore }: Props) => {
                   </span>
                 </div>
               </PriceDetail>
-              <PriceDetail title={"Profit Value"}>
+              <PriceDetail title={"Profit Amount"}>
                 <div className="gap-x-xsmall flex items-center">
                   <span className=" text-grey-90">
                     {d.profit_amount}
                   </span>
                 </div>
               </PriceDetail>
-              <PriceDetail title={"Delivery Fee"}>
+              <PriceDetail title={"Shipping Charge"}>
                 <div className="gap-x-xsmall flex items-center">
                   <span className=" text-grey-90">
                     {d.shipping_charge}
