@@ -231,6 +231,8 @@ const MoveOnProduct = () => {
           shop_slug: selectedSortByShopData?.key
         },
       }
+
+      setSelectedProducts([])
   
       createBatchJob.mutate(reqObj, {
         onSuccess: () => {
@@ -247,17 +249,6 @@ const MoveOnProduct = () => {
   
   return (
     <>
-     {data?.data.products.length===0 ?
-      <div className="flex flex-col justify-center items-center h-[500px] gap-6">
-       <div className="font-semibold text-lg tracking-twenty text-orange-50">Product Not Found</div>
-        <button onClick={clearFilters} className="px-small py-xsmall">
-          <div className="gap-x-xsmall text-grey-50 inter-grey-40 inter-small-semibold flex items-center">
-            <ArrowLeftIcon size={20} />
-             <span className="ml-1">Go back</span>
-          </div>
-        </button>
-     </div>
-      :
       <div className="container"> 
         <div className="flex flex-wrap justify-between">
           <div className="px-3 py-3">
@@ -346,7 +337,18 @@ const MoveOnProduct = () => {
 
         <div className="-mx-4 flex flex-wrap justify-center">
         <LoadingContainer isLoading={isLoading}>
-         {layOut === "grid" ? (
+
+        {data?.data.products.length===0 ?
+      <div className="flex flex-col justify-center items-center h-[500px] gap-6">
+       <div className="font-semibold text-lg tracking-twenty text-orange-50">Product Not Found</div>
+        <button onClick={clearFilters} className="px-small py-xsmall">
+          <div className="gap-x-xsmall text-grey-50 inter-grey-40 inter-small-semibold flex items-center">
+            <ArrowLeftIcon size={20} />
+             <span className="ml-1">Go back</span>
+          </div>
+        </button>
+     </div> :
+         layOut === "grid" ? (
               <>
               {data?.data?.products.map((item, index) => (
                 <ProductGridCard
@@ -408,7 +410,6 @@ const MoveOnProduct = () => {
          </LoadingContainer>
         </div>
       </div>
-      }
       {isOpenModal && (
         <QuickViewModal
           title="Inventory Product"
