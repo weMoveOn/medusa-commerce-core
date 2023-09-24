@@ -41,12 +41,12 @@ const ProductGridCard: React.FC<IProductGridCardProps> = ({
   handleSelect
 }) => {
 // console.log(productData)
-  const containerClassess = clsx(
+  const containerClasses = clsx(
     "relative m-1 flex w-full max-w-[18rem] flex-col overflow-hidden rounded-lg border border-gray-100  bg-white",
-    enableSelectOption && isSelect && "border-violet-600"
+    enableSelectOption && isSelect && "border-violet-600", enableSelectOption && "cursor-pointer"
   )
   return (
-    <div className={containerClassess}>
+    <div className={containerClasses} onClick={()=>handleSelect && handleSelect({vpid: productData.vpid, link: productData.link})}>
       <div
         className="relative flex h-60 overflow-hidden rounded-lg"
       >
