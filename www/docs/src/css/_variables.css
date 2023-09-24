@@ -43,8 +43,8 @@
   --ifm-h4-font-size: var(--ifm-font-size-base);
 
   /* Links */
-  --ifm-link-color: var(--ifm-color-primary);
-  --ifm-link-hover-color: var(--ifm-color-content);
+  --ifm-link-color: theme(colors.medusa.fg.interactive.DEFAULT);
+  --ifm-link-hover-color: theme(colors.medusa.fg.interactive.hover.DEFAULT);
   --ifm-link-decoration: none;
   --ifm-link-hover-decoration: none;
 
@@ -75,7 +75,7 @@
   /* Inline Code */
   --ifm-code-border-radius: theme(borderRadius.DEFAULT);
   --ifm-code-padding-horizontal: theme(padding[0.5]);
-  --ifm-code-background: theme(colors.medusa.bg.subtle.DEFAULT) !important;
+  --ifm-code-background: theme(colors.medusa.tag.neutral.bg.DEFAULT) !important;
 
   /* Code Blocks */
   --ifm-pre-background: theme(colors.medusa.code.bg.base.DEFAULT);
@@ -134,6 +134,10 @@ html[data-theme="dark"] {
   --ifm-base-border-color: theme(colors.medusa.border.base.dark);
   --ifm-strong-border-color: theme(colors.medusa.border.strong.dark);
 
+  /* Links */
+  --ifm-link-color: theme(colors.medusa.fg.interactive.DEFAULT);
+  --ifm-link-hover-color: theme(colors.medusa.fg.interactive.hover.DEFAULT);
+
   /* Sidebar */
   --ifm-menu-color: theme(colors.medusa.fg.subtle.dark);
   --ifm-menu-color-active: theme(colors.medusa.fg.base.dark);
@@ -150,7 +154,7 @@ html[data-theme="dark"] {
   --ifm-navbar-link-color: theme(colors.medusa.fg.subtle.dark);
 
   /* Inline Code */
-  --ifm-code-background: theme(colors.medusa.bg.base.dark) !important;
+  --ifm-code-background: theme(colors.medusa.tag.neutral.bg.dark) !important;
 
   /* Code Blocks */
   --ifm-pre-background: theme(colors.medusa.code.bg.base.dark);
@@ -196,9 +200,9 @@ html[data-theme="dark"] {
 }
 
 .alert {
-  --ifm-code-background: theme(colors.medusa.bg.subtle.DEFAULT) !important;
+  --ifm-code-background: theme(colors.medusa.tag.neutral.bg.DEFAULT) !important;
 }
 
 html[data-theme="dark"] .alert {
-  --ifm-code-background: theme(colors.medusa.bg.subtle.dark) !important;
+  --ifm-code-background: theme(colors.medusa.tag.neutral.bg.dark) !important;
 }

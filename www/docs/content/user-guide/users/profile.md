@@ -12,9 +12,9 @@ In this document, you’ll learn how to manage your account including resetting 
 
 To reset your password:
 
-1. On the login screen, click on the “Reset password” link.
+1. On the login screen, click on the “Forget your password?” link.
 2. Enter the email of your account.
-3. Click on “Send reset instructions”.
+3. Click on the “Send reset instructions” button.
 4. You’ll find the instructions to reset your password in the email you receive.
 
 :::note
@@ -33,6 +33,24 @@ To edit your profile details:
 2. Click on the “Edit information” button.
 3. In the form that opens, you can edit your personal information.
 4. Once done, click on the “Submit and close” button.
+
+---
+
+## Change Admin Language
+
+The Medusa admin supports multiple languages, and you can change the default language from your profile settings.
+
+To change the language:
+
+1. Go to Settings → Personal Information.
+2. For the Language field, select the language you want from the dropdown.
+3. The language will be saved and changed.
+
+:::tip
+
+Can't find your language? Learn how you can contribute by translating the admin to other languages [here](../../contribution/admin-translations.md).
+
+:::
 
 ---
 

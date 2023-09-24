@@ -20,7 +20,7 @@ const UserMenu: React.FC = () => {
   const logOut = () => {
     mutate(undefined, {
       onSuccess: () => {
-        remove();
+        remove()
         navigate("/login")
       },
       onError: (err) => {
