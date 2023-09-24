@@ -18,7 +18,6 @@ const AddPriceRoleForm = ({ form, currencyOptions }: Props) => {
     formState: { errors },
   } = form
 
-  console.log(errors)
   return (
     <div>
       <div>

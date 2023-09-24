@@ -25,7 +25,7 @@
   "scripts": {
     "test": "jest --runInBand --forceExit -- ./src/**/__tests__/**/*.ts",
     "create:dev:entry": "node ./scripts/create-dev-entry.js",
-    "dev": "yarn create:dev:entry && webpack serve --mode=development --config ./webpack.config.dev.ts --progress profile",
+    "dev": "npm run create:dev:entry && webpack serve --mode=development --config ./webpack.config.dev.ts --progress profile",
     "analyze:bundle": "ANALYZE_BUNDLE=true webpack --config ./webpack.config.dev.ts",
     "analyze:deps": "ANALYZE_DEPS=true webpack serve --config ./webpack.config.dev.ts --progress profile",
     "build": "tsup",

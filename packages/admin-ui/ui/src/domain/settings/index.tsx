@@ -49,6 +49,12 @@ const settings: SettingsCardType[] = [
     to: "/a/settings/currencies",
   },
   {
+    heading: "Inventory Pricing",
+    description: "Manage the pricing of the inventory products",
+    icon: CoinsIcon,
+    to: "/a/settings/inventory-pricing",
+  },
+  {
     heading: "Personal Information",
     description: "Manage your Medusa profile",
     icon: HappyIcon,
@@ -181,6 +187,7 @@ const Settings = () => {
       <Route path="/return-reasons" element={<ReturnReasons />} />
       <Route path="/team" element={<Users />} />
       <Route path="/personal-information" element={<PersonalInformation />} />
+      <Route path="/inventory-pricing/*" element={<InventoryPricing />} />
       <Route path="/taxes/*" element={<Taxes />} />
       {getSettings().map((s) => (
         <Route
