@@ -162,8 +162,8 @@ To configure the environment variables of your Medusa backend:
 PORT=9000
 JWT_SECRET=something
 COOKIE_SECRET=something
-DATABASE_URL=${{Postgres.DATABASE_URL}}
-REDIS_URL=${{Redis.REDIS_URL}}
+DATABASE_URL=${{postgresql.DATABASE_URL}}
+REDIS_URL=${{redis.REDIS_URL}}
 DATABASE_TYPE=postgres
 ```
 
@@ -221,7 +221,7 @@ You can access `/health` to get health status of your deployed backend.
 
 :::note
 
-Make sure to either set the `autoRebuild` option of the admin plugin to `true` or add its [build](../../admin/quickstart.mdx#build-command-options) command as part of the start command of your backend.
+Make sure to either set the `autoRebuild` option of the admin plugin to `true` or add its [build](../../admin/configuration.md#build-command-options) command as part of the start command of your backend.
 
 :::
 
