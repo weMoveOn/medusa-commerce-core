@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom"
 import RadioGroup from "../../../../components/organisms/radio-group"
 import Section from "../../../../components/organisms/section"
 import RegionCard from "./region-card"
-import { storeData } from "../data"
+import { inventoryStoreFixedData } from "../../../../utils/inventoryStoreFixedData"
 
 type Props = {
   id?: string
@@ -32,10 +32,10 @@ const InventoryPricingOverview = ({ id }: Props) => {
       handleChange(id)
     }
 
-    if (!id && storeData && storeData.length > 0) {
-      handleChange(storeData[0].id)
+    if (!id && inventoryStoreFixedData && inventoryStoreFixedData.length > 0) {
+      handleChange(inventoryStoreFixedData[0].id)
     }
-  }, [handleChange, id, storeData])
+  }, [handleChange, id, inventoryStoreFixedData])
 
   return (
     <>
@@ -48,7 +48,7 @@ const InventoryPricingOverview = ({ id }: Props) => {
         </p>
         <div className="mt-large">
           <RadioGroup.Root value={selectedRegion} onValueChange={handleChange}>
-            {storeData?.map((store) => (
+            {inventoryStoreFixedData?.map((store) => (
               <RegionCard key={store.id} store={store} />
             ))}
           </RadioGroup.Root>

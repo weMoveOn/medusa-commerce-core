@@ -1,6 +1,6 @@
-import { IInventoryStore } from "../../../types/inventory-price-setting";
+import { IInventoryStore } from "../types/inventory-price-setting";
 
-export const storeData: IInventoryStore[] = [
+export const inventoryStoreFixedData: IInventoryStore[] = [
     {
         id: "1",
         name: "Alibaba",
