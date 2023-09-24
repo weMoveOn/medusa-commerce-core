@@ -28,6 +28,8 @@ import { usePolling } from "../../../providers/polling-provider"
 import { getErrorMessage } from "../../../utils/error-messages"
 import { queryClient } from "../../../constants/query-client"
 import InventoryProductSortByShop from "../inventory-product-sort-by-shop"
+import useImperativeDialog from "../../../hooks/use-imperative-dialog"
+import { IPriceSettingReturnType } from "../../../types/inventory-price-setting"
 
 const MoveOnProduct = () => {
   const { resetInterval } = usePolling()
@@ -63,12 +65,21 @@ const MoveOnProduct = () => {
   const [count, setCount] = useState(0);
   const [selectedProducts, setSelectedProducts] = useState<IInventoryProductSelectType[]>([]);
   const [multipleImport, setMultipleImport] = useState(false);
+  const dialog = useImperativeDialog()
 
   const { isLoading, isError, data, error, refetch } = useQuery<
     AxiosResponse<IInventoryProductPayloadType>
   >(["inventory-fetch",newFiltersData], () =>
-    MedusaAPI.moveOnInventory.list({ keyword: "bag", shop_id: selectedSortByShop.value, ...newFiltersData })
-  )
+    MedusaAPI.moveOnInventory.list({ keyword: "bag", shop_id: selectedSortByShop.value, ...newFiltersData }))
+
+    const selectedSortByShopData = filterForTemporal.shop.values.find(
+      (x) => x.value === selectedSortByShop.value
+    )  
+
+    const { isLoading: isPriceSettingLoading, data: priceSettingData, refetch: refetchPriceSetting } = useQuery<
+    AxiosResponse<IPriceSettingReturnType>
+    >(["single-price-setting-retrieve"], () =>
+    MedusaAPI.InventoryPriceSettings.list(selectedSortByShopData?.key))
   
   // if data is fetched from backend set new count and limit
   useEffect(()=>{
@@ -213,22 +224,34 @@ const MoveOnProduct = () => {
     setSelectedProducts(updatedArray);
   };
 
-  const handleImport = (product?: IInventoryProductSelectType) =>{
+  const handleImport = async(product?: IInventoryProductSelectType) =>{
+    console.log(priceSettingData)
     const productsToImport = product ? [product] : selectedProducts;
-
     if(selectedProducts.length===0 && !product){
       notification("Error", "You must select at least one product to import", "warning")
     }
     else {
       const selectedSortByShopData = filterForTemporal.shop.values.find(
         (x) => x.value === selectedSortByShop.value
-      )
+      )  
+      const shouldImportText = !priceSettingData?.data.count  ? "You must add price rule to import product"
+  : "Are you sure you want to import this product(s) with the current price role?";
+
+const shouldImport = await dialog({
+  heading: "Confirm Import",
+  text: shouldImportText,
+});
+  
+      if (!shouldImport) {
+        return
+      }
+  
       const reqObj = {
         dry_run: false,
         type: "moveOn-inventory-product-import",
         context: {
           products: productsToImport,
-          shop_slug: selectedSortByShopData?.key
+          store_slug: selectedSortByShopData?.key
         },
       }
 

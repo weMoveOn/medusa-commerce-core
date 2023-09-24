@@ -40,7 +40,6 @@ const ProductGridCard: React.FC<IProductGridCardProps> = ({
   route = "product-list",
   handleSelect
 }) => {
-// console.log(productData)
   const containerClasses = clsx(
     "relative m-1 flex w-full max-w-[18rem] flex-col overflow-hidden rounded-lg border border-gray-100  bg-white",
     enableSelectOption && isSelect && "border-violet-600", enableSelectOption && "cursor-pointer"
