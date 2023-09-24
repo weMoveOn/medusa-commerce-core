@@ -88,6 +88,7 @@ export interface IConfigurator {
 }
 
 export interface IFilters {
+  shop: ISorter;
   sorter: ISorter;
   configurator: IConfigurator;
 }

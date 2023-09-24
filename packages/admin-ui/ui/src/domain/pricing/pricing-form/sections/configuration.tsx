@@ -8,10 +8,10 @@ import DatePicker from "../../../../components/atoms/date-picker/date-picker"
 import TimePicker from "../../../../components/atoms/date-picker/time-picker"
 import Switch from "../../../../components/atoms/switch"
 import Accordion from "../../../../components/organisms/accordion"
-import { weekFromNow } from "../../../../utils/date-utils"
 import { usePriceListForm } from "../form/pricing-form-context"
 import { ConfigurationFields } from "../types"
 import { NextSelect } from "../../../../components/molecules/select/next-select"
+import { weekFromNow } from "../../../../utils/date-utils"
 
 type ConfigurationProps = {
   priceList?: PriceList

@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query"
 import { AxiosResponse } from "axios"
-import React, { useEffect, useMemo, useState } from "react"
+import React, { useEffect, useState } from "react"
 import MedusaAPI from "../../../services/api"
 import { IInventoryProductDataType, IInventoryProductPayloadType, IInventoryProductSelectType, IInventoryQuery } from "../../../types/inventoryProduct"
 import ListIcon from "../../fundamentals/icons/list-icon"
@@ -8,7 +8,7 @@ import TileIcon from "../../fundamentals/icons/tile-icon"
 import ProductGridCard from "../../molecules/product-grid-card"
 import ProductListCard from "../../molecules/product-list-card"
 import QuickViewModal from "../../organisms/quick-view-modal"
-import { filterForTemporal } from "../../../utils/date-utils"
+import { filterForTemporal } from "../../../utils/filterFixedData"
 import InventoryProductFilters from "../inventory-product-filter"
 import InventoryProductSort from "../inventory-product-sort"
 import useInventoryProductFilters from "../../../hooks/use-inventory-product-filter"
@@ -27,6 +27,7 @@ import useNotification from "../../../hooks/use-notification"
 import { usePolling } from "../../../providers/polling-provider"
 import { getErrorMessage } from "../../../utils/error-messages"
 import { queryClient } from "../../../constants/query-client"
+import InventoryProductSortByShop from "../inventory-product-sort-by-shop"
 
 const MoveOnProduct = () => {
   const { resetInterval } = usePolling()
@@ -52,6 +53,10 @@ const MoveOnProduct = () => {
     label: string
     value: string
   } | null>(null)
+  const [selectedSortByShop, setSelectedSortByShop] = useState<{
+    label: string
+    value: string
+  }>({label:"1688", value:"10"})
   const [newFiltersData, setNewFilersData] = useState<IInventoryQuery>(defaultMoveonInventoryFilter)
   const [limit, setLimit] = useState(defaultMoveonInventoryFilter.limit);
   const [offset, setOffset] = useState(0);
@@ -62,7 +67,7 @@ const MoveOnProduct = () => {
   const { isLoading, isError, data, error, refetch } = useQuery<
     AxiosResponse<IInventoryProductPayloadType>
   >(["inventory-fetch",newFiltersData], () =>
-    MedusaAPI.moveOnInventory.list({ keyword: "beg", shop_id: 4, ...newFiltersData })
+    MedusaAPI.moveOnInventory.list({ keyword: "bag", shop_id: selectedSortByShop.value, ...newFiltersData })
   )
   
   // if data is fetched from backend set new count and limit
@@ -93,8 +98,11 @@ const MoveOnProduct = () => {
         setOffset(0)
       }
       if (!params.limit) {
-        params.limit = "20";
-        setLimit(20)
+        params.limit = defaultMoveonInventoryFilter.limit.toString();
+        setLimit(defaultMoveonInventoryFilter.limit)
+      }
+      if (!params.shop_id) {
+        params.shop_id = defaultMoveonInventoryFilter.shop_id;
       }
       const newParams = queryString.stringify({ ...filters, ...params }, { encode: false, skipEmptyString: true, skipNull: true });
       window.history.replaceState(null, 'Searching', `/a/moveon-inventory?${newParams}`)
@@ -157,6 +165,26 @@ const MoveOnProduct = () => {
     }
   }
 
+  const handleSortingByShop = (value: { value: string; label: string }) => {
+    setSelectedSortByShop(value)
+    const selectedSortByShopData = filterForTemporal.shop.values.find(
+      (x) => x.title === value.label
+    )
+    if (selectedSortByShopData) {
+      let key = "shop_id"
+
+      if (selectedSortByShopData?.key === defaultMoveonInventoryFilter.shop_id) {
+        updateQueryParams({ [key]: undefined})
+      } else {
+        updateQueryParams({
+          [key]: selectedSortByShopData?.value
+        })
+      }
+      setIsParamsUpdated(true)
+      refetch()
+    }
+  }
+
   const handleNextPage = () => {
      setOffset(offset + limit);
      handleFilterChange({offset: offset+limit, limit:limit})
@@ -192,11 +220,15 @@ const MoveOnProduct = () => {
       notification("Error", "You must select at least one product to import", "warning")
     }
     else {
+      const selectedSortByShopData = filterForTemporal.shop.values.find(
+        (x) => x.value === selectedSortByShop.value
+      )
       const reqObj = {
         dry_run: false,
         type: "moveOn-inventory-product-import",
         context: {
-          products: productsToImport
+          products: productsToImport,
+          shop_slug: selectedSortByShopData?.key
         },
       }
   
@@ -230,7 +262,7 @@ const MoveOnProduct = () => {
       <div className="container"> 
         <div className="flex flex-wrap justify-between">
           <div className="px-3 py-3">
-            <div className="flex justify-start">
+            <div className="flex justify-start gap-5">
               <InventoryProductFilters
                 submitFilters={submitFilter}
                 clearFilters={clearFilters}
@@ -241,6 +273,11 @@ const MoveOnProduct = () => {
                 selectedValue={selectedSort}
                 sorter={filterForTemporal.sorter}
                 onChange={handleSorting}
+              />  
+             <InventoryProductSortByShop
+                selectedValue={selectedSortByShop}
+                sorter={filterForTemporal.shop}
+                onChange={handleSortingByShop}
               />
             </div>
           </div>

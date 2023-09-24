@@ -4,26 +4,26 @@ import { filterForTemporal } from "../../../utils/filterFixedData";
 import { NextSelect } from "../../molecules/select/next-select";
 
 
-interface IInventoryProductSortProps {
+interface IInventoryProductSortByShopProps {
   sorter: ISorter;
   onChange: (value: { value: string; label: string }) => void;
   selectedValue:{value: string; label: string} | null
 }
 
-const InventoryProductSort: React.FC<IInventoryProductSortProps> = ({
+const InventoryProductSortByShop: React.FC<IInventoryProductSortByShopProps> = ({
   sorter,
   onChange,
   selectedValue
 }) => {
   const [sortState, setSortState] = useState<ISorter>(
-    sorter || filterForTemporal.sorter
+    sorter || filterForTemporal.shop
   );
  
 
   const sortOptions = useMemo(() => {
     return (
       sortState.values.map((s) => ({
-        value: s.value+"&"+s.title,
+        value: s.value,
         label: s.title,
       })) || []
     );
@@ -33,7 +33,7 @@ const InventoryProductSort: React.FC<IInventoryProductSortProps> = ({
     <div className="w-[200px] cursor-pointer">
       <NextSelect
         value={selectedValue}
-        placeholder="Sort by"
+        placeholder="Sort by Shop"
         name="sort"
         selectedPlaceholder=""
        
@@ -48,4 +48,4 @@ const InventoryProductSort: React.FC<IInventoryProductSortProps> = ({
   );
 };
 
-export default InventoryProductSort;
+export default InventoryProductSortByShop;

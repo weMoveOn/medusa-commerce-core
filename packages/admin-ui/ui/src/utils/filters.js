@@ -41,5 +41,5 @@ export const StatusFilters = {
 }
 
 export const defaultMoveonInventoryFilter = {
-    limit: DEFAULT_PAGE_LIMIT, offset: 0
+    limit: DEFAULT_PAGE_LIMIT, offset: 0, shop_id: "10"
 }
