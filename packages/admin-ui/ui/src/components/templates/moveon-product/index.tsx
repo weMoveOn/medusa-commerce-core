@@ -285,6 +285,7 @@ const shouldImport = await dialog({
       }
 
       setSelectedProducts([])
+      setMultipleImport(false)
   
       createBatchJob.mutate(reqObj, {
         onSuccess: () => {
@@ -390,7 +391,7 @@ const shouldImport = await dialog({
       }
 
         <div className="-mx-4 flex flex-wrap justify-center">
-        <LoadingContainer isLoading={isLoading}>
+        <LoadingContainer isLoading={isLoading || isPriceSettingLoading}>
 
         {data?.data.products.length===0 ?
       <div className="flex flex-col justify-center items-center h-[500px] gap-6">
