@@ -247,7 +247,6 @@ const MoveOnProduct = () => {
   
   return (
     <>
-     <LoadingContainer isLoading={isLoading}>
      {data?.data.products.length===0 ?
       <div className="flex flex-col justify-center items-center h-[500px] gap-6">
        <div className="font-semibold text-lg tracking-twenty text-orange-50">Product Not Found</div>
@@ -346,8 +345,9 @@ const MoveOnProduct = () => {
       }
 
         <div className="-mx-4 flex flex-wrap justify-center">
+        <LoadingContainer isLoading={isLoading}>
          {layOut === "grid" ? (
-            <>
+              <>
               {data?.data?.products.map((item, index) => (
                 <ProductGridCard
                 route="product-list"
@@ -405,10 +405,10 @@ const MoveOnProduct = () => {
             isLoading={isLoading}
           />
          </div>
+         </LoadingContainer>
         </div>
       </div>
       }
-      </LoadingContainer>
       {isOpenModal && (
         <QuickViewModal
           title="Inventory Product"
