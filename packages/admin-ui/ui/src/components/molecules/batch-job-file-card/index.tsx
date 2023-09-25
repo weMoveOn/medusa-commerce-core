@@ -1,6 +1,5 @@
 import { ReactNode } from "react"
 import clsx from "clsx"
-
 import Tooltip from "../../atoms/tooltip"
 import { BatchJobOperation } from "../../organisms/batch-jobs-activity-list/utils"
 
@@ -23,7 +22,7 @@ const BatchJobFileCard = ({
   hasError,
   errorMessage,
 }: Props) => {
-  const preparedOnClick = onClick ?? (() => void 0)
+const preparedOnClick = onClick ?? (() => void 0)
 
   return (
     <div
@@ -58,7 +57,7 @@ const BatchJobFileCard = ({
                 "text-rose-500": hasError,
               })}
             >
-              {fileSize}
+              {fileSize.includes("Successful")? fileSize : errorMessage}
             </div>
           )}
         </Tooltip>

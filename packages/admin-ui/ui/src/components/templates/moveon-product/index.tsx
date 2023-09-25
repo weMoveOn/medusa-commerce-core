@@ -288,7 +288,7 @@ const shouldImport = await dialog({
       setMultipleImport(false)
   
       createBatchJob.mutate(reqObj, {
-        onSuccess: () => {
+        onSuccess: (res) => {
           resetInterval()
           queryClient.invalidateQueries({ queryKey: ['inventory-retrive'] })
           notification("Success", "Successfully initiated import products", "success")

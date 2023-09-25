@@ -18,10 +18,12 @@ const ActivityDrawer = ({ onDismiss }) => {
     refetch()
   }, [])
 
+  console.log(batchJobs)
+
   return (
     <div
       ref={ref}
-      className="bg-grey-0 shadow-dropdown rounded-rounded fixed top-[64px] bottom-2 right-3 flex w-[400px] flex-col overflow-x-hidden rounded"
+      className="bg-grey-0 shadow-dropdown fixed top-[64px] bottom-2 right-3 flex w-[400px] flex-col overflow-x-hidden rounded"
     >
       <div className="inter-large-semibold pt-7 pl-8 pb-1">
         {t("activity-drawer-activity", "Activity")}
