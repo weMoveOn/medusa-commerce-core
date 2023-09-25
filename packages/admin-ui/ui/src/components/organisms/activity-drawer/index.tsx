@@ -18,8 +18,6 @@ const ActivityDrawer = ({ onDismiss }) => {
     refetch()
   }, [])
 
-  console.log(batchJobs)
-
   return (
     <div
       ref={ref}
