@@ -229,7 +229,7 @@ if (!shouldImport) {
     handleFilterChange({offset: offset-limit, limit:limit})
   }
 
-  const handleSelect = ({ vpid, link }: IInventoryProductSelectType) => {
+  const handleSelect = ({ vpid, link, title, image }: IInventoryProductSelectType) => {
     const productKey = `${vpid}_${link}`;
   
     setSelectedProducts(prevSelectedProducts => {
@@ -244,7 +244,7 @@ if (!shouldImport) {
         );
       } else {
         // Add the item if it's not selected
-        return [...prevSelectedProducts, { vpid, link }];
+        return [...prevSelectedProducts, { vpid, link, image, title }];
       }
     });
   };
@@ -417,7 +417,7 @@ const shouldImport = await dialog({
                 handleSelect={handleSelect}
                 leftButtonOnClick={handleProductView}
                 rightButtonOnClick={()=>{
-                  handleImport({link:item.link, vpid: item.vpid})
+                  handleImport({link:item.link, vpid: item.vpid, title: item.title, image: item.image})
                 }}
               />              
               ))}
@@ -438,7 +438,7 @@ const shouldImport = await dialog({
                   handleSelect={handleSelect}
                   leftButtonOnClick={handleProductView}
                   rightButtonOnClick={()=>{
-                    handleImport({link:item.link, vpid: item.vpid})
+                    handleImport({link:item.link, vpid: item.vpid, title: item.title, image: item.image})
                   }}
                 />
               ))}
