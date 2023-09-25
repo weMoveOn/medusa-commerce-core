@@ -7,6 +7,7 @@ import Button from "../../fundamentals/button"
 import DownloadIcon from "../../fundamentals/icons/download-icon"
 import EyeIcon from "../../fundamentals/icons/eye-icon"
 import { formatDate } from "../../../utils/formatDate"
+import { Link } from "react-router-dom"
 
 interface IProductGridCardProps {
   leftButtonOnClick?: (value: any) => void;
@@ -45,7 +46,7 @@ const ProductGridCard: React.FC<IProductGridCardProps> = ({
     enableSelectOption && isSelect && "border-violet-600", enableSelectOption && "cursor-pointer"
   )
   return (
-    <div className={containerClasses} onClick={()=>handleSelect && handleSelect({vpid: productData.vpid, link: productData.link})}>
+    <div className={containerClasses} onClick={()=>handleSelect && handleSelect({vpid: productData.vpid, link: productData.link, title: productData.title, image: productData.image})}>
       <div
         className="relative flex h-60 overflow-hidden rounded-lg"
       >
@@ -64,20 +65,21 @@ const ProductGridCard: React.FC<IProductGridCardProps> = ({
                 id="checkbox1"
                 label=""
                 className="mr-0 cursor-pointer"
-                onChange={()=>handleSelect({vpid: productData.vpid, link: productData.link})}
+                onChange={()=>handleSelect({vpid: productData.vpid, link: productData.link, title: productData.title, image: productData.image})}
               />
             </div>
           </span>
         )}
       </div>
       <div className="mt-4 px-4 pb-4">
-          <h5 className="truncate text-large leading-base font-bold tracking-tight text-slate-800 mb-1">
+          <Link target="_blank" to={productData.link}><h5 className="truncate text-large leading-base font-bold tracking-tight text-slate-800 hover:underline mb-1">
             {productData?.title}
           </h5>
+          </Link>
         {route === "product-list" && (
           <div className=" my-1 flex items-center justify-between">
             <p>
-              <span className="text-lg font-bold text-violet-600">{productData?.price}</span>
+              <span className="text-lg font-bold text-violet-600">Ұ{productData?.price}</span>
               {/* <span className="text-sm text-violet-500 line-through">${productData?.price}</span> */}
             </p>
           </div>
