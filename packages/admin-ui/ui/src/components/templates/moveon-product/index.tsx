@@ -12,7 +12,7 @@ import { filterForTemporal } from "../../../utils/filterFixedData"
 import InventoryProductFilters from "../inventory-product-filter"
 import InventoryProductSort from "../inventory-product-sort"
 import useInventoryProductFilters from "../../../hooks/use-inventory-product-filter"
-import { useLocation } from "react-router-dom"
+import { useLocation, useNavigate } from "react-router-dom"
 import queryString from "query-string"
 import ArrowLeftIcon from "../../fundamentals/icons/arrow-left-icon"
 import LoadingContainer from "../../atoms/loading-container"
@@ -28,9 +28,12 @@ import { usePolling } from "../../../providers/polling-provider"
 import { getErrorMessage } from "../../../utils/error-messages"
 import { queryClient } from "../../../constants/query-client"
 import InventoryProductSortByShop from "../inventory-product-sort-by-shop"
+import useImperativeDialog from "../../../hooks/use-imperative-dialog"
+import { IPriceSettingReturnType } from "../../../types/inventory-price-setting"
 
 const MoveOnProduct = () => {
   const { resetInterval } = usePolling()
+  const navigate = useNavigate()
   const createBatchJob = useAdminCreateBatchJob()
   const notification = useNotification()
   const location = useLocation();
@@ -63,12 +66,21 @@ const MoveOnProduct = () => {
   const [count, setCount] = useState(0);
   const [selectedProducts, setSelectedProducts] = useState<IInventoryProductSelectType[]>([]);
   const [multipleImport, setMultipleImport] = useState(false);
+  const dialog = useImperativeDialog()
 
   const { isLoading, isError, data, error, refetch } = useQuery<
     AxiosResponse<IInventoryProductPayloadType>
   >(["inventory-fetch",newFiltersData], () =>
-    MedusaAPI.moveOnInventory.list({ keyword: "bag", shop_id: selectedSortByShop.value, ...newFiltersData })
-  )
+    MedusaAPI.moveOnInventory.list({ keyword: "bag", shop_id: selectedSortByShop.value, ...newFiltersData }))
+
+    const selectedSortByShopData = filterForTemporal.shop.values.find(
+      (x) => x.value === selectedSortByShop.value
+    )  
+
+    const { isLoading: isPriceSettingLoading, data: priceSettingData } = useQuery<
+    AxiosResponse<IPriceSettingReturnType>
+    >(["single-price-setting-retrieve", selectedSortByShopData], () =>
+    MedusaAPI.InventoryPriceSettings.list(selectedSortByShopData?.key))
   
   // if data is fetched from backend set new count and limit
   useEffect(()=>{
@@ -83,6 +95,11 @@ const MoveOnProduct = () => {
     useEffect(()=>{
       submitFilter()
     }, [limit, offset])
+
+    useEffect(()=>{
+      setSelectedProducts([])
+      setMultipleImport(false)
+    }, [selectedSortByShop])
     
 
   useEffect(() => {
@@ -149,8 +166,8 @@ const MoveOnProduct = () => {
       (x) => x.title === value.label
     )
     if (selectedSortData) {
-      let key = "sortType"
-      let orderValue = "sortOrder"
+      const key = "sortType"
+      const orderValue = "sortOrder"
 
       if (selectedSortData?.key === "Default") {
         updateQueryParams({ [key]: undefined, [orderValue]: undefined })
@@ -171,7 +188,7 @@ const MoveOnProduct = () => {
       (x) => x.title === value.label
     )
     if (selectedSortByShopData) {
-      let key = "shop_id"
+      const key = "shop_id"
 
       if (selectedSortByShopData?.key === defaultMoveonInventoryFilter.shop_id) {
         updateQueryParams({ [key]: undefined})
@@ -183,6 +200,23 @@ const MoveOnProduct = () => {
       setIsParamsUpdated(true)
       refetch()
     }
+  }
+
+  const handleMultipleImport = async() =>{  
+    if(!priceSettingData?.data.count){
+const shouldImport = await dialog({
+heading: "Attention",
+text: "No price role found for this store, set at least 1 price rule to import product",
+confirmText: "Set Price Role", 
+buttonVariant: "primary"
+});
+if (!shouldImport) {
+  return
+} else {
+  navigate(`/a/settings/inventory-pricing`)
+}
+}
+   setMultipleImport(!multipleImport)
   }
 
   const handleNextPage = () => {
@@ -197,40 +231,61 @@ const MoveOnProduct = () => {
 
   const handleSelect = ({ vpid, link }: IInventoryProductSelectType) => {
     const productKey = `${vpid}_${link}`;
-    const updatedSet = new Set(selectedProducts.map(product => `${product.vpid}_${product.link}`));
   
-    if (updatedSet.has(productKey)) {
-      updatedSet.delete(productKey);
-    } else {
-      updatedSet.add(productKey);
-    }
+    setSelectedProducts(prevSelectedProducts => {
+      const isSelected = prevSelectedProducts.some(product =>
+        `${product.vpid}_${product.link}` === productKey
+      );
   
-    const updatedArray = Array.from(updatedSet).map(key => {
-      const [updatedVpid, updatedLink] = key.split('_');
-      return { vpid: updatedVpid, link: updatedLink };
+      if (isSelected) {
+        // Remove the item if it's already selected
+        return prevSelectedProducts.filter(product =>
+          `${product.vpid}_${product.link}` !== productKey
+        );
+      } else {
+        // Add the item if it's not selected
+        return [...prevSelectedProducts, { vpid, link }];
+      }
     });
-  
-    setSelectedProducts(updatedArray);
   };
+  
 
-  const handleImport = (product?: IInventoryProductSelectType) =>{
+  const handleImport = async(product?: IInventoryProductSelectType) =>{
     const productsToImport = product ? [product] : selectedProducts;
-
     if(selectedProducts.length===0 && !product){
       notification("Error", "You must select at least one product to import", "warning")
     }
     else {
       const selectedSortByShopData = filterForTemporal.shop.values.find(
         (x) => x.value === selectedSortByShop.value
-      )
+      )  
+      const shouldImportText = !priceSettingData?.data.count  ? "No price role found for this store, set at least 1 price rule to import product"
+  : "Are you sure you want to import this product(s) with current price role?";
+
+const shouldImport = await dialog({
+  heading: !priceSettingData?.data.count?"Attention":"Confirm Import",
+  text: shouldImportText,
+  confirmText: !priceSettingData?.data.count? "Set Price Role":"Yes, confirm", 
+  buttonVariant: !priceSettingData?.data.count?"primary":"nuclear"
+});
+  
+      if (!shouldImport) {
+        return
+      }
+      if(!priceSettingData?.data.count){
+        navigate(`/a/settings/inventory-pricing`)
+      }else {
       const reqObj = {
         dry_run: false,
         type: "moveOn-inventory-product-import",
         context: {
           products: productsToImport,
-          shop_slug: selectedSortByShopData?.key
+          store_slug: selectedSortByShopData?.key
         },
       }
+
+      setSelectedProducts([])
+      setMultipleImport(false)
   
       createBatchJob.mutate(reqObj, {
         onSuccess: () => {
@@ -244,21 +299,10 @@ const MoveOnProduct = () => {
       })
     }
   }
-  
+  }
+
   return (
     <>
-     <LoadingContainer isLoading={isLoading}>
-     {data?.data.products.length===0 ?
-      <div className="flex flex-col justify-center items-center h-[500px] gap-6">
-       <div className="font-semibold text-lg tracking-twenty text-orange-50">Product Not Found</div>
-        <button onClick={clearFilters} className="px-small py-xsmall">
-          <div className="gap-x-xsmall text-grey-50 inter-grey-40 inter-small-semibold flex items-center">
-            <ArrowLeftIcon size={20} />
-             <span className="ml-1">Go back</span>
-          </div>
-        </button>
-     </div>
-      :
       <div className="container"> 
         <div className="flex flex-wrap justify-between">
           <div className="px-3 py-3">
@@ -283,9 +327,10 @@ const MoveOnProduct = () => {
           </div>
           <div className="px-3 py-3 flex gap-4 items-center">
           <Button
+          // loading={isPriceSettingLoading}
             variant={multipleImport?"primary":"secondary"}
             size="small"
-            onClick={() => setMultipleImport(!multipleImport)}
+            onClick={handleMultipleImport}
             >
              <DownloadIcon size={20} />
               Multiple Import
@@ -346,8 +391,20 @@ const MoveOnProduct = () => {
       }
 
         <div className="-mx-4 flex flex-wrap justify-center">
-         {layOut === "grid" ? (
-            <>
+        <LoadingContainer isLoading={isLoading || isPriceSettingLoading}>
+
+        {data?.data.products.length===0 ?
+      <div className="flex flex-col justify-center items-center h-[500px] gap-6">
+       <div className="font-semibold text-lg tracking-twenty text-orange-50">Product Not Found</div>
+        <button onClick={clearFilters} className="px-small py-xsmall">
+          <div className="gap-x-xsmall text-grey-50 inter-grey-40 inter-small-semibold flex items-center">
+            <ArrowLeftIcon size={20} />
+             <span className="ml-1">Go back</span>
+          </div>
+        </button>
+     </div> :
+         layOut === "grid" ? (
+              <>
               {data?.data?.products.map((item, index) => (
                 <ProductGridCard
                 route="product-list"
@@ -405,10 +462,9 @@ const MoveOnProduct = () => {
             isLoading={isLoading}
           />
          </div>
+         </LoadingContainer>
         </div>
       </div>
-      }
-      </LoadingContainer>
       {isOpenModal && (
         <QuickViewModal
           title="Inventory Product"

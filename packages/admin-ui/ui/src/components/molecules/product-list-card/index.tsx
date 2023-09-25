@@ -41,10 +41,10 @@ const ProductListCard: React.FC<IProductListCardProps> = ({
 }) => {
   const containerClasses = clsx(
     "relative flex items-center gap-4 p-4 border rounded-lg border-gray-100 mb-4 bg-white w-[85%]",
-    enableSelectOption && isSelect && "border-violet-600"
+    enableSelectOption && isSelect && "border-violet-600", enableSelectOption && "cursor-pointer"
   )  
   return (
-    <div className={containerClasses}>
+    <div className={containerClasses} onClick={()=>handleSelect && handleSelect({vpid: productData.vpid, link: productData.link})}>
       {enableSelectOption && handleSelect && route==="product-list" && (
         <div className="flex items-center">
           <Checkbox
