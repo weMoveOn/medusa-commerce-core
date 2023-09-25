@@ -57,7 +57,7 @@ const preparedOnClick = onClick ?? (() => void 0)
                 "text-rose-500": hasError,
               })}
             >
-              {fileSize.includes("Successful")? fileSize : errorMessage}
+              {hasError && errorMessage ? errorMessage : fileSize}
             </div>
           )}
         </Tooltip>
