@@ -20,7 +20,7 @@ interface IProductListCardProps {
   footerProgressBarEnabled?: boolean;
   handleSelect?: ({ link, vpid }: IInventoryProductSelectType) => void;
   productData: IInventoryProductDataType;
-  route: "product-list" | 'imported-product'
+  route: "product-list" | 'imported-product' | 'import-status'
 }
 
 

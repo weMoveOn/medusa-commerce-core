@@ -22,7 +22,8 @@ interface IProductGridCardProps {
   footerProgressBarEnabled?: boolean;
   handleSelect?: ({ link, vpid }: IInventoryProductSelectType) => void;
   productData: IInventoryProductDataType;
-  route: "product-list" | 'imported-product'
+  route: "product-list" | "imported-product" | "import-status";
+  status?: string,
 }
 
 
@@ -39,7 +40,8 @@ const ProductGridCard: React.FC<IProductGridCardProps> = ({
   productData,
   rightButtonIcon,
   route = "product-list",
-  handleSelect
+  handleSelect,
+  status,
 }) => {
   const containerClasses = clsx(
     "relative m-1 flex w-full max-w-[18rem] flex-col overflow-hidden rounded-lg border border-gray-100  bg-white",
@@ -90,13 +92,14 @@ const ProductGridCard: React.FC<IProductGridCardProps> = ({
             <p className="text-slate-600 text-sm font-normal">Total Sales: {productData?.orders??0}</p>
           </div>
         )}
-        {route === "imported-product" && (
+        {route === "import-status" && (
           <>
-          <div className=" my-3 flex items-center justify-between ">
+          {status && <div className=" my-3 flex items-center justify-between ">
             <p className="rounded-sm border bg-purple-200 px-2 text-purple-600">
-              Status: processing
+              Status: { status }
             </p>
           </div>
+          }
           <div className="items-left	 my-3 flex flex-col justify-between ">
             <p className="">Last update: </p>
             <p className="">{formatDate(productData.updated_at!)}</p>
@@ -104,7 +107,7 @@ const ProductGridCard: React.FC<IProductGridCardProps> = ({
           </>
         )}
 
-        {footerProgressBarEnabled && <ProgressBarMoveShop progress="45%" />}
+        {route === "import-status" && footerProgressBarEnabled && <ProgressBarMoveShop progress={progress.toString()} />}
         {footerButtonEnabled && (
           <div className=" mt-1 flex items-center justify-between">
             {leftButtonOnClick && (
