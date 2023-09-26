@@ -10,6 +10,7 @@ import { queryClient } from "../../../constants/query-client"
 import useNotification from "../../../hooks/use-notification"
 import { getErrorMessage } from "../../../utils/error-messages"
 import QuickViewModal from "../../organisms/quick-view-modal"
+import medusaRequest from "../../../services/request"
 
 type Props = {
   batchJob: BatchJob
@@ -50,7 +51,6 @@ if(errorMessage && operation===BatchJobOperation.Manual){
   remainingProductsToImport = extractProductsAfterMatch({products: batchJob.context.products as IInventoryProductSelectType[], titleToMatch:productTitle})
 }
 
-console.log(productLink)
 const handleRetry = () =>{
   if(remainingProductsToImport.length){
     createBatchJob.mutate({
@@ -61,9 +61,11 @@ const handleRetry = () =>{
         store_slug: batchJob.context?.store_slug
       },
     }, {
-      onSuccess: (res) => {
+      onSuccess: async(res) => {
         resetInterval()
         queryClient.invalidateQueries({ queryKey: ['inventory-retrive'] })
+        const path = `/admin/batch-job-extended/${batchJob.id}`
+        await medusaRequest("delete", path);
         notification("Success", "Successfully initiated import products", "success")
       },
       onError: (err) => {
@@ -72,6 +74,7 @@ const handleRetry = () =>{
     })
   }
 }
+
   return (
     <div
       className="mt-4 flex w-full cursor-pointer items-center"
@@ -110,7 +113,7 @@ const handleRetry = () =>{
                 
                 <span className="block" onClick={()=>setModalOpen(!modalOpen)}>Failed while importing <strong className="font-bold">{productTitle}</strong></span>
                 <span className="block text-rose-500 sm:inline ml-2">Reason: {error}</span>
-                <span className="block text-green-600 sm:inline ml-2"> Remaining: {remainingProductsToImport.length} of {attemptToImport}</span>
+                <span className="block text-green-600 sm:inline ml-2"> Remaining: {remainingProductsToImport.length} out of {attemptToImport}</span>
               </div>
               : 
               fileSize}

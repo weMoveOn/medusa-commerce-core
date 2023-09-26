@@ -58,17 +58,17 @@ function useBatchJob(initialData: BatchJob): BatchJob {
   )
 }
 
-const BatchJobActivityList = ({ batchJobs }: { batchJobs?: BatchJob[] }) => {
+const BatchJobActivityList = ({ batchJobs, refetchBatchJob }: { batchJobs?: BatchJob[], refetchBatchJob:()=>void }) => {
   return (
     <div>
       {batchJobs?.map((batchJob) => {
-        return <BatchJobActivityCard key={batchJob.id} batchJob={batchJob} />
+        return <BatchJobActivityCard key={batchJob.id} batchJob={batchJob} refetchBatchJob={refetchBatchJob} />
       })}
     </div>
   )
 }
 
-const BatchJobActivityCard = (props: { batchJob: BatchJob }) => {
+const  BatchJobActivityCard = (props: { batchJob: BatchJob, refetchBatchJob: ()=>void }) => {
   const activityCardRef = useRef<HTMLDivElement>(null)
   const notification = useNotification()
   const { store } = useAdminStore()
@@ -243,11 +243,13 @@ const BatchJobActivityCard = (props: { batchJob: BatchJob }) => {
 
   return (
     <ActivityCard
-      title={store?.name ?? "Medusa Team"}
+      title={store?.name ?? "Moveshop Team"}
       icon={<MedusaIcon className="mr-3" size={20} />}
       relativeTimeElapsed={relativeTimeElapsed.rtf}
       date={batchJob.created_at}
       shouldShowStatus={true}
+      batchJob={batchJob}
+      refetchBatchJob={props.refetchBatchJob}
     >
       <div ref={activityCardRef} className="inter-small-regular flex flex-col">
         <span>{batchJobActivityDescription}</span>

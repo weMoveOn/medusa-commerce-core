@@ -7,9 +7,14 @@ import Spinner from "../../atoms/spinner"
 import SadFaceIcon from "../../fundamentals/icons/sad-face-icon"
 import SidedMouthFaceIcon from "../../fundamentals/icons/sided-mouth-face"
 import BatchJobActivityList from "../batch-jobs-activity-list"
+import useImperativeDialog from "../../../hooks/use-imperative-dialog"
+import medusaRequest from "../../../services/request"
+import useNotification from "../../../hooks/use-notification"
 
 const ActivityDrawer = ({ onDismiss }) => {
   const { t } = useTranslation()
+  const dialog = useImperativeDialog()
+  const notification = useNotification()
   const ref = React.useRef<HTMLDivElement>(null)
   const { batchJobs, hasPollingError, refetch } = usePolling()
   useOutsideClick(onDismiss, ref)
@@ -18,18 +23,44 @@ const ActivityDrawer = ({ onDismiss }) => {
     refetch()
   }, [])
 
+  const handleClearAll = async()=> {
+    const shouldDelete = await dialog({
+      heading: "Clear All",
+      text: `Are you sure you want to clear all activities? This is also going to stop all running processes.`,
+    })
+
+    if(shouldDelete){
+      const path = `/admin/batch-job-extended`
+      const res = await medusaRequest("delete", path);
+      if(res.status===200){
+        refetch();
+        notification(
+          "Activities deleted",
+          "All activities deleted successfully",
+          "success"
+        )
+      } else  notification(
+        "Failed",
+        "Failed to delete activities",
+        "error"
+      )
+    }
+  }
+
   return (
     <div
       ref={ref}
       className="bg-grey-0 shadow-dropdown fixed top-[64px] bottom-2 right-3 flex w-[400px] flex-col overflow-x-hidden rounded"
     >
+      <div className="flex flex-row justify-between">
       <div className="inter-large-semibold pt-7 pl-8 pb-1">
         {t("activity-drawer-activity", "Activity")}
       </div>
-
+      <div className="pt-7 pr-8 pb-1 cursor-pointer inter-large-thin" onClick={handleClearAll}>Clear All</div>
+      </div>
       {!hasPollingError ? (
         batchJobs ? (
-          <BatchJobActivityList batchJobs={batchJobs} />
+          <BatchJobActivityList batchJobs={batchJobs} refetchBatchJob={refetch} />
         ) : (
           <EmptyActivityDrawer />
         )
