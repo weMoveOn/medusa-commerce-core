@@ -20,6 +20,7 @@ import { ActivityCard } from "../../molecules/activity-card"
 import BatchJobFileCard from "../../molecules/batch-job-file-card"
 import { batchJobDescriptionBuilder, BatchJobOperation } from "./utils"
 import CrossIcon from "../../fundamentals/icons/cross-icon"
+import RefreshIcon from "../../fundamentals/icons/refresh-icon"
 
 /**
  * Retrieve a batch job and refresh the data depending on the last batch job status
@@ -167,9 +168,9 @@ const BatchJobActivityCard = (props: { batchJob: BatchJob }) => {
 
     const icon =
       batchJob.status !== "completed" && batchJob.status !== "canceled" ? (
-        batchJob.status === "failed" ? (
+        batchJob.status === "failed" && batchJob.type!="moveOn-inventory-product-import" ? (
           <CrossIcon size={18} />
-        ) : (
+        ): batchJob.status === "failed"? (<RefreshIcon size={18} />) : (
           <Spinner size={"medium"} variant={"secondary"} />
         )
       ) : (
@@ -195,6 +196,7 @@ const BatchJobActivityCard = (props: { batchJob: BatchJob }) => {
 
     return (
       <BatchJobFileCard
+        batchJob = {batchJob}
         operation={operation}
         onClick={onDownloadFile}
         fileName={fileName}

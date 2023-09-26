@@ -6,11 +6,10 @@ import BodyCard from "../../../components/organisms/body-card"
 import TableViewHeader from "../../../components/organisms/custom-table-header"
 import MoveOnInventoryImportedProduct from "../../../components/templates/moveon-inventory-imported-product"
 import MoveOnProduct from "../../../components/templates/moveon-product"
-import MoveonInventoryBatchImportStatus from "../../../components/templates/moveon-inventory-batch-import-status"
 
-export type ViewsType = "Product List" | "Imported Products" | "Import Status"
+export type ViewsType = "Product List" | "Imported Products"
 
-const VIEWS: ViewsType[] = ["Product List", "Imported Products", "Import Status"]
+const VIEWS: ViewsType[] = ["Product List", "Imported Products"]
 export type ProductLayoutType = "grid" | "list"
 
 const Overview = () => {
@@ -21,8 +20,8 @@ const Overview = () => {
     switch (view) {
       case "Product List":
         return <MoveOnProduct />
-      case "Import Status":
-        return <MoveonInventoryBatchImportStatus layout={importedProductStatusLayout} />
+      // case "Import Status":
+      //   return <MoveonInventoryBatchImportStatus layout={importedProductStatusLayout} />
       default:
         return <MoveOnInventoryImportedProduct layout={importedProductLayout} />
     }
@@ -36,7 +35,7 @@ const Overview = () => {
             forceDropdown={false}
             customActionable={
               <div className="flex space-x-2">
-                {view === "Imported Products" || view=== "Import Status" && (
+                {view === "Imported Products" && (
                   <>
                     <span
                       onClick={() => {
@@ -59,7 +58,7 @@ const Overview = () => {
                     >
                       <TileIcon
                         style={{
-                          opacity: importedProductLayout || importedProductStatusLayout === "grid" ? 1 : 0.4,
+                          opacity: importedProductLayout === "grid" ? 1 : 0.4,
                           cursor: "pointer",
                         }}
                       />
