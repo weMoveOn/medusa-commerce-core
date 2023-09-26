@@ -95,7 +95,7 @@ const handleRetry = () =>{
       <div className="relative w-full pl-4 text-left">
         <div className="inter-small-regular max-w-[90%] overflow-hidden truncate">
           {operation !== BatchJobOperation.Manual && fileName}
-          {operation=== BatchJobOperation.Manual && !hasError && <div>Successfully imported {attemptToImport} product(s)</div>}
+          {operation=== BatchJobOperation.Manual && !hasError && batchJob.status==="completed" && <div>Successfully imported {attemptToImport} product(s)</div>}
         </div>
           {!!fileSize && (
             <div
