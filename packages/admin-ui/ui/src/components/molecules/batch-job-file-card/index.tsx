@@ -106,8 +106,7 @@ const handleRetry = () =>{
               {hasError && errorMessage ?
               <div className="bg-red-100 border border-red-200 text-green-900 px-4 py-3 rounded relative" role="alert">
                 
-                <strong className="font-bold" onClick={()=>setModalOpen(!modalOpen)}>Failed while importing {productTitle}</strong>
-                <br />
+                <span className="block" onClick={()=>setModalOpen(!modalOpen)}>Failed while importing <strong className="font-bold">{productTitle}</strong></span>
                 <span className="block text-red-700 sm:inline ml-2">Reason: {error}</span>
                 <span className="block text-green-900 sm:inline ml-2"> Remaining: {remainingProductsToImport.length} of {attemptToImport}</span>
               </div>
