@@ -72,7 +72,6 @@ const handleRetry = () =>{
     })
   }
 }
-
   return (
     <div
       className="mt-4 flex w-full cursor-pointer items-center"
@@ -103,12 +102,15 @@ const handleRetry = () =>{
                 "text-rose-500": hasError,
               })}
             >
-              {hasError && errorMessage ?
+              {batchJob.canceled_at?  <div className="bg-red-100 border border-red-200= px-4 py-3 rounded relative" role="alert">
+                <span className="block text-rose-500 sm:inline ml-2">Batch job cancelled by user</span>
+              </div>:
+              hasError && errorMessage && batchJob.status==="failed" && productLink && productTitle && error ?
               <div className="bg-red-100 border border-red-200 text-green-900 px-4 py-3 rounded relative" role="alert">
                 
                 <span className="block" onClick={()=>setModalOpen(!modalOpen)}>Failed while importing <strong className="font-bold">{productTitle}</strong></span>
-                <span className="block text-red-700 sm:inline ml-2">Reason: {error}</span>
-                <span className="block text-green-900 sm:inline ml-2"> Remaining: {remainingProductsToImport.length} of {attemptToImport}</span>
+                <span className="block text-rose-500 sm:inline ml-2">Reason: {error}</span>
+                <span className="block text-green-600 sm:inline ml-2"> Remaining: {remainingProductsToImport.length} of {attemptToImport}</span>
               </div>
               : 
               fileSize}
