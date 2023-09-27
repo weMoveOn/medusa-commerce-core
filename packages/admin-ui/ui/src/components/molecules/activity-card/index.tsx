@@ -77,7 +77,7 @@ export const ActivityCard: React.FC<ActivityCardProps> = (
 
   return (
     <div key={key} className="border-grey-20 mx-8 border-b last:border-b-0">
-      {(batchJob.status==="failed" || batchJob.status==="completed") && batchJob.type==="moveOn-inventory-product-import" && <div className="flex flex-row-reverse  text-rose-500 pt-2">
+      {(batchJob.status==="failed" || batchJob.status==="completed") && <div className="flex flex-row-reverse  text-rose-500 pt-2">
        <Tooltip side="left" content="Delete"><CrossIcon size={18} className="cursor-pointer"  onClick={handleDelete} /></Tooltip>
       </div>}
       <div className="hover:bg-grey-5 -mx-8 flex px-8 py-3">
