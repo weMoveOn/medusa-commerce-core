@@ -7,6 +7,7 @@ import Button from "../../fundamentals/button"
 import DownloadIcon from "../../fundamentals/icons/download-icon"
 import EyeIcon from "../../fundamentals/icons/eye-icon"
 import { formatDate } from "../../../utils/formatDate"
+import { Link } from "react-router-dom"
 
 interface IProductGridCardProps {
   leftButtonOnClick?: (value: any) => void;
@@ -21,7 +22,8 @@ interface IProductGridCardProps {
   footerProgressBarEnabled?: boolean;
   handleSelect?: ({ link, vpid }: IInventoryProductSelectType) => void;
   productData: IInventoryProductDataType;
-  route: "product-list" | 'imported-product'
+  route: "product-list" | "imported-product" | "import-status";
+  status?: string,
 }
 
 
@@ -38,14 +40,15 @@ const ProductGridCard: React.FC<IProductGridCardProps> = ({
   productData,
   rightButtonIcon,
   route = "product-list",
-  handleSelect
+  handleSelect,
+  status,
 }) => {
   const containerClasses = clsx(
     "relative m-1 flex w-full max-w-[18rem] flex-col overflow-hidden rounded-lg border border-gray-100  bg-white",
     enableSelectOption && isSelect && "border-violet-600", enableSelectOption && "cursor-pointer"
   )
   return (
-    <div className={containerClasses} onClick={()=>handleSelect && handleSelect({vpid: productData.vpid, link: productData.link})}>
+    <div className={containerClasses} onClick={()=>handleSelect && handleSelect({vpid: productData.vpid, link: productData.link, title: productData.title, image: productData.image})}>
       <div
         className="relative flex h-60 overflow-hidden rounded-lg"
       >
@@ -64,20 +67,21 @@ const ProductGridCard: React.FC<IProductGridCardProps> = ({
                 id="checkbox1"
                 label=""
                 className="mr-0 cursor-pointer"
-                onChange={()=>handleSelect({vpid: productData.vpid, link: productData.link})}
+                onChange={()=>handleSelect({vpid: productData.vpid, link: productData.link, title: productData.title, image: productData.image})}
               />
             </div>
           </span>
         )}
       </div>
       <div className="mt-4 px-4 pb-4">
-          <h5 className="truncate text-large leading-base font-bold tracking-tight text-slate-800 mb-1">
+          <Link target="_blank" to={productData.link}><h5 className="truncate text-large leading-base font-bold tracking-tight text-slate-800 hover:underline mb-1">
             {productData?.title}
           </h5>
+          </Link>
         {route === "product-list" && (
           <div className=" my-1 flex items-center justify-between">
             <p>
-              <span className="text-lg font-bold text-violet-600">{productData?.price}</span>
+              <span className="text-lg font-bold text-violet-600">Ұ{productData?.price}</span>
               {/* <span className="text-sm text-violet-500 line-through">${productData?.price}</span> */}
             </p>
           </div>
@@ -88,13 +92,14 @@ const ProductGridCard: React.FC<IProductGridCardProps> = ({
             <p className="text-slate-600 text-sm font-normal">Total Sales: {productData?.orders??0}</p>
           </div>
         )}
-        {route === "imported-product" && (
+        {route === "import-status" && (
           <>
-          <div className=" my-3 flex items-center justify-between ">
+          {status && <div className=" my-3 flex items-center justify-between ">
             <p className="rounded-sm border bg-purple-200 px-2 text-purple-600">
-              Status: processing
+              Status: { status }
             </p>
           </div>
+          }
           <div className="items-left	 my-3 flex flex-col justify-between ">
             <p className="">Last update: </p>
             <p className="">{formatDate(productData.updated_at!)}</p>
@@ -102,7 +107,7 @@ const ProductGridCard: React.FC<IProductGridCardProps> = ({
           </>
         )}
 
-        {footerProgressBarEnabled && <ProgressBarMoveShop progress="45%" />}
+        {route === "import-status" && footerProgressBarEnabled && <ProgressBarMoveShop progress={progress.toString()} />}
         {footerButtonEnabled && (
           <div className=" mt-1 flex items-center justify-between">
             {leftButtonOnClick && (

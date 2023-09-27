@@ -81,12 +81,12 @@ const QuickViewModal: React.FC<QuickViewModalProps> = ({
             }
 
             <div className="mt-6 ml-3 w-1/2">
-              <h2 className="title-font text-sm tracking-widest text-gray-500">
+              {/* <h2 className="title-font text-sm tracking-widest text-gray-500">
                 {data.data.data.vendor}
-              </h2>
-              <h1 className="title-font mb-1 text-3xl font-medium text-gray-900">
+              </h2> */}
+              <h2 className="title-font mb-1 text-3xl font-medium text-gray-900">
                 {data.data.data.shop.name}
-              </h1>
+              </h2>
               <div className="mb-1 flex flex-row items-center">
                <Rating initialValue={Number(data.data.data.ratings_average) ?? 0} SVGstyle={ { 'display':'inline' } } readonly allowFraction size={20} />
                   <span className="ml-3 text-gray-600">{data.data.data.ratings_count ?? 0} Reviews</span>
@@ -136,9 +136,9 @@ const QuickViewModal: React.FC<QuickViewModalProps> = ({
               <div className="mb-3">
                 <div className="flex  h-[70px] w-[130px] items-center justify-center rounded-sm	 border-[1.5px] border-[#D9D9D9] drop-shadow-sm ">
                   <div className="my-auto flex flex-col">
-                    <p className="text-center text-lg font-bold text-gray-900">
-                      {data.data.data.price.original.max}
-                    </p>
+                    {data.data.data.price.original.max && <p className="text-center text-lg font-bold text-gray-900">
+                    Ұ{data.data.data.price.original.max}
+                    </p>}
                     <p className="text-center">{data.data.data.stock===0?"No stock available.":`1-${data.data.data.stock} Pieces`}</p>
                   </div>
                 </div>
@@ -201,15 +201,15 @@ const QuickViewModal: React.FC<QuickViewModalProps> = ({
                     >
                       <div className="flex items-center">{MoveonInventoryHelpers.getNameForColorIds(sku.props, data.data.data.variation.props)}</div>
                       <div className="pl-5">
-                        {sku.price.offer?
+                      {sku.price.offer?
                         <p>
-                        <span>{sku.price.offer}</span>
+                        <span>Ұ{sku.price.offer}</span>
                         <span className="-mt-2 text-center !text-[12px] text-gray-500 line-through">
-                          {sku.price.actual}
+                        Ұ{sku.price.actual}
                         </span>
                         </p>
                         :
-                        <p>{sku.price.actual}</p>
+                        <p>Ұ{sku.price.actual}</p>
                         }
                       </div>
                     </div>
@@ -222,15 +222,15 @@ const QuickViewModal: React.FC<QuickViewModalProps> = ({
                     >
                       <div className="flex items-center">{MoveonInventoryHelpers.getNameForSizeIds(sku.props, data.data.data.variation.props)}</div>
                       <div className="pl-5">
-                        {sku.price.offer?
+                      Ұ{sku.price.offer?
                         <span>
-                        <span>{sku.price.offer}</span>
+                        <span>Ұ{sku.price.offer}</span>
                         <span className="-mt-2 text-center !text-[12px] text-gray-500 line-through">
-                          {sku.price.actual}
+                        Ұ{sku.price.actual}
                         </span>
                         </span>
                         :
-                        <span>{sku.price.actual}</span>
+                        <span>Ұ{sku.price.actual}</span>
                         }
                       </div>
                     </div>

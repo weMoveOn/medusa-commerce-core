@@ -38,6 +38,8 @@ export interface IInventoryProductsFilterType {
 export interface IInventoryProductSelectType {
   vpid: string;
   link: string;
+  title: string;
+  image: string;
 }
 
 // filters type declearation 

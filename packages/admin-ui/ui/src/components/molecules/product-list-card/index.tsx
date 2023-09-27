@@ -20,7 +20,7 @@ interface IProductListCardProps {
   footerProgressBarEnabled?: boolean;
   handleSelect?: ({ link, vpid }: IInventoryProductSelectType) => void;
   productData: IInventoryProductDataType;
-  route: "product-list" | 'imported-product'
+  route: "product-list" | 'imported-product' | 'import-status'
 }
 
 
@@ -44,7 +44,8 @@ const ProductListCard: React.FC<IProductListCardProps> = ({
     enableSelectOption && isSelect && "border-violet-600", enableSelectOption && "cursor-pointer"
   )  
   return (
-    <div className={containerClasses} onClick={()=>handleSelect && handleSelect({vpid: productData.vpid, link: productData.link})}>
+    <div className={containerClasses} onClick={()=>handleSelect
+    && handleSelect({vpid: productData.vpid, link: productData.link, image: productData.image, title: productData.title})}>
       {enableSelectOption && handleSelect && route==="product-list" && (
         <div className="flex items-center">
           <Checkbox
@@ -54,7 +55,7 @@ const ProductListCard: React.FC<IProductListCardProps> = ({
             label=""
             className="mr-0 cursor-pointer"
             onChange={()=>{
-                handleSelect({vpid: productData.vpid, link: productData.link})
+                handleSelect({vpid: productData.vpid, link: productData.link, image: productData.image, title: productData.title})
           }}
           />
         </div>
@@ -75,7 +76,7 @@ const ProductListCard: React.FC<IProductListCardProps> = ({
             {route === "product-list" && (
               <div className="my-1 flex items-center justify-between">
               <p>
-                <span className="text-lg font-bold text-violet-600">{productData?.price}</span>
+                <span className="text-lg font-bold text-violet-600">Ұ{productData?.price}</span>
                 {/* <span className="text-sm text-violet-500 line-through">${productData?.price}</span> */}
               </p>
             </div>

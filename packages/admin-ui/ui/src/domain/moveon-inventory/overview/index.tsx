@@ -15,10 +15,13 @@ export type ProductLayoutType = "grid" | "list"
 const Overview = () => {
   const [view, setView] = useState<ViewsType>("Product List")
   const [importedProductLayout, setImportedProductLayOut] = useState<ProductLayoutType>("grid")
+  const [importedProductStatusLayout, setImportedProductStatusLayOut] = useState<ProductLayoutType>("grid")
   const CurrentView = () => {
     switch (view) {
       case "Product List":
         return <MoveOnProduct />
+      // case "Import Status":
+      //   return <MoveonInventoryBatchImportStatus layout={importedProductStatusLayout} />
       default:
         return <MoveOnInventoryImportedProduct layout={importedProductLayout} />
     }
@@ -37,6 +40,7 @@ const Overview = () => {
                     <span
                       onClick={() => {
                         setImportedProductLayOut("list")
+                        setImportedProductStatusLayOut("list")
                       }}
                     >
                       <ListIcon
@@ -49,6 +53,7 @@ const Overview = () => {
                     <span
                       onClick={() => {
                         setImportedProductLayOut("grid")
+                        setImportedProductStatusLayOut("grid")
                       }}
                     >
                       <TileIcon

@@ -2,6 +2,11 @@ import React, { ReactNode } from "react"
 import StatusIndicator from "../../fundamentals/status-indicator"
 import Tooltip from "../../atoms/tooltip"
 import clsx from "clsx"
+import { BatchJob } from "@medusajs/medusa"
+import useImperativeDialog from "../../../hooks/use-imperative-dialog"
+import useNotification from "../../../hooks/use-notification"
+import medusaRequest from "../../../services/request"
+import CrossIcon from "../../fundamentals/icons/cross-icon"
 
 export type ActivityCardProps = {
   key?: string
@@ -11,14 +16,18 @@ export type ActivityCardProps = {
   date?: string | Date
   shouldShowStatus?: boolean
   children?: ReactNode[]
+  batchJob: BatchJob
+  refetchBatchJob?: ()=>void
 }
 
 export const ActivityCard: React.FC<ActivityCardProps> = (
   props: ActivityCardProps
 ) => {
-  const { key, title, icon, relativeTimeElapsed, shouldShowStatus, children } =
+  const { key, title, icon, relativeTimeElapsed, shouldShowStatus, children, batchJob, refetchBatchJob } =
     props
 
+  const dialog = useImperativeDialog()
+  const notification = useNotification()
   const date =
     !!props.date &&
     new Date(props.date).toLocaleDateString("en-us", {
@@ -42,9 +51,36 @@ export const ActivityCard: React.FC<ActivityCardProps> = (
     )
   }
 
+  const handleDelete = async()=> {
+    const shouldDelete = await dialog({
+      heading: "Delete Activity",
+      text: `Are you sure you want to delete this activity?`,
+    })
+  
+    if(shouldDelete){
+      const path = `/admin/batch-job-extended/${batchJob.id}`
+      const res = await medusaRequest("delete", path);
+      if(res.status===200){
+        refetchBatchJob && refetchBatchJob();
+        notification(
+          "Activity deleted",
+          "Activity deleted successfully",
+          "success"
+        )
+      } else notification(
+        "Failed",
+        "Failed to delete activity",
+        "error"
+      )
+    }
+  }
+
   return (
     <div key={key} className="border-grey-20 mx-8 border-b last:border-b-0">
-      <div className="hover:bg-grey-5 -mx-8 flex px-8 py-6">
+      {(batchJob.status==="failed" || batchJob.status==="completed") && <div className="flex flex-row-reverse  text-rose-500 pt-2">
+       <Tooltip side="left" content="Delete"><CrossIcon size={18} className="cursor-pointer"  onClick={handleDelete} /></Tooltip>
+      </div>}
+      <div className="hover:bg-grey-5 -mx-8 flex px-8 py-3">
         <div className="relative h-full w-full">
           <div className="inter-small-semibold text-grey-90 flex justify-between">
             <div className="flex">
