@@ -77,10 +77,10 @@ const handleRetry = () =>{
 
   return (
     <div
-      className="mt-4 flex w-full cursor-pointer items-center"
+      className="mt-4 flex w-full items-center"
     >
       <div
-        className={`border-grey-20 flex items-center justify-center rounded-lg border p-2.5
+        className={`border-grey-20 flex items-center justify-center rounded-lg border p-2.5 ${operation===BatchJobOperation.Manual && "cursor-pointer"}
         ${remainingProductsToImport.length===0 && errorMessage && operation===BatchJobOperation.Manual && "hidden"}`}
         onClick={remainingProductsToImport.length>0 && errorMessage && operation===BatchJobOperation.Manual? handleRetry:()=>{}}
       >
@@ -111,7 +111,7 @@ const handleRetry = () =>{
               hasError && errorMessage && batchJob.status==="failed" && productLink && productTitle && error ?
               <div className="bg-red-100 border border-red-200 text-green-900 px-4 py-3 rounded relative" role="alert">
                 
-                <span className="block" onClick={()=>setModalOpen(!modalOpen)}>Failed while importing <strong className="font-bold hover:underline">{productTitle}</strong></span>
+                <span className="block">Failed while importing <strong onClick={()=>setModalOpen(!modalOpen)} className="font-bold hover:underline cursor-pointer">{productTitle}</strong></span>
                 <span className="block text-rose-500 sm:inline ml-2">Reason: {error}</span>
                 <span className="block text-green-600 sm:inline ml-2"> Remaining: {remainingProductsToImport.length} out of {attemptToImport}</span>
               </div>
