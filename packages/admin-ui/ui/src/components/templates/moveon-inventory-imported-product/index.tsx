@@ -92,10 +92,10 @@ const MoveOnInventoryImportedProduct: React.FC<IProps> = ({ layout }) => {
                 leftButtonTitle="View"
                 rightButtonTitle="Edit"
                 leftButtonOnClick={()=>{
-                  navigate(`/a/products/${item.id}`)
+                  navigate(`/a/products/${item.id}`, {state: "/a/moveon-inventory/imported-products"})
                 }}
                 rightButtonOnClick={()=>{
-                  navigate(`/a/products/${item.id}`)
+                  navigate(`/a/products/${item.id}`, {state: "/a/moveon-inventory/imported-products"})
                  }}
               />
             ))}
