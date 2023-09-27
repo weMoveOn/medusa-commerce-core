@@ -15,7 +15,7 @@ const BackButton = ({ path, label, className }: Props) => {
   return (
     <button
       onClick={() => {
-        path ? navigate(path) : navigate(-1)
+        path==="/a/moveon-inventory" ? navigate(path, {state:"Imported Products"}) : path ? navigate(path): navigate(-1)
       }}
       className={clsx("px-small py-xsmall", className)}
     >

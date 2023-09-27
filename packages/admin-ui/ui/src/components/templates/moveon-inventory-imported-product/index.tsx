@@ -92,10 +92,10 @@ const MoveOnInventoryImportedProduct: React.FC<IProps> = ({ layout }) => {
                 leftButtonTitle="View"
                 rightButtonTitle="Edit"
                 leftButtonOnClick={()=>{
-                  navigate(`/a/products/${item.id}`)
+                  navigate(`/a/products/${item.id}`, {state: "/a/moveon-inventory"})
                 }}
                 rightButtonOnClick={()=>{
-                  navigate(`/a/products/${item.id}`)
+                  navigate(`/a/products/${item.id}`, {state: "/a/moveon-inventory"})
                  }}
               />
             ))}
@@ -114,6 +114,7 @@ const MoveOnInventoryImportedProduct: React.FC<IProps> = ({ layout }) => {
                   link: "",
                   image: item.thumbnail,
                   updated_at: item.updated_at,
+                  created_at: item.created_at,
                   discount: 0,
                   price: 0,
                   price_real: 0,
@@ -123,7 +124,7 @@ const MoveOnInventoryImportedProduct: React.FC<IProps> = ({ layout }) => {
                 key={index}
                 enableSelectOption={false}
                 isSelect={false}
-                footerProgressBarEnabled={true}
+                footerProgressBarEnabled={false}
                 footerButtonEnabled={true}
                 rightButtonIcon={
                   <EditIcon
@@ -136,8 +137,8 @@ const MoveOnInventoryImportedProduct: React.FC<IProps> = ({ layout }) => {
                 }
                 leftButtonTitle="View"
                 rightButtonTitle="Edit"
-                leftButtonOnClick={()=>navigate(`/a/products/${item.id}`)}
-                rightButtonOnClick={()=>navigate(`/a/products/${item.id}`)}
+                leftButtonOnClick={()=>navigate(`/a/products/${item.id}`, {state: "/a/moveon-inventory"})}
+                rightButtonOnClick={()=>navigate(`/a/products/${item.id}`, {state: "/a/moveon-inventory"})}
               />
             ))}
           </>

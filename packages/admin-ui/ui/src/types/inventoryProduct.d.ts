@@ -5,7 +5,7 @@ export interface IInventoryProductDataType {
   vendor: string;
   link: string;
   title: string;
-  image: string;
+  image: string | null;
   price: number;
   price_real: number;
   discount: number;
@@ -16,7 +16,8 @@ export interface IInventoryProductDataType {
   rating?: number;
   rating_count?: number;
   wholesales_price?: number;
-  updated_at?: string
+  updated_at?: Date
+  created_at?: Date
 }
 
 export interface IInventoryProductsPaginateType {
@@ -39,7 +40,6 @@ export interface IInventoryProductSelectType {
   vpid: string;
   link: string;
   title: string;
-  image: string;
 }
 
 // filters type declearation 

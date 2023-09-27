@@ -173,8 +173,8 @@ const MoveOnProduct = () => {
       (x) => x.title === value.label
     )
     if (selectedSortData) {
-      const key = "sortType"
-      const orderValue = "sortOrder"
+      const key = "sortType" as string
+      const orderValue = "sortOrder" as string
 
       if (selectedSortData?.key === "Default") {
         updateQueryParams({ [key]: undefined, [orderValue]: undefined })
@@ -195,7 +195,7 @@ const MoveOnProduct = () => {
       (x) => x.title === value.label
     )
     if (selectedSortByShopData) {
-      const key = "shop_id"
+      const key = "shop_id" as string
 
       if (selectedSortByShopData?.key === defaultMoveonInventoryFilter.shop_id) {
         updateQueryParams({ [key]: undefined})
@@ -210,7 +210,7 @@ const MoveOnProduct = () => {
   }
 
 const handleSearch = (searchKeyword?:string) => {
-      const key = "keyword"
+      const key = "keyword" as string
 
       if (searchTerm === "") {
         updateQueryParams({ [key]: undefined})
@@ -250,7 +250,7 @@ if (!shouldImport) {
     handleFilterChange({offset: offset-limit, limit:limit})
   }
 
-  const handleSelect = ({ vpid, link, title, image }: IInventoryProductSelectType) => {
+  const handleSelect = ({ vpid, link, title }: IInventoryProductSelectType) => {
     const productKey = `${vpid}_${link}`;
   
     setSelectedProducts(prevSelectedProducts => {
@@ -265,7 +265,7 @@ if (!shouldImport) {
         );
       } else {
         // Add the item if it's not selected
-        return [...prevSelectedProducts, { vpid, link, image, title }];
+        return [...prevSelectedProducts, { vpid, link, title }];
       }
     });
   };
@@ -453,7 +453,7 @@ const shouldImport = await dialog({
                 handleSelect={handleSelect}
                 leftButtonOnClick={handleProductView}
                 rightButtonOnClick={()=>{
-                  handleImport({link:item.link, vpid: item.vpid, title: item.title, image: item.image})
+                  handleImport({link:item.link, vpid: item.vpid, title: item.title})
                 }}
               />              
               ))}
@@ -474,7 +474,7 @@ const shouldImport = await dialog({
                   handleSelect={handleSelect}
                   leftButtonOnClick={handleProductView}
                   rightButtonOnClick={()=>{
-                    handleImport({link:item.link, vpid: item.vpid, title: item.title, image: item.image})
+                    handleImport({link:item.link, vpid: item.vpid, title: item.title})
                   }}
                 />
               ))}

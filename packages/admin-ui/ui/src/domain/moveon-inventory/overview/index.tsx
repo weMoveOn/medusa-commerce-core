@@ -6,6 +6,7 @@ import BodyCard from "../../../components/organisms/body-card"
 import TableViewHeader from "../../../components/organisms/custom-table-header"
 import MoveOnInventoryImportedProduct from "../../../components/templates/moveon-inventory-imported-product"
 import MoveOnProduct from "../../../components/templates/moveon-product"
+import { useLocation } from "react-router-dom"
 
 export type ViewsType = "Product List" | "Imported Products"
 
@@ -13,15 +14,14 @@ const VIEWS: ViewsType[] = ["Product List", "Imported Products"]
 export type ProductLayoutType = "grid" | "list"
 
 const Overview = () => {
-  const [view, setView] = useState<ViewsType>("Product List")
+  const location = useLocation();
+  const [view, setView] = useState<ViewsType>(location.state??"Product List")
   const [importedProductLayout, setImportedProductLayOut] = useState<ProductLayoutType>("grid")
   const [importedProductStatusLayout, setImportedProductStatusLayOut] = useState<ProductLayoutType>("grid")
   const CurrentView = () => {
     switch (view) {
       case "Product List":
         return <MoveOnProduct />
-      // case "Import Status":
-      //   return <MoveonInventoryBatchImportStatus layout={importedProductStatusLayout} />
       default:
         return <MoveOnInventoryImportedProduct layout={importedProductLayout} />
     }

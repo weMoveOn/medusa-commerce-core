@@ -1,5 +1,5 @@
 import { useAdminProduct } from "medusa-react"
-import { useNavigate, useParams } from "react-router-dom"
+import { useLocation, useNavigate, useParams } from "react-router-dom"
 import BackButton from "../../../components/atoms/back-button"
 import Spinner from "../../../components/atoms/spinner"
 import WidgetContainer from "../../../components/extensions/widget-container"
@@ -13,6 +13,7 @@ import { useWidgets } from "../../../providers/widget-provider"
 import { getErrorStatus } from "../../../utils/get-error-status"
 
 const Edit = () => {
+  const location = useLocation()
   const { id } = useParams()
   const navigate = useNavigate()
 
@@ -46,8 +47,8 @@ const Edit = () => {
   return (
     <div className="pb-5xlarge">
       <BackButton
-        path="/a/products"
-        label="Back to Products"
+        path={location.state ?? "/a/products"}
+        label={location.state==="/a/moveon-inventory"? "Back to Imported Products":"Back to Products"}
         className="mb-xsmall"
       />
       <div className="gap-y-xsmall flex flex-col">
