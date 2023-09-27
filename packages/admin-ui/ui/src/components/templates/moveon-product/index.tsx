@@ -291,7 +291,7 @@ const shouldImport = await dialog({
         onSuccess: (res) => {
           resetInterval()
           queryClient.invalidateQueries({ queryKey: ['inventory-retrive'] })
-          notification("Success", "Successfully initiated import products", "success")
+          notification("Success", `Successfully initiated import of ${productsToImport.length} products`, "success")
         },
         onError: (err) => {
           notification("Error", getErrorMessage(err), "error")

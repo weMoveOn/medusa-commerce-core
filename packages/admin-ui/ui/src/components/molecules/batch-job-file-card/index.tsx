@@ -66,7 +66,7 @@ const handleRetry = () =>{
         queryClient.invalidateQueries({ queryKey: ['inventory-retrive'] })
         const path = `/admin/batch-job-extended/${batchJob.id}`
         await medusaRequest("delete", path);
-        notification("Success", "Successfully initiated import products", "success")
+        notification("Success", `Successfully initiated import of remaining ${remainingProductsToImport.length} products`, "success")
       },
       onError: (err) => {
         notification("Error", getErrorMessage(err), "error")
@@ -106,12 +106,12 @@ const handleRetry = () =>{
               })}
             >
               {batchJob.canceled_at?  <div className="bg-red-100 border border-red-200= px-4 py-3 rounded relative" role="alert">
-                <span className="block text-rose-500 sm:inline ml-2">Batch job cancelled by user</span>
+                <span className="block text-rose-500 sm:inline ml-2">Cancelled by you</span>
               </div>:
               hasError && errorMessage && batchJob.status==="failed" && productLink && productTitle && error ?
               <div className="bg-red-100 border border-red-200 text-green-900 px-4 py-3 rounded relative" role="alert">
                 
-                <span className="block" onClick={()=>setModalOpen(!modalOpen)}>Failed while importing <strong className="font-bold">{productTitle}</strong></span>
+                <span className="block" onClick={()=>setModalOpen(!modalOpen)}>Failed while importing <strong className="font-bold hover:underline">{productTitle}</strong></span>
                 <span className="block text-rose-500 sm:inline ml-2">Reason: {error}</span>
                 <span className="block text-green-600 sm:inline ml-2"> Remaining: {remainingProductsToImport.length} out of {attemptToImport}</span>
               </div>
