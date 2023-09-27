@@ -20,7 +20,7 @@ interface IProductListCardProps {
   footerProgressBarEnabled?: boolean;
   handleSelect?: ({ link, vpid }: IInventoryProductSelectType) => void;
   productData: IInventoryProductDataType;
-  route: "product-list" | 'imported-product' | 'import-status'
+  route: "product-list" | 'imported-product'
 }
 
 
@@ -45,7 +45,7 @@ const ProductListCard: React.FC<IProductListCardProps> = ({
   )  
   return (
     <div className={containerClasses} onClick={()=>handleSelect
-    && handleSelect({vpid: productData.vpid, link: productData.link, image: productData.image, title: productData.title})}>
+    && handleSelect({vpid: productData.vpid, link: productData.link, title: productData.title})}>
       {enableSelectOption && handleSelect && route==="product-list" && (
         <div className="flex items-center">
           <Checkbox
@@ -55,7 +55,7 @@ const ProductListCard: React.FC<IProductListCardProps> = ({
             label=""
             className="mr-0 cursor-pointer"
             onChange={()=>{
-                handleSelect({vpid: productData.vpid, link: productData.link, image: productData.image, title: productData.title})
+                handleSelect({vpid: productData.vpid, link: productData.link, title: productData.title})
           }}
           />
         </div>
@@ -63,7 +63,7 @@ const ProductListCard: React.FC<IProductListCardProps> = ({
 
       <img
         className="h-20 w-20 rounded-md object-cover hover:scale-125 hover:duration-300 transition ease-in-out"
-        src={productData?.image}
+        src={productData?.image??""}
         alt="product image"
       />
 
@@ -87,17 +87,17 @@ const ProductListCard: React.FC<IProductListCardProps> = ({
             </div>
             )}
 
-            {route === "imported-product" && (
+            {/* {route === "imported-product" && (
               <div className=" my-3 flex items-center justify-between ">
                 <p className="rounded-sm border bg-purple-200 px-2 text-purple-600">
                   Status: processing
                 </p>
               </div>
-            )}
+            )} */}
 
             {route === "imported-product" && (
               <div className="items-left	 my-3 flex  justify-between ">
-                <p className="">Last update: 21 June 2023 at 10:28pm</p>
+                <p className="">Imported at: {productData.created_at?.toString()}</p>
               </div>
             )}
           </div>
