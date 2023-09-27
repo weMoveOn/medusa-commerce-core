@@ -30,6 +30,9 @@ import { queryClient } from "../../../constants/query-client"
 import InventoryProductSortByShop from "../inventory-product-sort-by-shop"
 import useImperativeDialog from "../../../hooks/use-imperative-dialog"
 import { IPriceSettingReturnType } from "../../../types/inventory-price-setting"
+import InputField from "../../molecules/input"
+import { useDebounce } from "../../../hooks/use-debounce"
+import SearchIcon from "../../fundamentals/icons/search-icon"
 
 const MoveOnProduct = () => {
   const { resetInterval } = usePolling()
@@ -52,6 +55,7 @@ const MoveOnProduct = () => {
   const [isOpenModal, setIsOpenModal] = useState<boolean>(false)
   const [openProductLink, setOpenProductLink] = useState('');
   const [searchedQueries, setSearchedQueries] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
   const [selectedSort, setSelectedSort] = useState<{
     label: string
     value: string
@@ -71,7 +75,7 @@ const MoveOnProduct = () => {
   const { isLoading, isError, data, error, refetch } = useQuery<
     AxiosResponse<IInventoryProductPayloadType>
   >(["inventory-fetch",newFiltersData], () =>
-    MedusaAPI.moveOnInventory.list({ keyword: "bag", shop_id: selectedSortByShop.value, ...newFiltersData }))
+    MedusaAPI.moveOnInventory.list({ keyword: searchTerm, shop_id: selectedSortByShop.value, ...newFiltersData }))
 
     const selectedSortByShopData = filterForTemporal.shop.values.find(
       (x) => x.value === selectedSortByShop.value
@@ -202,6 +206,20 @@ const MoveOnProduct = () => {
     }
   }
 
+const handleSearch = () => {
+      const key = "keyword"
+
+      if (searchTerm === "") {
+        updateQueryParams({ [key]: undefined})
+      } else {
+        updateQueryParams({
+          [key]: searchTerm
+        })
+      }
+      setIsParamsUpdated(true)
+      refetch()
+}
+
   const handleMultipleImport = async() =>{  
     if(!priceSettingData?.data.count){
 const shouldImport = await dialog({
@@ -326,10 +344,17 @@ const shouldImport = await dialog({
             </div>
           </div>
           <div className="px-3 py-3 flex gap-4 items-center">
+           <InputField
+              suffix={<SearchIcon size="20" />}
+              suffixHandler={handleSearch}
+              className="w-[250px]"
+                placeholder={"Search..."}
+                onChange={(e)=>setSearchTerm(e.target.value)}
+              />
           <Button
-          // loading={isPriceSettingLoading}
+          loading={isPriceSettingLoading}
             variant={multipleImport?"primary":"secondary"}
-            size="small"
+            size="medium"
             onClick={handleMultipleImport}
             >
              <DownloadIcon size={20} />
@@ -342,7 +367,7 @@ const shouldImport = await dialog({
                     setLayOut("list")
                   }}
                 >
-                  <ListIcon
+                  <ListIcon size={20}
                     style={{
                       opacity: layOut === "list" ? 1 : 0.4,
                       cursor: "pointer",
@@ -354,7 +379,7 @@ const shouldImport = await dialog({
                     setLayOut("grid")
                   }}
                 >
-                  <TileIcon
+                  <TileIcon size={20}
                     style={{
                       opacity: layOut === "grid" ? 1 : 0.4,
                       cursor: "pointer",
