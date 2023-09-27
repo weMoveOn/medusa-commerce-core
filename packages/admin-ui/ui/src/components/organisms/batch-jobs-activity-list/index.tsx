@@ -170,7 +170,9 @@ const  BatchJobActivityCard = (props: { batchJob: BatchJob, refetchBatchJob: ()=
       batchJob.status !== "completed" && batchJob.status !== "canceled" ? (
         batchJob.status === "failed" && batchJob.type!="moveOn-inventory-product-import" ? (
           <CrossIcon size={18} />
-        ): batchJob.status === "failed"? (<RefreshIcon size={18} />) : (
+        ): batchJob.status === "failed" && hasError && batchJob?.result?.errors?.join(" \n") ? (<RefreshIcon size={18} />) :
+         batchJob.status === "failed" && hasError && !batchJob?.result?.errors?.join(" \n") ? (<CrossIcon size={18} />):
+        (
           <Spinner size={"medium"} variant={"secondary"} />
         )
       ) : (

@@ -52,6 +52,7 @@ if(errorMessage && operation===BatchJobOperation.Manual){
 }
 
 const handleRetry = () =>{
+  console.log(remainingProductsToImport)
   if(remainingProductsToImport.length){
     createBatchJob.mutate({
       dry_run: false,
@@ -74,7 +75,6 @@ const handleRetry = () =>{
     })
   }
 }
-
   return (
     <div
       className="mt-4 flex w-full items-center"
@@ -88,7 +88,7 @@ const handleRetry = () =>{
           side="top"
           open={operation === BatchJobOperation.Manual && hasError && errorMessage ? undefined : false}
           maxWidth={320}
-          content={`Retry remaining products`}
+          content={`Retry`}
         >
         {!!icon && icon}
         </Tooltip>
@@ -106,7 +106,7 @@ const handleRetry = () =>{
               })}
             >
               {batchJob.canceled_at?  <div className="bg-red-100 border border-red-200= px-4 py-3 rounded relative" role="alert">
-                <span className="block text-rose-500 sm:inline ml-2">Cancelled by you</span>
+                <span className="block text-rose-500 sm:inline ml-2">Cancelled</span>
               </div>:
               hasError && errorMessage && batchJob.status==="failed" && productLink && productTitle && error ?
               <div className="bg-red-100 border border-red-200 text-green-900 px-4 py-3 rounded relative" role="alert">
