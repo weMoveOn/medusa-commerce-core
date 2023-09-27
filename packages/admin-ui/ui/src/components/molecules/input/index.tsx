@@ -23,6 +23,7 @@ export type InputProps = Omit<React.ComponentPropsWithRef<"input">, "prefix"> &
     errors?: { [x: string]: unknown }
     prefix?: React.ReactNode
     suffix?: React.ReactNode
+    suffixHandler?: ()=>void
     props?: React.HTMLAttributes<HTMLDivElement>
   }
 
@@ -42,6 +43,7 @@ const InputField = React.forwardRef<HTMLInputElement, InputProps>(
       tooltip,
       prefix,
       suffix,
+      suffixHandler,
       errors,
       props,
       className,
@@ -117,7 +119,9 @@ const InputField = React.forwardRef<HTMLInputElement, InputProps>(
             required={required}
             {...fieldProps}
           />
-          {suffix ? (
+          {suffix && suffixHandler? (
+            <span className="mx-2xsmall text-grey-40 cursor-pointer" onClick={suffixHandler}>{suffix}</span>
+          ) : suffix? (
             <span className="mx-2xsmall text-grey-40">{suffix}</span>
           ) : null}
 

@@ -30,6 +30,9 @@ import { queryClient } from "../../../constants/query-client"
 import InventoryProductSortByShop from "../inventory-product-sort-by-shop"
 import useImperativeDialog from "../../../hooks/use-imperative-dialog"
 import { IPriceSettingReturnType } from "../../../types/inventory-price-setting"
+import InputField from "../../molecules/input"
+import SearchIcon from "../../fundamentals/icons/search-icon"
+import { getRandomValueForMoveonInventory } from "../../../utils/get-random-value-for-moveon"
 
 const MoveOnProduct = () => {
   const { resetInterval } = usePolling()
@@ -52,6 +55,7 @@ const MoveOnProduct = () => {
   const [isOpenModal, setIsOpenModal] = useState<boolean>(false)
   const [openProductLink, setOpenProductLink] = useState('');
   const [searchedQueries, setSearchedQueries] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
   const [selectedSort, setSelectedSort] = useState<{
     label: string
     value: string
@@ -71,7 +75,7 @@ const MoveOnProduct = () => {
   const { isLoading, isError, data, error, refetch } = useQuery<
     AxiosResponse<IInventoryProductPayloadType>
   >(["inventory-fetch",newFiltersData], () =>
-    MedusaAPI.moveOnInventory.list({ keyword: "bag", shop_id: selectedSortByShop.value, ...newFiltersData }))
+    MedusaAPI.moveOnInventory.list({ keyword: searchTerm.length? searchTerm: getRandomValueForMoveonInventory(), shop_id: selectedSortByShop.value, ...newFiltersData }))
 
     const selectedSortByShopData = filterForTemporal.shop.values.find(
       (x) => x.value === selectedSortByShop.value
@@ -155,9 +159,12 @@ const MoveOnProduct = () => {
 
   const clearFilters = () => {
     handelAllFilterClear();
+    setSelectedSort(null)
+    setSelectedSortByShop({label:"1688", value:"10"})
+    setSearchTerm("")
+    handleSearch(getRandomValueForMoveonInventory())
     setFilters(defaultMoveonInventoryFilter)
     setNewFilersData(defaultMoveonInventoryFilter)
-    setSelectedSort(null)
   }
 
   const handleSorting = (value: { value: string; label: string }) => {
@@ -201,6 +208,20 @@ const MoveOnProduct = () => {
       refetch()
     }
   }
+
+const handleSearch = (searchKeyword?:string) => {
+      const key = "keyword"
+
+      if (searchTerm === "") {
+        updateQueryParams({ [key]: undefined})
+      } else {
+        updateQueryParams({
+          [key]: searchKeyword ? searchKeyword : searchTerm
+        })
+      }
+      setIsParamsUpdated(true)
+      refetch()
+}
 
   const handleMultipleImport = async() =>{  
     if(!priceSettingData?.data.count){
@@ -326,10 +347,25 @@ const shouldImport = await dialog({
             </div>
           </div>
           <div className="px-3 py-3 flex gap-4 items-center">
+            <Tooltip side="top" content="Paste product link or Search from million of products...">
+             <InputField
+              value={searchTerm}
+              suffix={<SearchIcon size="20" />}
+              suffixHandler={()=>handleSearch(searchTerm)}
+              className="w-[250px]"
+              placeholder={"Search..."}
+              onChange={(e)=>setSearchTerm(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  handleSearch(searchTerm);
+                }
+              }
+            } />
+             </Tooltip>
           <Button
-          // loading={isPriceSettingLoading}
+          loading={isPriceSettingLoading}
             variant={multipleImport?"primary":"secondary"}
-            size="small"
+            size="medium"
             onClick={handleMultipleImport}
             >
              <DownloadIcon size={20} />
@@ -342,7 +378,7 @@ const shouldImport = await dialog({
                     setLayOut("list")
                   }}
                 >
-                  <ListIcon
+                  <ListIcon size={20}
                     style={{
                       opacity: layOut === "list" ? 1 : 0.4,
                       cursor: "pointer",
@@ -354,7 +390,7 @@ const shouldImport = await dialog({
                     setLayOut("grid")
                   }}
                 >
-                  <TileIcon
+                  <TileIcon size={20}
                     style={{
                       opacity: layOut === "grid" ? 1 : 0.4,
                       cursor: "pointer",
