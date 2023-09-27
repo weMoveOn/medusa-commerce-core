@@ -56,10 +56,10 @@ const ActivityDrawer = ({ onDismiss }) => {
       <div className="inter-large-semibold pt-7 pl-8 pb-1">
         {t("activity-drawer-activity", "Activity")}
       </div>
-      <div className="pt-7 pr-8 pb-1 cursor-pointer inter-large-thin" onClick={handleClearAll}>Clear All</div>
+      {!hasPollingError && batchJobs?.length ? <div className="pt-7 pr-8 pb-1 cursor-pointer inter-large-thin" onClick={handleClearAll}>Clear All</div>:<></>}
       </div>
       {!hasPollingError ? (
-        batchJobs ? (
+        batchJobs?.length ? (
           <BatchJobActivityList batchJobs={batchJobs} refetchBatchJob={refetch} />
         ) : (
           <EmptyActivityDrawer />
