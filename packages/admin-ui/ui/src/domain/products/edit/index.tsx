@@ -48,7 +48,7 @@ const Edit = () => {
     <div className="pb-5xlarge">
       <BackButton
         path={location.state ?? "/a/products"}
-        label="Back to Products"
+        label={location.state==="/a/moveon-inventory"? "Back to Imported Products":"Back to Products"}
         className="mb-xsmall"
       />
       <div className="gap-y-xsmall flex flex-col">

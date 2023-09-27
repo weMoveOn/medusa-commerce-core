@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react"
+import React, { useState } from "react"
 import Spacer from "../../../components/atoms/spacer"
 import ListIcon from "../../../components/fundamentals/icons/list-icon"
 import TileIcon from "../../../components/fundamentals/icons/tile-icon"
@@ -6,17 +6,18 @@ import BodyCard from "../../../components/organisms/body-card"
 import TableViewHeader from "../../../components/organisms/custom-table-header"
 import MoveOnInventoryImportedProduct from "../../../components/templates/moveon-inventory-imported-product"
 import MoveOnProduct from "../../../components/templates/moveon-product"
-import { useNavigate } from "react-router-dom"
+import { useLocation } from "react-router-dom"
 
 export type ViewsType = "Product List" | "Imported Products"
 
 const VIEWS: ViewsType[] = ["Product List", "Imported Products"]
 export type ProductLayoutType = "grid" | "list"
 
-const Overview = ({selectedView}:{selectedView?:ViewsType}) => {
-  const navigate = useNavigate()
-  const [view, setView] = useState<ViewsType>(selectedView? selectedView : "Product List")
+const Overview = () => {
+  const location = useLocation();
+  const [view, setView] = useState<ViewsType>(location.state??"Product List")
   const [importedProductLayout, setImportedProductLayOut] = useState<ProductLayoutType>("grid")
+  const [importedProductStatusLayout, setImportedProductStatusLayOut] = useState<ProductLayoutType>("grid")
   const CurrentView = () => {
     switch (view) {
       case "Product List":
@@ -25,16 +26,6 @@ const Overview = ({selectedView}:{selectedView?:ViewsType}) => {
         return <MoveOnInventoryImportedProduct layout={importedProductLayout} />
     }
   }
-
-  useEffect(() => {
-    let path = "/a/moveon-inventory";
-
-    if (view === "Imported Products") {
-      path = "/a/moveon-inventory/imported-products";
-    }
-
-    navigate(path);
-  }, [view, navigate]);
 
   return (
     <>
@@ -46,7 +37,12 @@ const Overview = ({selectedView}:{selectedView?:ViewsType}) => {
               <div className="flex space-x-2">
                 {view === "Imported Products" && (
                   <>
-                    <span onClick={() => setImportedProductLayOut("list")}>
+                    <span
+                      onClick={() => {
+                        setImportedProductLayOut("list")
+                        setImportedProductStatusLayOut("list")
+                      }}
+                    >
                       <ListIcon
                         style={{
                           opacity: importedProductLayout === "list" ? 1 : 0.4,
@@ -54,7 +50,12 @@ const Overview = ({selectedView}:{selectedView?:ViewsType}) => {
                         }}
                       />
                     </span>
-                    <span onClick={() => setImportedProductLayOut("grid")}>
+                    <span
+                      onClick={() => {
+                        setImportedProductLayOut("grid")
+                        setImportedProductStatusLayOut("grid")
+                      }}
+                    >
                       <TileIcon
                         style={{
                           opacity: importedProductLayout === "grid" ? 1 : 0.4,

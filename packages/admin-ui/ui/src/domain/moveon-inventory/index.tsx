@@ -7,7 +7,6 @@ const MoveOnInventoryRoute = () => {
   return (
     <Routes>
       <Route index element={<Overview />} />
-      <Route path="/imported-products" element={<Overview selectedView="Imported Products" />} />
     </Routes>
   )
 }
