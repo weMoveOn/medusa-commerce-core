@@ -6,6 +6,7 @@ import ProgressBarMoveShop from "../../atoms/progress-bar"
 import Button from "../../fundamentals/button"
 import DownloadIcon from "../../fundamentals/icons/download-icon"
 import EyeIcon from "../../fundamentals/icons/eye-icon"
+import ArrowUpIcon from "../../fundamentals/icons/arrow-up-icon"
 
 interface IProductListCardProps {
   leftButtonOnClick?: (value: any) => void;
@@ -118,23 +119,25 @@ const ProductListCard: React.FC<IProductListCardProps> = ({
                   {leftButtonTitle ?? "Quick view"}
                 </Button>
               )}
-              {rightButtonOnClick && (
-                <Button
-                disabled={enableSelectOption}
-                  icon={
-                    rightButtonIcon ?? (
-                      <DownloadIcon style={{ marginRight: "6px" }} />
-                    )
-                  }
-                  onClick={() => rightButtonOnClick(productData)}
-                  variant={enableSelectOption?"ghost":"secondary"}
-                  className="min-w-[114px]"
-                  size="medium"
-                  spanClassName="text-center text-sm font-medium text-slate-700"
-                >
-                  {rightButtonTitle ?? "Import"}
-                </Button>
-              )}
+             {rightButtonOnClick && (
+              <Button
+              disabled={enableSelectOption}
+                icon={
+                  rightButtonIcon ?? productData.isImported?(
+                    <ArrowUpIcon size={20} style={{ marginRight: "6px" }} />
+                  ):(
+                    <DownloadIcon style={{ marginRight: "6px" }} />
+                  )
+                }
+                className={`min-w-[114px] `}
+                onClick={() =>  !productData.isImported && rightButtonOnClick(productData.link)}
+                variant={productData.isImported? "primary" : enableSelectOption ? "ghost" :  "secondary"}
+                size="medium"
+                spanClassName={`text-center text-sm font-medium`}
+              >
+             {rightButtonTitle ?? productData.isImported?"Update":"Import"}
+              </Button>
+            )}
             </div>
           )}
         </div>
