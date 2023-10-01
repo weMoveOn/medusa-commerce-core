@@ -52,7 +52,7 @@ if(errorMessage && operation===BatchJobOperation.Manual){
 }
 
 const handleRetry = () =>{
-  console.log(remainingProductsToImport)
+  // console.log(remainingProductsToImport)
   if(remainingProductsToImport.length){
     createBatchJob.mutate({
       dry_run: false,

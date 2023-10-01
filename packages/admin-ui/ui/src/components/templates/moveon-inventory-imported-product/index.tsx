@@ -110,6 +110,7 @@ const MoveOnInventoryImportedProduct: React.FC<IProps> = ({ layout }) => {
                   link: "",
                   image: item.thumbnail,
                   updated_at: item.updated_at,
+                  created_at: item.created_at,
                   discount: 0,
                   price: 0,
                   price_real: 0,
@@ -119,7 +120,7 @@ const MoveOnInventoryImportedProduct: React.FC<IProps> = ({ layout }) => {
                 key={index}
                 enableSelectOption={false}
                 isSelect={false}
-                footerProgressBarEnabled={true}
+                footerProgressBarEnabled={false}
                 footerButtonEnabled={true}
                 rightButtonIcon={
                   <EditIcon
