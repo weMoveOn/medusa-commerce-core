@@ -17,6 +17,7 @@ export interface IInventoryProductDataType {
   rating_count?: number;
   wholesales_price?: number;
   updated_at?: string
+  isImported: boolean
 }
 
 export interface IInventoryProductsPaginateType {
