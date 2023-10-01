@@ -75,7 +75,7 @@ const MoveOnProduct = () => {
   const { isLoading, isError, data, error, refetch } = useQuery<
     AxiosResponse<IInventoryProductPayloadType>
   >(["inventory-fetch",newFiltersData], () =>
-    MedusaAPI.moveOnInventory.list({ keyword: searchTerm.length? searchTerm: getRandomValueForMoveonInventory(), shop_id: selectedSortByShop.value, ...newFiltersData }))
+    MedusaAPI.moveOnInventory.list({ keyword: searchTerm ?? "bag", shop_id: selectedSortByShop.value, ...newFiltersData }))
 
     const selectedSortByShopData = filterForTemporal.shop.values.find(
       (x) => x.value === selectedSortByShop.value
