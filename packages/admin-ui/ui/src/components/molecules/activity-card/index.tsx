@@ -58,7 +58,7 @@ export const ActivityCard: React.FC<ActivityCardProps> = (
     })
   
     if(shouldDelete){
-      const path = `/admin/batch-job-extended/${batchJob.id}`
+      const path = `/admin/api/v1/batch-job-extended/${batchJob.id}`
       const res = await medusaRequest("delete", path);
       if(res.status===200){
         refetchBatchJob && refetchBatchJob();

@@ -65,7 +65,7 @@ const handleRetry = () =>{
       onSuccess: async(res) => {
         resetInterval()
         queryClient.invalidateQueries({ queryKey: ['inventory-retrive'] })
-        const path = `/admin/batch-job-extended/${batchJob.id}`
+        const path = `/admin/api/v1/batch-job-extended/${batchJob.id}`
         await medusaRequest("delete", path);
         notification("Success", `Successfully initiated import of remaining ${remainingProductsToImport.length} products`, "success")
       },
