@@ -8,6 +8,7 @@ import DownloadIcon from "../../fundamentals/icons/download-icon"
 import EyeIcon from "../../fundamentals/icons/eye-icon"
 import { formatDate } from "../../../utils/formatDate"
 import { Link } from "react-router-dom"
+import ArrowUpIcon from "../../fundamentals/icons/arrow-up-icon"
 
 interface IProductGridCardProps {
   leftButtonOnClick?: (value: any) => void;
@@ -120,7 +121,7 @@ const ProductGridCard: React.FC<IProductGridCardProps> = ({
                 variant="secondary"
                 className="min-w-[114px]"
                 size="medium"
-                spanClassName="text-center text-sm  font-medium text-slate-700"
+                spanClassName="text-center text-sm  font-medium"
               >
                 {leftButtonTitle ?? "Quick view"}
               </Button>
@@ -129,17 +130,19 @@ const ProductGridCard: React.FC<IProductGridCardProps> = ({
               <Button
               disabled={enableSelectOption}
                 icon={
-                  rightButtonIcon ?? (
+                  rightButtonIcon ?? productData.isImported?(
+                    <ArrowUpIcon size={20} style={{ marginRight: "6px" }} />
+                  ):(
                     <DownloadIcon style={{ marginRight: "6px" }} />
                   )
                 }
-                className="min-w-[114px]"
-                onClick={() => rightButtonOnClick(productData.link)}
-                variant={enableSelectOption?"ghost":"secondary"}
+                className={`min-w-[114px] `}
+                onClick={() =>  !productData.isImported && rightButtonOnClick(productData.link)}
+                variant={productData.isImported? "primary" : enableSelectOption ? "ghost" :  "secondary"}
                 size="medium"
-                spanClassName="text-center text-sm font-medium text-slate-700"
+                spanClassName={`text-center text-sm font-medium`}
               >
-                {rightButtonTitle ?? "Import"}
+             {rightButtonTitle ?? productData.isImported?"Update":"Import"}
               </Button>
             )}
           </div>
