@@ -1,5 +1,4 @@
-import { defaultMoveonInventoryFilter } from "../utils/filters"
-import medusaRequest, { moveOnInventoryRequest } from "./request"
+import medusaRequest from "./request"
 
 
 
