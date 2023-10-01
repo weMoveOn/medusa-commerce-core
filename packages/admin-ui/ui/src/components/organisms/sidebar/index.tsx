@@ -73,7 +73,7 @@ const Sidebar: React.FC = () => {
             text={t("sidebar-products", "Products")}
             triggerHandler={triggerHandler}
           />
-          {!isFeatureEnabled("product_categories") && (
+          {isFeatureEnabled("product_categories") && (
             <SidebarMenuItem
               pageLink={"/a/product-categories"}
               icon={<SwatchIcon size={ICON_SIZE} />}
