@@ -30,7 +30,7 @@ const ActivityDrawer = ({ onDismiss }) => {
     })
 
     if(shouldDelete){
-      const path = `/admin/batch-job-extended`
+      const path = `/admin/api/v1/batch-job-extended`
       const res = await medusaRequest("delete", path);
       if(res.status===200){
         refetch();
