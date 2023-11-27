@@ -6,22 +6,24 @@ import ProgressBarMoveShop from "../../atoms/progress-bar"
 import Button from "../../fundamentals/button"
 import DownloadIcon from "../../fundamentals/icons/download-icon"
 import EyeIcon from "../../fundamentals/icons/eye-icon"
+import ArrowUpIcon from "../../fundamentals/icons/arrow-up-icon"
 
 interface IProductListCardProps {
-  leftButtonOnClick?: (value: any) => void
-  rightButtonOnClick?: (value: any) => void
-  productData: IInventoryProductDataType
-  leftButtonTitle?: string
-  rightButtonTitle?: string
-  leftButtonIcon?: React.ReactNode
-  rightButtonIcon?: React.ReactNode
-  enableSelectOption?: boolean
-  isSelect: boolean
-  footerButtonEnabled?: boolean
-  footerProgressBarEnabled?: boolean
-  route: "imported-product" | "product-list"
-  handleSelect: ({link, vpid}:IInventoryProductSelectType) => void
+  leftButtonOnClick?: (value: any) => void;
+  rightButtonOnClick?: (value: any) => void;
+  leftButtonTitle?: string;
+  rightButtonTitle?: string;
+  leftButtonIcon?: React.ReactNode;
+  rightButtonIcon?: React.ReactNode;
+  enableSelectOption?: boolean;
+  isSelect: boolean;
+  footerButtonEnabled?: boolean;
+  footerProgressBarEnabled?: boolean;
+  handleSelect?: ({ link, vpid }: IInventoryProductSelectType) => void;
+  productData: IInventoryProductDataType;
+  route: "product-list" | 'imported-product'
 }
+
 
 const ProductListCard: React.FC<IProductListCardProps> = ({
   leftButtonOnClick,
@@ -40,11 +42,12 @@ const ProductListCard: React.FC<IProductListCardProps> = ({
 }) => {
   const containerClasses = clsx(
     "relative flex items-center gap-4 p-4 border rounded-lg border-gray-100 mb-4 bg-white w-[85%]",
-    enableSelectOption && isSelect && "border-violet-600"
-  )
+    enableSelectOption && isSelect && "border-violet-600", enableSelectOption && "cursor-pointer"
+  )  
   return (
-    <div className={containerClasses}>
-      {enableSelectOption && (
+    <div className={containerClasses} onClick={()=>handleSelect
+    && handleSelect({vpid: productData.vpid, link: productData.link, title: productData.title})}>
+      {enableSelectOption && handleSelect && route==="product-list" && (
         <div className="flex items-center">
           <Checkbox
             checked={isSelect ?? false}
@@ -52,14 +55,16 @@ const ProductListCard: React.FC<IProductListCardProps> = ({
             id="checkbox1"
             label=""
             className="mr-0 cursor-pointer"
-            onChange={()=>handleSelect({vpid: productData.vpid, link: productData.link})}
+            onChange={()=>{
+                handleSelect({vpid: productData.vpid, link: productData.link, title: productData.title})
+          }}
           />
         </div>
       )}
 
       <img
         className="h-20 w-20 rounded-md object-cover hover:scale-125 hover:duration-300 transition ease-in-out"
-        src={productData?.image}
+        src={productData?.image??""}
         alt="product image"
       />
 
@@ -72,7 +77,7 @@ const ProductListCard: React.FC<IProductListCardProps> = ({
             {route === "product-list" && (
               <div className="my-1 flex items-center justify-between">
               <p>
-                <span className="text-lg font-bold text-violet-600">{productData?.price}</span>
+                <span className="text-lg font-bold text-violet-600">Ұ{productData?.price}</span>
                 {/* <span className="text-sm text-violet-500 line-through">${productData?.price}</span> */}
               </p>
             </div>
@@ -83,17 +88,17 @@ const ProductListCard: React.FC<IProductListCardProps> = ({
             </div>
             )}
 
-            {route === "imported-product" && (
+            {/* {route === "imported-product" && (
               <div className=" my-3 flex items-center justify-between ">
                 <p className="rounded-sm border bg-purple-200 px-2 text-purple-600">
                   Status: processing
                 </p>
               </div>
-            )}
+            )} */}
 
             {route === "imported-product" && (
               <div className="items-left	 my-3 flex  justify-between ">
-                <p className="">Last update: 21 June 2023 at 10:28pm</p>
+                <p className="">Imported at: {productData.created_at?.toString()}</p>
               </div>
             )}
           </div>
@@ -114,23 +119,25 @@ const ProductListCard: React.FC<IProductListCardProps> = ({
                   {leftButtonTitle ?? "Quick view"}
                 </Button>
               )}
-              {rightButtonOnClick && (
-                <Button
-                disabled={enableSelectOption}
-                  icon={
-                    rightButtonIcon ?? (
-                      <DownloadIcon style={{ marginRight: "6px" }} />
-                    )
-                  }
-                  onClick={() => rightButtonOnClick(productData)}
-                  variant={enableSelectOption?"ghost":"secondary"}
-                  className="min-w-[114px]"
-                  size="medium"
-                  spanClassName="text-center text-sm font-medium text-slate-700"
-                >
-                  {rightButtonTitle ?? "Import"}
-                </Button>
-              )}
+             {rightButtonOnClick && (
+              <Button
+              disabled={enableSelectOption}
+                icon={
+                  rightButtonIcon ?? productData.isImported?(
+                    <ArrowUpIcon size={20} style={{ marginRight: "6px" }} />
+                  ):(
+                    <DownloadIcon style={{ marginRight: "6px" }} />
+                  )
+                }
+                className={`min-w-[114px] `}
+                onClick={() =>  !productData.isImported && rightButtonOnClick(productData.link)}
+                variant={productData.isImported? "primary" : enableSelectOption ? "ghost" :  "secondary"}
+                size="medium"
+                spanClassName={`text-center text-sm font-medium`}
+              >
+             {rightButtonTitle ?? productData.isImported?"Update":"Import"}
+              </Button>
+            )}
             </div>
           )}
         </div>

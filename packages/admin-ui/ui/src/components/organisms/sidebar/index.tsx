@@ -1,7 +1,9 @@
 import { useAdminStore } from "medusa-react"
 import React, { useState } from "react"
+import { useTranslation } from "react-i18next"
 
 import { useFeatureFlag } from "../../../providers/feature-flag-provider"
+import { useRoutes } from "../../../providers/route-provider"
 import BuildingsIcon from "../../fundamentals/icons/buildings-icon"
 import CartIcon from "../../fundamentals/icons/cart-icon"
 import CashIcon from "../../fundamentals/icons/cash-icon"
@@ -9,6 +11,7 @@ import GearIcon from "../../fundamentals/icons/gear-icon"
 import GiftIcon from "../../fundamentals/icons/gift-icon"
 import PackageIcon from "../../fundamentals/icons/package-icon"
 import SaleIcon from "../../fundamentals/icons/sale-icon"
+import SquaresPlus from "../../fundamentals/icons/squares-plus"
 import SwatchIcon from "../../fundamentals/icons/swatch-icon"
 import TagIcon from "../../fundamentals/icons/tag-icon"
 import UsersIcon from "../../fundamentals/icons/users-icon"
@@ -18,10 +21,13 @@ import UserMenu from "../../molecules/user-menu"
 const ICON_SIZE = 20
 
 const Sidebar: React.FC = () => {
+  const { t } = useTranslation()
   const [currentlyOpen, setCurrentlyOpen] = useState(-1)
 
   const { isFeatureEnabled } = useFeatureFlag()
   const { store } = useAdminStore()
+
+  const { getLinks } = useRoutes()
 
   const triggerHandler = () => {
     const id = triggerHandler.id++
@@ -47,7 +53,9 @@ const Sidebar: React.FC = () => {
           </div>
         </div>
         <div className="my-base flex flex-col px-2">
-          <span className="text-grey-50 text-small font-medium">Move Shop</span>
+          <span className="text-grey-50 text-small font-medium">
+            {t("sidebar-store", "Store")}
+          </span>
           <span className="text-grey-90 text-medium font-medium">
             {store?.name}
           </span>
@@ -57,19 +65,19 @@ const Sidebar: React.FC = () => {
             pageLink={"/a/orders"}
             icon={<CartIcon size={ICON_SIZE} />}
             triggerHandler={triggerHandler}
-            text={"Orders"}
+            text={t("sidebar-orders", "Orders")}
           />
           <SidebarMenuItem
             pageLink={"/a/products"}
             icon={<TagIcon size={ICON_SIZE} />}
-            text={"Products"}
+            text={t("sidebar-products", "Products")}
             triggerHandler={triggerHandler}
           />
-          {!isFeatureEnabled("product_categories") && (
+          {isFeatureEnabled("product_categories") && (
             <SidebarMenuItem
               pageLink={"/a/product-categories"}
               icon={<SwatchIcon size={ICON_SIZE} />}
-              text={"Categories"}
+              text={t("sidebar-categories", "Categories")}
               triggerHandler={triggerHandler}
             />
           )}
@@ -77,39 +85,54 @@ const Sidebar: React.FC = () => {
             pageLink={"/a/customers"}
             icon={<UsersIcon size={ICON_SIZE} />}
             triggerHandler={triggerHandler}
-            text={"Customers"}
+            text={t("sidebar-customers", "Customers")}
           />
           {inventoryEnabled && (
             <SidebarMenuItem
               pageLink={"/a/inventory"}
               icon={<BuildingsIcon size={ICON_SIZE} />}
               triggerHandler={triggerHandler}
-              text={"Inventory"}
+              text={t("sidebar-inventory", "Inventory")}
             />
           )}
           <SidebarMenuItem
             pageLink={"/a/discounts"}
             icon={<SaleIcon size={ICON_SIZE} />}
             triggerHandler={triggerHandler}
-            text={"Discounts"}
+            text={t("sidebar-discounts", "Discounts")}
           />
           <SidebarMenuItem
             pageLink={"/a/gift-cards"}
             icon={<GiftIcon size={ICON_SIZE} />}
             triggerHandler={triggerHandler}
-            text={"Gift Cards"}
+            text={t("sidebar-gift-cards", "Gift Cards")}
           />
           <SidebarMenuItem
             pageLink={"/a/pricing"}
             icon={<CashIcon size={ICON_SIZE} />}
             triggerHandler={triggerHandler}
-            text={"Pricing"}
+            text={t("sidebar-pricing", "Pricing")}
           />
+          {getLinks().map(({ path, label, icon }, index) => {
+            const cleanLink = path.replace("/a/", "")
+
+            const Icon = icon ? icon : SquaresPlus
+
+            return (
+              <SidebarMenuItem
+                key={index}
+                pageLink={`/a${cleanLink}`}
+                icon={icon ? <Icon /> : <SquaresPlus size={ICON_SIZE} />}
+                triggerHandler={triggerHandler}
+                text={label}
+              />
+            )
+          })}
           <SidebarMenuItem
             pageLink={"/a/settings"}
             icon={<GearIcon size={ICON_SIZE} />}
             triggerHandler={triggerHandler}
-            text={"Settings"}
+            text={t("sidebar-settings", "Settings")}
           />
           <hr className="mx-auto my-4 h-[3px] w-48 rounded border-0 bg-gray-100 dark:bg-gray-700 md:my-10" />
 

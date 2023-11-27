@@ -20,6 +20,7 @@ import { ActivityCard } from "../../molecules/activity-card"
 import BatchJobFileCard from "../../molecules/batch-job-file-card"
 import { batchJobDescriptionBuilder, BatchJobOperation } from "./utils"
 import CrossIcon from "../../fundamentals/icons/cross-icon"
+import RefreshIcon from "../../fundamentals/icons/refresh-icon"
 
 /**
  * Retrieve a batch job and refresh the data depending on the last batch job status
@@ -48,20 +49,26 @@ function useBatchJob(initialData: BatchJob): BatchJob {
     setBatchJob(batch_job)
   }, [batch_job])
 
-  return useMemo(() => batchJob!, [batchJob?.status, batchJob?.result])
+  return useMemo(
+    () =>
+      new Date(initialData.updated_at) > new Date(batch_job.updated_at)
+        ? initialData
+        : batchJob,
+    [initialData.updated_at, batchJob?.updated_at]
+  )
 }
 
-const BatchJobActivityList = ({ batchJobs }: { batchJobs?: BatchJob[] }) => {
+const BatchJobActivityList = ({ batchJobs, refetchBatchJob }: { batchJobs?: BatchJob[], refetchBatchJob:()=>void }) => {
   return (
     <div>
       {batchJobs?.map((batchJob) => {
-        return <BatchJobActivityCard key={batchJob.id} batchJob={batchJob} />
+        return <BatchJobActivityCard key={batchJob.id} batchJob={batchJob} refetchBatchJob={refetchBatchJob} />
       })}
     </div>
   )
 }
 
-const BatchJobActivityCard = (props: { batchJob: BatchJob }) => {
+const  BatchJobActivityCard = (props: { batchJob: BatchJob, refetchBatchJob: ()=>void }) => {
   const activityCardRef = useRef<HTMLDivElement>(null)
   const notification = useNotification()
   const { store } = useAdminStore()
@@ -82,6 +89,7 @@ const BatchJobActivityCard = (props: { batchJob: BatchJob }) => {
 
   const operation = {
     "product-import": BatchJobOperation.Import,
+    "moveOn-inventory-product-import": BatchJobOperation.Manual,
     "price-list-import": BatchJobOperation.Import,
     "product-export": BatchJobOperation.Export,
     "order-export": BatchJobOperation.Export,
@@ -160,9 +168,11 @@ const BatchJobActivityCard = (props: { batchJob: BatchJob }) => {
 
     const icon =
       batchJob.status !== "completed" && batchJob.status !== "canceled" ? (
-        batchJob.status === "failed" ? (
+        batchJob.status === "failed" && batchJob.type!="moveOn-inventory-product-import" ? (
           <CrossIcon size={18} />
-        ) : (
+        ): batchJob.status === "failed" && hasError && batchJob?.result?.errors?.join(" \n") ? (<RefreshIcon size={18} />) :
+         batchJob.status === "failed" && hasError && !batchJob?.result?.errors?.join(" \n") ? (<CrossIcon size={18} />):
+        (
           <Spinner size={"medium"} variant={"secondary"} />
         )
       ) : (
@@ -188,6 +198,8 @@ const BatchJobActivityCard = (props: { batchJob: BatchJob }) => {
 
     return (
       <BatchJobFileCard
+        batchJob = {batchJob}
+        operation={operation}
         onClick={onDownloadFile}
         fileName={fileName}
         icon={icon}
@@ -233,11 +245,13 @@ const BatchJobActivityCard = (props: { batchJob: BatchJob }) => {
 
   return (
     <ActivityCard
-      title={store?.name ?? "Medusa Team"}
+      title={store?.name ?? "Moveshop Team"}
       icon={<MedusaIcon className="mr-3" size={20} />}
       relativeTimeElapsed={relativeTimeElapsed.rtf}
       date={batchJob.created_at}
       shouldShowStatus={true}
+      batchJob={batchJob}
+      refetchBatchJob={props.refetchBatchJob}
     >
       <div ref={activityCardRef} className="inter-small-regular flex flex-col">
         <span>{batchJobActivityDescription}</span>

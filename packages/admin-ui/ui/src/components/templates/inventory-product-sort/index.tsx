@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from "react";
 import { ISorter } from "../../../types/inventoryProduct";
-import { filterForTemporal } from "../../../utils/date-utils";
+import { filterForTemporal } from "../../../utils/filterFixedData";
 import { NextSelect } from "../../molecules/select/next-select";
 
 

@@ -7,13 +7,13 @@ import {
   useFormContext,
   useWatch,
 } from "react-hook-form"
-import { weekFromNow } from "../../../../utils/date-utils"
 import {
   ConfigurationField,
   CreatePriceListPricesFormValues,
   PriceListFormValues,
   PriceListType,
 } from "../types"
+import { weekFromNow } from "../../../../utils/date-utils"
 
 const defaultState: PriceListFormValues = {
   customer_groups: [],

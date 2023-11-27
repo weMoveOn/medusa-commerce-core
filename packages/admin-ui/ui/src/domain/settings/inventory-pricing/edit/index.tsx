@@ -1,0 +1,66 @@
+import { useAdminStore } from "medusa-react"
+import Spinner from "../../../../components/atoms/spinner"
+import GeneralSection from "./general-section"
+import PricingSettings from "./pricing-settings"
+import { useQuery } from "@tanstack/react-query"
+import { IInventoryStore, IPriceSettingReturnType } from "../../../../types/inventory-price-setting"
+import { AxiosResponse } from "axios"
+import Medusa from "../../../../services/api"
+import { useEffect } from "react"
+
+type Props = {
+  store: IInventoryStore
+}
+
+const EditInventoryPricing = ({ store }: Props) => { 
+  const { isLoading, data, refetch } = useQuery<
+  AxiosResponse<IPriceSettingReturnType>
+  >(["single-price-setting-retrieve"], () =>
+  Medusa.InventoryPriceSettings.list(store.slug))
+
+  const { store : medusaStore, isLoading: medusaStoreLoading } = useAdminStore({})
+
+  useEffect(() => {
+    refetch();
+  }, [store]);
+
+  if (!store) {
+    return (
+      <div className="bg-grey-0 rounded-rounded border-grey-20 gap-y-xsmall flex h-full w-full flex-col items-center justify-center border text-center ">
+        <h1 className="inter-large-semibold">Something went wrong...</h1>
+        <p className="inter-base-regular text-grey-50">
+          We can't find a store with that ID, use the menu to the left to
+          select a store.
+        </p>
+      </div>
+    )
+  }
+  
+
+  if (isLoading || medusaStoreLoading) {
+    return (
+      <div className="flex h-full w-full items-center justify-center">
+        <Spinner variant="secondary" />
+      </div>
+    )
+  }
+
+  return (
+    <div className="gap-y-xsmall flex flex-col">
+      <PricingSettings store={store} data={data?.data} medusaStore={medusaStore} />
+
+      {!data?.data.count && 
+      <div className="bg-grey-0 rounded-rounded border-grey-20 gap-y-xsmall flex h-full w-full flex-col items-center justify-center border text-center p-20">
+        <h1 className="inter-large-semibold">No price role found...</h1>
+        <p className="inter-base-regular text-grey-50">
+          We can't find any price role with this store, use set price role button above to set price.
+        </p>
+      </div>
+      }
+
+       {data?.data && <GeneralSection data={data?.data} medusaStore={medusaStore} />}
+    </div>
+  )
+}
+
+export default EditInventoryPricing

@@ -6,11 +6,11 @@ import {
   SalesChannelService,
 } from "../../../../services"
 
-import { IInventoryService } from "@medusajs/types"
-import { Type } from "class-transformer"
-import { Product } from "../../../../models"
-import { PricedProduct } from "../../../../types/pricing"
 import { FilterableProductProps } from "../../../../types/product"
+import { IInventoryService } from "@medusajs/types"
+import { PricedProduct } from "../../../../types/pricing"
+import { Product } from "../../../../models"
+import { Type } from "class-transformer"
 
 /**
  * @oas [get] /admin/products
@@ -199,7 +199,7 @@ import { FilterableProductProps } from "../../../../types/product"
  *   - lang: Shell
  *     label: cURL
  *     source: |
- *       curl 'https://medusa-url.com/admin/products' \
+ *       curl '{backend_url}/admin/products' \
  *       -H 'Authorization: Bearer {api_token}'
  * security:
  *   - api_token: []

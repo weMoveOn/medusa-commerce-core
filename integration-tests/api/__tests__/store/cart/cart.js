@@ -32,6 +32,7 @@ const {
 const {
   simpleCustomerGroupFactory,
 } = require("../../../../factories/simple-customer-group-factory")
+const { ProductVariantMoneyAmount } = require("@medusajs/medusa")
 
 jest.setTimeout(30000)
 
@@ -144,13 +145,18 @@ describe("/store/carts", () => {
       await dbConnection.manager.save(priceList1)
 
       const ma_sale_1 = dbConnection.manager.create(MoneyAmount, {
-        variant_id: prodSale.variants[0].id,
         currency_code: "usd",
         amount: 800,
         price_list_id: "pl_current",
       })
 
       await dbConnection.manager.save(ma_sale_1)
+
+      await dbConnection.manager.insert(ProductVariantMoneyAmount, {
+        id: `${prodSale.variants[0].id}-${ma_sale_1.id}`,
+        variant_id: prodSale.variants[0].id,
+        money_amount_id: ma_sale_1.id,
+      })
 
       const api = useApi()
 
@@ -556,6 +562,7 @@ describe("/store/carts", () => {
               {
                 id: "test-li",
                 variant_id: "test-variant",
+                product_id: "test-product",
                 quantity: 1,
                 unit_price: 100,
                 adjustments: [
@@ -644,6 +651,7 @@ describe("/store/carts", () => {
             id: "line-item-2",
             cart_id: discountCart.id,
             variant_id: "test-variant-quantity",
+            product_id: "test-product",
             unit_price: 950,
             quantity: 1,
             adjustments: [
@@ -713,6 +721,7 @@ describe("/store/carts", () => {
             id: "line-item-2",
             cart_id: discountCart.id,
             variant_id: "test-variant-quantity",
+            product_id: "test-product",
             unit_price: 1000,
             quantity: 1,
             adjustments: [
@@ -804,6 +813,7 @@ describe("/store/carts", () => {
         unit_price: 1000,
         quantity: 1,
         variant_id: "test-variant-quantity",
+        product_id: "test-product",
         cart_id: "test-cart-w-total-fixed-discount",
       })
 
@@ -847,6 +857,7 @@ describe("/store/carts", () => {
         unit_price: 1000,
         quantity: 1,
         variant_id: "test-variant-quantity",
+        product_id: "test-product",
         cart_id: "test-cart-w-total-percentage-discount",
       })
 
@@ -890,6 +901,7 @@ describe("/store/carts", () => {
         unit_price: 1000,
         quantity: 1,
         variant_id: "test-variant-quantity",
+        product_id: "test-product",
         cart_id: "test-cart-w-item-fixed-discount",
       })
 
@@ -933,6 +945,7 @@ describe("/store/carts", () => {
         unit_price: 1000,
         quantity: 1,
         variant_id: "test-variant-quantity",
+        product_id: "test-product",
         cart_id: "test-cart-w-item-percentage-discount",
       })
 
@@ -1050,6 +1063,7 @@ describe("/store/carts", () => {
           line_items: [
             {
               variant_id: "test-variant",
+              product_id: "test-product",
               unit_price: 100,
             },
           ],
@@ -1110,6 +1124,7 @@ describe("/store/carts", () => {
           line_items: [
             {
               variant_id: "test-variant",
+              product_id: "test-product",
               unit_price: 100,
             },
           ],
@@ -1260,6 +1275,7 @@ describe("/store/carts", () => {
           line_items: [
             {
               variant_id: "test-variant",
+              product_id: "test-product",
               unit_price: 100,
             },
           ],
@@ -1327,6 +1343,7 @@ describe("/store/carts", () => {
           line_items: [
             {
               variant_id: "test-variant",
+              product_id: "test-product",
               unit_price: 100,
             },
           ],
@@ -1387,6 +1404,7 @@ describe("/store/carts", () => {
           line_items: [
             {
               variant_id: "test-variant",
+              product_id: "test-product",
               unit_price: 100,
             },
           ],
@@ -1457,6 +1475,7 @@ describe("/store/carts", () => {
           line_items: [
             {
               variant_id: "test-variant",
+              product_id: "test-product",
               unit_price: 100,
             },
           ],
@@ -1623,7 +1642,8 @@ describe("/store/carts", () => {
 
       const cart = response.data.cart
 
-      const shippingAmount = 1000
+      // shipping is 0 because of line item update
+      const shippingAmount = 0
       const expectedTotal =
         quantity * variant1Price +
         quantity * variant2Price +
@@ -1635,7 +1655,7 @@ describe("/store/carts", () => {
       expect(cart.total).toBe(expectedTotal)
       expect(cart.subtotal).toBe(expectedSubtotal)
       expect(cart.discount_total).toBe(discountAmount)
-      expect(cart.shipping_total).toBe(1000)
+      expect(cart.shipping_total).toBe(shippingAmount)
     })
 
     it("updates cart customer id", async () => {
@@ -1646,6 +1666,87 @@ describe("/store/carts", () => {
       })
 
       expect(response.status).toEqual(200)
+    })
+
+    it("should remove shipping on line item remove", async () => {
+      const api = useApi()
+
+      const cartId = "test-cart-2"
+      const lineId = "test-item"
+      const optionId = "test-option"
+
+      await api.post(
+        `/store/carts/${cartId}/shipping-methods`,
+        {
+          option_id: optionId,
+        },
+        { withCredentials: true }
+      )
+
+      const cart = await api.get(`/store/carts/${cartId}`)
+
+      expect(cart.data.cart.shipping_total).toEqual(1000)
+
+      const response = await api.delete(
+        `/store/carts/${cartId}/line-items/${lineId}`
+      )
+
+      expect(response.data.cart.shipping_total).toEqual(0)
+    })
+
+    it("should remove shipping on line item update", async () => {
+      const api = useApi()
+
+      const cartId = "test-cart-2"
+      const lineId = "test-item"
+      const optionId = "test-option"
+
+      await api.post(
+        `/store/carts/${cartId}/shipping-methods`,
+        {
+          option_id: optionId,
+        },
+        { withCredentials: true }
+      )
+
+      const cart = await api.get(`/store/carts/${cartId}`)
+
+      expect(cart.data.cart.shipping_total).toEqual(1000)
+
+      const response = await api.post(
+        `/store/carts/${cartId}/line-items/${lineId}`,
+        {
+          quantity: 2,
+        }
+      )
+
+      expect(response.data.cart.shipping_total).toEqual(0)
+    })
+
+    it("should remove shipping on line item add", async () => {
+      const api = useApi()
+
+      const cartId = "test-cart-2"
+      const optionId = "test-option"
+
+      await api.post(
+        `/store/carts/${cartId}/shipping-methods`,
+        {
+          option_id: optionId,
+        },
+        { withCredentials: true }
+      )
+
+      const cart = await api.get(`/store/carts/${cartId}`)
+
+      expect(cart.data.cart.shipping_total).toEqual(1000)
+
+      const response = await api.post(`/store/carts/${cartId}/line-items`, {
+        variant_id: "test-variant-sale-customer",
+        quantity: 1,
+      })
+
+      expect(response.data.cart.shipping_total).toEqual(0)
     })
 
     it("updates prices when cart customer id is updated", async () => {
@@ -1958,8 +2059,9 @@ describe("/store/carts", () => {
       expect(getRes.status).toEqual(200)
       expect(getRes.data.type).toEqual("order")
 
+      // inventory pre-purchase was 10
       const variantRes = await api.get("/store/variants/test-variant")
-      expect(variantRes.data.variant.inventory_quantity).toEqual(0)
+      expect(variantRes.data.variant.inventory_quantity).toEqual(9)
     })
 
     it("calculates correct payment totals on cart completion taking into account line item adjustments", async () => {
@@ -2124,6 +2226,7 @@ describe("/store/carts", () => {
         line_items: [
           {
             variant_id: product.variants[0].id,
+            product_id: product.id,
             quantity: 1,
             unit_price: 1000,
           },
@@ -2168,6 +2271,7 @@ describe("/store/carts", () => {
       line_items: [
         {
           variant_id: product.variants[0].id,
+          product_id: product.id,
           quantity: 1,
           unit_price: 1000,
         },
@@ -2191,7 +2295,7 @@ describe("/store/carts", () => {
       await cartSeeder(dbConnection)
       const manager = dbConnection.manager
 
-      const _cart = await manager.create(Cart, {
+      const _cart = manager.create(Cart, {
         id: "test-cart-with-cso",
         customer_id: "some-customer",
         email: "some-customer@email.com",
@@ -2332,7 +2436,8 @@ describe("/store/carts", () => {
           }),
         ])
       )
-      expect(cartWithGiftcard.data.cart.total).toBe(2900) // 1000 (giftcard) + 900 (standard item with 10% discount) + 1000 Shipping
+      expect(cartWithGiftcard.data.cart.total).toBe(1900) // 1000 (giftcard) + 900 (standard item with 10% discount) - 1000 Shipping (because of line item update)
+      expect(cartWithGiftcard.data.cart.shipping_total).toBe(0) // 0 because of line item update
       expect(cartWithGiftcard.data.cart.discount_total).toBe(100)
       expect(cartWithGiftcard.status).toEqual(200)
     })
@@ -2606,6 +2711,49 @@ describe("/store/carts", () => {
     })
   })
 
+  describe("ignore region update if value didn't change", () => {
+    afterEach(async () => {
+      await doAfterEach()
+    })
+
+    it("has no side-effects when updating region with no change", async () => {
+      const region = await simpleRegionFactory(dbConnection, {
+        countries: ["us", "ca"],
+      })
+      const product = await simpleProductFactory(dbConnection)
+      const cart = await simpleCartFactory(dbConnection, {
+        region: region.id,
+        line_items: [
+          {
+            variant_id: product.variants[0].id,
+            product_id: product.id,
+            quantity: 1,
+          },
+        ],
+        shipping_address: {
+          country_code: "us",
+        },
+      })
+
+      const api = useApi()
+
+      const { data: preconditionData } = await api.get(
+        `/store/carts/${cart.id}`
+      )
+      const { data, status } = await api
+        .post(`/store/carts/${cart.id}`, {
+          region_id: region.id,
+        })
+        .catch((err) => {
+          console.log(err)
+          throw err
+        })
+
+      expect(status).toEqual(200)
+      expect(data.cart.shipping_address.country_code).toEqual("us")
+    })
+  })
+
   describe("calculated prices for shipping option", () => {
     afterEach(async () => {
       await doAfterEach()
@@ -2616,7 +2764,13 @@ describe("/store/carts", () => {
       const product = await simpleProductFactory(dbConnection)
       const cart = await simpleCartFactory(dbConnection, {
         region: region.id,
-        line_items: [{ variant_id: product.variants[0].id, quantity: 1 }],
+        line_items: [
+          {
+            variant_id: product.variants[0].id,
+            product_id: product.id,
+            quantity: 1,
+          },
+        ],
       })
       await simpleShippingOptionFactory(dbConnection, {
         region_id: region.id,
@@ -2648,7 +2802,13 @@ describe("/store/carts", () => {
       const product = await simpleProductFactory(dbConnection)
       const cart = await simpleCartFactory(dbConnection, {
         region: region.id,
-        line_items: [{ variant_id: product.variants[0].id, quantity: 1 }],
+        line_items: [
+          {
+            variant_id: product.variants[0].id,
+            product_id: product.id,
+            quantity: 1,
+          },
+        ],
       })
       await simpleShippingOptionFactory(dbConnection, {
         region_id: region.id,

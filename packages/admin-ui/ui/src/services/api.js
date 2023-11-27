@@ -1,5 +1,4 @@
-import { defaultMoveonInventoryFilter } from "../utils/filters"
-import medusaRequest, { moveOnInventoryRequest } from "./request"
+import medusaRequest from "./request"
 
 
 
@@ -292,13 +291,36 @@ export default {
       const params = Object.keys(search)
       .map((k) => `${k}=${search[k]}`) .join("&");
 
-    const path = `/inventory-products${params ? `?${params}` : ""}`;
+    const path = `/admin/api/v1/inventory-products${params ? `?${params}` : ""}`;
     return medusaRequest("GET", path);
     },
     retrieveSingleProduct(url){
-      const path = `/inventory-product-details?url=${url}`
+      const path = `/admin/api/v1/inventory-product-details?url=${url}`
+      return medusaRequest("GET", path)
+    },
+    retrieveCollectionProduct({limit, offset}){
+      const path = `/admin/api/v1/retrieve-inventory-product?limit=${limit}&offset=${offset}`
       return medusaRequest("GET", path)
     }
+  },
+
+  InventoryPriceSettings: {
+    list(search = "") {
+    const path = `/admin/api/v1/price-role-settings${search ? `?store_slug=${search}` : ""}`;
+    return medusaRequest("GET", path);
+    },
+    add(add) {
+      const path = `/admin/api/v1/price-role-settings`;
+      return medusaRequest("POST", path, add);
+      },
+    update(id, update) {  
+      const path = `/admin/api/v1/price-role-settings/${id}`;
+      return medusaRequest("PATCH", path, update);
+      },
+    delete(id) {  
+       const path = `/admin/api/v1/price-role-settings/${id}`;
+        return medusaRequest("DELETE", path);
+      },
   },
 
   swaps: {

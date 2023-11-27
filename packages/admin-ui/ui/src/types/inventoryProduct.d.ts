@@ -1,21 +1,25 @@
 export interface IInventoryProductDataType {
-  id: null | number;
+  id: string;
   shop_id: number;
   vpid: string;
   vendor: string;
   link: string;
   title: string;
-  image: string;
+  image: string | null;
   price: number;
   price_real: number;
   discount: number;
-  special_price: null | number;
-  special_discount: null | number;
-  shipping_cost: null | number;
-  orders: null | number;
-  rating: null | number;
-  rating_count: null | number;
-  wholesales_price: null | number;
+  special_price?: number;
+  special_discount?: number;
+  shipping_cost?: number;
+  orders?: number;
+  rating?: number;
+  rating_count?: number;
+  wholesales_price?: number;
+  updated_at?: string
+  isImported: boolean
+  updated_at?: Date
+  created_at?: Date
 }
 
 export interface IInventoryProductsPaginateType {
@@ -37,6 +41,7 @@ export interface IInventoryProductsFilterType {
 export interface IInventoryProductSelectType {
   vpid: string;
   link: string;
+  title: string;
 }
 
 // filters type declearation 
@@ -87,6 +92,7 @@ export interface IConfigurator {
 }
 
 export interface IFilters {
+  shop: ISorter;
   sorter: ISorter;
   configurator: IConfigurator;
 }

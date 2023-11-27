@@ -1,6 +1,6 @@
 import React, { useState } from "react"
 import { createRoot } from "react-dom/client"
-import Button from "../components/fundamentals/button"
+import Button, { ButtonProps } from "../components/fundamentals/button"
 import InputField from "../components/molecules/input"
 import Modal from "../components/molecules/modal"
 
@@ -14,6 +14,7 @@ const DeleteDialog = ({
   cancelText = "Cancel",
   extraConfirmation = false,
   entityName,
+  buttonVariant
 }) => {
   const [confirmationString, setConfirmationString] = useState<string>()
 
@@ -56,7 +57,7 @@ const DeleteDialog = ({
             <Button
               size="small"
               className="text-small justify-center"
-              variant="nuclear"
+              variant={buttonVariant??"nuclear"}
               onClick={onConfirm}
               disabled={extraConfirmation && entityName !== confirmationString}
             >
@@ -73,6 +74,7 @@ type ImperativeDialogProps =
   | {
       heading: string
       text: string
+      buttonVariant?:ButtonProps['variant']
       confirmText?: string
       cancelText?: string
     } & (
@@ -94,6 +96,7 @@ const useImperativeDialog = () => {
     cancelText,
     extraConfirmation,
     entityName,
+    buttonVariant
   }: ImperativeDialogProps): Promise<boolean> => {
     // We want a promise here so we can "await" the user's action (either confirm or cancel)
     return new Promise((resolve) => {
@@ -127,6 +130,7 @@ const useImperativeDialog = () => {
             cancelText={cancelText}
             extraConfirmation={extraConfirmation}
             entityName={entityName}
+            buttonVariant={buttonVariant}
           />
         )
       }
