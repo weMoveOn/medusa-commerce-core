@@ -6,6 +6,7 @@ import {
   JoinTable,
   ManyToMany,
   ManyToOne,
+  OneToMany,
   OneToOne,
 } from "typeorm"
 import {
@@ -18,9 +19,20 @@ import { Currency } from "./currency"
 import { DbAwareColumn } from "../utils/db-aware-column"
 import { SalesChannel } from "./sales-channel"
 import { generateEntityId } from "../utils/generate-entity-id"
+import { User } from "./user"
+import { Product } from "./product"
 
 @Entity()
 export class Store extends BaseEntity {
+  // new filed added start
+  @OneToMany(() => Product, (product) => product.store, {
+    cascade: true,
+  })
+  products: Product[]
+
+  @OneToMany(() => User, (user) => user.store)
+  members: User[]
+  // new filed added end
   @Column({ default: "Medusa Store" })
   name: string
 

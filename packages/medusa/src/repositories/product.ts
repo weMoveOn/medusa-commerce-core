@@ -43,6 +43,7 @@ export type FindWithoutRelationsOptions = DefaultWithoutRelations & {
     tags?: FindOperator<ProductTag>
     include_category_children?: boolean
     discount_condition_id?: string
+    store_id?: string
   }
 }
 

@@ -111,8 +111,15 @@ import { FeatureFlagDecorators } from "../../../../utils/feature-flag-decorators
  *   "500":
  *     $ref: "#/components/responses/500_error"
  */
+// identifier is required filed that extract from req.query
 export default async (req, res) => {
-  const validated = await validator(AdminPostProductsReq, req.body)
+  if (!req.query.identifier) {
+    throw new Error("store_id is required")
+  }
+  const validated = await validator(AdminPostProductsReq, {
+    ...req.body,
+    store_id: req.query.identifier,
+  })
 
   const logger: Logger = req.scope.resolve("logger")
   const productService: ProductService = req.scope.resolve("productService")
@@ -624,6 +631,9 @@ class ProductVariantReq {
 export class AdminPostProductsReq {
   @IsString()
   title: string
+
+  @IsString()
+  store_id: string
 
   @IsString()
   @IsOptional()

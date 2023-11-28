@@ -23,11 +23,15 @@ import { IsType } from "../utils/validators/is-type"
 import { PriceListLoadConfig } from "./price-list"
 import SalesChannelFeatureFlag from "../loaders/feature-flags/sales-channels"
 import { optionalBooleanMapper } from "../utils/validators/is-boolean"
+import { store } from "../services/__mocks__/store"
 
 /**
  * Filters to apply on retrieved products.
  */
 export class FilterableProductProps {
+  @IsString()
+  @IsOptional()
+  store_id?: string
   /**
    * IDs to filter products by.
    */

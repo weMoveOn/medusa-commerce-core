@@ -135,6 +135,7 @@ export const defaultAdminProductFields: (keyof Product)[] = [
   "updated_at",
   "deleted_at",
   "metadata",
+  "store_id",
 ]
 
 export const defaultAdminGetProductsVariantsFields = ["id", "product_id"]
@@ -503,4 +504,3 @@ export * from "./set-metadata"
 export * from "./update-option"
 export * from "./update-product"
 export * from "./update-variant"
-

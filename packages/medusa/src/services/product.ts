@@ -439,6 +439,8 @@ class ProductService extends TransactionBaseService {
         ...rest
       } = productObject
 
+      console.log(productObject, "productObject")
+
       if (!rest.thumbnail && images?.length) {
         rest.thumbnail = images[0]
       }
