@@ -29,8 +29,8 @@ import { store } from "../services/__mocks__/store"
  * Filters to apply on retrieved products.
  */
 export class FilterableProductProps {
-  @IsString()
   @IsOptional()
+  @IsString()
   store_id?: string
   /**
    * IDs to filter products by.

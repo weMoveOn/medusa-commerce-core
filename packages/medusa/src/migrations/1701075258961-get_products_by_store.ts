@@ -20,10 +20,6 @@ export class GetProductsByStore1701075258961 implements MigrationInterface {
       ON DELETE CASCADE
       ON UPDATE NO ACTION;
     `)
-
-    await queryRunner.query(
-      `ALTER TABLE "store" ADD "product_id" character varying`
-    )
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
@@ -38,12 +34,6 @@ export class GetProductsByStore1701075258961 implements MigrationInterface {
    DROP INDEX "IDX_store_id";
    ALTER TABLE "product"
    DROP COLUMN "store_id";
- `)
-
-    // Step 3: Drop column from the store table
-    await queryRunner.query(`
-   ALTER TABLE "store"
-   DROP COLUMN "product_id";
  `)
   }
 }

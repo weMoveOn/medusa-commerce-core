@@ -111,14 +111,11 @@ import { FeatureFlagDecorators } from "../../../../utils/feature-flag-decorators
  *   "500":
  *     $ref: "#/components/responses/500_error"
  */
-// identifier is required filed that extract from req.query
+// store_id is required filed that extract from req.query
 export default async (req, res) => {
-  if (!req.query.identifier) {
-    throw new Error("store_id is required")
-  }
   const validated = await validator(AdminPostProductsReq, {
     ...req.body,
-    store_id: req.query.identifier,
+    store_id: req.query.store_id,
   })
 
   const logger: Logger = req.scope.resolve("logger")
@@ -269,6 +266,7 @@ export default async (req, res) => {
     rawProduct = await productService.retrieve(product.id, {
       select: defaultAdminProductFields,
       relations: defaultAdminProductRelations,
+      store_id: req.store_id,
     })
   }
 

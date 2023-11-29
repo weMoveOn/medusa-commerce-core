@@ -83,7 +83,6 @@ export default async (req, res) => {
   const { id } = req.params
 
   const validated = req.validatedQuery as StoreGetProductsProductParams
-
   const customer_id = req.user?.customer_id
 
   const productVariantInventoryService: ProductVariantInventoryService =
@@ -98,7 +97,10 @@ export default async (req, res) => {
   if (featureFlagRouter.isFeatureEnabled(MedusaV2Flag.key)) {
     rawProduct = await getProductWithIsolatedProductModule(req, id)
   } else {
-    rawProduct = await productService.retrieve(id, req.retrieveConfig)
+    rawProduct = await productService.retrieve(id, {
+      ...req.retrieveConfig,
+      store_id: validated.store_id,
+    })
   }
 
   let sales_channel_id = validated.sales_channel_id
@@ -192,4 +194,8 @@ export class StoreGetProductsProductParams extends PriceSelectionParams {
   @IsString()
   @IsOptional()
   sales_channel_id?: string
+
+  @IsString()
+  @IsOptional()
+  store_id?: string
 }

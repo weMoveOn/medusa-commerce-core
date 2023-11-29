@@ -193,6 +193,7 @@ export default async (req: Request, res) => {
   const filterableFields: FilterableProductProps = {
     ...req.filterableFields,
     price_list_id: [id],
+    store_id: req.query.store_id as string,
   }
 
   if (featureFlagRouter.isFeatureEnabled(MedusaV2Flag.key)) {
@@ -202,9 +203,10 @@ export default async (req: Request, res) => {
       req.listConfig
     )
   } else {
+    const { store_id, ...rest } = filterableFields
     ;[products, count] = await priceListService.listProducts(
       id,
-      pickBy(filterableFields, (val) => isDefined(val)),
+      { ...pickBy(rest, (val) => isDefined(val)), store_id },
       req.listConfig
     )
   }

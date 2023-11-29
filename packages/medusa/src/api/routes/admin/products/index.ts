@@ -10,6 +10,7 @@ import { PricedProduct } from "../../../../types/pricing"
 import { validateSalesChannelsExist } from "../../../middlewares/validators/sales-channel-existence"
 import { AdminGetProductParams } from "./get-product"
 import { AdminGetProductsParams } from "./list-products"
+import { processIdentifierMiddleware } from "../../../middlewares/validators/identifier-existence"
 
 const route = Router()
 
@@ -26,11 +27,13 @@ export default (app, featureFlagRouter: FlagRouter) => {
 
   route.post(
     "/",
+    processIdentifierMiddleware,
     validateSalesChannelsExist((req) => req.body?.sales_channels),
     middlewares.wrap(require("./create-product").default)
   )
   route.post(
     "/:id",
+    processIdentifierMiddleware,
     validateSalesChannelsExist((req) => req.body?.sales_channels),
     middlewares.wrap(require("./update-product").default)
   )
@@ -77,6 +80,7 @@ export default (app, featureFlagRouter: FlagRouter) => {
   )
   route.get(
     "/:id",
+    processIdentifierMiddleware,
     transformQuery(AdminGetProductParams, {
       defaultRelations: defaultAdminProductRelations,
       defaultFields: defaultAdminProductFields,
@@ -87,6 +91,7 @@ export default (app, featureFlagRouter: FlagRouter) => {
 
   route.get(
     "/",
+    processIdentifierMiddleware,
     transformQuery(AdminGetProductsParams, {
       defaultRelations: defaultAdminProductRelations,
       defaultFields: defaultAdminProductFields,

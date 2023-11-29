@@ -246,8 +246,6 @@ export default async (req, res) => {
   const featureFlagRouter = req.scope.resolve("featureFlagRouter")
   const pricingService: PricingService = req.scope.resolve("pricingService")
 
-  console.log(req.query, "query")
-
   const { skip, take, relations } = req.listConfig
 
   let rawProducts

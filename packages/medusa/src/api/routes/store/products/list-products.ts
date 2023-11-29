@@ -445,6 +445,8 @@ export class StoreGetProductsPaginationParams extends PriceSelectionParams {
  * Parameters used to filter and configure the pagination of the retrieved products.
  */
 export class StoreGetProductsParams extends StoreGetProductsPaginationParams {
+  @IsString()
+  store_id?: string
   /**
    * {@inheritDoc FilterableProductProps.id}
    */

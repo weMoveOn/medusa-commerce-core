@@ -8,10 +8,6 @@ export class AddUserStoreId1700983753429 implements MigrationInterface {
     await queryRunner.query(
       `ALTER TABLE "user" ADD CONSTRAINT "FK_user_store" FOREIGN KEY ("store_id") REFERENCES "store" ("id") ON DELETE NO ACTION ON UPDATE NO ACTION`
     )
-
-    await queryRunner.query(
-      `ALTER TABLE "store" ADD "user_id" character varying`
-    )
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
@@ -19,6 +15,5 @@ export class AddUserStoreId1700983753429 implements MigrationInterface {
       `ALTER TABLE "user" DROP CONSTRAINT "FK_user_store"`
     )
     await queryRunner.query(`ALTER TABLE "user" DROP COLUMN "store_id"`)
-    await queryRunner.query(`ALTER TABLE "store" DROP COLUMN "user_id"`)
   }
 }
