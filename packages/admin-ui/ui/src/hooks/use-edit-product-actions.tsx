@@ -18,6 +18,7 @@ import { removeFalsy } from "../utils/remove-nullish"
 import useImperativeDialog from "./use-imperative-dialog"
 import { useNavigate } from "react-router-dom"
 import useNotification from "./use-notification"
+import { queryClient } from "../constants/query-client"
 
 const useEditProductActions = (productId: string) => {
   const dialog = useImperativeDialog()
@@ -118,6 +119,7 @@ const useEditProductActions = (productId: string) => {
       payload,
       {
         onSuccess: () => {
+          queryClient.invalidateQueries({ queryKey: ['inventory-retrieve'] })
           notification("Success", successMessage, "success")
           onSuccess()
         },

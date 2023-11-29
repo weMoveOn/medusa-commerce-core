@@ -12,6 +12,7 @@ import Customers from "../domain/customers"
 import Discounts from "../domain/discounts"
 import GiftCards from "../domain/gift-cards"
 import Inventory from "../domain/inventory"
+import MoveOnInventoryRoute from "../domain/moveon-inventory"
 import Oauth from "../domain/oauth"
 import Orders from "../domain/orders"
 import DraftOrders from "../domain/orders/draft-orders"
@@ -62,6 +63,10 @@ const DashboardRoutes = () => {
             path="publishable-api-keys/*"
             element={<PublishableApiKeys />}
           />
+          <Route
+              path="moveon-inventory/*"
+              element={<MoveOnInventoryRoute />}
+            />
           <Route path="inventory/*" element={<Inventory />} />
           {injectedRoutes.map((route, index) => {
             return (

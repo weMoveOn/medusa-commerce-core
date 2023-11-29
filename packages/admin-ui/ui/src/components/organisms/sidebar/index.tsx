@@ -9,6 +9,7 @@ import CartIcon from "../../fundamentals/icons/cart-icon"
 import CashIcon from "../../fundamentals/icons/cash-icon"
 import GearIcon from "../../fundamentals/icons/gear-icon"
 import GiftIcon from "../../fundamentals/icons/gift-icon"
+import PackageIcon from "../../fundamentals/icons/package-icon"
 import SaleIcon from "../../fundamentals/icons/sale-icon"
 import SquaresPlus from "../../fundamentals/icons/squares-plus"
 import SwatchIcon from "../../fundamentals/icons/swatch-icon"
@@ -132,6 +133,14 @@ const Sidebar: React.FC = () => {
             icon={<GearIcon size={ICON_SIZE} />}
             triggerHandler={triggerHandler}
             text={t("sidebar-settings", "Settings")}
+          />
+          <hr className="mx-auto my-4 h-[3px] w-48 rounded border-0 bg-gray-100 dark:bg-gray-700 md:my-10" />
+
+          <SidebarMenuItem
+            pageLink={"/a/moveon-inventory"}
+            icon={<PackageIcon size={ICON_SIZE} />}
+            triggerHandler={triggerHandler}
+            text={"MoveOn Inventory"}
           />
         </div>
       </div>

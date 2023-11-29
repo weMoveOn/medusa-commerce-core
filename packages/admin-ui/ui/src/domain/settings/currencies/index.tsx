@@ -17,7 +17,7 @@ const CurrencySettings = () => {
   const navigate = useNavigate()
   const { t } = useTranslation()
   const { trackCurrencies } = useAnalytics()
-  const { store, status, error } = useAdminStore({
+   const { store, status, error } = useAdminStore({
     onSuccess: (data) => {
       trackCurrencies({
         used_currencies: data.store.currencies.map((c) => c.code),

@@ -6,8 +6,8 @@ import FilterDropdownContainer from "../../../components/molecules/filter-dropdo
 import FilterDropdownItem from "../../../components/molecules/filter-dropdown/item"
 import SaveFilterItem from "../../../components/molecules/filter-dropdown/save-field"
 import TabFilter from "../../../components/molecules/filter-tab"
-import PlusIcon from "../../fundamentals/icons/plus-icon"
 import { useFeatureFlag } from "../../../providers/feature-flag-provider"
+import PlusIcon from "../../fundamentals/icons/plus-icon"
 
 const REGION_PAGE_SIZE = 10
 const CHANNEL_PAGE_SIZE = 10

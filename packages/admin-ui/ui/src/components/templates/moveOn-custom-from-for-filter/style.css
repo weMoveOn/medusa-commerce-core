@@ -1,0 +1,66 @@
+/* CSS for .filter_image */
+.filter_image {
+    background-color: #EEEEEE;
+    padding: 0;
+    display: block;
+    transition: 300ms ease-in-out box-shadow;
+    cursor: pointer;
+    border-radius: 5%;
+  }
+  
+  .filter_image__thumb {
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center !important;
+    justify-content: center !important;
+    border-radius: 5%;
+  }
+  
+  .filter_image__thumb__image {
+    max-width: 100px;
+    max-height: 100px;
+    overflow: hidden;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    border-radius: 5%;
+  }
+  
+  /* CSS for .form_element */
+  .form_element .adm-divider {
+    margin: 8px 0!important;
+  }
+  
+  .form_element .adm-form-item-label {
+    margin-bottom: 8px !important;
+    font-weight: bold;
+    font-size: 1.1em;
+    color: "green"; /* Replace with your actual brand color variable */
+  }
+  
+  .form_element .adm-selector-item {
+    padding: 4px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    max-width: 290px!important;
+  }
+  
+  /* CSS for .price_range */
+  .price_range {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  
+  .price_range .adm-input {
+    border: 1px solid #cccccc;
+    border-radius: 5px;
+    margin-left: 3%;
+  }
+  
+  .price_range .adm-input .adm-input-element {
+    padding: 1% 6%;
+  }
+  

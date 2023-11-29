@@ -24,6 +24,7 @@ import Regions from "./regions"
 import ReturnReasons from "./return-reasons"
 import Taxes from "./taxes"
 import Users from "./users"
+import InventoryPricing from "./inventory-pricing"
 
 type SettingsCardType = {
   heading: string
@@ -46,6 +47,12 @@ const settings: SettingsCardType[] = [
     description: "Manage the currencies of your store",
     icon: CoinsIcon,
     to: "/a/settings/currencies",
+  },
+  {
+    heading: "Inventory Pricing",
+    description: "Manage the pricing of the inventory products",
+    icon: CoinsIcon,
+    to: "/a/settings/inventory-pricing",
   },
   {
     heading: "Personal Information",
@@ -180,6 +187,7 @@ const Settings = () => {
       <Route path="/return-reasons" element={<ReturnReasons />} />
       <Route path="/team" element={<Users />} />
       <Route path="/personal-information" element={<PersonalInformation />} />
+      <Route path="/inventory-pricing/*" element={<InventoryPricing />} />
       <Route path="/taxes/*" element={<Taxes />} />
       {getSettings().map((s) => (
         <Route
@@ -194,3 +202,11 @@ const Settings = () => {
 }
 
 export default Settings
+
+
+{/* <SettingsCard
+heading={"Inventory Pricing"}
+description={"Manage the pricing of the inventory products"}
+icon={<MapPinIcon />}
+to={`/a/settings/inventory-pricing`}
+/> */}

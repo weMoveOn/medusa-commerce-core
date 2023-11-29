@@ -19,7 +19,8 @@
   ],
   "scripts": {
     "build": "tsc --build",
-    "test": "jest --passWithNoTests"
+    "test": "jest --passWithNoTests",
+    "watch": "tsc --build --watch"
   },
   "repository": {
     "type": "git",
