@@ -31,15 +31,22 @@ describe("PriceSet Service", () => {
   const priceSetInputData = [
     {
       id: "price-set-1",
-      money_amounts: [{ id: "money-amount-USD" }],
+      prices: [
+        {
+          id: "money-amount-USD",
+          currency_code: "EUR",
+          amount: 100,
+          rules: {},
+        },
+      ],
     },
     {
       id: "price-set-2",
-      money_amounts: [],
+      prices: [],
     },
     {
       id: "price-set-3",
-      money_amounts: [],
+      prices: [],
     },
   ]
 
@@ -117,9 +124,9 @@ describe("PriceSet Service", () => {
         {
           id: "price-set-1",
           money_amounts: [
-            {
+            expect.objectContaining({
               id: "money-amount-USD",
-            },
+            }),
           ],
         },
       ])
@@ -144,9 +151,9 @@ describe("PriceSet Service", () => {
         {
           id: "price-set-1",
           money_amounts: [
-            {
+            expect.objectContaining({
               id: "money-amount-USD",
-            },
+            }),
           ],
         },
       ])
@@ -220,9 +227,9 @@ describe("PriceSet Service", () => {
         {
           id: "price-set-1",
           money_amounts: [
-            {
+            expect.objectContaining({
               id: "money-amount-USD",
-            },
+            }),
           ],
         },
       ])

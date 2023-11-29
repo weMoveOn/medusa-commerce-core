@@ -18,7 +18,7 @@ import FileIcon from "../../fundamentals/icons/file-icon"
 import MedusaIcon from "../../fundamentals/icons/medusa-icon"
 import { ActivityCard } from "../../molecules/activity-card"
 import BatchJobFileCard from "../../molecules/batch-job-file-card"
-import { batchJobDescriptionBuilder, BatchJobOperation } from "./utils"
+import { BatchJobOperation, batchJobDescriptionBuilder } from "./utils"
 import CrossIcon from "../../fundamentals/icons/cross-icon"
 import RefreshIcon from "../../fundamentals/icons/refresh-icon"
 

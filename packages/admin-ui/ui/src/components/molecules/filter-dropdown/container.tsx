@@ -17,6 +17,9 @@ type FilterDropdownContainerProps = {
   triggerElement: ReactNode
 }
 
+/**
+ * @deprecated Use `FilterMenu` instead
+ */
 const FilterDropdownContainer = ({
   submitFilters,
   clearFilters,

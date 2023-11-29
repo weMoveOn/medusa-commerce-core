@@ -1,8 +1,9 @@
+import { UpdatePriceListDTO } from "@medusajs/types"
 import {
   Context,
-  CreatePriceSetDTO,
   DAL,
   UpdatePriceSetDTO,
+  CreatePriceSetDTO,
 } from "@medusajs/types"
 import { DALUtils, MedusaError } from "@medusajs/utils"
 import {
@@ -69,7 +70,7 @@ export class PriceSetRepository extends DALUtils.MikroOrmBaseRepository {
   }
 
   async create(
-    data: CreatePriceSetDTO[],
+    data: Omit<CreatePriceSetDTO, "rules">[],
     context: Context = {}
   ): Promise<PriceSet[]> {
     const manager = this.getActiveManager<SqlEntityManager>(context)
@@ -84,7 +85,7 @@ export class PriceSetRepository extends DALUtils.MikroOrmBaseRepository {
   }
 
   async update(
-    data: UpdatePriceSetDTO[],
+    data: Omit<UpdatePriceListDTO, "rules">[],
     context: Context = {}
   ): Promise<PriceSet[]> {
     const manager = this.getActiveManager<SqlEntityManager>(context)

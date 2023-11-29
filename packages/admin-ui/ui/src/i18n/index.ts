@@ -10,18 +10,63 @@ export const supportedLanguages = [
     name: "English",
   },
   {
+    locale: "de",
+    name: "Deutsch",
+  },
+  {
     locale: "fr",
     name: "Français",
+  },
+  {
+    locale: "hr",
+    name: "Hrvatski",
+  },
+  {
+    locale: "it",
+    name: "Italiano",
   },
   {
     locale: "pt",
     name: "Português (Brasil)",
   },
   {
+    locale: "uk",
+    name: "Українська",
+  },
+  {
+    locale: "ar",
+    name: "العربية",
+  },
+  {
     locale: "pl",
     name: "Polski",
   },
-]
+  {
+    locale: "es",
+    name: "Español",
+  },
+  {
+
+    locale: "hi",
+    name: "Hindi"
+  },
+  {
+    locale: "bs",
+    name: "Bosanski",
+  },
+  {
+    locale: "vi",
+    name: "Tiếng Việt",
+  },
+  {
+    locale: "tm",
+    name: "Tamil",
+  },
+  {
+    locale: "ru",
+    name: "Русский"
+  }
+].sort((a, b) => a.locale.localeCompare(b.locale))
 
 const adminPath = getFullAdminPath()
 const pathToLoadFrom = `${adminPath}public/locales/{{lng}}/{{ns}}.json`

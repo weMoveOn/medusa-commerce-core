@@ -8,8 +8,6 @@ import {
 } from "@medusajs/utils"
 import { RuleType } from "@models"
 
-import { doNotForceTransaction, shouldForceTransaction } from "@medusajs/utils"
-
 type InjectedDependencies = {
   ruleTypeRepository: DAL.RepositoryService
 }
@@ -43,8 +41,10 @@ export default class RuleTypeService<TEntity extends RuleType = RuleType> {
     config: FindConfig<PricingTypes.RuleTypeDTO> = {},
     @MedusaContext() sharedContext: Context = {}
   ): Promise<TEntity[]> {
+    const queryOptions = ModulesSdkUtils.buildQuery<RuleType>(filters, config)
+
     return (await this.ruleTypeRepository_.find(
-      this.buildQueryForList(filters, config),
+      queryOptions,
       sharedContext
     )) as TEntity[]
   }
@@ -55,26 +55,15 @@ export default class RuleTypeService<TEntity extends RuleType = RuleType> {
     config: FindConfig<PricingTypes.RuleTypeDTO> = {},
     @MedusaContext() sharedContext: Context = {}
   ): Promise<[TEntity[], number]> {
+    const queryOptions = ModulesSdkUtils.buildQuery<RuleType>(filters, config)
+
     return (await this.ruleTypeRepository_.findAndCount(
-      this.buildQueryForList(filters, config),
+      queryOptions,
       sharedContext
     )) as [TEntity[], number]
   }
 
-  private buildQueryForList(
-    filters: PricingTypes.FilterableRuleTypeProps = {},
-    config: FindConfig<PricingTypes.RuleTypeDTO> = {}
-  ) {
-    const queryOptions = ModulesSdkUtils.buildQuery<RuleType>(filters, config)
-
-    if (filters.id) {
-      queryOptions.where["id"] = { $in: filters.id }
-    }
-
-    return queryOptions
-  }
-
-  @InjectTransactionManager(shouldForceTransaction, "ruleTypeRepository_")
+  @InjectTransactionManager("ruleTypeRepository_")
   async create(
     data: PricingTypes.CreateRuleTypeDTO[],
     @MedusaContext() sharedContext: Context = {}
@@ -85,7 +74,7 @@ export default class RuleTypeService<TEntity extends RuleType = RuleType> {
     )) as TEntity[]
   }
 
-  @InjectTransactionManager(shouldForceTransaction, "ruleTypeRepository_")
+  @InjectTransactionManager("ruleTypeRepository_")
   async update(
     data: PricingTypes.UpdateRuleTypeDTO[],
     @MedusaContext() sharedContext: Context = {}
@@ -96,7 +85,7 @@ export default class RuleTypeService<TEntity extends RuleType = RuleType> {
     )) as TEntity[]
   }
 
-  @InjectTransactionManager(doNotForceTransaction, "ruleTypeRepository_")
+  @InjectTransactionManager("ruleTypeRepository_")
   async delete(
     ids: string[],
     @MedusaContext() sharedContext: Context = {}

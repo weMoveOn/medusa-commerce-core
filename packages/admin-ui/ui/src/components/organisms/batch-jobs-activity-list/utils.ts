@@ -8,7 +8,7 @@ export enum BatchJobOperation {
 
 export function batchJobDescriptionBuilder(
   batchJob: BatchJob,
-  operation: BatchJobOperation,
+  operation: string,
   elapsedTime?: number
 ): string {
   let description = ""
