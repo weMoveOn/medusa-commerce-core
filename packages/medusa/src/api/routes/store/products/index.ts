@@ -13,6 +13,7 @@ import { validateSalesChannelParam } from "../../../middlewares/publishable-api-
 import { withDefaultSalesChannel } from "../../../middlewares/with-default-sales-channel"
 import { StoreGetProductsProductParams } from "./get-product"
 import { StoreGetProductsParams } from "./list-products"
+import { processIdentifierMiddleware } from "../../../middlewares/validators/identifier-existence"
 
 const route = Router()
 
@@ -21,7 +22,13 @@ export default (app, featureFlagRouter: FlagRouter) => {
     allowedStoreProductsRelations.push("categories")
   }
 
-  app.use("/products", extendRequestParams, validateSalesChannelParam, route)
+  app.use(
+    "/products",
+    processIdentifierMiddleware,
+    extendRequestParams,
+    validateSalesChannelParam,
+    route
+  )
 
   route.use("/:id", validateProductSalesChannelAssociation)
 

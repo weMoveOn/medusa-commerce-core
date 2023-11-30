@@ -166,9 +166,7 @@ class ProductService extends TransactionBaseService {
 
     const manager = this.activeManager_
     const productRepo = manager.withRepository(this.productRepository_)
-
     const { q, query, relations } = this.prepareListQuery_(selector, config)
-
     if (q) {
       return await productRepo.getFreeTextSearchResultsAndCount(
         q,
@@ -202,7 +200,7 @@ class ProductService extends TransactionBaseService {
    * @return the result of the find one operation.
    */
   async retrieve(
-    productId: string,
+    productId,
     config: FindProductConfig = {
       include_discount_prices: false,
     }
@@ -213,8 +211,16 @@ class ProductService extends TransactionBaseService {
         `"productId" must be defined`
       )
     }
+    // if (!isDefined(config.store_id)) {
+    //   throw new MedusaError(
+    //     MedusaError.Types.NOT_FOUND,
+    //     `"Store id " must be defined`
+    //   )
+    // }
 
-    return await this.retrieve_({ id: productId }, config)
+    const { store_id, ...restConfig } = config
+
+    return await this.retrieve_({ id: productId, store_id }, restConfig)
   }
 
   /**
@@ -235,7 +241,16 @@ class ProductService extends TransactionBaseService {
       )
     }
 
-    return await this.retrieve_({ handle: productHandle }, config)
+    if (!isDefined(config.store_id)) {
+      throw new MedusaError(
+        MedusaError.Types.NOT_FOUND,
+        `"Store id " must be defined`
+      )
+    }
+
+    const { store_id, ...restConfig } = config
+
+    return await this.retrieve_({ handle: productHandle, store_id }, restConfig)
   }
 
   /**
@@ -295,11 +310,11 @@ class ProductService extends TransactionBaseService {
     /**
      * TODO: The below code is a temporary fix for the issue with the typeorm idle transaction in query strategy mode
      */
+
     const manager = this.activeManager_
     const productRepo = manager.withRepository(this.productRepository_)
 
     const { relations, ...query } = buildQuery(selector, config)
-
     const product = await productRepo.findOneWithRelations(
       objectToStringPath(relations),
       query as FindWithoutRelationsOptions
@@ -1006,7 +1021,6 @@ class ProductService extends TransactionBaseService {
       q = selector.q
       delete selector.q
     }
-
     const query = buildQuery(selector, config)
     query.order = config.order
 

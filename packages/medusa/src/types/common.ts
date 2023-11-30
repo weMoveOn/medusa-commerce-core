@@ -51,6 +51,7 @@ export interface FindConfig<Entity> {
   take?: number
   relations?: string[]
   order?: { [K: string]: "ASC" | "DESC" }
+  store_id?: string
 }
 
 export type ExtendedFindConfig<TEntity> = (
@@ -63,6 +64,7 @@ export type ExtendedFindConfig<TEntity> = (
   order?: FindOptionsOrder<TEntity>
   skip?: number
   take?: number
+  store_id?: string
 }
 
 export type QuerySelector<TEntity> = Selector<TEntity> & { q?: string }
@@ -136,6 +138,7 @@ export type RequestQueryFields = {
    * The field to sort the data by. By default, the sort order is ascending. To change the order to descending, prefix the field name with `-`.
    */
   order?: string
+  store_id?: string
 }
 
 /**

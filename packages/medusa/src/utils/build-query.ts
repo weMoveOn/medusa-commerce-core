@@ -70,6 +70,9 @@ export function buildQuery<TWhereKeys extends object, TEntity = unknown>(
   if (config.order) {
     query.order = buildOrder(config.order) as FindOptionsOrder<TEntity>
   }
+  if (config.store_id) {
+    query.store_id = config.store_id as string
+  }
 
   return query
 }

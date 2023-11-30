@@ -26,10 +26,11 @@ import { ShippingProfile } from "./shipping-profile"
 import { SoftDeletableEntity } from "../interfaces/models/soft-deletable-entity"
 import _ from "lodash"
 import { generateEntityId } from "../utils"
+import { Store } from "./store"
 
 /**
  * @enum
- * 
+ *
  * The status of a product.
  */
 export enum ProductStatus {
@@ -53,6 +54,15 @@ export enum ProductStatus {
 
 @Entity()
 export class Product extends SoftDeletableEntity {
+  @ManyToOne(() => Store, (store) => store.products)
+  @JoinColumn({ name: "store_id" })
+  store: Store
+
+  @Index()
+  @Column()
+  store_id: string
+  // new added filed end
+
   @Column()
   title: string
 
