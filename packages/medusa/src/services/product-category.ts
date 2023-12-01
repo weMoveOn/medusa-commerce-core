@@ -185,25 +185,28 @@ class ProductCategoryService extends TransactionBaseService {
    * @return created product category
    */
   async create(productCategoryInput: CreateProductCategoryInput): Promise<any> {
-    // return await this.atomicPhase_(async (manager) => {
-    //   const pcRepo = manager.withRepository(this.productCategoryRepo_)
-    //   const siblingCount = await pcRepo.countBy({
-    //     parent_category_id: nullableValue(
-    //       productCategoryInput.parent_category_id
-    //     ),
-    //   })
-    //   productCategoryInput.rank = siblingCount
-    //   productCategoryInput.store_id= "store_01HGCMBKJZ71E5078QHDEGA7TS"
-    //   await this.transformParentIdToEntity(productCategoryInput)
-    //   let productCategory = pcRepo.create(productCategoryInput)
-    //   productCategory = await pcRepo.save(productCategory)
-    //   await this.eventBusService_
-    //     .withTransaction(manager)
-    //     .emit(ProductCategoryService.Events.CREATED, {
-    //       id: productCategory.id,
-    //     })
-    //   return productCategory
-    // })
+    console.log("productCategoryInput", productCategoryInput)
+    return await this.atomicPhase_(async (manager) => {
+      const pcRepo = manager.withRepository(this.productCategoryRepo_)
+      const siblingCount = await pcRepo.countBy({
+        parent_category_id: nullableValue(
+          productCategoryInput.parent_category_id
+        ),
+      })
+      productCategoryInput.rank = siblingCount
+      // productCategoryInput.store_id= "store_01HGCMBKJZ71E5078QHDEGA7TS"
+
+      await this.transformParentIdToEntity(productCategoryInput)
+      let productCategory = pcRepo.create(productCategoryInput)
+      // productCategory.store_id= "store_01HGCMBKJZ71E5078QHDEGA7TS"
+      productCategory = await pcRepo.save(productCategory)
+      await this.eventBusService_
+        .withTransaction(manager)
+        .emit(ProductCategoryService.Events.CREATED, {
+          id: productCategory.id,
+        })
+      return productCategory
+    })
   }
 
   /**
