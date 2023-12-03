@@ -118,6 +118,7 @@ import { createVariantsTransaction } from "./transaction/create-product-variant"
 
 export default async (req, res) => {
   const { id } = req.params
+  const { store_id } = req.query
 
   const validated = await validator(
     AdminPostProductsProductVariantsReq,
@@ -178,7 +179,7 @@ export default async (req, res) => {
 
     const productService: ProductService = req.scope.resolve("productService")
 
-    rawProduct = await productService.retrieve(id, {
+    rawProduct = await productService.retrieve(id, store_id, {
       select: defaultAdminProductFields,
       relations: defaultAdminProductRelations,
     })

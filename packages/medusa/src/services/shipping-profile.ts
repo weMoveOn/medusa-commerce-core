@@ -25,6 +25,7 @@ import { buildQuery, isString, setMetadata } from "../utils"
 import CustomShippingOptionService from "./custom-shipping-option"
 import ProductService from "./product"
 import ShippingOptionService from "./shipping-option"
+import { store } from "./__mocks__/store"
 
 type InjectedDependencies = {
   manager: EntityManager
@@ -313,6 +314,7 @@ class ShippingProfileService extends TransactionBaseService {
    */
   async update(
     profileId: string,
+    storeId: string,
     update: UpdateShippingProfile
   ): Promise<ShippingProfile> {
     return await this.atomicPhase_(async (manager) => {
@@ -325,7 +327,7 @@ class ShippingProfileService extends TransactionBaseService {
       const { metadata, products, shipping_options, ...rest } = update
 
       if (products) {
-        await this.addProduct(profile.id, products)
+        await this.addProduct(profile.id, storeId, products)
       }
 
       if (shipping_options) {
@@ -374,9 +376,10 @@ class ShippingProfileService extends TransactionBaseService {
    */
   async addProduct(
     profileId: string,
+    storeId: string,
     productId: string | string[]
   ): Promise<ShippingProfile> {
-    return await this.addProducts(profileId, productId)
+    return await this.addProducts(profileId, storeId, productId)
   }
 
   /**
@@ -387,6 +390,7 @@ class ShippingProfileService extends TransactionBaseService {
    */
   async addProducts(
     profileId: string,
+    storeId: string,
     productId: string | string[]
   ): Promise<ShippingProfile> {
     return await this.atomicPhase_(async (manager) => {
@@ -394,6 +398,7 @@ class ShippingProfileService extends TransactionBaseService {
 
       await productServiceTx.updateShippingProfile(
         isString(productId) ? [productId] : productId,
+        storeId,
         profileId
       )
 
@@ -409,6 +414,7 @@ class ShippingProfileService extends TransactionBaseService {
    */
   async removeProducts(
     profileId: string | null,
+    storeId: string,
     productId: string | string[]
   ): Promise<ShippingProfile | void> {
     return await this.atomicPhase_(async (manager) => {
@@ -416,6 +422,7 @@ class ShippingProfileService extends TransactionBaseService {
 
       await productServiceTx.updateShippingProfile(
         isString(productId) ? [productId] : productId,
+        storeId,
         null
       )
     })

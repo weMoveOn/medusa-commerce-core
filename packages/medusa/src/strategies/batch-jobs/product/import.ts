@@ -317,14 +317,14 @@ class ProductImportStrategy extends AbstractBatchJobStrategy {
    *
    * @param batchJobId - An id of a batch job that is being processed.
    */
-  async processJob(batchJobId: string): Promise<void> {
+  async processJob(storeId: string, batchJobId: string): Promise<void> {
     return await this.atomicPhase_(async (manager) => {
       const batchJob = (await this.batchJobService_
         .withTransaction(manager)
         .retrieve(batchJobId)) as ProductImportBatchJob
 
       await this.createProducts(batchJob)
-      await this.updateProducts(batchJob)
+      await this.updateProducts(storeId, batchJob)
       await this.createVariants(batchJob)
       await this.updateVariants(batchJob)
       await this.finalize(batchJob)
@@ -485,7 +485,10 @@ class ProductImportStrategy extends AbstractBatchJobStrategy {
    *
    * @param batchJob - The current batch job being processed.
    */
-  private async updateProducts(batchJob: ProductImportBatchJob): Promise<void> {
+  private async updateProducts(
+    storeId: string,
+    batchJob: ProductImportBatchJob
+  ): Promise<void> {
     if (!batchJob.result.operations[OperationType.ProductUpdate]) {
       return
     }
@@ -544,6 +547,7 @@ class ProductImportStrategy extends AbstractBatchJobStrategy {
         // TODO: we should only pass the expected data. Here we are passing everything contained in productData
         await productServiceTx.update(
           productOp["product.id"] as string,
+          storeId,
           productData
         )
       } catch (e) {

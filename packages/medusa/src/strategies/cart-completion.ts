@@ -73,7 +73,9 @@ class CartCompletionStrategy extends AbstractCartCompletionStrategy {
   async complete(
     id: string,
     ikey: IdempotencyKey,
-    context: RequestContext
+    context: RequestContext & {
+      store_id: string
+    }
   ): Promise<CartCompletionResponse> {
     let idempotencyKey: IdempotencyKey = ikey
 
@@ -128,7 +130,9 @@ class CartCompletionStrategy extends AbstractCartCompletionStrategy {
                 .workStage(
                   idempotencyKey.idempotency_key,
                   async (manager) =>
-                    await this.handlePaymentAuthorized(id, { manager })
+                    await this.handlePaymentAuthorized(context.store_id, id, {
+                      manager,
+                    })
                 )
             })
             .catch((e) => {
@@ -277,6 +281,7 @@ class CartCompletionStrategy extends AbstractCartCompletionStrategy {
   }
 
   protected async handlePaymentAuthorized(
+    storeId: string,
     id: string,
     { manager }: { manager: EntityManager }
   ) {
@@ -373,7 +378,7 @@ class CartCompletionStrategy extends AbstractCartCompletionStrategy {
               .withTransaction(manager)
               .cancelPayment(cart.payment)
           }
-          await cartServiceTx.update(cart.id, {
+          await cartServiceTx.update(storeId, cart.id, {
             payment_authorized_at: null,
           })
 
@@ -407,7 +412,10 @@ class CartCompletionStrategy extends AbstractCartCompletionStrategy {
     if (cart.type === "swap") {
       try {
         const swapId = cart.metadata?.swap_id
-        let swap = await swapServiceTx.registerCartCompletion(swapId as string)
+        let swap = await swapServiceTx.registerCartCompletion(
+          storeId,
+          swapId as string
+        )
 
         swap = await swapServiceTx.retrieve(swap.id, {
           relations: ["shipping_address"],
@@ -444,7 +452,7 @@ class CartCompletionStrategy extends AbstractCartCompletionStrategy {
 
     let order: Order
     try {
-      order = await orderServiceTx.createFromCart(cart)
+      order = await orderServiceTx.createFromCart(storeId, cart)
     } catch (error) {
       await this.removeReservations(reservations)
 

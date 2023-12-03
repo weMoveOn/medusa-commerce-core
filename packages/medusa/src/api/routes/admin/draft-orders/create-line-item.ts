@@ -87,6 +87,7 @@ import { validator } from "../../../../utils/validator"
 
 export default async (req, res) => {
   const { id } = req.params
+  const { store_id } = req.query.store_id
 
   const validated = await validator(
     AdminPostDraftOrdersDraftOrderLineItemsReq,
@@ -129,7 +130,7 @@ export default async (req, res) => {
 
       await cartService
         .withTransaction(manager)
-        .addOrUpdateLineItems(draftOrder.cart_id, line, {
+        .addOrUpdateLineItems(store_id, draftOrder.cart_id, line, {
           validateSalesChannels: false,
         })
     } else {

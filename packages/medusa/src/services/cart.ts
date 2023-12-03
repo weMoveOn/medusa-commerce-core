@@ -613,6 +613,7 @@ class CartService extends TransactionBaseService {
    * @return a boolean indicating validation result
    */
   protected async validateLineItem(
+    storeId: string,
     { sales_channel_id }: { sales_channel_id: string | null },
     lineItem: LineItemValidateData
   ): Promise<boolean> {
@@ -631,6 +632,7 @@ class CartService extends TransactionBaseService {
         .withTransaction(this.activeManager_)
         .filterProductsBySalesChannel(
           [lineItemVariant.product_id],
+          storeId,
           sales_channel_id
         )
     ).length
@@ -647,6 +649,7 @@ class CartService extends TransactionBaseService {
    * @deprecated Use {@link addOrUpdateLineItems} instead.
    */
   async addLineItem(
+    storeId: string,
     cartId: string,
     lineItem: LineItem,
     config = { validateSalesChannels: true }
@@ -668,6 +671,7 @@ class CartService extends TransactionBaseService {
           if (config.validateSalesChannels) {
             if (lineItem.variant_id) {
               const lineItemIsValid = await this.validateLineItem(
+                storeId,
                 cart,
                 lineItem as LineItemValidateData
               )
@@ -787,6 +791,7 @@ class CartService extends TransactionBaseService {
    * @return the result of the update operation
    */
   async addOrUpdateLineItems(
+    storeId: string,
     cartId: string,
     lineItems: LineItem | LineItem[],
     config = { validateSalesChannels: true }
@@ -812,6 +817,7 @@ class CartService extends TransactionBaseService {
               items.map(async (item) => {
                 if (item.variant_id) {
                   return await this.validateLineItem(
+                    storeId,
                     cart,
                     item as LineItemValidateData
                   )
@@ -1146,7 +1152,11 @@ class CartService extends TransactionBaseService {
     }
   }
 
-  async update(cartOrId: string | Cart, data: CartUpdateProps): Promise<Cart> {
+  async update(
+    storeId: string,
+    cartOrId: string | Cart,
+    data: CartUpdateProps
+  ): Promise<Cart> {
     return await this.atomicPhase_(
       async (transactionManager: EntityManager) => {
         const cartRepo = transactionManager.withRepository(this.cartRepository_)
@@ -1219,7 +1229,7 @@ class CartService extends TransactionBaseService {
           isDefined(data.sales_channel_id) &&
           data.sales_channel_id != cart.sales_channel_id
         ) {
-          await this.onSalesChannelChange(cart, data.sales_channel_id)
+          await this.onSalesChannelChange(storeId, cart, data.sales_channel_id)
           cart.sales_channel_id = data.sales_channel_id
         }
 
@@ -1314,6 +1324,7 @@ class CartService extends TransactionBaseService {
    * @protected
    */
   protected async onSalesChannelChange(
+    storeId: string,
     cart: Cart,
     newSalesChannelId: string
   ): Promise<void> {
@@ -1322,7 +1333,7 @@ class CartService extends TransactionBaseService {
     const productIds = cart.items.map((item) => item.variant.product_id)
     const productsToKeep = await this.productService_
       .withTransaction(this.activeManager_)
-      .filterProductsBySalesChannel(productIds, newSalesChannelId, {
+      .filterProductsBySalesChannel(productIds, storeId, newSalesChannelId, {
         select: ["id"],
         take: productIds.length,
       })

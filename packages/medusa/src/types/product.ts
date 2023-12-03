@@ -29,9 +29,8 @@ import { store } from "../services/__mocks__/store"
  * Filters to apply on retrieved products.
  */
 export class FilterableProductProps {
-  @IsOptional()
   @IsString()
-  store_id?: string
+  store_id: string
   /**
    * IDs to filter products by.
    */
@@ -180,6 +179,7 @@ export type ProductSelector =
  */
 
 export type CreateProductInput = {
+  store_id: string
   title: string
   subtitle?: string
   profile_id?: string

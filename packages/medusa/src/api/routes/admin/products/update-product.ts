@@ -123,6 +123,7 @@ import { validator } from "../../../../utils/validator"
  */
 export default async (req, res) => {
   const { id } = req.params
+  const { store_id } = req.query
 
   const validated = await validator(AdminPostProductsProductReq, req.body)
 
@@ -175,7 +176,7 @@ export default async (req, res) => {
       const { variants } = validated
       delete validated.variants
 
-      const product = await productServiceTx.update(id, validated)
+      const product = await productServiceTx.update(id, store_id, validated)
 
       if (!variants) {
         return
@@ -294,7 +295,7 @@ export default async (req, res) => {
   if (isMedusaV2Enabled) {
     rawProduct = await getProductWithIsolatedProductModule(req, id)
   } else {
-    rawProduct = await productService.retrieve(id, {
+    rawProduct = await productService.retrieve(id, store_id, {
       select: defaultAdminProductFields,
       relations: defaultAdminProductRelations,
     })

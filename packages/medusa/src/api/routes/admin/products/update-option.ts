@@ -71,6 +71,7 @@ import { validator } from "../../../../utils/validator"
  */
 export default async (req, res) => {
   const { id, option_id } = req.params
+  const { store_id } = req.query
 
   const validated = await validator(
     AdminPostProductsProductOptionsOption,
@@ -84,10 +85,10 @@ export default async (req, res) => {
   await manager.transaction(async (transactionManager) => {
     return await productService
       .withTransaction(transactionManager)
-      .updateOption(id, option_id, validated)
+      .updateOption(id, store_id, option_id, validated)
   })
 
-  const rawProduct = await productService.retrieve(id, {
+  const rawProduct = await productService.retrieve(id, store_id, {
     select: defaultAdminProductFields,
     relations: defaultAdminProductRelations,
   })

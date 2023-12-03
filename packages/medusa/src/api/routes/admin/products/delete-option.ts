@@ -58,6 +58,7 @@ import { ProductService } from "../../../../services"
  */
 export default async (req, res) => {
   const { id, option_id } = req.params
+  const { store_id } = req.query
 
   const productService: ProductService = req.scope.resolve("productService")
 
@@ -65,10 +66,10 @@ export default async (req, res) => {
   await manager.transaction(async (transactionManager) => {
     return await productService
       .withTransaction(transactionManager)
-      .deleteOption(id, option_id)
+      .deleteOption(id, store_id, option_id)
   })
 
-  const data = await productService.retrieve(id, {
+  const data = await productService.retrieve(id, store_id, {
     select: defaultAdminProductFields,
     relations: defaultAdminProductRelations,
   })

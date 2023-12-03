@@ -79,6 +79,7 @@ import { FeatureFlagDecorators } from "../../../../utils/feature-flag-decorators
  *     $ref: "#/components/responses/500_error"
  */
 export default async (req, res) => {
+  const { store_id } = req.query
   const entityManager: EntityManager = req.scope.resolve("manager")
   const featureFlagRouter: FlagRouter = req.scope.resolve("featureFlagRouter")
   const cartService: CartService = req.scope.resolve("cartService")
@@ -203,6 +204,7 @@ export default async (req, res) => {
         )
 
         await cartServiceTx.addOrUpdateLineItems(
+          store_id,
           createdCart.id,
           generatedLineItems,
           {

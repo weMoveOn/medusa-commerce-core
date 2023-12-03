@@ -722,7 +722,10 @@ class SwapService extends TransactionBaseService {
    * @param swapId - The id of the swap
    * @return swap related to the cart
    */
-  async registerCartCompletion(swapId: string): Promise<Swap | never> {
+  async registerCartCompletion(
+    storeId: string,
+    swapId: string
+  ): Promise<Swap | never> {
     return await this.atomicPhase_(async (manager) => {
       const swap = await this.retrieve(swapId, {
         select: [
@@ -813,7 +816,8 @@ class SwapService extends TransactionBaseService {
       // Is the cascade insert really used? Also, is it really necessary to pass the entire entities when creating or updating?
       // We normally should only pass what is needed?
       swap.shipping_methods = cart.shipping_methods.map((method) => {
-        ;(method.tax_lines as any) = undefined
+        // @ts-ignore
+        method.tax_lines = undefined
         return method
       })
       swap.confirmed_at = new Date()
@@ -841,7 +845,7 @@ class SwapService extends TransactionBaseService {
 
       await this.cartService_
         .withTransaction(manager)
-        .update(cart.id, { completed_at: new Date() })
+        .update(storeId, cart.id, { completed_at: new Date() })
 
       return result
     })
