@@ -79,7 +79,6 @@ export default async (req: Request, res: Response) => {
   const productCategoryService: ProductCategoryService = req.scope.resolve(
     "productCategoryService"
   )
-  validatedBody.store_id= req.query.store_id as string
   const manager: EntityManager = req.scope.resolve("manager")
   const created = await manager.transaction(async (transactionManager) => {
     return await productCategoryService
@@ -142,13 +141,12 @@ export class AdminPostProductCategoriesReq extends AdminProductCategoriesReqBase
   @IsOptional()
   metadata?: Record<string, unknown>
 }
-
 export class AdminPostProductCategoriesParams extends FindParams {
+  // @IsString()
+  // @IsNotEmpty()
+  // identifier: string
 
   @IsString()
   @IsNotEmpty()
-  identifier: string
-
-  @IsString()
-  store_id?: string
+  store_id: string
 }

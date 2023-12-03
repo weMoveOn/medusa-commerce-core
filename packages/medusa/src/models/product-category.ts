@@ -15,11 +15,15 @@ import {
   Tree,
   TreeChildren,
   TreeParent,
+  Unique,
 } from "typeorm"
 
 @Entity()
 @Tree("materialized-path")
 @Index(["parent_category_id", "rank"], { unique: true })
+
+@Unique(["store_id", "handle"])
+
 export class ProductCategory extends BaseEntity {
   /**
    * @apiIgnore
@@ -44,7 +48,7 @@ export class ProductCategory extends BaseEntity {
   @Column({ nullable: false, default: "" })
   description: string
 
-  @Index({ unique: true })
+  @Index()
   @Column({ nullable: false })
   handle: string
 

@@ -1,4 +1,4 @@
-import { IsOptional, IsString, IsBoolean } from "class-validator"
+import { IsOptional, IsString, IsBoolean,IsNotEmpty } from "class-validator"
 import { Request, Response } from "express"
 import { Transform } from "class-transformer"
 
@@ -98,6 +98,13 @@ export class AdminGetProductCategoriesParams extends extendedFindParamsMixin({
   limit: 100,
   offset: 0,
 }) {
+  /**
+   * Store id to search product categories regarding specific store.
+   */
+  @IsString()
+  @IsNotEmpty()
+  store_id:string
+
   /**
    * Search term to search product categories' names and handles.
    */

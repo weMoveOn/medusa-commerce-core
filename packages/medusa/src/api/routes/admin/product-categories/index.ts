@@ -39,7 +39,7 @@ import deleteProductsBatch, {
 } from "./delete-products-batch"
 
 import { ProductCategory } from "../../../../models"
-import {processIdentifierMiddleware} from "../../../middlewares/validators/identifier-existence";
+import { processIdentifierMiddleware } from "../../../middlewares/validators/identifier-existence"
 
 const route = Router()
 
@@ -64,7 +64,7 @@ export default (app) => {
 
   route.post(
     "/",
-      processIdentifierMiddleware,
+    processIdentifierMiddleware,
     transformQuery(
       AdminPostProductCategoriesParams,
       retrieveTransformQueryConfig
@@ -75,6 +75,7 @@ export default (app) => {
 
   route.get(
     "/",
+      processIdentifierMiddleware,
     transformQuery(AdminGetProductCategoriesParams, listTransformQueryConfig),
     middlewares.wrap(listProductCategories)
   )
