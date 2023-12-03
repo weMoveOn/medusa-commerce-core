@@ -56,15 +56,15 @@ export enum ProductStatus {
 @Entity()
 @Unique(["store_id", "handle"])
 export class Product extends SoftDeletableEntity {
-  @ManyToOne(() => Store, (store) => store.products)
-  @JoinColumn({ name: "store_id" })
-  store: Store
-
   @Index({ where: "deleted_at IS NULL" })
   @Column()
   store_id: string
-  // new added filed end
 
+  @ManyToOne(() => Store, (store) => store.products)
+  @JoinColumn({ name: "store_id", referencedColumnName: "id" })
+  store: Store
+
+  // new added filed end
   @Column()
   title: string
 

@@ -30,6 +30,11 @@ export class Store extends BaseEntity {
   })
   products: Product[]
 
+  @OneToMany(() => SalesChannel, (salesChannel) => salesChannel.store, {
+    cascade: true,
+  })
+  salesChannel: SalesChannel[]
+
   @OneToMany(() => User, (user) => user.store)
   members: User[]
   // new filed added end
