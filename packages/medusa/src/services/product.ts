@@ -164,7 +164,7 @@ class ProductService extends TransactionBaseService {
     /**
      * TODO: The below code is a temporary fix for the issue with the typeorm idle transaction in query strategy mode
      */
-
+    console.log(selector, "selector")
     const manager = this.activeManager_
     const productRepo = manager.withRepository(this.productRepository_)
     const { q, query, relations } = this.prepareListQuery_(selector, config)
@@ -202,7 +202,7 @@ class ProductService extends TransactionBaseService {
    */
   async retrieve(
     productId: string,
-    store_id: string,
+    storeId: string,
     config: FindProductConfig = {
       include_discount_prices: false,
     }
@@ -213,14 +213,14 @@ class ProductService extends TransactionBaseService {
         `"productId" must be defined`
       )
     }
-    // if (!isDefined(config.store_id)) {
-    //   throw new MedusaError(
-    //     MedusaError.Types.NOT_FOUND,
-    //     `"Store id " must be defined`
-    //   )
-    // }
+    if (!isDefined(storeId)) {
+      throw new MedusaError(
+        MedusaError.Types.NOT_FOUND,
+        `"Store id " must be defined`
+      )
+    }
 
-    return await this.retrieve_({ id: productId, store_id }, config)
+    return await this.retrieve_({ id: productId, store_id: storeId }, config)
   }
 
   /**
@@ -232,6 +232,7 @@ class ProductService extends TransactionBaseService {
    */
   async retrieveByHandle(
     productHandle: string,
+    storeId: string,
     config: FindProductConfig = {}
   ): Promise<Product> {
     if (!isDefined(productHandle)) {
@@ -241,16 +242,17 @@ class ProductService extends TransactionBaseService {
       )
     }
 
-    if (!isDefined(config.store_id)) {
+    if (!isDefined(storeId)) {
       throw new MedusaError(
         MedusaError.Types.NOT_FOUND,
         `"Store id " must be defined`
       )
     }
 
-    const { store_id, ...restConfig } = config
-
-    return await this.retrieve_({ handle: productHandle, store_id }, restConfig)
+    return await this.retrieve_(
+      { handle: productHandle, store_id: storeId },
+      config
+    )
   }
 
   /**

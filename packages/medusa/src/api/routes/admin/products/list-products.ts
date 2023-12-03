@@ -262,6 +262,7 @@ export default async (req, res) => {
     rawProducts = products
     count = count_
   } else {
+    console.log(req.filterableFields, "filterableFields admin")
     const [products, count_] = await productService.listAndCount(
       req.filterableFields,
       req.listConfig

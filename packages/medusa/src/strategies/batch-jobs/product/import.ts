@@ -325,8 +325,8 @@ class ProductImportStrategy extends AbstractBatchJobStrategy {
 
       await this.createProducts(batchJob)
       await this.updateProducts(storeId, batchJob)
-      await this.createVariants(batchJob)
-      await this.updateVariants(batchJob)
+      await this.createVariants(storeId, batchJob)
+      await this.updateVariants(storeId, batchJob)
       await this.finalize(batchJob)
     })
   }
@@ -564,7 +564,10 @@ class ProductImportStrategy extends AbstractBatchJobStrategy {
    *
    * @param batchJob - The current batch job being processed.
    */
-  private async createVariants(batchJob: ProductImportBatchJob): Promise<void> {
+  private async createVariants(
+    storeId: string,
+    batchJob: ProductImportBatchJob
+  ): Promise<void> {
     if (!batchJob.result.operations[OperationType.VariantCreate]) {
       return
     }
@@ -582,7 +585,7 @@ class ProductImportStrategy extends AbstractBatchJobStrategy {
 
         const product = await this.productService_
           .withTransaction(transactionManager)
-          .retrieveByHandle(variantOp["product.handle"] as string, {
+          .retrieveByHandle(variantOp["product.handle"] as string, storeId, {
             relations: ["variants", "variants.options", "options"],
           })
 
@@ -620,7 +623,10 @@ class ProductImportStrategy extends AbstractBatchJobStrategy {
    *
    * @param batchJob - The current batch job being processed.
    */
-  private async updateVariants(batchJob: ProductImportBatchJob): Promise<void> {
+  private async updateVariants(
+    storeId: string,
+    batchJob: ProductImportBatchJob
+  ): Promise<void> {
     if (!batchJob.result.operations[OperationType.VariantUpdate]) {
       return
     }
@@ -638,7 +644,8 @@ class ProductImportStrategy extends AbstractBatchJobStrategy {
     for (const variantOp of variantOps) {
       try {
         const product = await productServiceTx.retrieveByHandle(
-          variantOp["product.handle"] as string
+          variantOp["product.handle"] as string,
+          storeId
         )
 
         await this.prepareVariantOptions(variantOp, product.id)
