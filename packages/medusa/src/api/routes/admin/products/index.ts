@@ -15,7 +15,7 @@ import { processIdentifierMiddleware } from "../../../middlewares/validators/ide
 const route = Router()
 
 export default (app, featureFlagRouter: FlagRouter) => {
-  app.use("/products", route)
+  app.use("/products", processIdentifierMiddleware, route)
 
   if (featureFlagRouter.isFeatureEnabled("sales_channels")) {
     defaultAdminProductRelations.push("sales_channels")
@@ -27,13 +27,11 @@ export default (app, featureFlagRouter: FlagRouter) => {
 
   route.post(
     "/",
-    processIdentifierMiddleware,
     validateSalesChannelsExist((req) => req.body?.sales_channels),
     middlewares.wrap(require("./create-product").default)
   )
   route.post(
     "/:id",
-    processIdentifierMiddleware,
     validateSalesChannelsExist((req) => req.body?.sales_channels),
     middlewares.wrap(require("./update-product").default)
   )
@@ -80,7 +78,6 @@ export default (app, featureFlagRouter: FlagRouter) => {
   )
   route.get(
     "/:id",
-    processIdentifierMiddleware,
     transformQuery(AdminGetProductParams, {
       defaultRelations: defaultAdminProductRelations,
       defaultFields: defaultAdminProductFields,
@@ -91,7 +88,6 @@ export default (app, featureFlagRouter: FlagRouter) => {
 
   route.get(
     "/",
-    processIdentifierMiddleware,
     transformQuery(AdminGetProductsParams, {
       defaultRelations: defaultAdminProductRelations,
       defaultFields: defaultAdminProductFields,
