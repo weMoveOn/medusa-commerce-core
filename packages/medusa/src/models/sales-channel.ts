@@ -1,12 +1,29 @@
-import { BeforeInsert, Column, OneToMany } from "typeorm"
+import {
+  BeforeInsert,
+  Column,
+  Index,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+} from "typeorm"
 
 import { FeatureFlagEntity } from "../utils/feature-flag-decorators"
 import { SoftDeletableEntity } from "../interfaces"
 import { DbAwareColumn, generateEntityId } from "../utils"
 import { SalesChannelLocation } from "./sales-channel-location"
+import { Store } from "./store"
 
 @FeatureFlagEntity("sales_channels")
 export class SalesChannel extends SoftDeletableEntity {
+  // new filed added start
+  @Index({ where: "deleted_at IS NULL" })
+  @Column({ nullable: false })
+  store_id: string
+
+  @ManyToOne(() => Store, (store) => store.salesChannel)
+  @JoinColumn({ name: "store_id", referencedColumnName: "id" })
+  store: Store
+
   @Column()
   name: string
 

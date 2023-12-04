@@ -94,6 +94,7 @@ import { validator } from "../../../../utils/validator"
  *     $ref: "#/components/responses/500_error"
  */
 export default async (req, res) => {
+  const { store_id } = req.query
   const value = await validator(AdminPostTaxRatesReq, req.body)
 
   const query = await validator(AdminPostTaxRatesParams, req.query)
@@ -110,7 +111,7 @@ export default async (req, res) => {
     id = created.id
 
     if (isDefined(value.products)) {
-      await txRateService.addToProduct(id, value.products)
+      await txRateService.addToProduct(store_id, id, value.products)
     }
 
     if (isDefined(value.product_types)) {

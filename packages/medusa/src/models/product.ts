@@ -10,6 +10,7 @@ import {
   ManyToMany,
   ManyToOne,
   OneToMany,
+  Unique,
 } from "typeorm"
 
 import { DbAwareColumn } from "../utils/db-aware-column"
@@ -53,16 +54,17 @@ export enum ProductStatus {
 }
 
 @Entity()
+@Unique(["store_id", "handle"])
 export class Product extends SoftDeletableEntity {
-  @ManyToOne(() => Store, (store) => store.products)
-  @JoinColumn({ name: "store_id" })
-  store: Store
-
-  @Index()
+  @Index({ where: "deleted_at IS NULL" })
   @Column()
   store_id: string
-  // new added filed end
 
+  @ManyToOne(() => Store, (store) => store.products)
+  @JoinColumn({ name: "store_id", referencedColumnName: "id" })
+  store: Store
+
+  // new added filed end
   @Column()
   title: string
 
@@ -72,7 +74,7 @@ export class Product extends SoftDeletableEntity {
   @Column({ type: "text", nullable: true })
   description: string | null
 
-  @Index({ unique: true, where: "deleted_at IS NULL" })
+  @Index({ where: "deleted_at IS NULL" })
   @Column({ type: "text", nullable: true })
   handle: string | null
 

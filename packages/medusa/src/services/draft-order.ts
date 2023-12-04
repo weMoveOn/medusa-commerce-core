@@ -257,7 +257,10 @@ class DraftOrderService extends TransactionBaseService {
    * @param data - data to create draft order from
    * @return the created draft order
    */
-  async create(data: DraftOrderCreateProps): Promise<DraftOrder> {
+  async create(
+    storeId: string,
+    data: DraftOrderCreateProps
+  ): Promise<DraftOrder> {
     return await this.atomicPhase_(
       async (transactionManager: EntityManager) => {
         const draftOrderRepo = transactionManager.withRepository(
@@ -403,7 +406,7 @@ class DraftOrderService extends TransactionBaseService {
         await promiseAll(promises)
 
         if (discounts?.length) {
-          await cartServiceTx.update(createdCart.id, { discounts })
+          await cartServiceTx.update(storeId, createdCart.id, { discounts })
         }
 
         return result

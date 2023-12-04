@@ -317,16 +317,16 @@ class ProductImportStrategy extends AbstractBatchJobStrategy {
    *
    * @param batchJobId - An id of a batch job that is being processed.
    */
-  async processJob(batchJobId: string): Promise<void> {
+  async processJob(storeId: string, batchJobId: string): Promise<void> {
     return await this.atomicPhase_(async (manager) => {
       const batchJob = (await this.batchJobService_
         .withTransaction(manager)
         .retrieve(batchJobId)) as ProductImportBatchJob
 
       await this.createProducts(batchJob)
-      await this.updateProducts(batchJob)
-      await this.createVariants(batchJob)
-      await this.updateVariants(batchJob)
+      await this.updateProducts(storeId, batchJob)
+      await this.createVariants(storeId, batchJob)
+      await this.updateVariants(storeId, batchJob)
       await this.finalize(batchJob)
     })
   }
@@ -485,7 +485,10 @@ class ProductImportStrategy extends AbstractBatchJobStrategy {
    *
    * @param batchJob - The current batch job being processed.
    */
-  private async updateProducts(batchJob: ProductImportBatchJob): Promise<void> {
+  private async updateProducts(
+    storeId: string,
+    batchJob: ProductImportBatchJob
+  ): Promise<void> {
     if (!batchJob.result.operations[OperationType.ProductUpdate]) {
       return
     }
@@ -544,6 +547,7 @@ class ProductImportStrategy extends AbstractBatchJobStrategy {
         // TODO: we should only pass the expected data. Here we are passing everything contained in productData
         await productServiceTx.update(
           productOp["product.id"] as string,
+          storeId,
           productData
         )
       } catch (e) {
@@ -560,7 +564,10 @@ class ProductImportStrategy extends AbstractBatchJobStrategy {
    *
    * @param batchJob - The current batch job being processed.
    */
-  private async createVariants(batchJob: ProductImportBatchJob): Promise<void> {
+  private async createVariants(
+    storeId: string,
+    batchJob: ProductImportBatchJob
+  ): Promise<void> {
     if (!batchJob.result.operations[OperationType.VariantCreate]) {
       return
     }
@@ -578,7 +585,7 @@ class ProductImportStrategy extends AbstractBatchJobStrategy {
 
         const product = await this.productService_
           .withTransaction(transactionManager)
-          .retrieveByHandle(variantOp["product.handle"] as string, {
+          .retrieveByHandle(variantOp["product.handle"] as string, storeId, {
             relations: ["variants", "variants.options", "options"],
           })
 
@@ -616,7 +623,10 @@ class ProductImportStrategy extends AbstractBatchJobStrategy {
    *
    * @param batchJob - The current batch job being processed.
    */
-  private async updateVariants(batchJob: ProductImportBatchJob): Promise<void> {
+  private async updateVariants(
+    storeId: string,
+    batchJob: ProductImportBatchJob
+  ): Promise<void> {
     if (!batchJob.result.operations[OperationType.VariantUpdate]) {
       return
     }
@@ -634,7 +644,8 @@ class ProductImportStrategy extends AbstractBatchJobStrategy {
     for (const variantOp of variantOps) {
       try {
         const product = await productServiceTx.retrieveByHandle(
-          variantOp["product.handle"] as string
+          variantOp["product.handle"] as string,
+          storeId
         )
 
         await this.prepareVariantOptions(variantOp, product.id)

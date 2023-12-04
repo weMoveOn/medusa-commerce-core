@@ -72,6 +72,7 @@ import { promiseAll } from "@medusajs/utils"
 
 export default async (req, res) => {
   const { id } = req.params
+  const { store_id } = req.query
 
   const draftOrderService: DraftOrderService =
     req.scope.resolve("draftOrderService")
@@ -104,7 +105,7 @@ export default async (req, res) => {
 
     await cartServiceTx.authorizePayment(cart.id)
 
-    let order = await orderServiceTx.createFromCart(cart.id)
+    let order = await orderServiceTx.createFromCart(store_id, cart.id)
 
     await draftOrderServiceTx.registerCartCompletion(draftOrder.id, order.id)
 

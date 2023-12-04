@@ -107,6 +107,7 @@ import { validator } from "../../../../utils/validator"
  */
 export default async (req, res) => {
   const { id, variant_id } = req.params
+  const { store_id } = req.query
 
   const manager: EntityManager = req.scope.resolve("manager")
   const productService: ProductService = req.scope.resolve("productService")
@@ -153,7 +154,7 @@ export default async (req, res) => {
     })
   }
 
-  const rawProduct = await productService.retrieve(id, {
+  const rawProduct = await productService.retrieve(id, store_id, {
     select: defaultAdminProductFields,
     relations: defaultAdminProductRelations,
     ...validatedQueryParams,

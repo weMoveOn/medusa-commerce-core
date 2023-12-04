@@ -19,6 +19,7 @@ export const CreateLineItemSteps = {
 }
 
 export async function handleAddOrUpdateLineItem(
+  storeId: string,
   cartId: string,
   data: {
     metadata?: Record<string, unknown>
@@ -48,7 +49,7 @@ export async function handleAddOrUpdateLineItem(
       metadata: data.metadata,
     })
 
-  await txCartService.addOrUpdateLineItems(cart.id, line, {
+  await txCartService.addOrUpdateLineItems(storeId, cart.id, line, {
     validateSalesChannels: featureFlagRouter.isFeatureEnabled("sales_channels"),
   })
 

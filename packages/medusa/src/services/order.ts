@@ -605,7 +605,10 @@ class OrderService extends TransactionBaseService {
    * @return resolves to the creation result.
    * @param cartOrId
    */
-  async createFromCart(cartOrId: string | Cart): Promise<Order | never> {
+  async createFromCart(
+    storeId: string,
+    cartOrId: string | Cart
+  ): Promise<Order | never> {
     return await this.atomicPhase_(async (manager) => {
       const cartServiceTx = this.cartService_.withTransaction(manager)
 
@@ -673,7 +676,8 @@ class OrderService extends TransactionBaseService {
       // Is the cascade insert really used? Also, is it really necessary to pass the entire entities when creating or updating?
       // We normally should only pass what is needed?
       const shippingMethods = cart.shipping_methods.map((method) => {
-        ;(method.tax_lines as any) = undefined
+        // @ts-ignore
+        method.tax_lines = undefined
         return method
       })
 
@@ -788,7 +792,8 @@ class OrderService extends TransactionBaseService {
             // TODO: Due to cascade insert we have to remove the tax_lines that have been added by the cart decorate totals.
             // Is the cascade insert really used? Also, is it really necessary to pass the entire entities when creating or updating?
             // We normally should only pass what is needed?
-            ;(method.tax_lines as any) = undefined
+            // @ts-ignore
+            method.tax_lines = undefined
             return shippingOptionServiceTx.updateShippingMethod(method.id, {
               order_id: order.id,
             })
@@ -803,7 +808,7 @@ class OrderService extends TransactionBaseService {
           no_notification: order.no_notification,
         })
 
-      await cartServiceTx.update(cart.id, { completed_at: new Date() })
+      await cartServiceTx.update(storeId, cart.id, { completed_at: new Date() })
 
       return order
     })

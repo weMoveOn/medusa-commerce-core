@@ -84,7 +84,7 @@ export default async (req, res) => {
 
   const validated = req.validatedQuery as StoreGetProductsProductParams
   const customer_id = req.user?.customer_id
-
+  const storeId = req.filterableFields.store_id
   const productVariantInventoryService: ProductVariantInventoryService =
     req.scope.resolve("productVariantInventoryService")
   const productService: ProductService = req.scope.resolve("productService")
@@ -97,9 +97,8 @@ export default async (req, res) => {
   if (featureFlagRouter.isFeatureEnabled(MedusaV2Flag.key)) {
     rawProduct = await getProductWithIsolatedProductModule(req, id)
   } else {
-    rawProduct = await productService.retrieve(id, {
+    rawProduct = await productService.retrieve(id, storeId,{
       ...req.retrieveConfig,
-      store_id: validated.store_id,
     })
   }
 

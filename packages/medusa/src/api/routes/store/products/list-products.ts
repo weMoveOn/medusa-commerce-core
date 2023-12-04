@@ -230,7 +230,6 @@ export default async (req, res) => {
     ...filterableFields
   } = req.filterableFields
   const listConfig = req.listConfig
-
   // get only published products for store endpoint
   filterableFields["status"] = ["published"]
   // store APIs only receive active and public categories to query from

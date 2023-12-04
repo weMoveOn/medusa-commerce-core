@@ -112,6 +112,7 @@ import { cleanResponseData } from "../../../../utils/clean-response-data"
  */
 
 export default async (req, res) => {
+  const storeId = req.query.store_id
   const validated = await validator(AdminPostDraftOrdersReq, req.body)
 
   const { shipping_address, billing_address, ...rest } = validated
@@ -138,7 +139,7 @@ export default async (req, res) => {
     async (transactionManager) => {
       return await draftOrderService
         .withTransaction(transactionManager)
-        .create(draftOrderDataToCreate)
+        .create(storeId, draftOrderDataToCreate)
     }
   )
 

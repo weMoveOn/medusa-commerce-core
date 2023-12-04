@@ -76,6 +76,7 @@ import { IsType } from "../../../../utils/validators/is-type"
  */
 export default async (req, res) => {
   const { id } = req.params
+  const { store_id } = req.query
   const validated = req.validatedBody as StorePostCartsCartReq
 
   const cartService: CartService = req.scope.resolve("cartService")
@@ -97,7 +98,7 @@ export default async (req, res) => {
   await manager.transaction(async (transactionManager) => {
     await cartService
       .withTransaction(transactionManager)
-      .update(cart ?? id, validated)
+      .update(store_id, cart ?? id, validated)
 
     const updated = await cartService
       .withTransaction(transactionManager)

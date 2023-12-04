@@ -79,6 +79,7 @@ import {
  */
 export default async (req, res) => {
   const { profile_id } = req.params
+  const { store_id } = req.query
 
   const validated = await validator(
     AdminPostShippingProfilesProfileReq,
@@ -93,7 +94,7 @@ export default async (req, res) => {
   await manager.transaction(async (transactionManager) => {
     return await profileService
       .withTransaction(transactionManager)
-      .update(profile_id, validated)
+      .update(profile_id, store_id, validated)
   })
 
   const data = await profileService.retrieve(profile_id, {

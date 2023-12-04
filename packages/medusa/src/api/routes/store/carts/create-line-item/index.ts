@@ -72,6 +72,7 @@ import { cleanResponseData } from "../../../../../utils/clean-response-data"
  */
 export default async (req, res) => {
   const { id } = req.params
+  const { store_id } = req.query
 
   const customerId: string | undefined = req.user?.customer_id
   const validated = await validator(StorePostCartsCartLineItemsReq, req.body)
@@ -101,6 +102,7 @@ export default async (req, res) => {
       case CreateLineItemSteps.STARTED: {
         await runIdempotencyStep(async ({ manager }) => {
           return await handleAddOrUpdateLineItem(
+            store_id,
             id,
             {
               customer_id: customerId,

@@ -20,7 +20,7 @@ import { checkRegisteredModules } from "../../../middlewares/check-registered-mo
 const route = Router()
 
 export default (app) => {
-  app.use("/sales-channels", isFeatureFlagEnabled("sales_channels"), route)
+  app.use("/sales-channels", isFeatureFlagEnabled("sales_channels"),  route)
 
   route.get(
     "/",

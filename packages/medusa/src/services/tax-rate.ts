@@ -189,6 +189,7 @@ class TaxRateService extends TransactionBaseService {
   }
 
   async addToProduct(
+    storeId: string,
     id: string,
     productIds: string | string[],
     replace = false
@@ -215,7 +216,7 @@ class TaxRateService extends TransactionBaseService {
           await promiseAll([
             this.retrieve(id, { select: ["id"] }),
             ...ids.map(async (pId) =>
-              this.productService_.retrieve(pId, { select: ["id"] })
+              this.productService_.retrieve(pId, storeId, { select: ["id"] })
             ),
           ])
         }

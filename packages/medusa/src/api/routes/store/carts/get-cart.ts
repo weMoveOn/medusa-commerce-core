@@ -52,6 +52,7 @@ import { cleanResponseData } from "../../../../utils/clean-response-data"
  */
 export default async (req, res) => {
   const { id } = req.params
+  const { store_id } = req.query
 
   const cartService: CartService = req.scope.resolve("cartService")
   const manager: EntityManager = req.scope.resolve("manager")
@@ -71,9 +72,11 @@ export default async (req, res) => {
       cart.customer_id !== req.user.customer_id
     ) {
       await manager.transaction(async (transctionManager) => {
-        await cartService.withTransaction(transctionManager).update(id, {
-          customer_id: req.user.customer_id,
-        })
+        await cartService
+          .withTransaction(transctionManager)
+          .update(store_id, id, {
+            customer_id: req.user.customer_id,
+          })
       })
     }
   }
