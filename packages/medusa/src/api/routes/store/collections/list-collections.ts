@@ -1,4 +1,4 @@
-import { IsArray, IsInt, IsOptional, ValidateNested } from "class-validator"
+import { IsArray, IsInt, IsOptional, IsString, ValidateNested } from "class-validator"
 
 import { DateComparisonOperator } from "../../../../types/common"
 import ProductCollectionService from "../../../../services/product-collection"
@@ -122,6 +122,11 @@ export default async (req, res) => {
  * Parameters used to filter and configure the pagination of the retrieved product collections.
  */
 export class StoreGetCollectionsParams {
+  /**
+   * Store id to filter product collections by.
+   */
+  @IsString()
+  store_id: string
   /**
    * Handles to filter product collections by.
    */
