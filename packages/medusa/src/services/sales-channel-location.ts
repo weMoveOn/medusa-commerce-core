@@ -68,12 +68,13 @@ class SalesChannelLocationService extends TransactionBaseService {
    * @returns A promise that resolves when the association has been created.
    */
   async associateLocation(
+    storeId: string,
     salesChannelId: string,
     locationId: string
   ): Promise<void> {
     const salesChannel = await this.salesChannelService_
       .withTransaction(this.activeManager_)
-      .retrieve(salesChannelId)
+      .retrieve(storeId, salesChannelId)
 
     if (this.stockLocationService_) {
       // trhows error if not found

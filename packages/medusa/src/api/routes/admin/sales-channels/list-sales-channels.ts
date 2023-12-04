@@ -160,6 +160,8 @@ export default async (req: Request, res: Response) => {
  * Parameters used to filter and configure the pagination of the retrieved sales channels.
  */
 export class AdminGetSalesChannelsParams extends extendedFindParamsMixin() {
+  @IsString()
+  store_id: string
   /**
    * ID to filter sales channels by.
    */

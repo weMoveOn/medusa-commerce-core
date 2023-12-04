@@ -82,6 +82,7 @@ export default async (req: Request, res: Response): Promise<void> => {
     req.validatedBody as AdminPostSalesChannelsChannelProductsBatchReq
 
   const { id } = req.params
+  const storeId = req.query.store_id as string
 
   const salesChannelService: SalesChannelService = req.scope.resolve(
     "salesChannelService"
@@ -92,6 +93,7 @@ export default async (req: Request, res: Response): Promise<void> => {
     return await salesChannelService
       .withTransaction(transactionManager)
       .addProducts(
+        storeId,
         id,
         validatedBody.product_ids.map((p) => p.id)
       )

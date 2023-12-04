@@ -16,11 +16,17 @@ import { AdminPostSalesChannelsSalesChannelReq } from "./update-sales-channel"
 import { AdminPostSalesChannelsChannelStockLocationsReq } from "./associate-stock-location"
 import { AdminDeleteSalesChannelsChannelStockLocationsReq } from "./remove-stock-location"
 import { checkRegisteredModules } from "../../../middlewares/check-registered-modules"
+import { processIdentifierMiddleware } from "../../../middlewares/validators/identifier-existence"
 
 const route = Router()
 
 export default (app) => {
-  app.use("/sales-channels", isFeatureFlagEnabled("sales_channels"),  route)
+  app.use(
+    "/sales-channels",
+    processIdentifierMiddleware,
+    isFeatureFlagEnabled("sales_channels"),
+    route
+  )
 
   route.get(
     "/",

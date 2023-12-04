@@ -104,6 +104,7 @@ import { cleanResponseData } from "../../../../utils/clean-response-data"
  */
 export default async (req, res) => {
   const { id } = req.params
+  const { store_id } = req.query as { store_id: string }
 
   const validated = req.validatedBody
 
@@ -175,9 +176,14 @@ export default async (req, res) => {
 
                 await swapService
                   .withTransaction(manager)
-                  .createCart(swap.id, validated.custom_shipping_options, {
-                    sales_channel_id: validated.sales_channel_id,
-                  })
+                  .createCart(
+                    store_id,
+                    swap.id,
+                    validated.custom_shipping_options,
+                    {
+                      sales_channel_id: validated.sales_channel_id,
+                    }
+                  )
 
                 const returnOrder = await returnService
                   .withTransaction(manager)

@@ -56,11 +56,15 @@ import { SalesChannelService } from "../../../../services"
  */
 export default async (req: Request, res: Response): Promise<void> => {
   const { id } = req.params
+  const { store_id } = req.query
 
   const salesChannelService: SalesChannelService = req.scope.resolve(
     "salesChannelService"
   )
 
-  const salesChannel = await salesChannelService.retrieve(id)
+  const salesChannel = await salesChannelService.retrieve(
+    store_id as string,
+    id
+  )
   res.status(200).json({ sales_channel: salesChannel })
 }

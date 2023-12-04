@@ -289,6 +289,7 @@ class DraftOrderService extends TransactionBaseService {
         let createdCart = await cartServiceTx.create({
           type: CartType.DRAFT_ORDER,
           ...rawCart,
+          store_id: storeId,
         })
 
         const draftOrder = draftOrderRepo.create({

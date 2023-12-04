@@ -344,7 +344,9 @@ class CartService extends TransactionBaseService {
    * @param data - the data to create the cart with
    * @return the result of the create operation
    */
-  async create(data: CartCreateProps): Promise<Cart | never> {
+  async create(
+    data: CartCreateProps & { store_id: string }
+  ): Promise<Cart | never> {
     return await this.atomicPhase_(
       async (transactionManager: EntityManager) => {
         const cartRepo = transactionManager.withRepository(this.cartRepository_)
@@ -360,7 +362,10 @@ class CartService extends TransactionBaseService {
           this.featureFlagRouter_.isFeatureEnabled(SalesChannelFeatureFlag.key)
         ) {
           rawCart.sales_channel_id = (
-            await this.getValidatedSalesChannel(data.sales_channel_id)
+            await this.getValidatedSalesChannel(
+              data.store_id,
+              data.sales_channel_id
+            )
           ).id
         }
 
@@ -483,13 +488,14 @@ class CartService extends TransactionBaseService {
   }
 
   protected async getValidatedSalesChannel(
+    storeId: string,
     salesChannelId?: string
   ): Promise<SalesChannel | never> {
     let salesChannel: SalesChannel
     if (isDefined(salesChannelId)) {
       salesChannel = await this.salesChannelService_
         .withTransaction(this.activeManager_)
-        .retrieve(salesChannelId)
+        .retrieve(storeId, salesChannelId)
     } else {
       salesChannel = (
         await this.storeService_.withTransaction(this.activeManager_).retrieve({

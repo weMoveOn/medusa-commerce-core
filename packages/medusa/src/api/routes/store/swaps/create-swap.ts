@@ -104,6 +104,7 @@ import { validator } from "../../../../utils/validator"
  *     $ref: "#/components/responses/500_error"
  */
 export default async (req, res) => {
+  const { store_id } = req.query as { store_id: string }
   const swapDto = await validator(StorePostSwapsReq, req.body)
 
   const idempotencyKeyService: IdempotencyKeyService = req.scope.resolve(
@@ -175,7 +176,9 @@ export default async (req, res) => {
                     }
                   )
 
-                await swapService.withTransaction(manager).createCart(swap.id)
+                await swapService
+                  .withTransaction(manager)
+                  .createCart(store_id, swap.id)
                 const returnOrder = await returnService
                   .withTransaction(manager)
                   .retrieveBySwap(swap.id)
