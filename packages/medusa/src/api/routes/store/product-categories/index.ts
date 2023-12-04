@@ -10,6 +10,7 @@ import listProductCategories, {
 import getProductCategory, {
   StoreGetProductCategoriesCategoryParams,
 } from "./get-product-category"
+import {processIdentifierMiddleware} from "../../../middlewares/validators/identifier-existence";
 
 const route = Router()
 
@@ -18,6 +19,7 @@ export default (app) => {
 
   route.get(
     "/",
+    processIdentifierMiddleware,
     transformStoreQuery(StoreGetProductCategoriesParams, {
       defaultFields: defaultStoreProductCategoryFields,
       allowedFields: allowedStoreProductCategoryFields,
@@ -29,6 +31,7 @@ export default (app) => {
 
   route.get(
     "/:id",
+    processIdentifierMiddleware,
     transformStoreQuery(StoreGetProductCategoriesCategoryParams, {
       defaultFields: defaultStoreProductCategoryFields,
       allowedFields: allowedStoreProductCategoryFields,

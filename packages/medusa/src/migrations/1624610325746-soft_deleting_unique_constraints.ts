@@ -4,7 +4,6 @@ export class softDeletingUniqueConstraints1624610325746 implements MigrationInte
     name = 'softDeletingUniqueConstraints1624610325746'
 
     public async up(queryRunner: QueryRunner): Promise<void> {
-        await queryRunner.query(`DROP INDEX "IDX_6910923cb678fd6e99011a21cc"`);
         await queryRunner.query(`DROP INDEX "IDX_db7355f7bd36c547c8a4f539e5"`);
         await queryRunner.query(`DROP INDEX "IDX_087926f6fec32903be3c8eedfa"`);
         await queryRunner.query(`DROP INDEX "IDX_f4dc2c0888b66d547c175f090e"`);

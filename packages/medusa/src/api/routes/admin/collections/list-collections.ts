@@ -176,6 +176,14 @@ export class AdminGetCollectionsPaginationParams {
  */
 // eslint-disable-next-line max-len
 export class AdminGetCollectionsParams extends AdminGetCollectionsPaginationParams {
+
+  /**
+   * Store id to filter product collections by.
+   */
+
+    @IsString()
+    store_id: string
+
   /**
    * Title to filter product collections by.
    */

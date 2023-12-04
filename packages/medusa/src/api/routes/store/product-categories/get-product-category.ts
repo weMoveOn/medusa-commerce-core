@@ -4,6 +4,7 @@ import ProductCategoryService from "../../../../services/product-category"
 import { FindParams } from "../../../../types/common"
 import { transformTreeNodesWithConfig } from "../../../../utils/transformers/tree"
 import { defaultStoreCategoryScope } from "."
+import { IsString } from "class-validator"
 
 /**
  * @oas [get] /store/product-categories/{id}
@@ -86,4 +87,7 @@ export default async (req: Request, res: Response) => {
   })
 }
 
-export class StoreGetProductCategoriesCategoryParams extends FindParams {}
+export class StoreGetProductCategoriesCategoryParams extends FindParams {
+  @IsString()
+  store_id: string
+}

@@ -46,10 +46,11 @@ import ProductCollectionService from "../../../../services/product-collection"
 
 export default async (req, res) => {
   const { id } = req.params
+  const store_id = req.query.store_id as string
   const productCollectionService: ProductCollectionService = req.scope.resolve(
     "productCollectionService"
   )
 
-  const collection = await productCollectionService.retrieve(id)
+  const collection = await productCollectionService.retrieve(id,store_id)
   res.status(200).json({ collection })
 }

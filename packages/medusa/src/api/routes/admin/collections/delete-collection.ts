@@ -57,6 +57,7 @@ import ProductCollectionService from "../../../../services/product-collection"
  */
 export default async (req: Request, res: Response) => {
   const { id } = req.params
+  const store_id = req.query.store_id as string
 
   const productCollectionService: ProductCollectionService = req.scope.resolve(
     "productCollectionService"
@@ -66,7 +67,7 @@ export default async (req: Request, res: Response) => {
   await manager.transaction(async (transactionManager) => {
     return await productCollectionService
       .withTransaction(transactionManager)
-      .delete(id)
+      .delete(id,store_id)
   })
 
   res.json({

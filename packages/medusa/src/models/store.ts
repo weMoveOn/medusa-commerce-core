@@ -22,6 +22,7 @@ import { generateEntityId } from "../utils/generate-entity-id"
 import { ProductCategory } from "./product-category"
 import { Product } from "./product"
 import { User } from "./user"
+import {ProductCollection} from "./product-collection";
 
 @Entity()
 export class Store extends BaseEntity {
@@ -36,6 +37,9 @@ export class Store extends BaseEntity {
 
   @OneToMany(() => ProductCategory, (productCategory) => productCategory.store)
   products_category: ProductCategory[]
+
+  @OneToMany(()=> ProductCollection, (productCollection) => productCollection.store)
+    product_collections: ProductCollection[]
 
   // new filed added end
   @Column({ default: "Medusa Store" })
