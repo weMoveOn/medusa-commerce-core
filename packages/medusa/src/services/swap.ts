@@ -576,6 +576,7 @@ class SwapService extends TransactionBaseService {
    * @return the swap with its cart_id prop set to the id of the new cart.
    */
   async createCart(
+    storeId: string,
     swapId: string,
     customShippingOptions: { option_id: string; price: number }[] = [],
     context: { sales_channel_id?: string } = {}
@@ -624,6 +625,7 @@ class SwapService extends TransactionBaseService {
         undefined
 
       let cart = await this.cartService_.withTransaction(manager).create({
+        store_id: storeId,
         discounts,
         email: order.email,
         billing_address_id: order.billing_address_id,

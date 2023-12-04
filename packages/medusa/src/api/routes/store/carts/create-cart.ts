@@ -186,7 +186,7 @@ export default async (req, res) => {
       const cartServiceTx = cartService.withTransaction(manager)
       const lineItemServiceTx = lineItemService.withTransaction(manager)
 
-      const createdCart = await cartServiceTx.create(toCreate)
+      const createdCart = await cartServiceTx.create({ ...toCreate, store_id })
 
       if (validated.items?.length) {
         const generateInputData = validated.items.map((item) => {

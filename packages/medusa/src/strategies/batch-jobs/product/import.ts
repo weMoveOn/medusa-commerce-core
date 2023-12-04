@@ -323,7 +323,7 @@ class ProductImportStrategy extends AbstractBatchJobStrategy {
         .withTransaction(manager)
         .retrieve(batchJobId)) as ProductImportBatchJob
 
-      await this.createProducts(batchJob)
+      await this.createProducts(storeId, batchJob)
       await this.updateProducts(storeId, batchJob)
       await this.createVariants(storeId, batchJob)
       await this.updateVariants(storeId, batchJob)
@@ -341,6 +341,7 @@ class ProductImportStrategy extends AbstractBatchJobStrategy {
    * @return an array of sales channels created or retrieved by name
    */
   private async processSalesChannels(
+    storeId: string,
     data: Pick<SalesChannel, "name" | "id">[]
   ): Promise<SalesChannel[]> {
     const transactionManager = this.transactionManager_ ?? this.manager_
@@ -354,7 +355,7 @@ class ProductImportStrategy extends AbstractBatchJobStrategy {
 
       if (input.id) {
         try {
-          channel = await salesChannelServiceTx.retrieve(input.id, {
+          channel = await salesChannelServiceTx.retrieve(storeId, input.id, {
             select: ["id"],
           })
         } catch (e) {
@@ -364,9 +365,13 @@ class ProductImportStrategy extends AbstractBatchJobStrategy {
 
       if (!channel) {
         try {
-          channel = (await salesChannelServiceTx.retrieveByName(input.name, {
-            select: ["id"],
-          })) as SalesChannel
+          channel = (await salesChannelServiceTx.retrieveByName(
+            storeId,
+            input.name,
+            {
+              select: ["id"],
+            }
+          )) as SalesChannel
         } catch (e) {
           // noop
         }
@@ -412,7 +417,10 @@ class ProductImportStrategy extends AbstractBatchJobStrategy {
    *
    * @param batchJob - The current batch job being processed.
    */
-  private async createProducts(batchJob: ProductImportBatchJob): Promise<void> {
+  private async createProducts(
+    storeId: string,
+    batchJob: ProductImportBatchJob
+  ): Promise<void> {
     if (!batchJob.result.operations[OperationType.ProductCreate]) {
       return
     }
@@ -442,6 +450,7 @@ class ProductImportStrategy extends AbstractBatchJobStrategy {
       try {
         if (isSalesChannelsFeatureOn && productOp["product.sales_channels"]) {
           productData["sales_channels"] = await this.processSalesChannels(
+            storeId,
             productOp["product.sales_channels"] as Pick<
               SalesChannel,
               "name" | "id" | "description"
@@ -516,6 +525,7 @@ class ProductImportStrategy extends AbstractBatchJobStrategy {
       try {
         if (isSalesChannelsFeatureOn && productOp["product.sales_channels"]) {
           productData["sales_channels"] = await this.processSalesChannels(
+            storeId,
             productOp["product.sales_channels"] as Pick<
               SalesChannel,
               "name" | "id" | "description"
