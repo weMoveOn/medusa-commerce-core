@@ -50,7 +50,20 @@ export class Region extends SoftDeletableEntity {
   @Column({ default: true })
   automatic_taxes: boolean
 
-  @OneToMany(() => Country, (c) => c.region)
+  // @OneToMany(() => Country, (c) => c.region)
+  // countries: Country[]
+  @ManyToMany(() => Country, { cascade: ["remove", "soft-remove"] })
+  @JoinTable({
+    name: "region_country_region",
+    joinColumn: {
+      name: "region_id",
+      referencedColumnName: "id",
+    },
+    inverseJoinColumn: {
+      name: "country_id",
+      referencedColumnName: "id",
+    },
+  })
   countries: Country[]
 
   @Column({ type: "text", nullable: true })

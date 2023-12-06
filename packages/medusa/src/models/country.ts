@@ -3,6 +3,8 @@ import {
   Entity,
   Index,
   JoinColumn,
+  JoinTable,
+  ManyToMany,
   ManyToOne,
   PrimaryGeneratedColumn,
 } from "typeorm"
@@ -30,13 +32,27 @@ export class Country {
   @Column()
   display_name: string
 
-  @Index()
-  @Column({ nullable: true })
-  region_id: string | null
+  // @Index()
+  // @Column({ nullable: true })
+  // region_id: string | null
 
-  @ManyToOne(() => Region, (r) => r.countries)
-  @JoinColumn({ name: "region_id" })
-  region: Region
+  // @ManyToOne(() => Region, (r) => r.countries)
+  // @JoinColumn({ name: "region_id" })
+  // region: Region
+
+  @ManyToMany(() => Region, { cascade: ["remove", "soft-remove"] })
+  @JoinTable({
+    name: "region_country_region",
+    joinColumn: {
+      name: "country_id",
+      referencedColumnName: "id",
+    },
+    inverseJoinColumn: {
+      name: "region_id",
+      referencedColumnName: "id",
+    },
+  })
+  regions: Region[]
 }
 
 /**

@@ -331,9 +331,9 @@ export class initialSchema1611063162649 implements MigrationInterface {
     await queryRunner.query(
       `ALTER TABLE "return_item" ADD CONSTRAINT "FK_87774591f44564effd8039d7162" FOREIGN KEY ("item_id") REFERENCES "line_item"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`
     )
-    await queryRunner.query(
-      `ALTER TABLE "country" ADD CONSTRAINT "FK_b1aac8314662fa6b25569a575bb" FOREIGN KEY ("region_id") REFERENCES "region"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`
-    )
+    // await queryRunner.query(
+    //   `ALTER TABLE "country" ADD CONSTRAINT "FK_b1aac8314662fa6b25569a575bb" FOREIGN KEY ("region_id") REFERENCES "region"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`
+    // )
     await queryRunner.query(
       `ALTER TABLE "region" ADD CONSTRAINT "FK_3bdd5896ec93be2f1c62a3309a5" FOREIGN KEY ("currency_code") REFERENCES "currency"("code") ON DELETE NO ACTION ON UPDATE NO ACTION`
     )
@@ -781,9 +781,9 @@ export class initialSchema1611063162649 implements MigrationInterface {
     await queryRunner.query(
       `ALTER TABLE "region" DROP CONSTRAINT "FK_3bdd5896ec93be2f1c62a3309a5"`
     )
-    await queryRunner.query(
-      `ALTER TABLE "country" DROP CONSTRAINT "FK_b1aac8314662fa6b25569a575bb"`
-    )
+    // await queryRunner.query(
+    //   `ALTER TABLE "country" DROP CONSTRAINT "FK_b1aac8314662fa6b25569a575bb"`
+    // )
     await queryRunner.query(
       `ALTER TABLE "return_item" DROP CONSTRAINT "FK_87774591f44564effd8039d7162"`
     )

@@ -97,7 +97,9 @@ class RegionService extends TransactionBaseService {
    * @param data - the unvalidated region
    * @return the newly created region
    */
-  async create(data: CreateRegionInput): Promise<Region> {
+  async create(
+    data: CreateRegionInput & { store_id: string }
+  ): Promise<Region> {
     return await this.atomicPhase_(async (manager) => {
       const regionRepository = manager.withRepository(this.regionRepository_)
       const currencyRepository = manager.withRepository(
@@ -105,7 +107,8 @@ class RegionService extends TransactionBaseService {
       )
 
       const regionObject = { ...data } as DeepPartial<Region>
-      const { metadata, currency_code, includes_tax, ...toValidate } = data
+      const { store_id, metadata, currency_code, includes_tax, ...toValidate } =
+        data
 
       const validated = await this.validateFields(toValidate)
 
@@ -396,12 +399,12 @@ class RegionService extends TransactionBaseService {
       )
     }
 
-    if (country.region_id && country.region_id !== regionId) {
-      throw new MedusaError(
-        MedusaError.Types.DUPLICATE_ERROR,
-        `${country.display_name} already exists in region ${country.region_id}`
-      )
-    }
+    // if (country.region_id && country.region_id !== regionId) {
+    //   throw new MedusaError(
+    //     MedusaError.Types.DUPLICATE_ERROR,
+    //     `${country.display_name} already exists in region ${country.region_id}`
+    //   )
+    // }
 
     return country
   }
@@ -431,14 +434,14 @@ class RegionService extends TransactionBaseService {
       )
     }
 
-    if (!country.region_id) {
-      throw new MedusaError(
-        MedusaError.Types.INVALID_DATA,
-        `Country does not belong to a region`
-      )
-    }
+    // if (!country.region_id) {
+    //   throw new MedusaError(
+    //     MedusaError.Types.INVALID_DATA,
+    //     `Country does not belong to a region`
+    //   )
+    // }
 
-    return await this.retrieve(country.region_id, config)
+    return await this.retrieve("country.region_id", config)
   }
 
   /**
@@ -555,7 +558,7 @@ class RegionService extends TransactionBaseService {
       }
 
       await regionRepo.softRemove(region)
-      await countryRepo.update({ region_id: region.id }, { region_id: null })
+      // await countryRepo.update({ region_id: "A" }, { region_id: null })
 
       await this.eventBus_
         .withTransaction(manager)
