@@ -270,7 +270,7 @@ export default async (req, res) => {
     })
   }
 
-  const [pricedProduct] = await pricingService.setAdminProductPricing([
+  const [pricedProduct] = await pricingService.setAdminProductPricing(storeId, [
     rawProduct,
   ])
 

@@ -1,4 +1,10 @@
-import { IsInt, IsOptional, ValidateNested } from "class-validator"
+import {
+  IsInt,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  ValidateNested,
+} from "class-validator"
 import _, { identity } from "lodash"
 import { defaultAdminRegionFields, defaultAdminRegionRelations } from "."
 
@@ -146,9 +152,12 @@ import { validator } from "../../../../utils/validator"
 export default async (req, res) => {
   const validated = await validator(AdminGetRegionsParams, req.query)
 
+  console.log(validated, req.query)
+
   const regionService: RegionService = req.scope.resolve("regionService")
 
-  const filterableFields = _.omit(validated, ["limit", "offset"])
+  const filterableFields = _.omit(validated, ["limit", "offset", "store_id"])
+  console.log(filterableFields,'filterableFields')
 
   const listConfig = {
     select: defaultAdminRegionFields,
@@ -158,7 +167,7 @@ export default async (req, res) => {
   }
 
   const [regions, count] = await regionService.listAndCount(
-    _.pickBy(filterableFields, identity),
+    {store_id:validated.store_id},
     listConfig
   )
 
@@ -197,6 +206,9 @@ export class AdminGetRegionsPaginationParams {
  * Parameters used to filter and configure the pagination of the retrieved regions.
  */
 export class AdminGetRegionsParams extends AdminGetRegionsPaginationParams {
+  @IsString()
+  @IsNotEmpty()
+  store_id: string
   /**
    * Date filters to apply on the regions' `created_at` date.
    */

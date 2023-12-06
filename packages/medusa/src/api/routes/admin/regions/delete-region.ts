@@ -55,6 +55,7 @@ import RegionService from "../../../../services/region"
  */
 export default async (req, res) => {
   const { region_id } = req.params
+  const { store_id } = req.query
 
   const regionService: RegionService = req.scope.resolve("regionService")
 
@@ -62,7 +63,7 @@ export default async (req, res) => {
   await manager.transaction(async (transactionManager) => {
     return await regionService
       .withTransaction(transactionManager)
-      .delete(region_id)
+      .delete(store_id, region_id)
   })
 
   res.status(200).json({

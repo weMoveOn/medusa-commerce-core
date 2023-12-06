@@ -196,6 +196,7 @@ export default async (req, res) => {
           }
         })
         const generatedLineItems: LineItem[] = await lineItemServiceTx.generate(
+          store_id,
           generateInputData,
           {
             region_id: regionId,

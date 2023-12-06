@@ -63,6 +63,7 @@ import { defaultAdminProductRemoteQueryObject } from "./index"
  */
 export default async (req, res) => {
   const { id } = req.params
+  const { store_id } = req.query
 
   const productService: ProductService = req.scope.resolve("productService")
   const pricingService: PricingService = req.scope.resolve("pricingService")
@@ -94,7 +95,9 @@ export default async (req, res) => {
 
   const decoratePromises: Promise<any>[] = []
   if (shouldSetPricing) {
-    decoratePromises.push(pricingService.setAdminProductPricing([product]))
+    decoratePromises.push(
+      pricingService.setAdminProductPricing(store_id, [product])
+    )
   }
 
   const shouldSetAvailability =

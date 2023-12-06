@@ -84,6 +84,7 @@ export const defaultAdminRegionRelations = [
   "countries",
   "payment_providers",
   "fulfillment_providers",
+  "store",
 ]
 
 /**

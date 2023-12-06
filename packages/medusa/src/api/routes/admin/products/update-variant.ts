@@ -162,7 +162,9 @@ export default async (req, res) => {
     ...validatedQueryParams,
   })
 
-  const [product] = await pricingService.setProductPrices([rawProduct])
+  const [product] = await pricingService.setProductPrices(store_id, [
+    rawProduct,
+  ])
 
   res.json({ product })
 }

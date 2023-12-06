@@ -82,7 +82,9 @@ export default async (req, res) => {
     relations: defaultAdminProductRelations,
   })
 
-  const [product] = await pricingService.setAdminProductPricing([data])
+  const [product] = await pricingService.setAdminProductPricing(store_id, [
+    data,
+  ])
 
   res.json({
     variant_id,

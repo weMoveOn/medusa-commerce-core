@@ -329,7 +329,7 @@ export default class ClaimService extends TransactionBaseService {
    * @param data - the object containing all data required to create a claim
    * @return created claim
    */
-  async create(data: CreateClaimInput): Promise<ClaimOrder> {
+  async create(storeId: string, data: CreateClaimInput): Promise<ClaimOrder> {
     return await this.atomicPhase_(
       async (transactionManager: EntityManager) => {
         const claimRepo = transactionManager.withRepository(
@@ -381,6 +381,7 @@ export default class ClaimService extends TransactionBaseService {
           newItems = await promiseAll(
             additional_items.map(async (i) =>
               lineItemServiceTx.generate(
+                storeId,
                 i.variant_id,
                 order.region_id,
                 i.quantity

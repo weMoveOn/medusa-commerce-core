@@ -97,7 +97,7 @@ export default async (req, res) => {
   if (featureFlagRouter.isFeatureEnabled(MedusaV2Flag.key)) {
     rawProduct = await getProductWithIsolatedProductModule(req, id)
   } else {
-    rawProduct = await productService.retrieve(id, storeId,{
+    rawProduct = await productService.retrieve(id, storeId, {
       ...req.retrieveConfig,
     })
   }
@@ -113,7 +113,7 @@ export default async (req, res) => {
     const cart = await cartService.retrieve(validated.cart_id, {
       select: ["id", "region_id"],
     })
-    const region = await regionService.retrieve(cart.region_id, {
+    const region = await regionService.retrieve(storeId, cart.region_id, {
       select: ["id", "currency_code"],
     })
     regionId = region.id
@@ -135,7 +135,7 @@ export default async (req, res) => {
 
   if (shouldSetPricing) {
     decoratePromises.push(
-      pricingService.setProductPrices([decoratedProduct], {
+      pricingService.setProductPrices(storeId, [decoratedProduct], {
         cart_id: validated.cart_id,
         customer_id: customer_id,
         region_id: regionId,

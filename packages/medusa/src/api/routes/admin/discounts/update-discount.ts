@@ -90,6 +90,9 @@ import { FindParams } from "../../../../types/common"
  */
 export default async (req: Request, res: Response) => {
   const { discount_id } = req.params
+  const { store_id } = req.query as {
+    store_id: string
+  }
 
   const discountService: DiscountService = req.scope.resolve("discountService")
 
@@ -97,7 +100,11 @@ export default async (req: Request, res: Response) => {
   await manager.transaction(async (transactionManager) => {
     return await discountService
       .withTransaction(transactionManager)
-      .update(discount_id, req.validatedBody as AdminPostDiscountsDiscountReq)
+      .update(
+        store_id,
+        discount_id,
+        req.validatedBody as AdminPostDiscountsDiscountReq
+      )
   })
 
   const discount = await discountService.retrieve(

@@ -71,6 +71,7 @@ import { validator } from "../../../../utils/validator"
  */
 export default async (req, res) => {
   const { region_id } = req.params
+  const { store_id } = req.query
   const validated = await validator(
     AdminPostRegionsRegionPaymentProvidersReq,
     req.body
@@ -81,10 +82,10 @@ export default async (req, res) => {
   await manager.transaction(async (transactionManager) => {
     return await regionService
       .withTransaction(transactionManager)
-      .addPaymentProvider(region_id, validated.provider_id)
+      .addPaymentProvider(store_id, region_id, validated.provider_id)
   })
 
-  const region: Region = await regionService.retrieve(region_id, {
+  const region: Region = await regionService.retrieve(store_id, region_id, {
     select: defaultAdminRegionFields,
     relations: defaultAdminRegionRelations,
   })

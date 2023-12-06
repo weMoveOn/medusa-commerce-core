@@ -75,6 +75,7 @@ import { validator } from "../../../../utils/validator"
  */
 export default async (req, res) => {
   const { id } = req.params
+  const { store_id } = req.query
 
   const validated = await validator(
     AdminPostProductsProductMetadataReq,
@@ -96,7 +97,9 @@ export default async (req, res) => {
     relations: defaultAdminProductRelations,
   })
 
-  const [product] = await pricingService.setAdminProductPricing([rawProduct])
+  const [product] = await pricingService.setAdminProductPricing(store_id, [
+    rawProduct,
+  ])
 
   res.status(200).json({ product })
 }

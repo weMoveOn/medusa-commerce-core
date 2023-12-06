@@ -347,6 +347,7 @@ class DraftOrderService extends TransactionBaseService {
         // generate line item link to a variant
         if (itemsToGenerate.length) {
           const generatedLines = await lineItemServiceTx.generate(
+            storeId,
             itemsToGenerate,
             {
               region_id: data.region_id,

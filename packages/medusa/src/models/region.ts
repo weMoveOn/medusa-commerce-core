@@ -21,9 +21,19 @@ import { FulfillmentProvider } from "./fulfillment-provider"
 import { PaymentProvider } from "./payment-provider"
 import { TaxProvider } from "./tax-provider"
 import { TaxRate } from "./tax-rate"
+import { Store } from "./store"
 
 @Entity()
 export class Region extends SoftDeletableEntity {
+  // new filed added start
+  @Index({ where: "deleted_at IS NULL" })
+  @Column({ nullable: false })
+  store_id: string
+
+  @ManyToOne(() => Store, (store) => store.regions)
+  @JoinColumn({ name: "store_id", referencedColumnName: "id" })
+  store: Store
+
   @Column()
   name: string
 

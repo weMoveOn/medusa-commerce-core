@@ -108,11 +108,11 @@ export default async (req, res) => {
     async (transactionManager) => {
       return await regionService
         .withTransaction(transactionManager)
-        .create({...validated,store_id})
+        .create({ ...validated, store_id })
     }
   )
 
-  const region: Region = await regionService.retrieve(result.id, {
+  const region: Region = await regionService.retrieve(store_id, result.id, {
     select: defaultAdminRegionFields,
     relations: defaultAdminRegionRelations,
   })

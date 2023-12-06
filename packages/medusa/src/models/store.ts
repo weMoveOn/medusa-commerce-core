@@ -21,6 +21,7 @@ import { SalesChannel } from "./sales-channel"
 import { generateEntityId } from "../utils/generate-entity-id"
 import { User } from "./user"
 import { Product } from "./product"
+import { Region } from "./region"
 
 @Entity()
 export class Store extends BaseEntity {
@@ -34,6 +35,11 @@ export class Store extends BaseEntity {
     cascade: true,
   })
   salesChannel: SalesChannel[]
+
+  @OneToMany(() => Region, (region) => region.store, {
+    cascade: true,
+  })
+  regions: Region[]
 
   @OneToMany(() => User, (user) => user.store)
   members: User[]

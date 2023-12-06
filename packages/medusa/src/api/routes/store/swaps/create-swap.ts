@@ -166,6 +166,7 @@ export default async (req, res) => {
                 const swap = await swapService
                   .withTransaction(manager)
                   .create(
+                    store_id,
                     order,
                     swapDto.return_items,
                     swapDto.additional_items,
