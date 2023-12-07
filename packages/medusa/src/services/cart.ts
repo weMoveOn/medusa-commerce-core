@@ -229,7 +229,7 @@ class CartService extends TransactionBaseService {
    */
   async retrieve(
     cartId: string,
-    storeId: string,
+    storeId?: string,
     options: FindConfig<Cart> = {},
     totalsConfig: TotalsConfig = {}
   ): Promise<Cart> {
@@ -247,19 +247,17 @@ class CartService extends TransactionBaseService {
         )
     }
 
-    console.log('storeId from 250', storeId,'storeId from 250')
-
-    // if (this.featureFlagRouter_.isFeatureEnabled(MedusaV2Flag.key)) {
-    //   if (Array.isArray(options.relations)) {
-    //     for (let i = 0; i < options.relations.length; i++) {
-    //       if (options.relations[i].startsWith("items.variant")) {
-    //         options.relations[i] = "items"
-    //       }
-    //     }
-    //   }
-    //   options.relations = [...new Set(options.relations)]
-    // }
-
+    if (this.featureFlagRouter_.isFeatureEnabled(MedusaV2Flag.key)) {
+      if (Array.isArray(options.relations)) {
+        for (let i = 0; i < options.relations.length; i++) {
+          if (options.relations[i].startsWith("items.variant")) {
+            options.relations[i] = "items"
+          }
+        }
+      }
+      options.relations = [...new Set(options.relations)]
+    }
+    //
     const { totalsToSelect } = this.transformQueryForTotals_(options)
 
     if (totalsToSelect.length) {
@@ -268,16 +266,10 @@ class CartService extends TransactionBaseService {
 
     const cartRepo = this.activeManager_.withRepository(this.cartRepository_)
 
-    const query = buildQuery({ id: cartId, store_id: 'store_01HGTAF204EW4TF64FCHEV79N3' }, options)
-    console.log('===============query from line 270==============================', query,'===============query from line 270==============================')
-    // const query2 = buildQuery({id:cartId, store_id:'store_01HGTAF204EW4TF64FCHEV79N3'}, options)
-    // console.log('===============query2 from line 272==============================', query2,'===============query2 from line 270==============================')
-
-
+    const query = buildQuery({ id: cartId, store_id:storeId  }, options)
     if ((options.select || []).length === 0) {
       query.select = undefined
     }
-
     const queryRelations = { ...query.relations }
     delete query.relations
 
@@ -289,7 +281,6 @@ class CartService extends TransactionBaseService {
         `Cart with ${cartId} was not found`
       )
     }
-
     return raw
   }
 

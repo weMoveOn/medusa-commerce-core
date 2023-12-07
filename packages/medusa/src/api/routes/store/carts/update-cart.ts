@@ -256,6 +256,11 @@ class Discount {
  *       user_agent: "Chrome"
  */
 export class StorePostCartsCartReq {
+
+  @IsString()
+  @IsOptional()
+  store_id?: string
+
   @IsOptional()
   @IsString()
   region_id?: string

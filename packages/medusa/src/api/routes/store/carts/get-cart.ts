@@ -52,7 +52,8 @@ import { cleanResponseData } from "../../../../utils/clean-response-data"
  */
 export default async (req, res) => {
   const { id } = req.params
-  const { store_id } = req.query
+  const store_id = req.query.store_id as string
+
 
   const cartService: CartService = req.scope.resolve("cartService")
   const manager: EntityManager = req.scope.resolve("manager")
@@ -60,26 +61,26 @@ export default async (req, res) => {
   const productVariantInventoryService: ProductVariantInventoryService =
     req.scope.resolve("productVariantInventoryService")
 
-  const cart = await cartService.retrieve(id, 'store_01HGTAF204EW4TF64FCHEV79N3',{
-    select: ["id" ,"customer_id","store_id"],
+  const cart = await cartService.retrieve(id, store_id,{
+    select: ["id" ,"customer_id"],
   })
 
   // If there is a logged in user add the user to the cart
-  // if (req.user && req.user.customer_id) {
-  //   if (
-  //     !cart.customer_id ||
-  //     !cart.email ||
-  //     cart.customer_id !== req.user.customer_id
-  //   ) {
-  //     await manager.transaction(async (transctionManager) => {
-  //       await cartService
-  //         .withTransaction(transctionManager)
-  //         .update(store_id, id, {
-  //           customer_id: req.user.customer_id,
-  //         })
-  //     })
-  //   }
-  // }
+  if (req.user && req.user.customer_id) {
+    if (
+      !cart.customer_id ||
+      !cart.email ||
+      cart.customer_id !== req.user.customer_id
+    ) {
+      await manager.transaction(async (transctionManager) => {
+        await cartService
+          .withTransaction(transctionManager)
+          .update(store_id, id, {
+            customer_id: req.user.customer_id,
+          })
+      })
+    }
+  }
   const shouldSetAvailability = req.retrieveConfig.relations?.some((rel) =>
     rel.includes("variant")
   )
@@ -93,7 +94,7 @@ export default async (req, res) => {
     select.push("sales_channel_id")
   }
 
-  const data = await cartService.retrieveWithTotals(id, req.retrieveConfig)
+  const data = await cartService.retrieveWithTotals(id,store_id, req.retrieveConfig)
 
   if (shouldSetAvailability) {
     await productVariantInventoryService.setVariantAvailability(
