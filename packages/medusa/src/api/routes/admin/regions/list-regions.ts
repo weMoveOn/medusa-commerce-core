@@ -152,12 +152,8 @@ import { validator } from "../../../../utils/validator"
 export default async (req, res) => {
   const validated = await validator(AdminGetRegionsParams, req.query)
 
-  console.log(validated, req.query)
-
   const regionService: RegionService = req.scope.resolve("regionService")
-
   const filterableFields = _.omit(validated, ["limit", "offset", "store_id"])
-  console.log(filterableFields,'filterableFields')
 
   const listConfig = {
     select: defaultAdminRegionFields,
@@ -167,7 +163,7 @@ export default async (req, res) => {
   }
 
   const [regions, count] = await regionService.listAndCount(
-    {store_id:validated.store_id},
+    { store_id: validated.store_id },
     listConfig
   )
 

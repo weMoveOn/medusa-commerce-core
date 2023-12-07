@@ -44,7 +44,7 @@ import { validator } from "../../../../utils/validator"
  *     label: JS Client
  *     source: |
  *       import Medusa from "@medusajs/medusa-js"
- *       const medusa = new Medusa({ baseUrl: MEDUSA_BACKEND_URL, maxRetries: 3 })
+ *       const medusa = new Med usa({ baseUrl: MEDUSA_BACKEND_URL, maxRetries: 3 })
  *       medusa.swaps.create({
  *         order_id,
  *         return_items: [

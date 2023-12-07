@@ -1,4 +1,4 @@
-import { IsInt, IsOptional, ValidateNested } from "class-validator"
+import { IsInt, IsOptional, IsString, ValidateNested } from "class-validator"
 
 import { DateComparisonOperator } from "../../../../types/common"
 import RegionService from "../../../../services/region"
@@ -113,7 +113,7 @@ export default async (req, res) => {
     skip: offset,
     take: limit,
   }
-
+  console.log(filterableFields, "filterableFields")
   const [regions, count] = await regionService.listAndCount(
     filterableFields,
     listConfig
@@ -123,6 +123,9 @@ export default async (req, res) => {
 }
 
 export class StoreGetRegionsParams {
+  @IsString()
+  store_id: string
+
   @IsOptional()
   @IsInt()
   @Type(() => Number)
