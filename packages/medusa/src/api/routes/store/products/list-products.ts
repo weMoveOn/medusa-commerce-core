@@ -213,6 +213,7 @@ import { defaultStoreProductRemoteQueryObject } from "./index"
  *     $ref: "#/components/responses/500_error"
  */
 export default async (req, res) => {
+  const  store_id  = req.query.store_id as string
   const productService: ProductService = req.scope.resolve("productService")
   const productVariantInventoryService: ProductVariantInventoryService =
     req.scope.resolve("productVariantInventoryService")
@@ -267,7 +268,7 @@ export default async (req, res) => {
 
   if (validated.cart_id) {
     promises.push(
-      cartService.retrieve(validated.cart_id, {
+      cartService.retrieve(validated.cart_id,store_id ,{
         select: ["id", "region_id"] as any,
         relations: ["region"],
       })

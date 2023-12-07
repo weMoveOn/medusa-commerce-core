@@ -88,7 +88,7 @@ export default async (req, res) => {
   const productVariantInventoryService: ProductVariantInventoryService =
     req.scope.resolve("productVariantInventoryService")
 
-  const validated = req.validatedBody as StorePostCartReq
+  const validated = req.validatedBody as StorePostCartReq & { store_id: string }
 
   const reqContext = {
     ip: reqIp.getClientIp(req),
@@ -220,7 +220,7 @@ export default async (req, res) => {
     })
   }
 
-  cart = await cartService.retrieveWithTotals(cart!.id, {
+  cart = await cartService.retrieveWithTotals(cart!.id,store_id, {
     select: defaultStoreCartFields,
     relations: defaultStoreCartRelations,
   })
@@ -248,6 +248,9 @@ export class Item {
  * type: object
  * description: "The details of the cart to be created."
  * properties:
+ *   store_id:
+ *   type: string
+ *   description: "The ID of the Store to create the Cart in. This store_id needed to make multi-tenant store. If this parameter is not provided, it will show error."
  *   region_id:
  *     type: string
  *     description: "The ID of the Region to create the Cart in. Setting the cart's region can affect the pricing of the items in the cart as well as the used currency.
@@ -290,7 +293,10 @@ export class Item {
  *       user_agent: "Chrome"
  */
 export class StorePostCartReq {
-  @IsOptional()
+
+  @IsString()
+  store_id: string
+
   @IsString()
   region_id?: string
 

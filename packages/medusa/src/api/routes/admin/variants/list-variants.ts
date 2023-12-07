@@ -158,6 +158,7 @@ import { omit } from "lodash"
  *     $ref: "#/components/responses/500_error"
  */
 export default async (req, res) => {
+  const {store_id} = req.query
   const variantService: ProductVariantService = req.scope.resolve(
     "productVariantService"
   )
@@ -182,7 +183,7 @@ export default async (req, res) => {
   let regionId = req.validatedQuery.region_id
   let currencyCode = req.validatedQuery.currency_code
   if (req.validatedQuery.cart_id) {
-    const cart = await cartService.retrieve(req.validatedQuery.cart_id, {
+    const cart = await cartService.retrieve(req.validatedQuery.cart_id,store_id, {
       select: ["id", "region_id"],
     })
     const region = await regionService.retrieve(cart.region_id, {

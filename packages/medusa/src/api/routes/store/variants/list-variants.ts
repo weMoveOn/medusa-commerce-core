@@ -136,6 +136,7 @@ import { promiseAll } from "@medusajs/utils"
  *     $ref: "#/components/responses/500_error"
  */
 export default async (req, res) => {
+  const {store_id} = req.query
   const validated = await validator(StoreGetVariantsParams, req.query)
 
   const customer_id = req.user?.customer_id
@@ -172,7 +173,7 @@ export default async (req, res) => {
   let regionId = validated.region_id
   let currencyCode = validated.currency_code
   if (validated.cart_id) {
-    const cart = await cartService.retrieve(validated.cart_id, {
+    const cart = await cartService.retrieve(validated.cart_id, store_id,{
       select: ["id", "region_id"],
     })
     const region = await regionService.retrieve(cart.region_id, {

@@ -254,6 +254,7 @@ class DraftOrderService extends TransactionBaseService {
 
   /**
    * Creates a draft order.
+   * @param storeId
    * @param data - data to create draft order from
    * @return the created draft order
    */
@@ -385,7 +386,7 @@ class DraftOrderService extends TransactionBaseService {
             .create(shippingMethodToCreate)
         }
 
-        createdCart = await cartServiceTx.retrieveWithTotals(createdCart.id, {
+        createdCart = await cartServiceTx.retrieveWithTotals(createdCart.id, storeId,{
           relations: [
             "shipping_methods",
             "shipping_methods.shipping_option",
@@ -393,13 +394,13 @@ class DraftOrderService extends TransactionBaseService {
             "payment_sessions",
           ],
         })
-
+        // #TODO: should remove any type
         shipping_methods.forEach((method) => {
           promises.push(
             cartServiceTx.addShippingMethod(
               createdCart,
               method.option_id,
-              method.data
+              method.data as any
             )
           )
         })

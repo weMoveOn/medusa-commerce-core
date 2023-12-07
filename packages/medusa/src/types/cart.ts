@@ -51,6 +51,7 @@ class Discount {
 }
 
 export type CartCreateProps = {
+  store_id?: string
   region_id?: string
   region?: Region
   email?: string

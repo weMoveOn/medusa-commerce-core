@@ -92,7 +92,7 @@ class CartCompletionStrategy extends AbstractCartCompletionStrategy {
                 .workStage(
                   idempotencyKey.idempotency_key,
                   async (manager) =>
-                    await this.handleCreateTaxLines(id, { manager })
+                    await this.handleCreateTaxLines(id, context.store_id,{ manager })
                 )
             })
             .catch((e) => {
@@ -109,7 +109,7 @@ class CartCompletionStrategy extends AbstractCartCompletionStrategy {
                 .workStage(
                   idempotencyKey.idempotency_key,
                   async (manager) =>
-                    await this.handleTaxLineCreated(id, idempotencyKey, {
+                    await this.handleTaxLineCreated(context.store_id,id, idempotencyKey, {
                       context,
                       manager,
                     })
@@ -171,7 +171,7 @@ class CartCompletionStrategy extends AbstractCartCompletionStrategy {
           } catch (error) {
             await this.cartService_
               .withTransaction(transactionManager)
-              .deleteTaxLines(id)
+              .deleteTaxLines(id, context.store_id)
           }
         })
       }
@@ -186,9 +186,10 @@ class CartCompletionStrategy extends AbstractCartCompletionStrategy {
 
   protected async handleCreateTaxLines(
     id: string,
+    storeId: string,
     { manager }: { manager: EntityManager }
   ) {
-    const cart = await this.cartService_.withTransaction(manager).retrieve(id, {
+    const cart = await this.cartService_.withTransaction(manager).retrieve(id, storeId,{
       relations: [
         "customer",
         "discounts",
@@ -215,7 +216,7 @@ class CartCompletionStrategy extends AbstractCartCompletionStrategy {
       }
     }
 
-    await this.cartService_.withTransaction(manager).createTaxLines(cart)
+    await this.cartService_.withTransaction(manager).createTaxLines(cart, storeId)
 
     return {
       recovery_point: "tax_lines_created",
@@ -223,11 +224,12 @@ class CartCompletionStrategy extends AbstractCartCompletionStrategy {
   }
 
   protected async handleTaxLineCreated(
+      storeId: string,
     id: string,
     idempotencyKey: IdempotencyKey,
     { context, manager }: { context: any; manager: EntityManager }
   ) {
-    const res = await this.handleCreateTaxLines(id, { manager })
+    const res = await this.handleCreateTaxLines(id, storeId,{ manager })
     if (res.response_code) {
       return res
     }
@@ -245,7 +247,7 @@ class CartCompletionStrategy extends AbstractCartCompletionStrategy {
         cart.payment_session.status === "requires_more" ||
         cart.payment_session.status === "pending"
       ) {
-        await this.cartService_.withTransaction(manager).deleteTaxLines(id)
+        await this.cartService_.withTransaction(manager).deleteTaxLines(id, storeId)
 
         return {
           response_code: 200,
@@ -285,7 +287,7 @@ class CartCompletionStrategy extends AbstractCartCompletionStrategy {
     id: string,
     { manager }: { manager: EntityManager }
   ) {
-    const res = await this.handleCreateTaxLines(id, { manager })
+    const res = await this.handleCreateTaxLines(id, storeId,{ manager })
     if (res.response_code) {
       return res
     }
@@ -294,7 +296,7 @@ class CartCompletionStrategy extends AbstractCartCompletionStrategy {
     const swapServiceTx = this.swapService_.withTransaction(manager)
     const cartServiceTx = this.cartService_.withTransaction(manager)
 
-    const cart = await cartServiceTx.retrieveWithTotals(id, {
+    const cart = await cartServiceTx.retrieveWithTotals(id, storeId,{
       relations: [
         "region",
         "payment",
@@ -417,7 +419,7 @@ class CartCompletionStrategy extends AbstractCartCompletionStrategy {
           swapId as string
         )
 
-        swap = await swapServiceTx.retrieve(swap.id, {
+        swap = await swapServiceTx.retrieve(storeId,swap.id, {
           relations: ["shipping_address"],
         })
 

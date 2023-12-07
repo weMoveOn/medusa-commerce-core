@@ -67,6 +67,7 @@ import { handleAddOrUpdateLineItem } from "./create-line-item/utils/handler-step
  */
 export default async (req, res) => {
   const { id, line_id } = req.params
+  const { store_id } = req.query
 
   const validated = req.validatedBody
 
@@ -79,9 +80,9 @@ export default async (req, res) => {
   await manager.transaction(async (m) => {
     // If the quantity is 0 that is effectively deletion
     if (validated.quantity === 0) {
-      await cartService.withTransaction(m).removeLineItem(id, line_id)
+      await cartService.withTransaction(m).removeLineItem(id,store_id, line_id)
     } else {
-      const cart = await cartService.withTransaction(m).retrieve(id, {
+      const cart = await cartService.withTransaction(m).retrieve(id, store_id,{
         relations: ["items", "items.variant", "shipping_methods"],
       })
 
@@ -103,20 +104,20 @@ export default async (req, res) => {
 
       await cartService
         .withTransaction(m)
-        .updateLineItem(id, line_id, lineItemUpdate)
+        .updateLineItem(id, store_id,line_id, lineItemUpdate)
     }
 
     // If the cart has payment sessions update these
-    const updated = await cartService.withTransaction(m).retrieve(id, {
+    const updated = await cartService.withTransaction(m).retrieve(id, store_id,{
       relations: ["payment_sessions"],
     })
 
     if (updated.payment_sessions?.length) {
-      await cartService.withTransaction(m).setPaymentSessions(id)
+      await cartService.withTransaction(m).setPaymentSessions(id,store_id)
     }
   })
 
-  const data = await cartService.retrieveWithTotals(id, {
+  const data = await cartService.retrieveWithTotals(id, store_id,{
     select: defaultStoreCartFields,
     relations: defaultStoreCartRelations,
   })

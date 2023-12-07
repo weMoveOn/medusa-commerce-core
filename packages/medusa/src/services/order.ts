@@ -603,6 +603,7 @@ class OrderService extends TransactionBaseService {
   /**
    * Creates an order from a cart
    * @return resolves to the creation result.
+   * @param storeId
    * @param cartOrId
    */
   async createFromCart(
@@ -627,7 +628,7 @@ class OrderService extends TransactionBaseService {
       }
 
       const cart = isString(cartOrId)
-        ? await cartServiceTx.retrieveWithTotals(cartOrId, {
+        ? await cartServiceTx.retrieveWithTotals(cartOrId, storeId,{
             relations: ["region", "payment", "items"],
           })
         : cartOrId

@@ -80,6 +80,7 @@ import { cleanResponseData } from "../../../../utils/clean-response-data"
 
 export default async (req, res) => {
   const { id, line_id } = req.params
+  const { store_id } = req.query
 
   const validated = await validator(
     AdminPostDraftOrdersDraftOrderLineItemsItemReq,
@@ -109,7 +110,7 @@ export default async (req, res) => {
     if (validated.quantity === 0) {
       await cartService
         .withTransaction(manager)
-        .removeLineItem(draftOrder.cart.id, line_id)
+        .removeLineItem(draftOrder.cart.id, store_id, line_id)
     } else {
       const existing = draftOrder.cart.items.find((i) => i.id === line_id)
 
@@ -131,12 +132,12 @@ export default async (req, res) => {
 
       await cartService
         .withTransaction(manager)
-        .updateLineItem(draftOrder.cart_id, line_id, lineItemUpdate)
+        .updateLineItem(draftOrder.cart_id, store_id, line_id, lineItemUpdate)
     }
 
     draftOrder.cart = await cartService
       .withTransaction(manager)
-      .retrieveWithTotals(draftOrder.cart_id, {
+      .retrieveWithTotals(draftOrder.cart_id, store_id,{
         relations: defaultAdminDraftOrdersCartRelations,
         select: defaultAdminDraftOrdersCartFields,
       })

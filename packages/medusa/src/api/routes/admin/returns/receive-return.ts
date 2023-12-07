@@ -87,6 +87,7 @@ import { defaultRelations } from "."
  */
 export default async (req, res) => {
   const { id } = req.params
+  const {store_id} = req.query
 
   const validated = await validator(AdminPostReturnsReturnReceiveReq, req.body)
 
@@ -122,7 +123,7 @@ export default async (req, res) => {
     if (receivedReturn.swap_id) {
       await swapService
         .withTransaction(manager)
-        .registerReceived(receivedReturn.swap_id)
+        .registerReceived(receivedReturn.swap_id,store_id)
     }
   })
 

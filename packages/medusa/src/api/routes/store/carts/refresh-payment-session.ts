@@ -48,6 +48,7 @@ import { cleanResponseData } from "../../../../utils/clean-response-data"
  */
 export default async (req, res) => {
   const { id, provider_id } = req.params
+  const { store_id } = req.query
 
   const cartService: CartService = req.scope.resolve("cartService")
 
@@ -55,9 +56,9 @@ export default async (req, res) => {
   await manager.transaction(async (transactionManager) => {
     return await cartService
       .withTransaction(transactionManager)
-      .refreshPaymentSession(id, provider_id)
+      .refreshPaymentSession(id,store_id, provider_id)
   })
-  const data = await cartService.retrieveWithTotals(id, {
+  const data = await cartService.retrieveWithTotals(id, store_id,{
     relations: [
       "region",
       "region.countries",

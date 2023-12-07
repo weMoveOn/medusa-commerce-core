@@ -65,6 +65,7 @@ import { cleanResponseData } from "../../../../utils/clean-response-data"
  */
 export default async (req, res) => {
   const { id } = req.params
+  const { store_id } = req.query
 
   const validated = req.validatedBody
 
@@ -77,10 +78,10 @@ export default async (req, res) => {
   await manager.transaction(async (transactionManager) => {
     return await cartService
       .withTransaction(transactionManager)
-      .setPaymentSession(id, validated.provider_id)
+      .setPaymentSession(id, store_id,validated.provider_id)
   })
 
-  const data = await cartService.retrieveWithTotals(id, {
+  const data = await cartService.retrieveWithTotals(id, store_id,{
     select: defaultStoreCartFields,
     relations: defaultStoreCartRelations,
   })

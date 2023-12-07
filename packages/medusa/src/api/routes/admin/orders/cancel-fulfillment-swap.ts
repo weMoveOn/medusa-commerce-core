@@ -68,6 +68,7 @@ import { cleanResponseData } from "../../../../utils/clean-response-data"
  */
 export default async (req, res) => {
   const { id, swap_id, fulfillment_id } = req.params
+  const {store_id} = req.query;
 
   const swapService: SwapService = req.scope.resolve("swapService")
   const orderService: OrderService = req.scope.resolve("orderService")
@@ -83,7 +84,7 @@ export default async (req, res) => {
     )
   }
 
-  const swap = await swapService.retrieve(swap_id)
+  const swap = await swapService.retrieve(store_id,swap_id)
 
   if (swap.order_id !== id) {
     throw new MedusaError(
@@ -96,7 +97,7 @@ export default async (req, res) => {
   await manager.transaction(async (transactionManager) => {
     return await swapService
       .withTransaction(transactionManager)
-      .cancelFulfillment(fulfillment_id)
+      .cancelFulfillment(store_id,fulfillment_id)
   })
 
   const order = await orderService.retrieveWithTotals(id, req.retrieveConfig, {

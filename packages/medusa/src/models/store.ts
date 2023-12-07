@@ -23,14 +23,21 @@ import { ProductCategory } from "./product-category"
 import { Product } from "./product"
 import { User } from "./user"
 import {ProductCollection} from "./product-collection";
+import {Cart} from "./cart";
 
 @Entity()
 export class Store extends BaseEntity {
   // new filed added start
+
   @OneToMany(() => Product, (product) => product.store, {
     cascade: true,
   })
   products: Product[]
+
+  @OneToMany(() => Cart, (cart) => cart.store,{
+    cascade: true,
+  })
+  carts: Cart[];
 
   @OneToMany(() => SalesChannel, (salesChannel) => salesChannel.store, {
     cascade: true,

@@ -16,6 +16,7 @@ import { StorePostCartsCartShippingMethodReq } from "./add-shipping-method"
 import { StorePostCartsCartPaymentSessionReq } from "./set-payment-session"
 import { StorePostCartsCartLineItemsItemReq } from "./update-line-item"
 import { StorePostCartsCartPaymentSessionUpdateReq } from "./update-payment-session"
+import { processIdentifierMiddleware } from "../../../middlewares/validators/identifier-existence"
 
 const route = Router()
 
@@ -23,7 +24,7 @@ export default (app, container) => {
   const middlewareService = container.resolve("middlewareService")
   const featureFlagRouter = container.resolve("featureFlagRouter")
 
-  app.use("/carts", route)
+  app.use("/carts", processIdentifierMiddleware ,route)
 
   if (featureFlagRouter.isFeatureEnabled(SalesChannelFeatureFlag.key)) {
     defaultStoreCartRelations.push("sales_channel")
