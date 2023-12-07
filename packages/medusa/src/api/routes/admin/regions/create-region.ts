@@ -98,7 +98,9 @@ import { validator } from "../../../../utils/validator"
  *     $ref: "#/components/responses/500_error"
  */
 export default async (req, res) => {
+  const { store_id } = req.query
   const validated = await validator(AdminPostRegionsReq, req.body)
+  // const validated.store_id = store_id
 
   const regionService: RegionService = req.scope.resolve("regionService")
   const manager: EntityManager = req.scope.resolve("manager")
@@ -106,11 +108,11 @@ export default async (req, res) => {
     async (transactionManager) => {
       return await regionService
         .withTransaction(transactionManager)
-        .create(validated)
+        .create({ ...validated, store_id })
     }
   )
 
-  const region: Region = await regionService.retrieve(result.id, {
+  const region: Region = await regionService.retrieve(store_id, result.id, {
     select: defaultAdminRegionFields,
     relations: defaultAdminRegionRelations,
   })

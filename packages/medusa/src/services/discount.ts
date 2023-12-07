@@ -175,7 +175,9 @@ class DiscountService extends TransactionBaseService {
    * @param {Discount} discount - the discount data to create
    * @return {Promise} the result of the create operation
    */
-  async create(discount: CreateDiscountInput): Promise<Discount> {
+  async create(
+    discount: CreateDiscountInput & { store_id: string }
+  ): Promise<Discount> {
     return await this.atomicPhase_(async (manager: EntityManager) => {
       const discountRepo = manager.withRepository(this.discountRepository_)
       const ruleRepo = manager.withRepository(this.discountRuleRepository_)
@@ -199,7 +201,9 @@ class DiscountService extends TransactionBaseService {
       if (discount.regions) {
         discount.regions = (await promiseAll(
           discount.regions.map(async (regionId) =>
-            this.regionService_.withTransaction(manager).retrieve(regionId)
+            this.regionService_
+              .withTransaction(manager)
+              .retrieve(discount.store_id, regionId)
           )
         )) as Region[]
       }
@@ -336,6 +340,7 @@ class DiscountService extends TransactionBaseService {
    * @return {Promise} the result of the update operation
    */
   async update(
+    storeId: string,
     discountId: string,
     update: UpdateDiscountInput
   ): Promise<Discount> {
@@ -385,7 +390,7 @@ class DiscountService extends TransactionBaseService {
       if (regions) {
         discount.regions = await promiseAll(
           regions.map(async (regionId) =>
-            this.regionService_.retrieve(regionId)
+            this.regionService_.retrieve(storeId, regionId)
           )
         )
       }
@@ -500,7 +505,11 @@ class DiscountService extends TransactionBaseService {
    * @param {string} regionId - id of region to add
    * @return {Promise} the result of the update operation
    */
-  async addRegion(discountId: string, regionId: string): Promise<Discount> {
+  async addRegion(
+    storeId: string,
+    discountId: string,
+    regionId: string
+  ): Promise<Discount> {
     return await this.atomicPhase_(async (manager) => {
       const discountRepo = manager.withRepository(this.discountRepository_)
 
@@ -521,7 +530,7 @@ class DiscountService extends TransactionBaseService {
         )
       }
 
-      const region = await this.regionService_.retrieve(regionId)
+      const region = await this.regionService_.retrieve(storeId, regionId)
 
       discount.regions = [...discount.regions, region]
 

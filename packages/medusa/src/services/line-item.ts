@@ -196,6 +196,7 @@ class LineItemService extends TransactionBaseService {
       ? LineItem
       : LineItem[]
   >(
+    storeId: string,
     variantIdOrData: T,
     regionIdOrContext: T extends string ? string : GenerateLineItemContext,
     quantity?: number,
@@ -288,7 +289,7 @@ class LineItemService extends TransactionBaseService {
         if (variantsToCalculatePricingFor.length) {
           variantsPricing = await this.pricingService_
             .withTransaction(transactionManager)
-            .getProductVariantsPricing(variantsToCalculatePricingFor, {
+            .getProductVariantsPricing(storeId, variantsToCalculatePricingFor, {
               region_id: regionId,
               customer_id: context?.customer_id,
               include_discount_prices: true,

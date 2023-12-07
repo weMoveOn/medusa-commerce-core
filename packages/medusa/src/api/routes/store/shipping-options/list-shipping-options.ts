@@ -49,7 +49,7 @@ import ShippingProfileService from "../../../../services/shipping-profile"
  */
 export default async (req, res) => {
   const { cart_id } = req.params
-  const {store_id} = req.query
+  const { store_id } = req.query
 
   const cartService: CartService = req.scope.resolve("cartService")
   const pricingService: PricingService = req.scope.resolve("pricingService")
@@ -59,7 +59,7 @@ export default async (req, res) => {
 
   const cart = await cartService.retrieveWithTotals(cart_id,store_id)
   const options = await shippingProfileService.fetchCartOptions(cart)
-  const data = await pricingService.setShippingOptionPrices(options, {
+  const data = await pricingService.setShippingOptionPrices(store_id, options, {
     cart_id,
   })
 

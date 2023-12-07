@@ -44,7 +44,7 @@ export async function handleAddOrUpdateLineItem(
 
   const line = await lineItemService
     .withTransaction(manager)
-    .generate(data.variant_id, cart.region_id, data.quantity, {
+    .generate(storeId, data.variant_id, cart.region_id, data.quantity, {
       customer_id: data.customer_id || cart.customer_id,
       metadata: data.metadata,
     })

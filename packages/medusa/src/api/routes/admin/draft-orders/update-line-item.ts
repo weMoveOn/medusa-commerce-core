@@ -132,7 +132,11 @@ export default async (req, res) => {
 
       await cartService
         .withTransaction(manager)
+<<<<<<< HEAD
         .updateLineItem(draftOrder.cart_id, store_id, line_id, lineItemUpdate)
+=======
+        .updateLineItem(store_id, draftOrder.cart_id, line_id, lineItemUpdate)
+>>>>>>> stage-dev
     }
 
     draftOrder.cart = await cartService

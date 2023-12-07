@@ -164,7 +164,6 @@ class ProductService extends TransactionBaseService {
     /**
      * TODO: The below code is a temporary fix for the issue with the typeorm idle transaction in query strategy mode
      */
-    console.log(selector, "selector")
     const manager = this.activeManager_
     const productRepo = manager.withRepository(this.productRepository_)
     const { q, query, relations } = this.prepareListQuery_(selector, config)

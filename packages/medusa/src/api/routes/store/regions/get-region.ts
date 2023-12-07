@@ -46,10 +46,11 @@ import { defaultRelations } from "."
  */
 export default async (req, res) => {
   const { region_id } = req.params
+  const { store_id } = req.query
 
   const regionService: RegionService = req.scope.resolve("regionService")
 
-  const region = await regionService.retrieve(region_id, {
+  const region = await regionService.retrieve(store_id, region_id, {
     relations: defaultRelations,
   })
 

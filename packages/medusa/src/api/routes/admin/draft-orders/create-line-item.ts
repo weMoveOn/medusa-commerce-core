@@ -119,6 +119,7 @@ export default async (req, res) => {
       const line = await lineItemService
         .withTransaction(manager)
         .generate(
+          store_id,
           validated.variant_id,
           draftOrder.cart.region_id,
           validated.quantity,

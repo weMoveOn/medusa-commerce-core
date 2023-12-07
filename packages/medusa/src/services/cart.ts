@@ -407,7 +407,7 @@ class CartService extends TransactionBaseService {
           ? data.region
           : await this.regionService_
               .withTransaction(transactionManager)
-              .retrieve(data.region_id!, {
+              .retrieve(data.store_id, data.region_id!, {
                 relations: ["countries"],
               })
         const regCountries = region.countries.map(({ iso_2 }) => iso_2)
@@ -919,6 +919,7 @@ class CartService extends TransactionBaseService {
             const variantsPricing = await this.pricingService_
               .withTransaction(transactionManager)
               .getProductVariantsPricing(
+                storeId,
                 [
                   {
                     variantId: item.variant_id!,
@@ -1015,8 +1016,8 @@ class CartService extends TransactionBaseService {
    * @return the result of the update operation
    */
   async updateLineItem(
-    cartId: string,
     storeId: string,
+    cartId: string,
     lineItemId: string,
     update: LineItemUpdate
   ): Promise<Cart> {
@@ -1068,6 +1069,7 @@ class CartService extends TransactionBaseService {
               const variantsPricing = await this.pricingService_
                 .withTransaction(transactionManager)
                 .getProductVariantsPricing(
+                  storeId,
                   [
                     {
                       variantId: lineItem.variant_id,
@@ -1210,7 +1212,12 @@ class CartService extends TransactionBaseService {
         }
 
         if (isDefined(data.customer_id) || isDefined(data.region_id)) {
-          await this.updateUnitPrices_(cart, data.region_id, data.customer_id)
+          await this.updateUnitPrices_(
+            storeId,
+            cart,
+            data.region_id,
+            data.customer_id
+          )
         }
 
         if (isDefined(data.region_id) && cart.region_id !== data.region_id) {
@@ -1220,7 +1227,7 @@ class CartService extends TransactionBaseService {
               : {}
           const countryCode =
             (data.country_code || shippingAddress?.country_code) ?? null
-          await this.setRegion_(cart, data.region_id, countryCode)
+          await this.setRegion_(storeId, cart, data.region_id, countryCode)
         }
 
         const addrRepo = transactionManager.withRepository(
@@ -2361,6 +2368,7 @@ class CartService extends TransactionBaseService {
   }
 
   protected async updateUnitPrices_(
+    storeId: string,
     cart: Cart,
     regionId?: string,
     customer_id?: string
@@ -2375,7 +2383,7 @@ class CartService extends TransactionBaseService {
 
     const region = await this.regionService_
       .withTransaction(this.activeManager_)
-      .retrieve(regionId || cart.region_id, {
+      .retrieve(storeId, regionId || cart.region_id, {
         relations: ["countries"],
       })
 
@@ -2440,6 +2448,7 @@ class CartService extends TransactionBaseService {
    * @return the result of the update operation
    */
   protected async setRegion_(
+    storeId: string,
     cart: Cart,
     regionId: string,
     countryCode: string | null
@@ -2453,7 +2462,7 @@ class CartService extends TransactionBaseService {
 
     const region = await this.regionService_
       .withTransaction(this.activeManager_)
-      .retrieve(regionId, {
+      .retrieve(storeId, regionId, {
         relations: ["countries"],
       })
     cart.region = region

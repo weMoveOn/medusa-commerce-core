@@ -104,7 +104,7 @@ export default async (req, res) => {
 
       await cartService
         .withTransaction(m)
-        .updateLineItem(id, store_id,line_id, lineItemUpdate)
+        .updateLineItem(store_id, id, line_id, lineItemUpdate)
     }
 
     // If the cart has payment sessions update these

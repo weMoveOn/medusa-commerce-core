@@ -67,6 +67,7 @@ import { EntityManager } from "typeorm"
  *     $ref: "#/components/responses/500_error"
  */
 export default async (req, res) => {
+  const { store_id } = req.query
   const validatedBody: AdminPostGiftCardsReq & { balance?: number } =
     req.validatedBody
   validatedBody.balance = validatedBody.value
@@ -76,7 +77,7 @@ export default async (req, res) => {
   const newly = await manager.transaction(async (transactionManager) => {
     return await giftCardService
       .withTransaction(transactionManager)
-      .create(validatedBody)
+      .create(store_id, validatedBody)
   })
 
   const giftCard = await giftCardService.retrieve(newly.id, {

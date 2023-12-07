@@ -56,6 +56,7 @@ import { validator } from "../../../../utils/validator"
  *     $ref: "#/components/responses/500_error"
  */
 export default async (req, res) => {
+  const { store_id } = req.query
   const validated = await validator(StoreGetShippingOptionsParams, req.query)
 
   const productIds =
@@ -100,7 +101,7 @@ export default async (req, res) => {
     relations: defaultRelations,
   })
 
-  const data = await pricingService.setShippingOptionPrices(options)
+  const data = await pricingService.setShippingOptionPrices(store_id, options)
 
   res.status(200).json({ shipping_options: data })
 }

@@ -59,6 +59,7 @@ import { EntityManager } from "typeorm"
  */
 export default async (req, res) => {
   const { discount_id, region_id } = req.params
+  const { store_id } = req.query
 
   const discountService: DiscountService = req.scope.resolve("discountService")
 
@@ -66,7 +67,7 @@ export default async (req, res) => {
   await manager.transaction(async (transactionManager) => {
     return await discountService
       .withTransaction(transactionManager)
-      .addRegion(discount_id, region_id)
+      .addRegion(store_id, discount_id, region_id)
   })
 
   const discount: Discount = await discountService.retrieve(discount_id, {

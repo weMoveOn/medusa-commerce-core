@@ -185,7 +185,9 @@ export default async (req, res) => {
     })
   }
 
-  const [product] = await pricingService.setAdminProductPricing([rawProduct])
+  const [product] = await pricingService.setAdminProductPricing(store_id, [
+    rawProduct,
+  ])
 
   res.json({ product })
 }

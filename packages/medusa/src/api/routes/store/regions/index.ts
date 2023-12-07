@@ -2,6 +2,7 @@ import { PaginatedResponse } from "@medusajs/types"
 import { Region } from "./../../../../"
 import { Router } from "express"
 import middlewares from "../../../middlewares"
+import { processIdentifierMiddleware } from "../../../middlewares/validators/identifier-existence"
 
 const route = Router()
 

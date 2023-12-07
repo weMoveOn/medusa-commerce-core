@@ -321,6 +321,7 @@ class SwapService extends TransactionBaseService {
    * @return the newly created swap
    */
   async create(
+    storeId: string,
     order: Order,
     returnItems: WithRequiredProperty<Partial<ReturnItem>, "item_id">[],
     additionalItems?: Pick<LineItem, "variant_id" | "quantity">[],
@@ -369,6 +370,7 @@ class SwapService extends TransactionBaseService {
               )
             }
             return this.lineItemService_.withTransaction(manager).generate(
+              storeId,
               { variantId: variant_id, quantity },
               {
                 region_id: order.region_id,

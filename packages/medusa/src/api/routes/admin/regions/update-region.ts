@@ -79,6 +79,7 @@ import { validator } from "../../../../utils/validator"
  */
 export default async (req, res) => {
   const { region_id } = req.params
+  const { store_id } = req.query
   const validated = await validator(AdminPostRegionsRegionReq, req.body)
 
   const regionService: RegionService = req.scope.resolve("regionService")
@@ -86,10 +87,10 @@ export default async (req, res) => {
   await manager.transaction(async (transactionManager) => {
     return await regionService
       .withTransaction(transactionManager)
-      .update(region_id, validated)
+      .update(store_id, region_id, validated)
   })
 
-  const region = await regionService.retrieve(region_id, {
+  const region = await regionService.retrieve(store_id, region_id, {
     select: defaultAdminRegionFields,
     relations: defaultAdminRegionRelations,
   })
