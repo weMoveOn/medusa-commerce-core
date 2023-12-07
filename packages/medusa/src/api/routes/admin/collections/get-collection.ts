@@ -57,12 +57,13 @@ import { defaultAdminCollectionsRelations } from "."
  */
 export default async (req: Request, res: Response) => {
   const { id } = req.params
-
+  const store_id = req.query.store_id as string
+  console.log('store_id from line 60', store_id)
   const productCollectionService: ProductCollectionService = req.scope.resolve(
     "productCollectionService"
   )
 
-  const collection = await productCollectionService.retrieve(id, {
+  const collection = await productCollectionService.retrieve( id, store_id , {
     relations: defaultAdminCollectionsRelations,
   })
   res.status(200).json({ collection })

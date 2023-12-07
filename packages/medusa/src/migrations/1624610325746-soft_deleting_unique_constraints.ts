@@ -6,12 +6,13 @@ export class softDeletingUniqueConstraints1624610325746
   name = "softDeletingUniqueConstraints1624610325746"
 
   public async up(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.query(`DROP INDEX "IDX_6910923cb678fd6e99011a21cc"`)
-    await queryRunner.query(`DROP INDEX "IDX_087926f6fec32903be3c8eedfa"`)
-    await queryRunner.query(`DROP INDEX "IDX_f4dc2c0888b66d547c175f090e"`)
-    await queryRunner.query(`DROP INDEX "IDX_9db95c4b71f632fc93ecbc3d8b"`)
-    await queryRunner.query(`DROP INDEX "IDX_7124082c8846a06a857cca386c"`)
-    await queryRunner.query(`DROP INDEX "IDX_a0a3f124dc5b167622217fee02"`)
+    // await queryRunner.query(`DROP INDEX "IDX_6910923cb678fd6e99011a21cc"`)
+    // await queryRunner.query(`DROP INDEX "IDX_db7355f7bd36c547c8a4f539e5"`);
+    // await queryRunner.query(`DROP INDEX "IDX_087926f6fec32903be3c8eedfa"`)
+    // await queryRunner.query(`DROP INDEX "IDX_f4dc2c0888b66d547c175f090e"`)
+    // await queryRunner.query(`DROP INDEX "IDX_9db95c4b71f632fc93ecbc3d8b"`)
+    // await queryRunner.query(`DROP INDEX "IDX_7124082c8846a06a857cca386c"`)
+    // await queryRunner.query(`DROP INDEX "IDX_a0a3f124dc5b167622217fee02"`)
 
     await queryRunner.query(
       `CREATE UNIQUE INDEX "IDX_e08af711f3493df1e921c4c9ef" ON "product_collection" ("handle") WHERE deleted_at IS NOT NULL`
@@ -51,6 +52,7 @@ export class softDeletingUniqueConstraints1624610325746
     await queryRunner.query(
       `CREATE UNIQUE INDEX "IDX_6910923cb678fd6e99011a21cc" ON "product_collection" ("handle") `
     )
+    await queryRunner.query(`CREATE UNIQUE INDEX "IDX_db7355f7bd36c547c8a4f539e5" ON "product" ("handle") `);
     await queryRunner.query(
       `CREATE UNIQUE INDEX "IDX_a0a3f124dc5b167622217fee02" ON "product_variant" ("upc") `
     )

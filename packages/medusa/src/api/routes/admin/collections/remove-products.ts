@@ -73,7 +73,7 @@ import ProductCollectionService from "../../../../services/product-collection"
  *    $ref: "#/components/responses/500_error"
  */
 export default async (req: Request, res: Response) => {
-  const { id } = req.params
+  const { id,store_id } = req.params
   const { validatedBody } = req as {
     validatedBody: AdminDeleteProductsFromCollectionReq
   }
@@ -86,7 +86,7 @@ export default async (req: Request, res: Response) => {
   await manager.transaction(async (transactionManager) => {
     return await productCollectionService
       .withTransaction(transactionManager)
-      .removeProducts(id, validatedBody.product_ids)
+      .removeProducts(id, store_id,validatedBody.product_ids)
   })
 
   res.json({

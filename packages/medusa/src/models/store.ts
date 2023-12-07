@@ -19,9 +19,14 @@ import { Currency } from "./currency"
 import { DbAwareColumn } from "../utils/db-aware-column"
 import { SalesChannel } from "./sales-channel"
 import { generateEntityId } from "../utils/generate-entity-id"
-import { User } from "./user"
+import { ProductCategory } from "./product-category"
 import { Product } from "./product"
+<<<<<<< HEAD
 import { Region } from "./region"
+=======
+import { User } from "./user"
+import {ProductCollection} from "./product-collection";
+>>>>>>> stage-dev
 
 @Entity()
 export class Store extends BaseEntity {
@@ -43,6 +48,13 @@ export class Store extends BaseEntity {
 
   @OneToMany(() => User, (user) => user.store)
   members: User[]
+
+  @OneToMany(() => ProductCategory, (productCategory) => productCategory.store)
+  products_category: ProductCategory[]
+
+  @OneToMany(()=> ProductCollection, (productCollection) => productCollection.store)
+    product_collections: ProductCollection[]
+
   // new filed added end
   @Column({ default: "Medusa Store" })
   name: string

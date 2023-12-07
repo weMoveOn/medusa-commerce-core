@@ -194,20 +194,15 @@ class ProductCategoryService extends TransactionBaseService {
           productCategoryInput.parent_category_id
         ),
       })
-
       productCategoryInput.rank = siblingCount
-
       await this.transformParentIdToEntity(productCategoryInput)
-
       let productCategory = pcRepo.create(productCategoryInput)
       productCategory = await pcRepo.save(productCategory)
-
       await this.eventBusService_
         .withTransaction(manager)
         .emit(ProductCategoryService.Events.CREATED, {
           id: productCategory.id,
         })
-
       return productCategory
     })
   }

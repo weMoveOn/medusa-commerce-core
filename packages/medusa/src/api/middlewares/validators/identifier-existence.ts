@@ -7,12 +7,13 @@ export function processIdentifierMiddleware(
   next: NextFunction
 ): void {
   const identifier = req.query.identifier as string
-
+  // console.log("identifier", identifier)
   if (identifier) {
     // Modify query to use store_id instead of identifier
     req.query.store_id = identifier
+    //delete identifier form request
     delete req.query.identifier
-    next() // Call next() to pass control to the next middleware in the chain
+    next()
   } else {
     // Send response indicating that identifier is required
     res.status(422).json({

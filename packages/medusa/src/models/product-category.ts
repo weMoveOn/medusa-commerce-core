@@ -2,7 +2,7 @@ import { generateEntityId } from "../utils/generate-entity-id"
 import { BaseEntity } from "../interfaces/models/base-entity"
 import { kebabCase } from "lodash"
 import { DbAwareColumn } from "../utils/db-aware-column"
-import { Product } from "."
+import { Product, Store } from "."
 import {
   BeforeInsert,
   Column,
@@ -11,14 +11,19 @@ import {
   JoinColumn,
   JoinTable,
   ManyToMany,
+  ManyToOne,
   Tree,
   TreeChildren,
   TreeParent,
+  Unique,
 } from "typeorm"
 
 @Entity()
 @Tree("materialized-path")
 @Index(["parent_category_id", "rank"], { unique: true })
+
+@Unique(["store_id", "handle"])
+
 export class ProductCategory extends BaseEntity {
   /**
    * @apiIgnore
@@ -29,13 +34,21 @@ export class ProductCategory extends BaseEntity {
    */
   static treeRelations = ["parent_category", "category_children"]
 
+  @Index()
+  @Column()
+  store_id: string
+
+  @ManyToOne(() => Store, (store) => store.products_category)
+  @JoinColumn({ name: "store_id" })
+  store: Store
+
   @Column()
   name: string
 
   @Column({ nullable: false, default: "" })
   description: string
 
-  @Index({ unique: true })
+  @Index()
   @Column({ nullable: false })
   handle: string
 

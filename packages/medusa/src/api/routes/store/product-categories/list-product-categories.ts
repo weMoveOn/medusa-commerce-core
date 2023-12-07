@@ -106,6 +106,12 @@ export class StoreGetProductCategoriesParams extends extendedFindParamsMixin({
   offset: 0,
 }) {
   /**
+   * Store ID to filter product categories by.
+   */
+    @IsString()
+    store_id: string
+
+  /**
    * Search term to search product categories' names and handles.
    */
   @IsString()

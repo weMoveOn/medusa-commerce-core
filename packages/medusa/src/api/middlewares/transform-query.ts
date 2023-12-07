@@ -46,7 +46,6 @@ export function transformQuery<
         queryConfig
       )
       attachListOrRetrieveConfig<TEntity>(req, queryConfig)
-
       next()
     } catch (e) {
       next(e)

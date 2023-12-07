@@ -75,6 +75,7 @@ import { defaultAdminCollectionsRelations } from "./index"
  */
 export default async (req: Request, res: Response) => {
   const { id } = req.params
+  const store_id = req.query.store_id as string
   const { validatedBody } = req as {
     validatedBody: AdminPostProductsToCollectionReq
   }
@@ -87,10 +88,10 @@ export default async (req: Request, res: Response) => {
   const updated = await manager.transaction(async (transactionManager) => {
     return await productCollectionService
       .withTransaction(transactionManager)
-      .addProducts(id, validatedBody.product_ids)
+      .addProducts(id, store_id, validatedBody.product_ids)
   })
 
-  const collection = await productCollectionService.retrieve(updated.id, {
+  const collection = await productCollectionService.retrieve(updated.id, store_id, {
     relations: defaultAdminCollectionsRelations,
   })
 
@@ -114,4 +115,8 @@ export class AdminPostProductsToCollectionReq {
   @ArrayNotEmpty()
   @IsString({ each: true })
   product_ids: string[]
+
+  @IsString()
+  store_id: string
+
 }

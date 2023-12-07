@@ -62,11 +62,13 @@ class ProductCollectionService extends TransactionBaseService {
   /**
    * Retrieves a product collection by id.
    * @param collectionId - the id of the collection to retrieve.
+   * @param storeId
    * @param config - the config of the collection to retrieve.
    * @return the collection.
    */
   async retrieve(
     collectionId: string,
+    storeId: string,
     config: FindConfig<ProductCollection> = {}
   ): Promise<ProductCollection> {
     if (!isDefined(collectionId)) {
@@ -80,7 +82,7 @@ class ProductCollectionService extends TransactionBaseService {
       this.productCollectionRepository_
     )
 
-    const query = buildQuery({ id: collectionId }, config)
+    const query = buildQuery({ id: collectionId, store_id:storeId }, config)
     const collection = await collectionRepo.findOne(query)
 
     if (!collection) {
@@ -148,11 +150,13 @@ class ProductCollectionService extends TransactionBaseService {
   /**
    * Updates a product collection
    * @param collectionId - id of collection to update
+   * @param storeId
    * @param update - update object
    * @return update collection
    */
   async update(
     collectionId: string,
+    storeId: string,
     update: UpdateProductCollection
   ): Promise<ProductCollection> {
     return await this.atomicPhase_(async (manager) => {
@@ -160,10 +164,10 @@ class ProductCollectionService extends TransactionBaseService {
         this.productCollectionRepository_
       )
 
-      let productCollection = await this.retrieve(collectionId)
+      let productCollection = await this.retrieve(collectionId,storeId)
 
       const { metadata, ...rest } = update
-
+      console.log('update', update)
       if (metadata) {
         productCollection.metadata = setMetadata(productCollection, metadata)
       }
@@ -187,15 +191,16 @@ class ProductCollectionService extends TransactionBaseService {
   /**
    * Deletes a product collection idempotently
    * @param collectionId - id of collection to delete
+   * @param storeId
    * @return empty promise
    */
-  async delete(collectionId: string): Promise<void> {
+  async delete(collectionId: string, storeId:string): Promise<void> {
     return await this.atomicPhase_(async (manager) => {
       const productCollectionRepo = manager.withRepository(
         this.productCollectionRepository_
       )
 
-      const productCollection = await this.retrieve(collectionId)
+      const productCollection = await this.retrieve(collectionId, storeId)
 
       if (!productCollection) {
         return Promise.resolve()
@@ -215,16 +220,17 @@ class ProductCollectionService extends TransactionBaseService {
 
   async addProducts(
     collectionId: string,
+    storeId: string,
     productIds: string[]
   ): Promise<ProductCollection> {
     return await this.atomicPhase_(async (manager) => {
       const productRepo = manager.withRepository(this.productRepository_)
 
-      const { id } = await this.retrieve(collectionId, { select: ["id"] })
+      const { id } = await this.retrieve(collectionId, storeId,{ select: ["id"] })
 
       await productRepo.bulkAddToCollection(productIds, id)
 
-      const productCollection = await this.retrieve(id, {
+      const productCollection = await this.retrieve(id, storeId,{
         relations: ["products"],
       })
 
@@ -241,16 +247,17 @@ class ProductCollectionService extends TransactionBaseService {
 
   async removeProducts(
     collectionId: string,
+    storeId: string,
     productIds: string[]
   ): Promise<void> {
     return await this.atomicPhase_(async (manager) => {
       const productRepo = manager.withRepository(this.productRepository_)
 
-      const { id } = await this.retrieve(collectionId, { select: ["id"] })
+      const { id } = await this.retrieve(collectionId, storeId,{ select: ["id"] })
 
       await productRepo.bulkRemoveFromCollection(productIds, id)
 
-      const productCollection = await this.retrieve(id, {
+      const productCollection = await this.retrieve(id, storeId,{
         relations: ["products"],
       })
 
