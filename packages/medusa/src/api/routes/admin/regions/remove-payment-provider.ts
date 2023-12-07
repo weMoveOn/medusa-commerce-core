@@ -58,16 +58,17 @@ import RegionService from "../../../../services/region"
  */
 export default async (req, res) => {
   const { region_id, provider_id } = req.params
+  const { store_id } = req.query
 
   const regionService: RegionService = req.scope.resolve("regionService")
   const manager: EntityManager = req.scope.resolve("manager")
   await manager.transaction(async (transactionManager) => {
     return await regionService
       .withTransaction(transactionManager)
-      .removePaymentProvider(region_id, provider_id)
+      .removePaymentProvider(store_id, region_id, provider_id)
   })
 
-  const region = await regionService.retrieve(region_id, {
+  const region = await regionService.retrieve(store_id, region_id, {
     select: defaultAdminRegionFields,
     relations: defaultAdminRegionRelations,
   })

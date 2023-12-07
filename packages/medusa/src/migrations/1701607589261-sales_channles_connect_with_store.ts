@@ -1,4 +1,4 @@
-import { MigrationInterface, QueryRunner } from "typeorm"
+import { MigrationInterface, QueryRunner,TableForeignKey } from "typeorm"
 
 export class SalesChannlesConnectWithStore1701607589261
   implements MigrationInterface

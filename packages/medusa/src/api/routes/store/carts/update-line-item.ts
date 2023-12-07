@@ -67,6 +67,7 @@ import { handleAddOrUpdateLineItem } from "./create-line-item/utils/handler-step
  */
 export default async (req, res) => {
   const { id, line_id } = req.params
+  const { store_id } = req.query
 
   const validated = req.validatedBody
 
@@ -103,7 +104,7 @@ export default async (req, res) => {
 
       await cartService
         .withTransaction(m)
-        .updateLineItem(id, line_id, lineItemUpdate)
+        .updateLineItem(store_id, id, line_id, lineItemUpdate)
     }
 
     // If the cart has payment sessions update these

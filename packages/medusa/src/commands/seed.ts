@@ -186,7 +186,7 @@ const seed = async function ({ directory, migrate, seedFile }: SeedOptions) {
         delete so.is_giftcard
       }
 
-      await shippingOptionService.withTransaction(tx).create(so)
+      await shippingOptionService.withTransaction(tx).create(store.id, so)
     }
 
     const createProductCategory = async (

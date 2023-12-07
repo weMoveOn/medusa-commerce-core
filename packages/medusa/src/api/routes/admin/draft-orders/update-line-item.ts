@@ -80,6 +80,7 @@ import { cleanResponseData } from "../../../../utils/clean-response-data"
 
 export default async (req, res) => {
   const { id, line_id } = req.params
+  const { store_id } = req.query
 
   const validated = await validator(
     AdminPostDraftOrdersDraftOrderLineItemsItemReq,
@@ -131,7 +132,7 @@ export default async (req, res) => {
 
       await cartService
         .withTransaction(manager)
-        .updateLineItem(draftOrder.cart_id, line_id, lineItemUpdate)
+        .updateLineItem(store_id, draftOrder.cart_id, line_id, lineItemUpdate)
     }
 
     draftOrder.cart = await cartService

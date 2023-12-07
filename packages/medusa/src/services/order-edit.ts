@@ -541,6 +541,7 @@ export default class OrderEditService extends TransactionBaseService {
   }
 
   async addLineItem(
+    storeId: string,
     orderEditId: string,
     data: AddOrderEditLineItemInput
   ): Promise<void> {
@@ -565,6 +566,7 @@ export default class OrderEditService extends TransactionBaseService {
        */
 
       const lineItemData = await lineItemServiceTx.generate(
+        storeId,
         data.variant_id,
         regionId,
         data.quantity,

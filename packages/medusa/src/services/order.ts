@@ -748,7 +748,7 @@ class OrderService extends TransactionBaseService {
         )
         const giftCardBalanceUsed = giftCard.balance - newGiftCardBalance
 
-        await giftCardService.update(giftCard.id, {
+        await giftCardService.update(storeId, giftCard.id, {
           balance: newGiftCardBalance,
           is_disabled: newGiftCardBalance === 0,
         })
@@ -782,7 +782,12 @@ class OrderService extends TransactionBaseService {
 
             if (lineItem.is_giftcard) {
               toReturn.push(
-                ...this.createGiftCardsFromLineItem_(order, lineItem, manager)
+                ...this.createGiftCardsFromLineItem_(
+                  storeId,
+                  order,
+                  lineItem,
+                  manager
+                )
               )
             }
 
@@ -815,6 +820,7 @@ class OrderService extends TransactionBaseService {
   }
 
   protected createGiftCardsFromLineItem_(
+    storeId: string,
     order: Order,
     lineItem: LineItem,
     manager: EntityManager
@@ -842,7 +848,7 @@ class OrderService extends TransactionBaseService {
     const giftCardTxnService = this.giftCardService_.withTransaction(manager)
 
     for (let qty = 0; qty < lineItem.quantity; qty++) {
-      const createGiftCardPromise = giftCardTxnService.create({
+      const createGiftCardPromise = giftCardTxnService.create(storeId, {
         region_id: order.region_id,
         order_id: order.id,
         value: taxExclusivePrice,
@@ -956,6 +962,7 @@ class OrderService extends TransactionBaseService {
    * @return the result of the update operation
    */
   protected async updateBillingAddress(
+    storeId: string,
     order: Order,
     address: Address
   ): Promise<void> {
@@ -964,7 +971,7 @@ class OrderService extends TransactionBaseService {
 
     const region = await this.regionService_
       .withTransaction(this.activeManager_)
-      .retrieve(order.region_id, {
+      .retrieve(storeId, order.region_id, {
         relations: ["countries"],
       })
 
@@ -1003,6 +1010,7 @@ class OrderService extends TransactionBaseService {
    * @return the result of the update operation
    */
   protected async updateShippingAddress(
+    storeId: string,
     order: Order,
     address: Address
   ): Promise<void> {
@@ -1011,7 +1019,7 @@ class OrderService extends TransactionBaseService {
 
     const region = await this.regionService_
       .withTransaction(this.activeManager_)
-      .retrieve(order.region_id, {
+      .retrieve(storeId, order.region_id, {
         relations: ["countries"],
       })
 
@@ -1094,7 +1102,11 @@ class OrderService extends TransactionBaseService {
    * @param update - an object with the update values.
    * @return resolves to the update result.
    */
-  async update(orderId: string, update: UpdateOrderInput): Promise<Order> {
+  async update(
+    storeId: string,
+    orderId: string,
+    update: UpdateOrderInput
+  ): Promise<Order> {
     return await this.atomicPhase_(async (manager) => {
       const order = await this.retrieve(orderId)
 
@@ -1138,11 +1150,19 @@ class OrderService extends TransactionBaseService {
       }
 
       if (update.shipping_address) {
-        await this.updateShippingAddress(order, shipping_address as Address)
+        await this.updateShippingAddress(
+          storeId,
+          order,
+          shipping_address as Address
+        )
       }
 
       if (update.billing_address) {
-        await this.updateBillingAddress(order, billing_address as Address)
+        await this.updateBillingAddress(
+          storeId,
+          order,
+          billing_address as Address
+        )
       }
 
       if (update.no_notification) {

@@ -224,6 +224,7 @@ export default async (req, res) => {
   const validated = req.validatedQuery as StoreGetProductsParams
 
   let {
+    store_id,
     cart_id,
     region_id: regionId,
     currency_code: currencyCode,
@@ -296,7 +297,7 @@ export default async (req, res) => {
 
   if (shouldSetPricing) {
     decoratePromises.push(
-      pricingService.setProductPrices(computedProducts, {
+      pricingService.setProductPrices(store_id, computedProducts, {
         cart_id: cart_id,
         region_id: regionId,
         currency_code: currencyCode,

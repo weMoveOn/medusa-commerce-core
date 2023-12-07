@@ -70,6 +70,7 @@ import { promiseAll } from "@medusajs/utils"
  */
 export default async (req, res) => {
   const { token } = req.validatedBody
+  const { store_id } = req.query
 
   const orderSerivce: OrderService = req.scope.resolve("orderService")
   const customerService: CustomerService = req.scope.resolve("customerService")
@@ -101,7 +102,7 @@ export default async (req, res) => {
       orders.map(async (order) => {
         await orderSerivce
           .withTransaction(transactionManager)
-          .update(order.id, {
+          .update(store_id, order.id, {
             customer_id: claimingCustomerId,
             email: customer.email,
           })

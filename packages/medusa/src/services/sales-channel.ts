@@ -276,11 +276,11 @@ class SalesChannelService extends TransactionBaseService {
       if (store.default_sales_channel_id) {
         return store.default_sales_channel
       }
-
+         // @ts-ignore
+        //  there need to add store_id 
       const defaultSalesChannel = await this.create({
-        store_id: "fake",
-        description: "Created by Medusa",
-        name: "Default Sales Channel",
+        description: "This is sales channel created default. By default your product assign this sales channel",
+        name: "Online store",
         is_disabled: false,
       })
 

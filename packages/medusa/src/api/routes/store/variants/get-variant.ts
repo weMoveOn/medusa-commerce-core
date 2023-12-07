@@ -79,6 +79,7 @@ import { promiseAll } from "@medusajs/utils"
  */
 export default async (req, res) => {
   const { id } = req.params
+  const { store_id } = req.query
 
   const validated = await validator(StoreGetVariantsVariantParams, req.query)
 
@@ -107,7 +108,7 @@ export default async (req, res) => {
     const cart = await cartService.retrieve(validated.cart_id, {
       select: ["id", "region_id"],
     })
-    const region = await regionService.retrieve(cart.region_id, {
+    const region = await regionService.retrieve(store_id, cart.region_id, {
       select: ["id", "currency_code"],
     })
     regionId = region.id
@@ -117,7 +118,7 @@ export default async (req, res) => {
   const decoratePromises: Promise<any>[] = []
 
   decoratePromises.push(
-    (await pricingService.setVariantPrices([variant], {
+    (await pricingService.setVariantPrices(store_id, [variant], {
       cart_id: validated.cart_id,
       customer_id: customer_id,
       region_id: regionId,

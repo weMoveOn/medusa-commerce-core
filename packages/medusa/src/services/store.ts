@@ -85,7 +85,7 @@ class StoreService extends TransactionBaseService {
     const storeRepo = this.activeManager_.withRepository(this.storeRepository_)
     const query = buildQuery(
       {
-        id: Not(IsNull()),
+        id: config.store_id,
       },
       config
     )

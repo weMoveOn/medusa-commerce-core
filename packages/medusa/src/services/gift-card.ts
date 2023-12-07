@@ -119,14 +119,17 @@ class GiftCardService extends TransactionBaseService {
    * @param giftCard - the gift card data to create
    * @return the result of the create operation
    */
-  async create(giftCard: CreateGiftCardInput): Promise<GiftCard> {
+  async create(
+    storeId: string,
+    giftCard: CreateGiftCardInput
+  ): Promise<GiftCard> {
     return await this.atomicPhase_(async (manager) => {
       const giftCardRepo = manager.withRepository(this.giftCardRepository_)
 
       // Will throw if region does not exist
       const region = await this.regionService_
         .withTransaction(manager)
-        .retrieve(giftCard.region_id)
+        .retrieve(storeId, giftCard.region_id)
 
       const code = GiftCardService.generateCode()
       const taxRate = GiftCardService.resolveTaxRate(
@@ -247,6 +250,7 @@ class GiftCardService extends TransactionBaseService {
    * @return the result of the update operation
    */
   async update(
+    storeId: string,
     giftCardId: string,
     update: UpdateGiftCardInput
   ): Promise<GiftCard> {
@@ -260,7 +264,7 @@ class GiftCardService extends TransactionBaseService {
       if (region_id && region_id !== giftCard.region_id) {
         const region = await this.regionService_
           .withTransaction(manager)
-          .retrieve(region_id)
+          .retrieve(storeId, region_id)
         giftCard.region_id = region.id
       }
 

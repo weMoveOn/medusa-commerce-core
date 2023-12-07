@@ -106,14 +106,16 @@ import { FindParams } from "../../../../types/common"
  *     $ref: "#/components/responses/500_error"
  */
 
-export default async (req: Request, res: Response) => {
+export default async (req, res) => {
+  const { store_id } = req.query as { store_id: string }
   const discountService: DiscountService = req.scope.resolve("discountService")
+  const validateBody = req.validateBody as AdminPostDiscountsReq
 
   const manager: EntityManager = req.scope.resolve("manager")
   const created = await manager.transaction(async (transactionManager) => {
     return await discountService
       .withTransaction(transactionManager)
-      .create(req.validatedBody as AdminPostDiscountsReq)
+      .create({ ...validateBody, store_id })
   })
 
   const discount = await discountService.retrieve(

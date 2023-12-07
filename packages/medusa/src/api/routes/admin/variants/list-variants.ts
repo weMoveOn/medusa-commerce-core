@@ -158,6 +158,7 @@ import { omit } from "lodash"
  *     $ref: "#/components/responses/500_error"
  */
 export default async (req, res) => {
+  const { store_id } = req.query
   const variantService: ProductVariantService = req.scope.resolve(
     "productVariantService"
   )
@@ -185,21 +186,25 @@ export default async (req, res) => {
     const cart = await cartService.retrieve(req.validatedQuery.cart_id, {
       select: ["id", "region_id"],
     })
-    const region = await regionService.retrieve(cart.region_id, {
+    const region = await regionService.retrieve(store_id, cart.region_id, {
       select: ["id", "currency_code"],
     })
     regionId = region.id
     currencyCode = region.currency_code
   }
 
-  let variants = await pricingService.setAdminVariantPricing(rawVariants, {
-    cart_id: req.validatedQuery.cart_id,
-    region_id: regionId,
-    currency_code: currencyCode,
-    customer_id: req.validatedQuery.customer_id,
-    include_discount_prices: true,
-    ignore_cache: true,
-  })
+  let variants = await pricingService.setAdminVariantPricing(
+    store_id,
+    rawVariants,
+    {
+      cart_id: req.validatedQuery.cart_id,
+      region_id: regionId,
+      currency_code: currencyCode,
+      customer_id: req.validatedQuery.customer_id,
+      include_discount_prices: true,
+      ignore_cache: true,
+    }
+  )
 
   const inventoryService: IInventoryService | undefined =
     req.scope.resolve("inventoryService")

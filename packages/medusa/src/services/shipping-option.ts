@@ -428,7 +428,10 @@ class ShippingOptionService extends TransactionBaseService {
    * @param {ShippingOption} data - the data to create shipping options
    * @return {Promise<ShippingOption>} the result of the create operation
    */
-  async create(data: CreateShippingOptionInput): Promise<ShippingOption> {
+  async create(
+    storeId: string,
+    data: CreateShippingOptionInput
+  ): Promise<ShippingOption> {
     return this.atomicPhase_(async (manager) => {
       const optionWithValidatedPrice = await this.validateAndMutatePrice(data, {
         price_type: data.price_type,
@@ -439,7 +442,7 @@ class ShippingOptionService extends TransactionBaseService {
 
       const region = await this.regionService_
         .withTransaction(manager)
-        .retrieve(option.region_id, {
+        .retrieve(storeId, option.region_id, {
           relations: ["fulfillment_providers"],
         })
 

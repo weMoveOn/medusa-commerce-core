@@ -21,9 +21,19 @@ import { FulfillmentProvider } from "./fulfillment-provider"
 import { PaymentProvider } from "./payment-provider"
 import { TaxProvider } from "./tax-provider"
 import { TaxRate } from "./tax-rate"
+import { Store } from "./store"
 
 @Entity()
 export class Region extends SoftDeletableEntity {
+  // new filed added start
+  @Index({ where: "deleted_at IS NULL" })
+  @Column({ nullable: false })
+  store_id: string
+
+  @ManyToOne(() => Store, (store) => store.regions)
+  @JoinColumn({ name: "store_id", referencedColumnName: "id" })
+  store: Store
+
   @Column()
   name: string
 
@@ -50,7 +60,20 @@ export class Region extends SoftDeletableEntity {
   @Column({ default: true })
   automatic_taxes: boolean
 
-  @OneToMany(() => Country, (c) => c.region)
+  // @OneToMany(() => Country, (c) => c.region)
+  // countries: Country[]
+  @ManyToMany(() => Country, { cascade: ["remove", "soft-remove"] })
+  @JoinTable({
+    name: "region_country_region",
+    joinColumn: {
+      name: "region_id",
+      referencedColumnName: "id",
+    },
+    inverseJoinColumn: {
+      name: "country_id",
+      referencedColumnName: "id",
+    },
+  })
   countries: Country[]
 
   @Column({ type: "text", nullable: true })
