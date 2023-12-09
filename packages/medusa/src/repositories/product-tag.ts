@@ -56,11 +56,15 @@ export const ProductTagRepository = dataSource
       return await qb.getRawMany()
     },
 
-    async upsertTags(tags: UpsertTagsInput): Promise<ProductTag[]> {
+    async upsertTags(
+      tags: UpsertTagsInput,
+      store_id: string
+    ): Promise<ProductTag[]> {
       const tagsValues = tags.map((tag) => tag.value)
       const existingTags = await this.find({
         where: {
           value: In(tagsValues),
+          store_id,
         },
       })
       const existingTagsMap = new Map(
@@ -75,7 +79,7 @@ export const ProductTagRepository = dataSource
         if (aTag) {
           upsertedTags.push(aTag)
         } else {
-          const newTag = this.create(tag)
+          const newTag = this.create({ ...tag, store_id })
           tagsToCreate.push(newTag as QueryDeepPartialEntity<ProductTag>)
         }
       }

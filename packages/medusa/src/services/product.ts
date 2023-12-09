@@ -474,15 +474,21 @@ class ProductService extends TransactionBaseService {
       }
 
       if (images?.length) {
-        product.images = await imageRepo.upsertImages(images)
+        product.images = await imageRepo.upsertImages(images, rest.store_id)
       }
 
       if (tags?.length) {
-        product.tags = await productTagRepo.upsertTags(tags)
+        product.tags = await productTagRepo.upsertTags(tags, rest.store_id)
       }
 
       if (typeof type !== `undefined`) {
-        product.type_id = (await productTypeRepo.upsertType(type))?.id || null
+        product.type_id =
+          (
+            await productTypeRepo.upsertType({
+              ...type,
+              store_id: rest.store_id,
+            })
+          )?.id || null
       }
 
       if (
@@ -546,7 +552,7 @@ class ProductService extends TransactionBaseService {
           )
       }
 
-      const result = await this.retrieve(product.id, productObject.store_id, {
+      const result = await this.retrieve(product.id, rest.store_id, {
         relations: ["options"],
       })
 
@@ -625,7 +631,7 @@ class ProductService extends TransactionBaseService {
       if (images) {
         promises.push(
           imageRepo
-            .upsertImages(images)
+            .upsertImages(images, storeId)
             .then((image) => (product.images = image))
         )
       }
@@ -637,14 +643,16 @@ class ProductService extends TransactionBaseService {
       if (isDefined(type)) {
         promises.push(
           productTypeRepo
-            .upsertType(type)
+            .upsertType({ ...type, store_id: storeId })
             .then((type) => (product.type_id = type?.id ?? null))
         )
       }
 
       if (tags) {
         promises.push(
-          productTagRepo.upsertTags(tags).then((tags) => (product.tags = tags))
+          productTagRepo
+            .upsertTags(tags, storeId)
+            .then((tags) => (product.tags = tags))
         )
       }
 

@@ -1,11 +1,21 @@
-import { BeforeInsert, Column, Entity } from "typeorm"
+import { BeforeInsert, Column, Entity, JoinColumn, ManyToOne } from "typeorm"
 
 import { DbAwareColumn } from "../utils/db-aware-column"
 import { SoftDeletableEntity } from "../interfaces/models/soft-deletable-entity"
 import { generateEntityId } from "../utils/generate-entity-id"
+import { Store } from "./store"
 
 @Entity()
 export class ProductType extends SoftDeletableEntity {
+  // new added filed
+
+  @Column({ type: "text", nullable: true })
+  store_id: string | null
+
+  @ManyToOne(() => Store, { onDelete: "CASCADE" })
+  @JoinColumn({ name: "store_id" })
+  store: Store
+  // new added filed end
   @Column()
   value: string
 

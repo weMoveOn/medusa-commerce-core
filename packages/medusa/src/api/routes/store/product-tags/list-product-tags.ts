@@ -145,6 +145,9 @@ export default async (req: Request, res: Response) => {
  * Parameters used to filter and configure the pagination of the retrieved product tags.
  */
 export class StoreGetProductTagsParams extends FindPaginationParams {
+
+  @IsString()
+  store_id: string
   /**
    * IDs to filter product tags by.
    */

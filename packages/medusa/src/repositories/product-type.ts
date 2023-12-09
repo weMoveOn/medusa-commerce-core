@@ -6,6 +6,7 @@ import { promiseAll } from "@medusajs/utils"
 
 type UpsertTypeInput = Partial<ProductType> & {
   value: string
+  store_id: string
 }
 
 export const ProductTypeRepository = dataSource
@@ -17,7 +18,7 @@ export const ProductTypeRepository = dataSource
       }
 
       const existing = await this.findOne({
-        where: { value: type.value },
+        where: { value: type.value, store_id: type.store_id },
       })
 
       if (existing) {
@@ -26,6 +27,7 @@ export const ProductTypeRepository = dataSource
 
       const created = this.create({
         value: type.value,
+        store_id: type.store_id,
       })
 
       const queryBuilder = this.createQueryBuilder()

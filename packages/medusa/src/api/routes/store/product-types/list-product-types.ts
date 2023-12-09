@@ -151,6 +151,8 @@ export default async (req, res) => {
  */
 // eslint-disable-next-line max-len
 export class StoreGetProductTypesParams extends FindPaginationParams {
+  @IsString()
+  store_id: string
   /**
    * IDs to filter product types by.
    */

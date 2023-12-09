@@ -21,9 +21,7 @@ import {
 @Entity()
 @Tree("materialized-path")
 @Index(["parent_category_id", "rank"], { unique: true })
-
 @Unique(["store_id", "handle"])
-
 export class ProductCategory extends BaseEntity {
   /**
    * @apiIgnore
