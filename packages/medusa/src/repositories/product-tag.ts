@@ -79,7 +79,7 @@ export const ProductTagRepository = dataSource
         if (aTag) {
           upsertedTags.push(aTag)
         } else {
-          const newTag = this.create(tag)
+          const newTag = this.create({ ...tag, store_id })
           tagsToCreate.push(newTag as QueryDeepPartialEntity<ProductTag>)
         }
       }

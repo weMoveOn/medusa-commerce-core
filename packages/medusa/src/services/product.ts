@@ -446,7 +446,7 @@ class ProductService extends TransactionBaseService {
       )
       const imageRepo = manager.withRepository(this.imageRepository_)
       const optionRepo = manager.withRepository(this.productOptionRepository_)
-      productObject
+
       const {
         options,
         tags,
@@ -474,17 +474,11 @@ class ProductService extends TransactionBaseService {
       }
 
       if (images?.length) {
-        product.images = await imageRepo.upsertImages(
-          images,
-          productObject.store_id
-        )
+        product.images = await imageRepo.upsertImages(images, rest.store_id)
       }
 
       if (tags?.length) {
-        product.tags = await productTagRepo.upsertTags(
-          tags,
-          productObject.store_id
-        )
+        product.tags = await productTagRepo.upsertTags(tags, rest.store_id)
       }
 
       if (typeof type !== `undefined`) {
@@ -492,7 +486,7 @@ class ProductService extends TransactionBaseService {
           (
             await productTypeRepo.upsertType({
               ...type,
-              store_id: productObject.store_id,
+              store_id: rest.store_id,
             })
           )?.id || null
       }
@@ -558,7 +552,7 @@ class ProductService extends TransactionBaseService {
           )
       }
 
-      const result = await this.retrieve(product.id, productObject.store_id, {
+      const result = await this.retrieve(product.id, rest.store_id, {
         relations: ["options"],
       })
 
