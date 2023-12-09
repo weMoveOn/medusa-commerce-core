@@ -257,6 +257,9 @@ class CustomerGroup {
  */
 export class AdminPostPriceListsPriceListReq {
   @IsString()
+  store_id: string
+
+  @IsString()
   name: string
 
   @IsString()
