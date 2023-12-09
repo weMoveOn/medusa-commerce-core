@@ -20,10 +20,11 @@ export const ImageRepository = dataSource.getRepository(Image).extend({
     return rawImages.generatedMaps.map((d) => this.create(d))
   },
 
-  async upsertImages(imageUrls: string[]) {
+  async upsertImages(imageUrls: string[], store_id: string) {
     const existingImages = await this.find({
       where: {
         url: In(imageUrls),
+        store_id,
       },
     })
     const existingImagesMap = new Map(
@@ -38,7 +39,7 @@ export const ImageRepository = dataSource.getRepository(Image).extend({
       if (aImg) {
         upsertedImgs.push(aImg)
       } else {
-        const newImg = this.create({ url })
+        const newImg = this.create({ url, store_id })
         imageToCreate.push(newImg as QueryDeepPartialEntity<Image>)
       }
     })

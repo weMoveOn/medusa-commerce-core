@@ -4,11 +4,12 @@ import { PaginatedResponse } from "../../../../types/common"
 import middlewares, { transformQuery } from "../../../middlewares"
 import "reflect-metadata"
 import { AdminGetProductTagsParams } from "./list-product-tags"
+import { processIdentifierMiddleware } from "../../../middlewares/validators/identifier-existence"
 
 const route = Router()
 
 export default (app) => {
-  app.use("/product-tags", route)
+  app.use("/product-tags", processIdentifierMiddleware, route)
 
   route.get(
     "/",
@@ -28,6 +29,7 @@ export const defaultAdminProductTagsFields = [
   "value",
   "created_at",
   "updated_at",
+  "store_id",
 ]
 export const defaultAdminProductTagsRelations = []
 

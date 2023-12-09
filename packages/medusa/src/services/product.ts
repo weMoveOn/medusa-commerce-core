@@ -446,7 +446,7 @@ class ProductService extends TransactionBaseService {
       )
       const imageRepo = manager.withRepository(this.imageRepository_)
       const optionRepo = manager.withRepository(this.productOptionRepository_)
-
+      productObject
       const {
         options,
         tags,
@@ -474,15 +474,27 @@ class ProductService extends TransactionBaseService {
       }
 
       if (images?.length) {
-        product.images = await imageRepo.upsertImages(images)
+        product.images = await imageRepo.upsertImages(
+          images,
+          productObject.store_id
+        )
       }
 
       if (tags?.length) {
-        product.tags = await productTagRepo.upsertTags(tags)
+        product.tags = await productTagRepo.upsertTags(
+          tags,
+          productObject.store_id
+        )
       }
 
       if (typeof type !== `undefined`) {
-        product.type_id = (await productTypeRepo.upsertType(type))?.id || null
+        product.type_id =
+          (
+            await productTypeRepo.upsertType({
+              ...type,
+              store_id: productObject.store_id,
+            })
+          )?.id || null
       }
 
       if (
@@ -625,7 +637,7 @@ class ProductService extends TransactionBaseService {
       if (images) {
         promises.push(
           imageRepo
-            .upsertImages(images)
+            .upsertImages(images, storeId)
             .then((image) => (product.images = image))
         )
       }
@@ -637,14 +649,16 @@ class ProductService extends TransactionBaseService {
       if (isDefined(type)) {
         promises.push(
           productTypeRepo
-            .upsertType(type)
+            .upsertType({ ...type, store_id: storeId })
             .then((type) => (product.type_id = type?.id ?? null))
         )
       }
 
       if (tags) {
         promises.push(
-          productTagRepo.upsertTags(tags).then((tags) => (product.tags = tags))
+          productTagRepo
+            .upsertTags(tags, storeId)
+            .then((tags) => (product.tags = tags))
         )
       }
 
