@@ -24,7 +24,7 @@ export default (app, container) => {
   const middlewareService = container.resolve("middlewareService")
   const featureFlagRouter = container.resolve("featureFlagRouter")
 
-  app.use("/carts", processIdentifierMiddleware ,route)
+  app.use("/carts", route)
 
   if (featureFlagRouter.isFeatureEnabled(SalesChannelFeatureFlag.key)) {
     defaultStoreCartRelations.push("sales_channel")

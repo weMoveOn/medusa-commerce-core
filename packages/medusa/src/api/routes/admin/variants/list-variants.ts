@@ -158,11 +158,7 @@ import { omit } from "lodash"
  *     $ref: "#/components/responses/500_error"
  */
 export default async (req, res) => {
-<<<<<<< HEAD
-  const {store_id} = req.query
-=======
   const { store_id } = req.query
->>>>>>> stage-dev
   const variantService: ProductVariantService = req.scope.resolve(
     "productVariantService"
   )
