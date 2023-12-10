@@ -97,7 +97,7 @@ export default async (req, res) => {
       .update(profile_id, store_id, validated)
   })
 
-  const data = await profileService.retrieve(profile_id, {
+  const data = await profileService.retrieve(store_id, profile_id, {
     select: defaultAdminShippingProfilesFields,
     relations: defaultAdminShippingProfilesRelations,
   })

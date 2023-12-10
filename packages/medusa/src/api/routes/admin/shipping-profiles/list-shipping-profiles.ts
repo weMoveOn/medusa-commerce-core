@@ -51,11 +51,12 @@ import { ShippingProfileService } from "../../../../services"
  *     $ref: "#/components/responses/500_error"
  */
 export default async (req, res) => {
+  const { store_id } = req.query
   const profileService: ShippingProfileService = req.scope.resolve(
     "shippingProfileService"
   )
 
-  const data = await profileService.list()
+  const data = await profileService.list({ store_id })
 
   res.status(200).json({ shipping_profiles: data })
 }

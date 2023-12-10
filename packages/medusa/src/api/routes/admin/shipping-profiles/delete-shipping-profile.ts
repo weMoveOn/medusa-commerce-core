@@ -55,6 +55,8 @@ import { ShippingProfileService } from "../../../../services"
  */
 export default async (req, res) => {
   const { profile_id } = req.params
+  const { store_id } = req.query
+
   const profileService: ShippingProfileService = req.scope.resolve(
     "shippingProfileService"
   )
@@ -63,7 +65,7 @@ export default async (req, res) => {
   await manager.transaction(async (transactionManager) => {
     return await profileService
       .withTransaction(transactionManager)
-      .delete(profile_id)
+      .delete(store_id, profile_id)
   })
 
   res.status(200).json({
