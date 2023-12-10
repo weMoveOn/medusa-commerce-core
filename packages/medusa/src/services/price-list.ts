@@ -79,6 +79,7 @@ class PriceListService extends TransactionBaseService {
    * @return {Promise<PriceList>} the collection.
    */
   async retrieve(
+    storeId: string,
     priceListId: string,
     config: FindConfig<PriceList> = {}
   ): Promise<PriceList> {
@@ -93,7 +94,7 @@ class PriceListService extends TransactionBaseService {
       this.priceListRepo_
     )
 
-    const query = buildQuery({ id: priceListId }, config)
+    const query = buildQuery({ id: priceListId, store_id: storeId }, config)
     const priceList = await priceListRepo.findOne(query)
 
     if (!priceList) {
@@ -141,7 +142,7 @@ class PriceListService extends TransactionBaseService {
    * @return created Price List
    */
   async create(
-    priceListObject: CreatePriceListInput
+    priceListObject: CreatePriceListInput & { store_id: string }
   ): Promise<PriceList | never> {
     return await this.atomicPhase_(async (manager: EntityManager) => {
       const priceListRepo = manager.withRepository(this.priceListRepo_)
@@ -173,10 +174,14 @@ class PriceListService extends TransactionBaseService {
       }
 
       if (customer_groups) {
-        await this.upsertCustomerGroups_(priceList.id, customer_groups)
+        await this.upsertCustomerGroups_(
+          priceListObject.store_id,
+          priceList.id,
+          customer_groups
+        )
       }
 
-      return await this.retrieve(priceList.id, {
+      return await this.retrieve(priceListObject.store_id, priceList.id, {
         relations: ["prices", "customer_groups"],
       })
     })
@@ -188,12 +193,16 @@ class PriceListService extends TransactionBaseService {
    * @param {UpdatePriceListInput} update - the update to apply
    * @returns {Promise<PriceList>} updated Price List
    */
-  async update(id: string, update: UpdatePriceListInput): Promise<PriceList> {
+  async update(
+    storeId: string,
+    id: string,
+    update: UpdatePriceListInput
+  ): Promise<PriceList> {
     return await this.atomicPhase_(async (manager: EntityManager) => {
       const priceListRepo = manager.withRepository(this.priceListRepo_)
       const moneyAmountRepo = manager.withRepository(this.moneyAmountRepo_)
 
-      const priceList = await this.retrieve(id, { select: ["id"] })
+      const priceList = await this.retrieve(storeId, id, { select: ["id"] })
 
       const { prices, customer_groups, includes_tax, ...rest } = update
 
@@ -213,7 +222,7 @@ class PriceListService extends TransactionBaseService {
       }
 
       if (customer_groups) {
-        await this.upsertCustomerGroups_(id, customer_groups)
+        await this.upsertCustomerGroups_(storeId, id, customer_groups)
       }
 
       for (const [key, value] of Object.entries(rest)) {
@@ -226,7 +235,7 @@ class PriceListService extends TransactionBaseService {
 
       await priceListRepo.save(priceList)
 
-      return await this.retrieve(id, {
+      return await this.retrieve(storeId, id, {
         relations: ["prices", "customer_groups"],
       })
     })
@@ -240,6 +249,7 @@ class PriceListService extends TransactionBaseService {
    * @returns {Promise<PriceList>} updated Price List
    */
   async addPrices(
+    storeId: string,
     id: string,
     prices: PriceListPriceCreateInput[],
     replace = false
@@ -247,12 +257,12 @@ class PriceListService extends TransactionBaseService {
     return await this.atomicPhase_(async (manager: EntityManager) => {
       const moneyAmountRepo = manager.withRepository(this.moneyAmountRepo_)
 
-      const priceList = await this.retrieve(id, { select: ["id"] })
+      const priceList = await this.retrieve(storeId, id, { select: ["id"] })
 
       const prices_ = await this.addCurrencyFromRegion(prices)
       await moneyAmountRepo.addPriceListPrices(priceList.id, prices_, replace)
 
-      return await this.retrieve(priceList.id, {
+      return await this.retrieve(storeId, priceList.id, {
         relations: ["prices"],
       })
     })
@@ -264,11 +274,15 @@ class PriceListService extends TransactionBaseService {
    * @param priceIds - ids of the prices to delete
    * @returns {Promise<void>} updated Price List
    */
-  async deletePrices(id: string, priceIds: string[]): Promise<void> {
+  async deletePrices(
+    storeId: string,
+    id: string,
+    priceIds: string[]
+  ): Promise<void> {
     return await this.atomicPhase_(async (manager: EntityManager) => {
       const moneyAmountRepo = manager.withRepository(this.moneyAmountRepo_)
 
-      const priceList = await this.retrieve(id, { select: ["id"] })
+      const priceList = await this.retrieve(storeId, id, { select: ["id"] })
 
       await moneyAmountRepo.deletePriceListPrices(priceList.id, priceIds)
     })
@@ -279,10 +293,10 @@ class PriceListService extends TransactionBaseService {
    * @param id - id of the price list
    * @returns {Promise<void>} updated Price List
    */
-  async clearPrices(id: string): Promise<void> {
+  async clearPrices(storeId: string, id: string): Promise<void> {
     return await this.atomicPhase_(async (manager: EntityManager) => {
       const moneyAmountRepo = manager.withRepository(this.moneyAmountRepo_)
-      const priceList = await this.retrieve(id, { select: ["id"] })
+      const priceList = await this.retrieve(storeId, id, { select: ["id"] })
       await moneyAmountRepo.delete({ price_list_id: priceList.id })
     })
   }
@@ -293,11 +307,13 @@ class PriceListService extends TransactionBaseService {
    * @param id - id of the price list
    * @returns {Promise<void>} empty promise
    */
-  async delete(id: string): Promise<void> {
+  async delete(storeId: string, id: string): Promise<void> {
     return await this.atomicPhase_(async (manager: EntityManager) => {
       const priceListRepo = manager.withRepository(this.priceListRepo_)
 
-      const priceList = await priceListRepo.findOne({ where: { id: id } })
+      const priceList = await priceListRepo.findOne({
+        where: { id: id, store_id: storeId },
+      })
 
       if (!priceList) {
         return Promise.resolve()
@@ -344,13 +360,16 @@ class PriceListService extends TransactionBaseService {
   }
 
   protected async upsertCustomerGroups_(
+    storeId: string,
     priceListId: string,
     customerGroups: { id: string }[]
   ): Promise<void> {
     const priceListRepo = this.activeManager_.withRepository(
       this.priceListRepo_
     )
-    const priceList = await this.retrieve(priceListId, { select: ["id"] })
+    const priceList = await this.retrieve(storeId, priceListId, {
+      select: ["id"],
+    })
 
     const groups: CustomerGroup[] = []
 
@@ -381,7 +400,7 @@ class PriceListService extends TransactionBaseService {
       const [products, count] = await this.productService_
         .withTransaction(manager)
         .listAndCount(selector, config)
-
+      console.log(products, "products")
       const moneyAmountRepo = manager.withRepository(this.moneyAmountRepo_)
 
       const productsWithPrices = await promiseAll(
@@ -449,6 +468,7 @@ class PriceListService extends TransactionBaseService {
   }
 
   public async deleteProductPrices(
+    storeId: string,
     priceListId: string,
     productIds: string[]
   ): Promise<[string[], number]> {
@@ -480,12 +500,13 @@ class PriceListService extends TransactionBaseService {
         return [[], 0]
       }
 
-      await this.deletePrices(priceListId, priceIds)
+      await this.deletePrices(storeId, priceListId, priceIds)
       return [priceIds, priceIds.length]
     })
   }
 
   public async deleteVariantPrices(
+    storeId: string,
     priceListId: string,
     variantIds: string[]
   ): Promise<[string[], number]> {
@@ -511,7 +532,7 @@ class PriceListService extends TransactionBaseService {
         return [[], 0]
       }
 
-      await this.deletePrices(priceListId, priceIds)
+      await this.deletePrices(storeId, priceListId, priceIds)
       return [priceIds, priceIds.length]
     })
   }

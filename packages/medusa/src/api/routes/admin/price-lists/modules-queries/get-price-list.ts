@@ -4,6 +4,7 @@ import { MedusaError } from "medusa-core-utils"
 import { listAndCountPriceListPricingModule } from "./list-and-count-price-lists"
 
 export async function getPriceListPricingModule(
+  storeId: string,
   id: string,
   {
     container,
@@ -14,6 +15,7 @@ export async function getPriceListPricingModule(
   const [priceLists, count] = await listAndCountPriceListPricingModule({
     filters: {
       id: [id],
+      store_id: storeId,
     },
     container,
   })

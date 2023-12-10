@@ -86,6 +86,8 @@ import { getPriceListPricingModule } from "./modules-queries"
  */
 export default async (req, res) => {
   const { id } = req.params
+  const { store_id } = req.query
+
   let priceList
   const featureFlagRouter = req.scope.resolve("featureFlagRouter")
   const manager: EntityManager = req.scope.resolve("manager")
@@ -124,17 +126,17 @@ export default async (req, res) => {
       },
     })
 
-    priceList = await getPriceListPricingModule(id, {
+    priceList = await getPriceListPricingModule(store_id, id, {
       container: req.scope as MedusaContainer,
     })
   } else {
     await manager.transaction(async (transactionManager) => {
       return await priceListService
         .withTransaction(transactionManager)
-        .update(id, validated)
+        .update(store_id, id, validated)
     })
 
-    priceList = await priceListService.retrieve(id, {
+    priceList = await priceListService.retrieve(store_id, id, {
       select: defaultAdminPriceListFields as (keyof PriceList)[],
       relations: defaultAdminPriceListRelations,
     })

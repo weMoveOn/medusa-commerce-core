@@ -59,6 +59,7 @@ import { WorkflowTypes } from "@medusajs/types"
  */
 export default async (req, res) => {
   const { id, variant_id } = req.params
+  const { store_id } = req.query
 
   const priceListService: PriceListService =
     req.scope.resolve("priceListService")
@@ -93,7 +94,7 @@ export default async (req, res) => {
       async (transactionManager) => {
         return await priceListService
           .withTransaction(transactionManager)
-          .deleteVariantPrices(id, [variant_id])
+          .deleteVariantPrices(store_id, id, [variant_id])
       }
     )
 

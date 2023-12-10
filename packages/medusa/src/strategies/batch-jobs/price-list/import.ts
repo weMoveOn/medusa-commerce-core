@@ -110,7 +110,10 @@ class PriceListImportStrategy extends AbstractBatchJobStrategy {
 
     // Validate that PriceList exists
     const priceListId = batchJob.context.price_list_id as string
-    await this.priceListService_.withTransaction(manager).retrieve(priceListId)
+    const storeId = batchJob.context.store_id as string
+    await this.priceListService_
+      .withTransaction(manager)
+      .retrieve(storeId, priceListId)
 
     return batchJob
   }
@@ -122,12 +125,15 @@ class PriceListImportStrategy extends AbstractBatchJobStrategy {
    * @param csvData - An array of parsed CSV rows.
    */
   async getImportInstructions(
+    storeId: string,
     priceListId: string,
     csvData: TParsedPriceListImportRowData[]
   ): Promise<Record<OperationType, PriceListImportOperation[]>> {
     // Validate that PriceList exists
     const manager = this.transactionManager_ ?? this.manager_
-    await this.priceListService_.withTransaction(manager).retrieve(priceListId)
+    await this.priceListService_
+      .withTransaction(manager)
+      .retrieve(storeId, priceListId)
 
     const pricesToCreate: PriceListImportOperation[] = []
 
@@ -227,7 +233,7 @@ class PriceListImportStrategy extends AbstractBatchJobStrategy {
    *
    * @param batchJobId - An id of a job that is being preprocessed.
    */
-  async preProcessBatchJob(batchJobId: string): Promise<void> {
+  async preProcessBatchJob(storeId: string, batchJobId: string): Promise<void> {
     const transactionManager = this.transactionManager_ ?? this.manager_
     const batchJob = (await this.batchJobService_
       .withTransaction(transactionManager)
@@ -250,7 +256,11 @@ class PriceListImportStrategy extends AbstractBatchJobStrategy {
       )
     }
 
-    const ops = await this.getImportInstructions(priceListId, builtData)
+    const ops = await this.getImportInstructions(
+      storeId,
+      priceListId,
+      builtData
+    )
 
     await this.uploadImportOpsFile(batchJobId, ops)
 
@@ -288,7 +298,7 @@ class PriceListImportStrategy extends AbstractBatchJobStrategy {
    *
    * @param batchJobId - An id of a batch job that is being processed.
    */
-  async processJob(batchJobId: string): Promise<void> {
+  async processJob(storeId: string, batchJobId: string): Promise<void> {
     return await this.atomicPhase_(async (manager) => {
       const batchJob = (await this.batchJobService_
         .withTransaction(manager)
@@ -298,7 +308,7 @@ class PriceListImportStrategy extends AbstractBatchJobStrategy {
       const txPriceListService = this.priceListService_.withTransaction(manager)
 
       // Delete Existing prices for price list
-      await txPriceListService.clearPrices(priceListId)
+      await txPriceListService.clearPrices(storeId, priceListId)
 
       // Upload new prices for price list
       const priceImportOperations = await this.downloadImportOpsFile(
@@ -309,6 +319,7 @@ class PriceListImportStrategy extends AbstractBatchJobStrategy {
       for (const op of priceImportOperations) {
         try {
           await txPriceListService.addPrices(
+            storeId,
             priceListId,
             (op.prices as PriceListPriceCreateInput[]).map(
               (p: PriceListPriceCreateInput) => {
