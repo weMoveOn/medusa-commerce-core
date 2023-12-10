@@ -226,6 +226,7 @@ class TaxRateService extends TransactionBaseService {
   }
 
   async addToProductType(
+    storeId: string,
     id: string,
     productTypeIds: string | string[],
     replace = false
@@ -255,7 +256,7 @@ class TaxRateService extends TransactionBaseService {
             }) as Promise<unknown>,
             ...ids.map(
               async (pId) =>
-                this.productTypeService_.retrieve(pId, {
+                this.productTypeService_.retrieve(storeId, pId, {
                   select: ["id"],
                 }) as Promise<unknown>
             ),

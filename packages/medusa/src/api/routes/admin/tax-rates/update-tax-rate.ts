@@ -117,6 +117,7 @@ export default async (req, res) => {
 
     if (isDefined(value.product_types)) {
       await txRateService.addToProductType(
+        store_id,
         req.params.id,
         value.product_types,
         true

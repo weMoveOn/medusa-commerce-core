@@ -3,8 +3,10 @@ import {
   BeforeInsert,
   Column,
   Entity,
+  JoinColumn,
   JoinTable,
   ManyToMany,
+  ManyToOne,
   OneToMany,
 } from "typeorm"
 import { DbAwareColumn, resolveDbType } from "../utils/db-aware-column"
@@ -15,9 +17,20 @@ import { FeatureFlagColumn } from "../utils/feature-flag-decorators"
 import { generateEntityId } from "../utils/generate-entity-id"
 import { CustomerGroup } from "./customer-group"
 import { MoneyAmount } from "./money-amount"
+import { Store } from "./store"
 
 @Entity()
 export class PriceList extends SoftDeletableEntity {
+  // new added filed
+
+  @Column({ type: "text", nullable: true })
+  store_id: string | null
+
+  @ManyToOne(() => Store, { onDelete: "CASCADE" })
+  @JoinColumn({ name: "store_id" })
+  store: Store
+  // new added filed end
+
   @Column()
   name: string
 

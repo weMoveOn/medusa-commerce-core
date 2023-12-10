@@ -173,6 +173,8 @@ export class AdminGetProductTagsPaginationParams {
  * Parameters used to filter and configure the pagination of the retrieved product tags.
  */
 export class AdminGetProductTagsParams extends AdminGetProductTagsPaginationParams {
+  @IsString()
+  store_id: string
   /**
    * IDs to filter product tags by.
    */

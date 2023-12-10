@@ -152,6 +152,13 @@ const seed = async function ({ directory, migrate, seedFile }: SeedOptions) {
 
     const store = await storeService.retrieve()
 
+    if (seededStore.sales_channel) {
+      await salesChannelService.create({
+        ...seededStore.sales_channel,
+        store_id: store.id,
+      })
+    }
+
     for (const u of users) {
       const pass = u.password
       if (pass) {
@@ -213,7 +220,7 @@ const seed = async function ({ directory, migrate, seedFile }: SeedOptions) {
     }
 
     for (const c of categories) {
-      await createProductCategory(c)
+      await createProductCategory({ ...c, store_id: store.id })
     }
 
     for (const pc of product_collections) {

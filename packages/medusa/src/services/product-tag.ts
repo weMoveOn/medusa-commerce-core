@@ -28,12 +28,13 @@ class ProductTagService extends TransactionBaseService {
    * @return the collection.
    */
   async retrieve(
+    storeId: string,
     tagId: string,
     config: FindConfig<ProductTag> = {}
   ): Promise<ProductTag> {
     const tagRepo = this.activeManager_.withRepository(this.tagRepo_)
 
-    const query = buildQuery({ id: tagId }, config)
+    const query = buildQuery({ id: tagId, store_id: storeId }, config)
     const tag = await tagRepo.findOne(query)
 
     if (!tag) {
@@ -51,11 +52,10 @@ class ProductTagService extends TransactionBaseService {
    * @param tag - the product tag to create
    * @return created product tag
    */
-  async create(tag: Partial<ProductTag>): Promise<ProductTag> {
+  async create(storeId: string, tag: Partial<ProductTag>): Promise<ProductTag> {
     return await this.atomicPhase_(async (manager: EntityManager) => {
       const tagRepo = manager.withRepository(this.tagRepo_)
-
-      const productTag = tagRepo.create(tag)
+      const productTag = tagRepo.create({ value: tag.value, store_id: storeId })
       return await tagRepo.save(productTag)
     })
   }
@@ -102,6 +102,13 @@ class ProductTagService extends TransactionBaseService {
     if (selector.discount_condition_id) {
       discount_condition_id = selector.discount_condition_id
       delete selector.discount_condition_id
+    }
+
+    if (!selector.store_id) {
+      throw new MedusaError(
+        MedusaError.Types.INVALID_DATA,
+        `Store id must be provided`
+      )
     }
 
     const query = buildQuery(selector, config)

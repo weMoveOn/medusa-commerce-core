@@ -93,6 +93,7 @@ import { validator } from "../../../../utils/validator"
  *     $ref: "#/components/responses/500_error"
  */
 export default async (req, res) => {
+  const { store_id } = req.query
   const value = await validator(
     AdminPostTaxRatesTaxRateProductTypesReq,
     req.body
@@ -109,7 +110,7 @@ export default async (req, res) => {
   await manager.transaction(async (transactionManager) => {
     return await rateService
       .withTransaction(transactionManager)
-      .addToProductType(req.params.id, value.product_types)
+      .addToProductType(store_id, req.params.id, value.product_types)
   })
 
   const config = getRetrieveConfig(

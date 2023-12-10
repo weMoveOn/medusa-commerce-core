@@ -25,12 +25,13 @@ class ProductTypeService extends TransactionBaseService {
    * @return the result of the find one operation.
    */
   async retrieve(
+    storeId: string,
     id: string,
     config: FindConfig<ProductType> = {}
   ): Promise<ProductType> {
     const typeRepo = this.activeManager_.withRepository(this.typeRepository_)
 
-    const query = buildQuery({ id }, config)
+    const query = buildQuery({ id, store_id: storeId }, config)
     const type = await typeRepo.findOne(query)
 
     if (!type) {
@@ -79,6 +80,13 @@ class ProductTypeService extends TransactionBaseService {
     if (isString(selector.q)) {
       q = selector.q
       delete selector.q
+    }
+
+    if (!selector.store_id) {
+      throw new MedusaError(
+        MedusaError.Types.INVALID_DATA,
+        `Store id must be provided`
+      )
     }
 
     const query = buildQuery(
