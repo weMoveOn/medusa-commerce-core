@@ -26,6 +26,7 @@ import CustomShippingOptionService from "./custom-shipping-option"
 import ProductService from "./product"
 import ShippingOptionService from "./shipping-option"
 import { store } from "./__mocks__/store"
+import StoreService from "./store"
 
 type InjectedDependencies = {
   manager: EntityManager
@@ -35,6 +36,7 @@ type InjectedDependencies = {
   shippingProfileRepository: typeof ShippingProfileRepository
   productRepository: typeof ProductRepository
   featureFlagRouter: FlagRouter
+  storeService: StoreService
 }
 
 /**
@@ -50,6 +52,7 @@ class ShippingProfileService extends TransactionBaseService {
   protected readonly shippingProfileRepository_: typeof ShippingProfileRepository
   protected readonly productRepository_: typeof ProductRepository
   protected readonly featureFlagRouter_: FlagRouter
+  protected readonly storeService_: StoreService
 
   constructor({
     shippingProfileRepository,
@@ -58,6 +61,7 @@ class ShippingProfileService extends TransactionBaseService {
     shippingOptionService,
     customShippingOptionService,
     featureFlagRouter,
+    storeService,
   }: InjectedDependencies) {
     // eslint-disable-next-line prefer-rest-params
     super(arguments[0])
@@ -68,6 +72,7 @@ class ShippingProfileService extends TransactionBaseService {
     this.shippingOptionService_ = shippingOptionService
     this.customShippingOptionService_ = customShippingOptionService
     this.featureFlagRouter_ = featureFlagRouter
+    this.storeService_ = storeService
   }
 
   /**
@@ -133,6 +138,7 @@ class ShippingProfileService extends TransactionBaseService {
    * @return {Promise<Product>} the profile document.
    */
   async retrieve(
+    storeId: string,
     profileId: string,
     options: FindConfig<ShippingProfile> = {}
   ): Promise<ShippingProfile> {
@@ -147,7 +153,7 @@ class ShippingProfileService extends TransactionBaseService {
       this.shippingProfileRepository_
     )
 
-    const query = buildQuery({ id: profileId }, options)
+    const query = buildQuery({ id: profileId, store_id: storeId }, options)
 
     const profile = await profileRepository.findOne(query)
 
@@ -210,6 +216,9 @@ class ShippingProfileService extends TransactionBaseService {
   async createDefault(): Promise<ShippingProfile> {
     return await this.atomicPhase_(async (manager) => {
       let profile = await this.retrieveDefault()
+      const store = await this.storeService_.withTransaction(manager).retrieve({
+        relations: [],
+      })
 
       if (!profile) {
         const profileRepository = manager.withRepository(
@@ -219,6 +228,7 @@ class ShippingProfileService extends TransactionBaseService {
         const toCreate = {
           type: ShippingProfileType.DEFAULT,
           name: "Default Shipping Profile",
+          store_id: store.id,
         }
 
         const created = profileRepository.create(toCreate)
@@ -259,10 +269,16 @@ class ShippingProfileService extends TransactionBaseService {
         const profileRepository = manager.withRepository(
           this.shippingProfileRepository_
         )
+        const store = await this.storeService_
+          .withTransaction(manager)
+          .retrieve({
+            relations: [],
+          })
 
         const created = profileRepository.create({
           type: ShippingProfileType.GIFT_CARD,
           name: "Gift Card Profile",
+          store_id: store.id,
         })
 
         profile = await profileRepository.save(created)
@@ -277,7 +293,9 @@ class ShippingProfileService extends TransactionBaseService {
    * @param profile - the shipping profile to create from
    * @return the result of the create operation
    */
-  async create(profile: CreateShippingProfile): Promise<ShippingProfile> {
+  async create(
+    profile: CreateShippingProfile & { store_id: string }
+  ): Promise<ShippingProfile> {
     return await this.atomicPhase_(async (manager) => {
       const profileRepository = manager.withRepository(
         this.shippingProfileRepository_
@@ -322,7 +340,7 @@ class ShippingProfileService extends TransactionBaseService {
         this.shippingProfileRepository_
       )
 
-      const profile = await this.retrieve(profileId)
+      const profile = await this.retrieve(storeId, profileId)
 
       const { metadata, products, shipping_options, ...rest } = update
 
@@ -331,7 +349,7 @@ class ShippingProfileService extends TransactionBaseService {
       }
 
       if (shipping_options) {
-        await this.addShippingOption(profile.id, shipping_options)
+        await this.addShippingOption(storeId, profile.id, shipping_options)
       }
 
       if (metadata) {
@@ -352,17 +370,21 @@ class ShippingProfileService extends TransactionBaseService {
    *   castable as an ObjectId
    * @return the result of the delete operation.
    */
-  async delete(profileId: string): Promise<void> {
+  async delete(storeId: string, profileId: string): Promise<void> {
     return await this.atomicPhase_(async (manager) => {
       const profileRepo = manager.withRepository(
         this.shippingProfileRepository_
       )
 
       // Should not fail, if profile does not exist, since delete is idempotent
-      const profile = await profileRepo.findOne({ where: { id: profileId } })
-
+      const profile = await profileRepo.findOne({
+        where: { id: profileId, store_id: storeId },
+      })
       if (!profile) {
-        return Promise.resolve()
+        throw new MedusaError(
+          MedusaError.Types.NOT_FOUND,
+          `Shipping profile with ${profileId} was not found`
+        )
       }
 
       await profileRepo.softRemove(profile)
@@ -402,7 +424,7 @@ class ShippingProfileService extends TransactionBaseService {
         profileId
       )
 
-      return await this.retrieve(profileId)
+      return await this.retrieve(storeId, profileId)
     })
   }
 
@@ -436,6 +458,7 @@ class ShippingProfileService extends TransactionBaseService {
    * @return the result of the model update operation
    */
   async addShippingOption(
+    storeId: string,
     profileId: string,
     optionId: string | string[]
   ): Promise<ShippingProfile> {
@@ -448,7 +471,7 @@ class ShippingProfileService extends TransactionBaseService {
         profileId
       )
 
-      return await this.retrieve(profileId, {
+      return await this.retrieve(storeId, profileId, {
         relations: ["products.profiles", "shipping_options.profile"],
       })
     })
