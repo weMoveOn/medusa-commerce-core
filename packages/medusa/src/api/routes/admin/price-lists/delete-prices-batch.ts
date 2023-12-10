@@ -75,6 +75,7 @@ import { removePriceListPrices } from "@medusajs/core-flows"
  */
 export default async (req, res) => {
   const { id } = req.params
+  const { store_id } = req.query
 
   const validated = await validator(
     AdminDeletePriceListPricesPricesReq,
@@ -109,7 +110,7 @@ export default async (req, res) => {
     await manager.transaction(async (transactionManager) => {
       await priceListService
         .withTransaction(transactionManager)
-        .deletePrices(id, validated.price_ids)
+        .deletePrices(store_id, id, validated.price_ids)
     })
   }
 

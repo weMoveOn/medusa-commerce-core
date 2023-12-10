@@ -14,16 +14,16 @@ import { FindProductConfig } from "../../../types/product"
 import { csvCellContentFormatter } from "../../../utils"
 import { prepareListQuery } from "../../../utils/get-query-config"
 import {
-    DynamicProductExportDescriptor,
-    ProductExportBatchJob,
-    ProductExportBatchJobContext,
-    ProductExportInjectedDependencies,
-    ProductExportPriceData,
+  DynamicProductExportDescriptor,
+  ProductExportBatchJob,
+  ProductExportBatchJobContext,
+  ProductExportInjectedDependencies,
+  ProductExportPriceData,
 } from "./types"
 import {
-    productCategoriesColumnsDefinition,
-    productColumnsDefinition,
-    productSalesChannelColumnsDefinition,
+  productCategoriesColumnsDefinition,
+  productColumnsDefinition,
+  productSalesChannelColumnsDefinition,
 } from "./types/columns-definition"
 
 export default class ProductExportStrategy extends AbstractBatchJobStrategy {

@@ -58,6 +58,7 @@ import PriceListService from "../../../../services/price-list"
  */
 export default async (req, res) => {
   const { id } = req.params
+  const { store_id } = req.query
 
   const featureFlagRouter: FlagRouter = req.scope.resolve("featureFlagRouter")
   const manager: EntityManager = req.scope.resolve("manager")
@@ -83,7 +84,9 @@ export default async (req, res) => {
     const priceListService: PriceListService =
       req.scope.resolve("priceListService")
     await manager.transaction(async (transactionManager) => {
-      await priceListService.withTransaction(transactionManager).delete(id)
+      await priceListService
+        .withTransaction(transactionManager)
+        .delete(store_id, id)
     })
   }
 

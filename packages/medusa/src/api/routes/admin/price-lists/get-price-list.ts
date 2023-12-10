@@ -59,6 +59,7 @@ import { getPriceListPricingModule } from "./modules-queries"
  */
 export default async (req, res) => {
   const { id } = req.params
+  const { store_id } = req.query
 
   const featureFlagRouter: FlagRouter = req.scope.resolve("featureFlagRouter")
   const priceListService: PriceListService =
@@ -67,11 +68,11 @@ export default async (req, res) => {
   let priceList
 
   if (featureFlagRouter.isFeatureEnabled(MedusaV2Flag.key)) {
-    priceList = await getPriceListPricingModule(id, {
+    priceList = await getPriceListPricingModule(store_id, id, {
       container: req.scope as MedusaContainer,
     })
   } else {
-    priceList = await priceListService.retrieve(id, {
+    priceList = await priceListService.retrieve(store_id, id, {
       select: defaultAdminPriceListFields as (keyof PriceList)[],
       relations: defaultAdminPriceListRelations,
     })

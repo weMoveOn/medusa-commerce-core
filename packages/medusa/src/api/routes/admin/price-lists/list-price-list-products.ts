@@ -193,7 +193,7 @@ export default async (req: Request, res) => {
   const filterableFields: FilterableProductProps = {
     ...req.filterableFields,
     price_list_id: [id],
-    store_id: req.query.store_id as string,
+    store_id: req.filterableFields.store_id as string,
   }
 
   if (featureFlagRouter.isFeatureEnabled(MedusaV2Flag.key)) {
@@ -228,6 +228,8 @@ export default async (req: Request, res) => {
 export class AdminGetPriceListsPriceListProductsParams extends extendedFindParamsMixin(
   { limit: 50 }
 ) {
+  @IsString()
+  store_id: string
   /**
    * ID to filter products by.
    */
