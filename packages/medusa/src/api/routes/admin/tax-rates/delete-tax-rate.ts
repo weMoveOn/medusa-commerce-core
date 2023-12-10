@@ -55,11 +55,14 @@ import { TaxRateService } from "../../../../services"
  */
 export default async (req, res) => {
   const { id } = req.params
+  const { store_id } = req.query
   const taxRateService: TaxRateService = req.scope.resolve("taxRateService")
 
   const manager: EntityManager = req.scope.resolve("manager")
   await manager.transaction(async (transactionManager) => {
-    return await taxRateService.withTransaction(transactionManager).delete(id)
+    return await taxRateService
+      .withTransaction(transactionManager)
+      .delete(store_id, id)
   })
 
   res.json({

@@ -91,7 +91,6 @@ import { validator } from "../../../../utils/validator"
  *     $ref: "#/components/responses/500_error"
  */
 export default async (req, res) => {
-  const { store_id } = req.query
   const value = await validator(AdminPostTaxRatesTaxRateReq, req.body)
 
   const query = await validator(AdminPostTaxRatesTaxRateParams, req.query)
@@ -102,13 +101,14 @@ export default async (req, res) => {
   await manager.transaction(async (tx) => {
     const txRateService = rateService.withTransaction(tx)
     await txRateService.update(
+      query.store_id,
       req.params.id,
       omit(value, ["products", "product_types", "shipping_options"])
     )
 
     if (isDefined(value.products)) {
       await txRateService.addToProduct(
-        store_id,
+        query.store_id,
         req.params.id,
         value.products,
         true
@@ -117,7 +117,7 @@ export default async (req, res) => {
 
     if (isDefined(value.product_types)) {
       await txRateService.addToProductType(
-        store_id,
+        query.store_id,
         req.params.id,
         value.product_types,
         true
@@ -126,6 +126,7 @@ export default async (req, res) => {
 
     if (isDefined(value.shipping_options)) {
       await txRateService.addToShippingOption(
+        query.store_id,
         req.params.id,
         value.shipping_options,
         true
@@ -138,7 +139,7 @@ export default async (req, res) => {
     query.expand
   )
 
-  const rate = await rateService.retrieve(req.params.id, config)
+  const rate = await rateService.retrieve(query.store_id, req.params.id, config)
   const data = pickByConfig(rate, config)
 
   res.json({ tax_rate: data })
@@ -210,6 +211,8 @@ export class AdminPostTaxRatesTaxRateReq {
  * {@inheritDoc FindParams}
  */
 export class AdminPostTaxRatesTaxRateParams {
+  @IsString()
+  store_id: string
   /**
    * {@inheritDoc FindParams.expand}
    */

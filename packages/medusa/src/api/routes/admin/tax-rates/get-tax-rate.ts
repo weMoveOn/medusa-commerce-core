@@ -1,4 +1,4 @@
-import { IsArray, IsOptional } from "class-validator"
+import { IsArray, IsOptional, IsString } from "class-validator"
 import { getRetrieveConfig, pickByConfig } from "./utils/get-query-config"
 
 import { TaxRate } from "../../../.."
@@ -84,7 +84,7 @@ export default async (req, res) => {
     value.fields as (keyof TaxRate)[],
     value.expand
   )
-  const rate = await rateService.retrieve(req.params.id, config)
+  const rate = await rateService.retrieve(value.store_id, req.params.id, config)
   const data = pickByConfig<TaxRate>(rate, config)
 
   res.json({ tax_rate: data })
@@ -94,6 +94,9 @@ export default async (req, res) => {
  * {@inheritDoc FindParams}
  */
 export class AdminGetTaxRatesTaxRateParams {
+  @IsString()
+  store_id: string
+
   /**
    * {@inheritDoc FindParams.expand}
    */
