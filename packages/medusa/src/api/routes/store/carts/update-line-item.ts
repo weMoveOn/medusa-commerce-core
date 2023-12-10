@@ -113,7 +113,7 @@ export default async (req, res) => {
     })
 
     if (updated.payment_sessions?.length) {
-      await cartService.withTransaction(m).setPaymentSessions(id)
+      await cartService.withTransaction(m).setPaymentSessions(store_id,id)
     }
   })
 

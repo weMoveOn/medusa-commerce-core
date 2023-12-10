@@ -64,6 +64,7 @@ import { defaultRelations } from "."
  *    $ref: "#/components/responses/500_error"
  */
 export default async (req, res) => {
+  const { store_id } = req.query
   const validated = await validator(StorePostAuthReq, req.body)
 
   const authService: AuthService = req.scope.resolve("authService")
@@ -83,7 +84,7 @@ export default async (req, res) => {
   req.session.customer_id = result.customer?.id
 
   const customerService: CustomerService = req.scope.resolve("customerService")
-  const customer = await customerService.retrieve(result.customer?.id || "", {
+  const customer = await customerService.retrieve(store_id,result.customer?.id || "", {
     relations: defaultRelations,
   })
 

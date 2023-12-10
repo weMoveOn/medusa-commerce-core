@@ -86,6 +86,8 @@ import { validator } from "../../../../utils/validator"
  *     $ref: "#/components/responses/500_error"
  */
 export default async (req, res) => {
+    const { store_id } = req.query
+    req.body.store_id = store_id
   const validated = await validator(StorePostCustomersReq, req.body)
 
   const customerService: CustomerService = req.scope.resolve("customerService")
@@ -98,7 +100,7 @@ export default async (req, res) => {
     }
   )
 
-  customer = await customerService.retrieve(customer.id, {
+  customer = await customerService.retrieve(store_id,customer.id, {
     relations: defaultStoreCustomersRelations,
     select: defaultStoreCustomersFields,
   })
@@ -136,6 +138,9 @@ export default async (req, res) => {
  *     type: string
  */
 export class StorePostCustomersReq {
+  @IsString()
+  store_id: string
+
   @IsString()
   @IsOptional()
   first_name: string

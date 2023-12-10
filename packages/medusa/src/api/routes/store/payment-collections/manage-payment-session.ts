@@ -65,6 +65,7 @@ import { PaymentCollectionService } from "../../../../services"
 export default async (req, res) => {
   const data = req.validatedBody as StorePaymentCollectionSessionsReq
   const { id } = req.params
+  const { store_id } = req.query
 
   const customerId = req.user?.customer_id
 
@@ -78,7 +79,7 @@ export default async (req, res) => {
     async (transactionManager) => {
       return await paymentCollectionService
         .withTransaction(transactionManager)
-        .setPaymentSession(id, data, customerId)
+        .setPaymentSession(store_id,id, data, customerId)
     }
   )
 

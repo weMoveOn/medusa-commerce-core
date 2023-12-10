@@ -58,6 +58,7 @@ import { EntityManager } from "typeorm"
 
 export default async (req: Request, res: Response) => {
   const { id } = req.params
+  const store_id = req.query.store_id as string
 
   const customerGroupService: CustomerGroupService = req.scope.resolve(
     "customerGroupService"
@@ -67,7 +68,7 @@ export default async (req: Request, res: Response) => {
   await manager.transaction(async (transactionManager) => {
     return await customerGroupService
       .withTransaction(transactionManager)
-      .delete(id)
+      .delete(store_id,id)
   })
 
   res.json({

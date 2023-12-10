@@ -72,6 +72,7 @@ import { TokenEvents } from "../../../../types/token"
  */
 export default async (req, res) => {
   const { order_ids } = req.validatedBody
+    const { store_id } = req.query
 
   const eventBusService: EventBusService = req.scope.resolve("eventBusService")
   const orderService: OrderService = req.scope.resolve("orderService")
@@ -81,7 +82,7 @@ export default async (req, res) => {
   )
 
   const customerId: string = req.user?.customer_id
-  const customer = await customerService.retrieve(customerId)
+  const customer = await customerService.retrieve(store_id,customerId)
 
   if (!customer.has_account) {
     throw new MedusaError(

@@ -199,16 +199,19 @@ export default class PaymentProviderService extends TransactionBaseService {
 
   /**
    * @deprecated
+   * @param storeId
    * @param providerId
    * @param cart
    */
-  async createSession(providerId: string, cart: Cart): Promise<PaymentSession>
+  async createSession(storeId:string ,providerId: string, cart: Cart): Promise<PaymentSession>
 
   /**
    * Creates a payment session with the given provider.
+   * @param storeId
    * @param sessionInput
    */
   async createSession(
+    storeId: string,
     sessionInput: PaymentSessionInput
   ): Promise<PaymentSession>
 
@@ -221,6 +224,7 @@ export default class PaymentProviderService extends TransactionBaseService {
   async createSession<
     TInput extends string | PaymentSessionInput = string | PaymentSessionInput
   >(
+      storeId: string,
     providerIdOrSessionInput: TInput,
     ...[cart]: TInput extends string ? [Cart] : [never?]
   ): Promise<PaymentSession> {
@@ -271,6 +275,7 @@ export default class PaymentProviderService extends TransactionBaseService {
       const sessionData = paymentResponse.session_data ?? paymentResponse
 
       await this.processUpdateRequestsData(
+          storeId,
         {
           customer: { id: context.customer?.id },
         },
@@ -299,6 +304,7 @@ export default class PaymentProviderService extends TransactionBaseService {
    * @return the payment session
    */
   async refreshSession(
+        storeId: string,
     paymentSession: {
       id: string
       data: Record<string, unknown>
@@ -329,7 +335,7 @@ export default class PaymentProviderService extends TransactionBaseService {
       )
 
       await sessionRepo.remove(session)
-      return await this.createSession(sessionInput)
+      return await this.createSession(storeId,sessionInput)
     })
   }
 
@@ -340,6 +346,7 @@ export default class PaymentProviderService extends TransactionBaseService {
    * @return the payment session
    */
   async updateSession(
+      storeId: string,
     paymentSession: {
       id: string
       data: Record<string, unknown>
@@ -384,6 +391,7 @@ export default class PaymentProviderService extends TransactionBaseService {
       }
 
       await this.processUpdateRequestsData(
+          storeId,
         {
           customer: { id: context.customer?.id },
         },
@@ -933,6 +941,7 @@ export default class PaymentProviderService extends TransactionBaseService {
    * @protected
    */
   protected async processUpdateRequestsData(
+      storeId: string,
     data: { customer?: { id?: string } } = {},
     paymentResponse: PaymentSessionResponse | Record<string, unknown>
   ): Promise<void> {
@@ -945,7 +954,7 @@ export default class PaymentProviderService extends TransactionBaseService {
     if (update_requests.customer_metadata && data.customer?.id) {
       await this.customerService_
         .withTransaction(this.activeManager_)
-        .update(data.customer.id, {
+        .update(storeId,data.customer.id, {
           metadata: update_requests.customer_metadata,
         })
     }

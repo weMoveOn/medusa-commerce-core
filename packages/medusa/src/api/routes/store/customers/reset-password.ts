@@ -69,6 +69,7 @@ import { MedusaError } from "medusa-core-utils"
  *     $ref: "#/components/responses/500_error"
  */
 export default async (req, res) => {
+  const { store_id } = req.query
   const validated = (await validator(
     StorePostCustomersResetPasswordReq,
     req.body
@@ -100,12 +101,12 @@ export default async (req, res) => {
   await manager.transaction(async (transactionManager) => {
     return await customerService
       .withTransaction(transactionManager)
-      .update(customer.id, {
+      .update(store_id,customer.id, {
         password: validated.password,
       })
   })
 
-  customer = await customerService.retrieve(customer.id)
+  customer = await customerService.retrieve(store_id,customer.id)
   res.status(200).json({ customer })
 }
 

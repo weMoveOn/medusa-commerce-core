@@ -138,9 +138,11 @@ class PriceListService extends TransactionBaseService {
   /**
    * Creates a Price List
    * @param priceListObject - the Price List to create
+   * @param storeId
    * @return created Price List
    */
   async create(
+      storeId:string,
     priceListObject: CreatePriceListInput
   ): Promise<PriceList | never> {
     return await this.atomicPhase_(async (manager: EntityManager) => {
@@ -173,7 +175,7 @@ class PriceListService extends TransactionBaseService {
       }
 
       if (customer_groups) {
-        await this.upsertCustomerGroups_(priceList.id, customer_groups)
+        await this.upsertCustomerGroups_(storeId,priceList.id, customer_groups)
       }
 
       return await this.retrieve(priceList.id, {
@@ -184,11 +186,12 @@ class PriceListService extends TransactionBaseService {
 
   /**
    * Updates a Price List
+   * @param storeId
    * @param {string} id - the id of the Product List to update
    * @param {UpdatePriceListInput} update - the update to apply
    * @returns {Promise<PriceList>} updated Price List
    */
-  async update(id: string, update: UpdatePriceListInput): Promise<PriceList> {
+  async update(storeId:string,id: string, update: UpdatePriceListInput): Promise<PriceList> {
     return await this.atomicPhase_(async (manager: EntityManager) => {
       const priceListRepo = manager.withRepository(this.priceListRepo_)
       const moneyAmountRepo = manager.withRepository(this.moneyAmountRepo_)
@@ -213,7 +216,7 @@ class PriceListService extends TransactionBaseService {
       }
 
       if (customer_groups) {
-        await this.upsertCustomerGroups_(id, customer_groups)
+        await this.upsertCustomerGroups_(storeId,id, customer_groups)
       }
 
       for (const [key, value] of Object.entries(rest)) {
@@ -344,6 +347,7 @@ class PriceListService extends TransactionBaseService {
   }
 
   protected async upsertCustomerGroups_(
+      storeId:string,
     priceListId: string,
     customerGroups: { id: string }[]
   ): Promise<void> {
@@ -355,7 +359,7 @@ class PriceListService extends TransactionBaseService {
     const groups: CustomerGroup[] = []
 
     for (const cg of customerGroups) {
-      const customerGroup = await this.customerGroupService_.retrieve(cg.id)
+      const customerGroup = await this.customerGroupService_.retrieve(storeId,cg.id)
       groups.push(customerGroup)
     }
 

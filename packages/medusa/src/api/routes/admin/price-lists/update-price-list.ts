@@ -86,6 +86,7 @@ import { getPriceListPricingModule } from "./modules-queries"
  */
 export default async (req, res) => {
   const { id } = req.params
+  const store_id = req.query.store_id as string
   let priceList
   const featureFlagRouter = req.scope.resolve("featureFlagRouter")
   const manager: EntityManager = req.scope.resolve("manager")
@@ -131,7 +132,7 @@ export default async (req, res) => {
     await manager.transaction(async (transactionManager) => {
       return await priceListService
         .withTransaction(transactionManager)
-        .update(id, validated)
+        .update(store_id,id, validated)
     })
 
     priceList = await priceListService.retrieve(id, {

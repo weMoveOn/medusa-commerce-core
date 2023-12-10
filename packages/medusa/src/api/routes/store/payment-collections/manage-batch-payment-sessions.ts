@@ -104,6 +104,7 @@ import { PaymentCollectionService } from "../../../../services"
 export default async (req, res) => {
   const data = req.validatedBody as StorePostPaymentCollectionsBatchSessionsReq
   const { id } = req.params
+  const { store_id } = req.query
 
   const customerId = req.user?.customer_id
 
@@ -116,7 +117,7 @@ export default async (req, res) => {
     async (transactionManager) => {
       return await paymentCollectionService
         .withTransaction(transactionManager)
-        .setPaymentSessionsBatch(id, data.sessions, customerId)
+        .setPaymentSessionsBatch(store_id,id, data.sessions, customerId)
     }
   )
 

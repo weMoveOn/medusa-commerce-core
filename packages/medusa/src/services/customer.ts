@@ -62,12 +62,13 @@ class CustomerService extends TransactionBaseService {
    * The token will be signed with the customer's current password hash as a
    * secret a long side a payload with userId and the expiry time for the token,
    * which is always 15 minutes.
+   * @param storeId
    * @param {string} customerId - the customer to reset the password for
    * @return {string} the generated JSON web token
    */
-  async generateResetPasswordToken(customerId: string): Promise<string> {
+  async generateResetPasswordToken(storeId:string,customerId: string): Promise<string> {
     return await this.atomicPhase_(async (manager) => {
-      const customer = await this.retrieve(customerId, {
+      const customer = await this.retrieve(storeId,customerId, {
         select: [
           "id",
           "has_account",
@@ -247,10 +248,11 @@ class CustomerService extends TransactionBaseService {
   }
 
   async listByEmail(
+    store_id: string,
     email: string,
     config: FindConfig<Customer> = { relations: [], skip: 0, take: 2 }
   ): Promise<Customer[]> {
-    return await this.list({ email: email.toLowerCase() }, config)
+    return await this.list({ store_id: store_id,email: email.toLowerCase() }, config)
   }
   /**
    * Gets a customer by phone.
@@ -267,11 +269,13 @@ class CustomerService extends TransactionBaseService {
 
   /**
    * Gets a customer by id.
+   * @param storeId - the id of the store to get the customer of the store
    * @param {string} customerId - the id of the customer to get.
    * @param {Object} config - the config object containing query settings
    * @return {Promise<Customer>} the customer document.
    */
   async retrieve(
+      storeId: string,
     customerId: string,
     config: FindConfig<Customer> = {}
   ): Promise<Customer> {
@@ -282,7 +286,7 @@ class CustomerService extends TransactionBaseService {
       )
     }
 
-    return this.retrieve_({ id: customerId }, config)
+    return this.retrieve_({store_id:storeId, id: customerId }, config)
   }
 
   /**
@@ -311,11 +315,11 @@ class CustomerService extends TransactionBaseService {
 
       customer.email = customer.email.toLowerCase()
 
-      const { email, password } = customer
+      const { email, password, store_id } = customer
 
       // should be a list of customers at this point
-      const existing = await this.listByEmail(email).catch(() => undefined)
-
+      const existing = await this.listByEmail(store_id,email).catch(() => undefined)
+      console.log("existing", existing)
       // should validate that "existing.some(acc => acc.has_account) && password"
       if (existing) {
         if (existing.some((customer) => customer.has_account) && password) {
@@ -354,12 +358,14 @@ class CustomerService extends TransactionBaseService {
 
   /**
    * Updates a customer.
+   * @param storeId
    * @param {string} customerId - the id of the variant. Must be a string that
    *   can be casted to an ObjectId
    * @param {object} update - an object with the update values.
    * @return {Promise} resolves to the update result.
    */
   async update(
+      storeId: string,
     customerId: string,
     update: UpdateCustomerInput
   ): Promise<Customer> {
@@ -368,7 +374,7 @@ class CustomerService extends TransactionBaseService {
         this.customerRepository_
       )
 
-      const customer = await this.retrieve(customerId)
+      const customer = await this.retrieve(storeId,customerId)
 
       const {
         password,
@@ -402,6 +408,7 @@ class CustomerService extends TransactionBaseService {
         customer.groups = groups as CustomerGroup[]
       }
 
+      customer.store_id = storeId
       const updated = await customerRepository.save(customer)
 
       await this.eventBusService_
@@ -517,6 +524,7 @@ class CustomerService extends TransactionBaseService {
   }
 
   async addAddress(
+    storeId: string,
     customerId: string,
     address: AddressCreatePayload
   ): Promise<Customer | Address> {
@@ -525,7 +533,7 @@ class CustomerService extends TransactionBaseService {
 
       address.country_code = address.country_code.toLowerCase()
 
-      const customer = await this.retrieve(customerId, {
+      const customer = await this.retrieve(storeId,customerId, {
         relations: ["shipping_addresses"],
       })
 

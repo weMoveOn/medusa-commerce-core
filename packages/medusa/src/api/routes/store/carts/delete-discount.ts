@@ -54,6 +54,7 @@ import { cleanResponseData } from "../../../../utils/clean-response-data"
  */
 export default async (req, res) => {
   const { id, code } = req.params
+  const { store_id } = req.query
 
   const manager: EntityManager = req.scope.resolve("manager")
   const cartService: CartService = req.scope.resolve("cartService")
@@ -62,7 +63,7 @@ export default async (req, res) => {
 
   await manager.transaction(async (m) => {
     // Remove the discount
-    await cartService.withTransaction(m).removeDiscount(id, code)
+    await cartService.withTransaction(m).removeDiscount(store_id,id, code)
 
     // If the cart has payment sessions update these
     const updated = await cartService.withTransaction(m).retrieve(id, {
@@ -70,7 +71,7 @@ export default async (req, res) => {
     })
 
     if (updated.payment_sessions?.length) {
-      await cartService.withTransaction(m).setPaymentSessions(id)
+      await cartService.withTransaction(m).setPaymentSessions(store_id,id)
     }
   })
 

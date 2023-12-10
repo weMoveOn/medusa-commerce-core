@@ -85,6 +85,7 @@ import { validator } from "../../../../utils/validator"
  */
 export default async (req, res) => {
   const id = req.user.customer_id
+  const { store_id } = req.query
 
   const validated = await validator(
     StorePostCustomersCustomerAddressesReq,
@@ -97,10 +98,10 @@ export default async (req, res) => {
   await manager.transaction(async (transactionManager) => {
     return await customerService
       .withTransaction(transactionManager)
-      .addAddress(id, validated.address)
+      .addAddress(store_id,id, validated.address)
   })
 
-  const customer = await customerService.retrieve(id, {
+  const customer = await customerService.retrieve(store_id,id, {
     relations: defaultStoreCustomersRelations,
     select: defaultStoreCustomersFields,
   })

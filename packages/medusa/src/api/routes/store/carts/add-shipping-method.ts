@@ -64,6 +64,7 @@ import { cleanResponseData } from "../../../../utils/clean-response-data"
  */
 export default async (req, res) => {
   const { id } = req.params
+  const {store_id} = req.query
 
   const validated = req.validatedBody
 
@@ -87,7 +88,7 @@ export default async (req, res) => {
     })
 
     if (updated.payment_sessions?.length) {
-      await txCartService.setPaymentSessions(id)
+      await txCartService.setPaymentSessions(store_id,id)
     }
   })
 
