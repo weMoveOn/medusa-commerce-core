@@ -65,6 +65,7 @@ class TaxRateService extends TransactionBaseService {
   }
 
   async retrieve(
+    storeId: string,
     taxRateId: string,
     config: FindConfig<TaxRate> = {}
   ): Promise<TaxRate> {
@@ -78,7 +79,7 @@ class TaxRateService extends TransactionBaseService {
     const taxRateRepo = this.activeManager_.withRepository(
       this.taxRateRepository_
     )
-    const query = buildQuery({ id: taxRateId }, config)
+    const query = buildQuery({ id: taxRateId, store_id: storeId }, config)
 
     const taxRate = await taxRateRepo.findOneWithResolution(query)
     if (!taxRate) {
@@ -91,7 +92,9 @@ class TaxRateService extends TransactionBaseService {
     return taxRate
   }
 
-  async create(data: CreateTaxRateInput): Promise<TaxRate> {
+  async create(
+    data: CreateTaxRateInput & { store_id: string }
+  ): Promise<TaxRate> {
     return await this.atomicPhase_(async (manager: EntityManager) => {
       const taxRateRepo = manager.withRepository(this.taxRateRepository_)
 
@@ -107,10 +110,14 @@ class TaxRateService extends TransactionBaseService {
     })
   }
 
-  async update(id: string, data: UpdateTaxRateInput): Promise<TaxRate> {
+  async update(
+    storeId: string,
+    id: string,
+    data: UpdateTaxRateInput
+  ): Promise<TaxRate> {
     return await this.atomicPhase_(async (manager: EntityManager) => {
       const taxRateRepo = manager.withRepository(this.taxRateRepository_)
-      const taxRate = await this.retrieve(id)
+      const taxRate = await this.retrieve(storeId, id)
 
       for (const [k, v] of Object.entries(data)) {
         if (isDefined(v)) {
@@ -122,14 +129,26 @@ class TaxRateService extends TransactionBaseService {
     })
   }
 
-  async delete(id: string | string[]): Promise<void> {
+  async delete(storeId: string, id: string | string[]): Promise<void> {
     return await this.atomicPhase_(async (manager: EntityManager) => {
       const taxRateRepo = manager.withRepository(this.taxRateRepository_)
-      const query = buildQuery({ id })
+      const query = buildQuery({ id, store_id: storeId })
       if (Array.isArray(id)) {
-        await taxRateRepo.delete({ id: In(id) })
+        const res = await taxRateRepo.delete({ id: In(id), store_id: storeId })
+        if (res.affected === 0) {
+          throw new MedusaError(
+            MedusaError.Types.NOT_FOUND,
+            `TaxRate  was not found`
+          )
+        }
       } else {
-        await taxRateRepo.delete({ id: id })
+        const res = await taxRateRepo.delete({ id: id, store_id: storeId })
+        if (res.affected === 0) {
+          throw new MedusaError(
+            MedusaError.Types.NOT_FOUND,
+            `TaxRate with ${id} was not found`
+          )
+        }
       }
     })
   }
@@ -203,6 +222,16 @@ class TaxRateService extends TransactionBaseService {
 
     const result = await this.atomicPhase_(
       async (manager: EntityManager) => {
+        if (typeof ids === "string") {
+          await this.retrieve(storeId, id, { select: ["id"] })
+        } else {
+          await promiseAll([
+            ...ids.map(async (pId) =>
+              this.productService_.retrieve(pId, storeId, { select: ["id"] })
+            ),
+          ])
+        }
+
         const taxRateRepo = manager.withRepository(this.taxRateRepository_)
         return await taxRateRepo.addToProduct(id, ids, replace)
       },
@@ -214,7 +243,7 @@ class TaxRateService extends TransactionBaseService {
           // will try to retrieve all of the resources and will fail when
           // something is not found.
           await promiseAll([
-            this.retrieve(id, { select: ["id"] }),
+            this.retrieve(storeId, id, { select: ["id"] }),
             ...ids.map(async (pId) =>
               this.productService_.retrieve(pId, storeId, { select: ["id"] })
             ),
@@ -251,7 +280,7 @@ class TaxRateService extends TransactionBaseService {
           // will try to retrieve all of the resources and will fail when
           // something is not found.
           await promiseAll([
-            this.retrieve(id, {
+            this.retrieve(storeId, id, {
               select: ["id"],
             }) as Promise<unknown>,
             ...ids.map(
@@ -267,6 +296,7 @@ class TaxRateService extends TransactionBaseService {
   }
 
   async addToShippingOption(
+    storeId: string,
     id: string,
     optionIds: string | string[],
     replace = false
@@ -281,7 +311,9 @@ class TaxRateService extends TransactionBaseService {
     return await this.atomicPhase_(
       async (manager: EntityManager) => {
         const taxRateRepo = manager.withRepository(this.taxRateRepository_)
-        const taxRate = await this.retrieve(id, { select: ["id", "region_id"] })
+        const taxRate = await this.retrieve(storeId, id, {
+          select: ["id", "region_id"],
+        })
         const options = await this.shippingOptionService_.list(
           { id: ids },
           { select: ["id", "region_id"] }
@@ -304,7 +336,7 @@ class TaxRateService extends TransactionBaseService {
           // will try to retrieve all of the resources and will fail when
           // something is not found.
           await promiseAll([
-            this.retrieve(id, { select: ["id"] }),
+            this.retrieve(storeId, id, { select: ["id"] }),
             ...ids.map(async (sId) =>
               this.shippingOptionService_.retrieve(sId, { select: ["id"] })
             ),

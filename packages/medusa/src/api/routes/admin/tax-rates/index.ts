@@ -2,11 +2,12 @@ import { Router } from "express"
 import { TaxRate } from "../../../.."
 import { DeleteResponse, PaginatedResponse } from "../../../../types/common"
 import middlewares from "../../../middlewares"
+import { processIdentifierMiddleware } from "../../../middlewares/validators/identifier-existence"
 
 const route = Router()
 
 export default (app) => {
-  app.use("/tax-rates", route)
+  app.use("/tax-rates", processIdentifierMiddleware, route)
 
   /**
    * List tax rates
@@ -94,6 +95,7 @@ export const defaultAdminTaxRatesFields: (keyof TaxRate)[] = [
   "region_id",
   "created_at",
   "updated_at",
+  "store_id",
 ]
 
 /**

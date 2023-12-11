@@ -15,9 +15,19 @@ import { Product } from "./product"
 import { ProductType } from "./product-type"
 import { Region } from "./region"
 import { ShippingOption } from "./shipping-option"
+import { Store } from "./store"
 
 @Entity()
 export class TaxRate extends BaseEntity {
+  // new added filed
+
+  @Column({ type: "text", nullable: true })
+  store_id: string | null
+
+  @ManyToOne(() => Store, { onDelete: "CASCADE" })
+  @JoinColumn({ name: "store_id" })
+  store: Store
+
   @Column({ type: "real", nullable: true })
   rate: number | null
 

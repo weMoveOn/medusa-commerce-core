@@ -67,7 +67,6 @@ import { validator } from "../../../../utils/validator"
  */
 export default async (req, res) => {
   const { store_id } = req.query
-  console.log(store_id, "store_id")
   const validated = await validator(AdminPostShippingProfilesReq, req.body)
 
   const profileService: ShippingProfileService = req.scope.resolve(
