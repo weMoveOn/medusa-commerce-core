@@ -134,9 +134,21 @@ class TaxRateService extends TransactionBaseService {
       const taxRateRepo = manager.withRepository(this.taxRateRepository_)
       const query = buildQuery({ id, store_id: storeId })
       if (Array.isArray(id)) {
-        await taxRateRepo.delete({ id: In(id), store_id: storeId })
+        const res = await taxRateRepo.delete({ id: In(id), store_id: storeId })
+        if (res.affected === 0) {
+          throw new MedusaError(
+            MedusaError.Types.NOT_FOUND,
+            `TaxRate  was not found`
+          )
+        }
       } else {
-        await taxRateRepo.delete({ id: id, store_id: storeId })
+        const res = await taxRateRepo.delete({ id: id, store_id: storeId })
+        if (res.affected === 0) {
+          throw new MedusaError(
+            MedusaError.Types.NOT_FOUND,
+            `TaxRate with ${id} was not found`
+          )
+        }
       }
     })
   }
@@ -210,6 +222,16 @@ class TaxRateService extends TransactionBaseService {
 
     const result = await this.atomicPhase_(
       async (manager: EntityManager) => {
+        if (typeof ids === "string") {
+          await this.retrieve(storeId, id, { select: ["id"] })
+        } else {
+          await promiseAll([
+            ...ids.map(async (pId) =>
+              this.productService_.retrieve(pId, storeId, { select: ["id"] })
+            ),
+          ])
+        }
+
         const taxRateRepo = manager.withRepository(this.taxRateRepository_)
         return await taxRateRepo.addToProduct(id, ids, replace)
       },
