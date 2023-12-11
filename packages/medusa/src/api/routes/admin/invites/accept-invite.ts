@@ -82,6 +82,7 @@ import { EntityManager } from "typeorm"
  */
 export default async (req, res) => {
   const validated = await validator(AdminPostInvitesInviteAcceptReq, req.body)
+  const query = await validator(userAcceptInvitesQuery, req.query)
 
   const inviteService: InviteService = req.scope.resolve("inviteService")
 
@@ -89,7 +90,7 @@ export default async (req, res) => {
   await manager.transaction(async (transactionManager) => {
     return await inviteService
       .withTransaction(transactionManager)
-      .accept(validated.token, validated.user)
+      .accept(query.store_id, validated.token, validated.user)
   })
 
   res.sendStatus(200)
@@ -118,6 +119,11 @@ export class AdminPostInvitesInviteAcceptUserReq {
    */
   @IsString()
   password: string
+}
+
+export class userAcceptInvitesQuery {
+  @IsString()
+  store_id: string
 }
 
 /**
