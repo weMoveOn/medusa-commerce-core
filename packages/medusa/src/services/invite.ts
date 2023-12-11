@@ -82,6 +82,7 @@ class InviteService extends TransactionBaseService {
    * @return the result of create
    */
   async create(
+    store_id: string,
     user: string,
     role: UserRoles,
     validDuration = DEFAULT_VALID_DURATION
@@ -93,7 +94,7 @@ class InviteService extends TransactionBaseService {
       const userRepo = this.activeManager_.withRepository(UserRepository)
 
       const userEntity = await userRepo.findOne({
-        where: { email: user },
+        where: { email: user, store_id },
       })
 
       if (userEntity) {
@@ -104,7 +105,7 @@ class InviteService extends TransactionBaseService {
       }
 
       let invite = await inviteRepository.findOne({
-        where: { user_email: user },
+        where: { user_email: user, store_id },
       })
       // if user is trying to send another invite for the same account + email, but with a different role
       // then change the role on the invite as long as the invite has not been accepted yet
@@ -118,6 +119,7 @@ class InviteService extends TransactionBaseService {
           role,
           token: "",
           user_email: user,
+          store_id,
         })
 
         invite = await inviteRepository.save(created)
@@ -127,6 +129,7 @@ class InviteService extends TransactionBaseService {
         invite_id: invite.id,
         role,
         user_email: user,
+        store_id,
       })
 
       invite.expires_at = new Date()
@@ -152,23 +155,38 @@ class InviteService extends TransactionBaseService {
    *   castable as an ObjectId
    * @return the result of the delete operation.
    */
-  async delete(inviteId): Promise<void> {
+  async delete(storeId: string, inviteId): Promise<void> {
     return await this.atomicPhase_(async (manager) => {
       const inviteRepo: typeof InviteRepository =
         manager.withRepository(InviteRepository)
 
       // Should not fail, if invite does not exist, since delete is idempotent
-      const invite = await inviteRepo.findOne({ where: { id: inviteId } })
+      const invite = await inviteRepo.findOne({
+        where: { id: inviteId, store_id: storeId },
+      })
 
       if (!invite) {
-        return
+        throw new MedusaError(
+          MedusaError.Types.NOT_FOUND,
+          `Invite id ${inviteId} not found`
+        )
       }
 
-      await inviteRepo.delete({ id: invite.id })
+      const response = await inviteRepo.delete({
+        id: invite.id,
+        store_id: storeId,
+      })
+
+      if (response.affected === 0) {
+        throw new MedusaError(
+          MedusaError.Types.NOT_FOUND,
+          `Invite id ${inviteId} not found`
+        )
+      }
     })
   }
 
-  async accept(token, user_): Promise<User> {
+  async accept(visitedStoreId: string, token, user_): Promise<User> {
     let decoded
     try {
       decoded = this.verifyToken(token)
@@ -179,7 +197,15 @@ class InviteService extends TransactionBaseService {
       )
     }
 
-    const { invite_id, user_email } = decoded
+    const { invite_id, user_email, store_id: originalStoreId } = decoded
+
+    // check for  original store id matches visited store id
+    if (originalStoreId === visitedStoreId) {
+      throw new MedusaError(
+        MedusaError.Types.INVALID_DATA,
+        "Token is not valid"
+      )
+    }
 
     return await this.atomicPhase_(async (m) => {
       const userRepo = m.withRepository(this.userRepo_)
@@ -187,7 +213,9 @@ class InviteService extends TransactionBaseService {
         this.inviteRepository_
       )
 
-      const invite = await inviteRepo.findOne({ where: { id: invite_id } })
+      const invite = await inviteRepo.findOne({
+        where: { id: invite_id, store_id: originalStoreId },
+      })
 
       if (
         !invite ||

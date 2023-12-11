@@ -1,5 +1,7 @@
 import { EntityManager } from "typeorm"
 import InviteService from "../../../../services/invite"
+import { validator } from "../../../../utils/validator"
+import { IsString } from "class-validator"
 
 /**
  * @oas [delete] /admin/invites/{invite_id}
@@ -55,11 +57,14 @@ import InviteService from "../../../../services/invite"
  */
 export default async (req, res) => {
   const { invite_id } = req.params
+  const query = await validator(AdminDeleteInvitesQuery, req.query)
 
   const inviteService: InviteService = req.scope.resolve("inviteService")
   const manager: EntityManager = req.scope.resolve("manager")
   await manager.transaction(async (transactionManager) => {
-    await inviteService.withTransaction(transactionManager).delete(invite_id)
+    await inviteService
+      .withTransaction(transactionManager)
+      .delete(query.store_id, invite_id)
   })
 
   res.status(200).send({
@@ -67,4 +72,9 @@ export default async (req, res) => {
     object: "invite",
     deleted: true,
   })
+}
+
+export class AdminDeleteInvitesQuery {
+  @IsString()
+  store_id: string
 }

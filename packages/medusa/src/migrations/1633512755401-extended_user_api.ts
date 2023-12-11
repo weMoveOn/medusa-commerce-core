@@ -27,9 +27,9 @@ export class extendedUserApi1633512755401 implements MigrationInterface {
     await queryRunner.query(
       `ALTER TABLE "store" ADD "invite_link_template" character varying`
     )
-    await queryRunner.query(
-      `CREATE UNIQUE INDEX "IDX_6b0ce4b4bcfd24491510bf19d1" ON "invite" ("user_email")`
-    )
+    // await queryRunner.query(
+    //   `CREATE UNIQUE INDEX "IDX_6b0ce4b4bcfd24491510bf19d1" ON "invite" ("user_email")`
+    // )
     await queryRunner.query(`DROP INDEX "IDX_e12875dfb3b1d92d7d7c5377e2"`)
     await queryRunner.query(
       `CREATE UNIQUE INDEX "IDX_ba8de19442d86957a3aa3b5006" ON "user" ("email") WHERE deleted_at IS NULL`
@@ -44,9 +44,7 @@ export class extendedUserApi1633512755401 implements MigrationInterface {
     await queryRunner.query(`DROP INDEX "IDX_6b0ce4b4bcfd24491510bf19d1"`)
     await queryRunner.query(`ALTER TABLE "user" DROP COLUMN "role"`)
     await queryRunner.query(`DROP TYPE "user_role_enum"`)
-    await queryRunner.query(
-      `ALTER TABLE "invite" DROP COLUMN "expires_at"`
-    )
+    await queryRunner.query(`ALTER TABLE "invite" DROP COLUMN "expires_at"`)
     await queryRunner.query(`ALTER TABLE "invite" DROP COLUMN "token"`)
 
     await queryRunner.query(`DROP TABLE "invite"`)
