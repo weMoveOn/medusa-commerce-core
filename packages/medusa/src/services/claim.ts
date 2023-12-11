@@ -474,7 +474,7 @@ export default class ClaimService extends TransactionBaseService {
         }
 
         if (return_shipping) {
-          await this.returnService_.withTransaction(transactionManager).create({
+          await this.returnService_.withTransaction(transactionManager).create(storeId,{
             refund_amount: toRefund,
             order_id: order.id,
             claim_order_id: result.id,

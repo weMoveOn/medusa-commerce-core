@@ -66,6 +66,7 @@ import { cleanResponseData } from "../../../../utils/clean-response-data"
  */
 export default async (req, res) => {
   const { id, swap_id } = req.params
+  const { store_id } = req.query
 
   const orderService: OrderService = req.scope.resolve("orderService")
   const swapService: SwapService = req.scope.resolve("swapService")
@@ -75,7 +76,7 @@ export default async (req, res) => {
     await swapService.withTransaction(manager).processDifference(swap_id)
   })
 
-  const order = await orderService.retrieveWithTotals(id, req.retrieveConfig, {
+  const order = await orderService.retrieveWithTotals(store_id,id, req.retrieveConfig, {
     includes: req.includes,
   })
 

@@ -92,6 +92,7 @@ export default async (req, res) => {
   }
 
   const orders = await orderService.list(
+      store_id,
     { id: order_ids },
     { select: ["id", "email"] }
   )

@@ -87,6 +87,7 @@ import { defaultRelations } from "."
  */
 export default async (req, res) => {
   const { id } = req.params
+  const { store_id } = req.query
 
   const validated = await validator(AdminPostReturnsReturnReceiveReq, req.body)
 
@@ -97,7 +98,7 @@ export default async (req, res) => {
 
   let receivedReturn
   await entityManager.transaction(async (manager) => {
-    let refundAmount = validated.refund
+    let refundAmount = validated.refund as number
 
     if (isDefined(validated.refund) && validated.refund! < 0) {
       refundAmount = 0
@@ -105,7 +106,7 @@ export default async (req, res) => {
 
     receivedReturn = await returnService
       .withTransaction(manager)
-      .receive(id, validated.items, refundAmount, true, {
+      .receive(store_id,id, validated.items, refundAmount, true, {
         locationId: validated.location_id,
       })
 
@@ -113,6 +114,7 @@ export default async (req, res) => {
       await orderService
         .withTransaction(manager)
         .registerReturnReceived(
+            store_id,
           receivedReturn.order_id,
           receivedReturn,
           refundAmount

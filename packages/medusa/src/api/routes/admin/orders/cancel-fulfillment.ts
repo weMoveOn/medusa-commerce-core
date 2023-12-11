@@ -70,6 +70,7 @@ import { promiseAll } from "@medusajs/utils"
  */
 export default async (req, res) => {
   const { id, fulfillment_id } = req.params
+  const { store_id } = req.query
 
   const orderService: OrderService = req.scope.resolve("orderService")
   const inventoryService: IInventoryService =
@@ -93,7 +94,7 @@ export default async (req, res) => {
   await manager.transaction(async (transactionManager) => {
     await orderService
       .withTransaction(transactionManager)
-      .cancelFulfillment(fulfillment_id)
+      .cancelFulfillment(store_id,fulfillment_id)
 
     const fulfillment = await fulfillmentService
       .withTransaction(transactionManager)
@@ -107,7 +108,7 @@ export default async (req, res) => {
     }
   })
 
-  const order = await orderService.retrieveWithTotals(id, req.retrieveConfig, {
+  const order = await orderService.retrieveWithTotals(store_id,id, req.retrieveConfig, {
     includes: req.includes,
   })
 

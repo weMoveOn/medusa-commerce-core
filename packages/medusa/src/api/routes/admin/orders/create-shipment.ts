@@ -84,6 +84,7 @@ import { cleanResponseData } from "../../../../utils/clean-response-data"
  */
 export default async (req, res) => {
   const { id } = req.params
+  const { store_id } = req.query
 
   const validated = req.validatedBody
 
@@ -94,6 +95,7 @@ export default async (req, res) => {
     return await orderService
       .withTransaction(transactionManager)
       .createShipment(
+          store_id,
         id,
         validated.fulfillment_id,
         validated.tracking_numbers?.map((n) => ({
@@ -106,7 +108,7 @@ export default async (req, res) => {
       )
   })
 
-  const order = await orderService.retrieveWithTotals(id, req.retrieveConfig, {
+  const order = await orderService.retrieveWithTotals(store_id,id, req.retrieveConfig, {
     includes: req.includes,
   })
 

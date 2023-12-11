@@ -66,6 +66,7 @@ import { cleanResponseData } from "../../../../utils/clean-response-data"
  */
 export default async (req, res) => {
   const { id, claim_id } = req.params
+  const { store_id } = req.query
 
   const claimService: ClaimService = req.scope.resolve("claimService")
   const orderService: OrderService = req.scope.resolve("orderService")
@@ -86,7 +87,7 @@ export default async (req, res) => {
       .cancel(claim_id)
   })
 
-  const order = await orderService.retrieveWithTotals(id, req.retrieveConfig, {
+  const order = await orderService.retrieveWithTotals(store_id,id, req.retrieveConfig, {
     includes: req.includes,
   })
 

@@ -26,10 +26,10 @@ export class Customer extends SoftDeletableEntity {
 
   // new filed added start
   @Column({ nullable: true })
-  store_id?: string
+  store_id: string
   @ManyToOne(() => Store, (store) => store.customers)
   @JoinColumn({ name: "store_id", referencedColumnName: "id" })
-  store?: Store
+  store: Store
   // new filed added end
   @Index()
   @Column()

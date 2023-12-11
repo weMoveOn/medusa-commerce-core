@@ -123,6 +123,8 @@ export default async (req, res) => {
     return
   }
 
+  console.log("idempotencyKey from 127",idempotencyKey)
+
   res.setHeader("Access-Control-Expose-Headers", "Idempotency-Key")
   res.setHeader("Idempotency-Key", idempotencyKey.idempotency_key)
 
@@ -419,6 +421,10 @@ export default async (req, res) => {
  *        url: "https://docs.medusajs.com/development/entities/overview#metadata-attribute"
  */
 export class AdminPostOrdersOrderClaimsReq {
+  @IsString()
+  @IsNotEmpty()
+  store_id: string
+
   @IsEnum(ClaimType)
   @IsNotEmpty()
   type: ClaimTypeValue
@@ -544,4 +550,8 @@ class AdditionalItem {
   quantity: number
 }
 
-export class AdminPostOrdersOrderClaimsParams extends FindParams {}
+export class AdminPostOrdersOrderClaimsParams extends FindParams {
+    @IsString()
+    @IsNotEmpty()
+    store_id: string
+}

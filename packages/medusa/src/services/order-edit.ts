@@ -489,7 +489,7 @@ export default class OrderEditService extends TransactionBaseService {
     await lineItemAdjustmentServiceTx.createAdjustments(localCart)
   }
 
-  async decorateTotals(orderEdit: OrderEdit): Promise<OrderEdit> {
+  async decorateTotals(storeId:string,orderEdit: OrderEdit): Promise<OrderEdit> {
     const { order_id, items } = await this.retrieve(orderEdit.id, {
       select: ["id", "order_id", "items"],
       relations: [
@@ -504,7 +504,7 @@ export default class OrderEditService extends TransactionBaseService {
       this.activeManager_
     )
 
-    const order = await orderServiceTx.retrieve(order_id, {
+    const order = await orderServiceTx.retrieve(storeId,order_id, {
       relations: [
         "discounts",
         "discounts.rule",

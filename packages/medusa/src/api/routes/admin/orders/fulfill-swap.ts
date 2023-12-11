@@ -80,6 +80,7 @@ import { updateInventoryAndReservations } from "./create-fulfillment"
  */
 export default async (req, res) => {
   const { id, swap_id } = req.params
+  const { store_id } = req.query
 
   const validated = await validator(
     AdminPostOrdersOrderSwapsSwapFulfillmentsReq,
@@ -138,7 +139,7 @@ export default async (req, res) => {
     }
   })
 
-  const order = await orderService.retrieveWithTotals(id, req.retrieveConfig, {
+  const order = await orderService.retrieveWithTotals(store_id,id, req.retrieveConfig, {
     includes: req.includes,
   })
 

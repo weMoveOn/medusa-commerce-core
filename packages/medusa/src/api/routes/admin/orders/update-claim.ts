@@ -85,6 +85,7 @@ import { cleanResponseData } from "../../../../utils/clean-response-data"
  */
 export default async (req, res) => {
   const { id, claim_id } = req.params
+  const {store_id} = req.query
 
   const validated = await validator(
     AdminPostOrdersOrderClaimsClaimReq,
@@ -101,7 +102,7 @@ export default async (req, res) => {
       .update(claim_id, validated)
   })
 
-  const data = await orderService.retrieveWithTotals(id, req.retrieveConfig, {
+  const data = await orderService.retrieveWithTotals(store_id,id, req.retrieveConfig, {
     includes: req.includes,
   })
 

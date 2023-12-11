@@ -482,7 +482,7 @@ class CartCompletionStrategy extends AbstractCartCompletionStrategy {
       }
     }
 
-    order = await orderServiceTx.retrieveWithTotals(order.id, {
+    order = await orderServiceTx.retrieveWithTotals(storeId,order.id, {
       relations: ["shipping_address", "items", "payments"],
     })
 

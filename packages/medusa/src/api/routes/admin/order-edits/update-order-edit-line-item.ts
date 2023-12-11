@@ -72,6 +72,7 @@ import {
  */
 export default async (req: Request, res: Response) => {
   const { id, item_id } = req.params
+    const { store_id } = req.query as { store_id: string }
 
   const validatedBody =
     req.validatedBody as AdminPostOrderEditsEditLineItemsLineItemReq
@@ -92,7 +93,7 @@ export default async (req: Request, res: Response) => {
         relations: defaultOrderEditRelations,
       })
 
-      await orderEditTx.decorateTotals(orderEdit)
+      await orderEditTx.decorateTotals(store_id,orderEdit)
 
       return orderEdit
     }

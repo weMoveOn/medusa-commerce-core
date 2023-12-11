@@ -197,6 +197,7 @@ export default async (req: Request, res: Response) => {
   }
 
   const [orders, count] = await orderService.listAndCount(
+      store_id,
     req.filterableFields,
     req.listConfig
   )

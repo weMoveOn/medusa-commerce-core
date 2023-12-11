@@ -55,6 +55,7 @@ import { defaultReturnCancelFields, defaultReturnCancelRelations } from "."
  */
 export default async (req, res) => {
   const { id } = req.params
+  const { store_id } = req.query
 
   const returnService: ReturnService = req.scope.resolve("returnService")
   const orderService: OrderService = req.scope.resolve("orderService")
@@ -72,7 +73,7 @@ export default async (req, res) => {
     result = await claimService.retrieve(result.claim_order_id)
   }
 
-  const order = await orderService.retrieve(result.order_id!, {
+  const order = await orderService.retrieve(store_id,result.order_id!, {
     select: defaultReturnCancelFields,
     relations: defaultReturnCancelRelations,
   })

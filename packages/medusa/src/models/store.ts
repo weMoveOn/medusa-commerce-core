@@ -26,6 +26,7 @@ import { User } from "./user"
 import { ProductCollection } from "./product-collection"
 import {Customer} from "./customer";
 import {CustomerGroup} from "./customer-group";
+import {Order} from "./order";
 
 @Entity()
 export class Store extends BaseEntity {
@@ -34,6 +35,11 @@ export class Store extends BaseEntity {
     cascade: true,
   })
   products: Product[]
+
+  @OneToMany(() => Order, (order) => order.store, {
+    cascade: true,
+  })
+  orders: Order[]
 
   @OneToMany(() => SalesChannel, (salesChannel) => salesChannel.store, {
     cascade: true,

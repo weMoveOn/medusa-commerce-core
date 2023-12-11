@@ -395,7 +395,7 @@ class SwapService extends TransactionBaseService {
 
       const result = await swapRepo.save(created)
 
-      await this.returnService_.withTransaction(manager).create({
+      await this.returnService_.withTransaction(manager).create(storeId,{
         swap_id: result.id,
         order_id: order.id,
         items: returnItems as OrdersReturnItem[],

@@ -82,10 +82,12 @@ import { FindParams } from "../../../../types/common"
  */
 export default async (req, res) => {
   const validated = req.validatedQuery as StoreGetOrdersParams
+  const {store_id} = req.query
 
   const orderService: OrderService = req.scope.resolve("orderService")
 
   const orders = await orderService.list(
+    store_id,
     {
       display_id: validated.display_id,
       email: validated.email,

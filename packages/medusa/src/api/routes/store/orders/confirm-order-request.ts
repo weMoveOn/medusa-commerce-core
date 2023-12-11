@@ -96,7 +96,7 @@ export default async (req, res) => {
       .withTransaction(transactionManager)
       .retrieve(store_id,claimingCustomerId)
 
-    const orders = await orderService.list({ id: orderIds })
+    const orders = await orderService.list(store_id,{ id: orderIds })
 
     await promiseAll(
       orders.map(async (order) => {

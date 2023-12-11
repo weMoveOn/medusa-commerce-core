@@ -146,7 +146,7 @@ export default async (req, res) => {
               .workStage(idempotencyKey.idempotency_key, async (manager) => {
                 const order = await orderService
                   .withTransaction(manager)
-                  .retrieveWithTotals(id, {
+                  .retrieveWithTotals(store_id,id, {
                     relations: [
                       "cart",
                       "items",
@@ -227,7 +227,7 @@ export default async (req, res) => {
 
                 const order = await orderService
                   .withTransaction(transactionManager)
-                  .retrieveWithTotals(id, req.retrieveConfig, {
+                  .retrieveWithTotals(store_id,id, req.retrieveConfig, {
                     includes: req.includes,
                   })
 

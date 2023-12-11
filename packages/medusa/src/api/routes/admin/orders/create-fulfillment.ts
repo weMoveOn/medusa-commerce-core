@@ -103,6 +103,7 @@ import { promiseAll } from "@medusajs/utils"
  */
 export default async (req, res) => {
   const { id } = req.params
+  const { store_id } = req.query
 
   const { validatedBody } = req as {
     validatedBody: AdminPostOrdersOrderFulfillmentsReq
@@ -118,21 +119,21 @@ export default async (req, res) => {
     const orderServiceTx = orderService.withTransaction(transactionManager)
 
     const { fulfillments: existingFulfillments } =
-      await orderServiceTx.retrieve(id, {
+      await orderServiceTx.retrieve(store_id,id, {
         relations: ["fulfillments"],
       })
     const existingFulfillmentSet = new Set(
       existingFulfillments.map((fulfillment) => fulfillment.id)
     )
 
-    await orderServiceTx.createFulfillment(id, validatedBody.items, {
+    await orderServiceTx.createFulfillment(store_id,id, validatedBody.items, {
       metadata: validatedBody.metadata,
       no_notification: validatedBody.no_notification,
       location_id: validatedBody.location_id,
     })
 
     if (validatedBody.location_id) {
-      const { fulfillments } = await orderServiceTx.retrieve(id, {
+      const { fulfillments } = await orderServiceTx.retrieve(store_id,id, {
         relations: [
           "fulfillments",
           "fulfillments.items",
@@ -153,7 +154,7 @@ export default async (req, res) => {
     }
   })
 
-  const order = await orderService.retrieveWithTotals(id, req.retrieveConfig, {
+  const order = await orderService.retrieveWithTotals(store_id,id, req.retrieveConfig, {
     includes: req.includes,
   })
 

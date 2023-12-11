@@ -146,7 +146,7 @@ export default async (req, res) => {
               .workStage(idempotencyKey.idempotency_key, async (manager) => {
                 const order = await orderService
                   .withTransaction(manager)
-                  .retrieve(swapDto.order_id, {
+                  .retrieve(store_id,swapDto.order_id, {
                     select: ["refunded_total", "total"],
                     relations: [
                       "items.variant",

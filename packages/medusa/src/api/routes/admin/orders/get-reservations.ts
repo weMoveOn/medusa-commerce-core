@@ -47,12 +47,13 @@ import { extendedFindParamsMixin } from "../../../../types/common"
  */
 export default async (req: Request, res: Response) => {
   const { id } = req.params
+    const { store_id } = req.query as { store_id: string}
 
   const inventoryService: IInventoryService =
     req.scope.resolve("inventoryService")
   const orderService: OrderService = req.scope.resolve("orderService")
 
-  const order = await orderService.retrieve(id, { relations: ["items"] })
+  const order = await orderService.retrieve(store_id,id, { relations: ["items"] })
 
   const [reservations, count] = await inventoryService.listReservationItems(
     {

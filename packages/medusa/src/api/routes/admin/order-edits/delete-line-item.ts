@@ -62,6 +62,7 @@ import {
  */
 export default async (req: Request, res: Response) => {
   const { id, item_id } = req.params
+  const { store_id } = req.query as { store_id: string }
 
   const orderEditService: OrderEditService =
     req.scope.resolve("orderEditService")
@@ -78,7 +79,7 @@ export default async (req: Request, res: Response) => {
     select: defaultOrderEditFields,
     relations: defaultOrderEditRelations,
   })
-  orderEdit = await orderEditService.decorateTotals(orderEdit)
+  orderEdit = await orderEditService.decorateTotals(store_id,orderEdit)
 
   res.status(200).send({
     order_edit: orderEdit,
