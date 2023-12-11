@@ -125,7 +125,7 @@ export default async (req, res) => {
       },
     })
 
-    priceList = await getPriceListPricingModule(id, {
+    priceList = await getPriceListPricingModule(store_id, id, {
       container: req.scope as MedusaContainer,
     })
   } else {
@@ -135,7 +135,7 @@ export default async (req, res) => {
         .update(store_id,id, validated)
     })
 
-    priceList = await priceListService.retrieve(id, {
+    priceList = await priceListService.retrieve(store_id, id, {
       select: defaultAdminPriceListFields as (keyof PriceList)[],
       relations: defaultAdminPriceListRelations,
     })

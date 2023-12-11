@@ -198,6 +198,8 @@ export default async (req: Request, res) => {
  */
 // eslint-disable-next-line max-len
 export class AdminGetPriceListPaginationParams extends FilterablePriceListProps {
+  @IsString()
+  store_id: string
   /**
    * {@inheritDoc FindPaginationParams.offset}
    * @defaultValue 0

@@ -145,6 +145,8 @@ export default async (req, res) => {
  * Parameters used to filter and configure the pagination of the retrieved tax rates.
  */
 export class AdminGetTaxRatesParams {
+  @IsString()
+  store_id: string
   /**
    * Filter tax rates by the IDs of their associates region.
    */

@@ -16,7 +16,7 @@ export interface IBatchJobStrategy extends TransactionBaseService {
   /**
    * Method for pre-processing a batch job
    */
-  preProcessBatchJob(batchJobId: string): Promise<void>
+  preProcessBatchJob(storeId: string, batchJobId: string): Promise<void>
 
   /**
    *  Method does the actual processing of the job. Should report back on the progress of the operation.
@@ -47,7 +47,10 @@ export abstract class AbstractBatchJobStrategy
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  public async preProcessBatchJob(batchJobId: string): Promise<void> {
+  public async preProcessBatchJob(
+    storeId: string,
+    batchJobId: string
+  ): Promise<void> {
     return
   }
 

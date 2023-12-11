@@ -94,7 +94,6 @@ import { validator } from "../../../../utils/validator"
  *     $ref: "#/components/responses/500_error"
  */
 export default async (req, res) => {
-  const { store_id } = req.query
   const value = await validator(AdminPostTaxRatesReq, req.body)
 
   const query = await validator(AdminPostTaxRatesParams, req.query)
@@ -106,20 +105,32 @@ export default async (req, res) => {
   await manager.transaction(async (tx) => {
     const txRateService = rateService.withTransaction(tx)
     const created = await txRateService.create(
-      omit(value, ["products", "product_types", "shipping_options"])
+      omit({ ...value, store_id: query.store_id }, [
+        "products",
+        "product_types",
+        "shipping_options",
+      ])
     )
     id = created.id
 
     if (isDefined(value.products)) {
-      await txRateService.addToProduct(store_id, id, value.products)
+      await txRateService.addToProduct(query.store_id, id, value.products)
     }
 
     if (isDefined(value.product_types)) {
-      await txRateService.addToProductType(store_id, id, value.product_types)
+      await txRateService.addToProductType(
+        query.store_id,
+        id,
+        value.product_types
+      )
     }
 
     if (isDefined(value.shipping_options)) {
-      await txRateService.addToShippingOption(id, value.shipping_options)
+      await txRateService.addToShippingOption(
+        query.store_id,
+        id,
+        value.shipping_options
+      )
     }
   })
 
@@ -135,7 +146,7 @@ export default async (req, res) => {
     query.expand
   )
 
-  const rate = await rateService.retrieve(id, config)
+  const rate = await rateService.retrieve(query.store_id, id, config)
   const data = pickByConfig(rate, config)
 
   res.json({ tax_rate: data })
@@ -208,6 +219,8 @@ export class AdminPostTaxRatesReq {
  * {@inheritDoc FindParams}
  */
 export class AdminPostTaxRatesParams {
+  @IsString()
+  store_id: string
   /**
    * {@inheritDoc FindParams.expand}
    */

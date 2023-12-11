@@ -66,6 +66,7 @@ import { validator } from "../../../../utils/validator"
  *     $ref: "#/components/responses/500_error"
  */
 export default async (req, res) => {
+  const { store_id } = req.query
   const validated = await validator(AdminPostShippingProfilesReq, req.body)
 
   const profileService: ShippingProfileService = req.scope.resolve(
@@ -75,7 +76,7 @@ export default async (req, res) => {
   const data = await manager.transaction(async (transactionManager) => {
     return await profileService
       .withTransaction(transactionManager)
-      .create(validated)
+      .create({ ...validated, store_id })
   })
 
   res.status(200).json({ shipping_profile: data })
