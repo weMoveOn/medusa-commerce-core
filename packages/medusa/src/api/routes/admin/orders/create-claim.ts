@@ -103,6 +103,7 @@ import { cleanResponseData } from "../../../../utils/clean-response-data"
 
 export default async (req, res) => {
   const { id } = req.params
+  const { store_id } = req.query
 
   const value = req.validatedBody
 
@@ -122,8 +123,6 @@ export default async (req, res) => {
     res.status(409).send("Failed to create idempotency key")
     return
   }
-
-  console.log("idempotencyKey from 127",idempotencyKey)
 
   res.setHeader("Access-Control-Expose-Headers", "Idempotency-Key")
   res.setHeader("Idempotency-Key", idempotencyKey.idempotency_key)
@@ -145,8 +144,9 @@ export default async (req, res) => {
               .workStage(idempotencyKey.idempotency_key, async (manager) => {
                 const order = await orderService
                   .withTransaction(manager)
-                  .retrieve(id, {
+                  .retrieve(store_id,id, {
                     relations: [
+                        "store",
                       "customer",
                       "shipping_address",
                       "region",
@@ -162,8 +162,8 @@ export default async (req, res) => {
                       "swaps.additional_items.tax_lines",
                     ],
                   })
-
-                await claimService.withTransaction(manager).create({
+                console.log('order from line 165',order)
+                await claimService.withTransaction(manager).create(store_id,{
                   idempotency_key: idempotencyKey.idempotency_key,
                   order,
                   ...value,

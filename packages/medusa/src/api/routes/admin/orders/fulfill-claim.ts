@@ -93,7 +93,7 @@ export default async (req, res) => {
     const claimServiceTx = claimService.withTransaction(manager)
 
     const { fulfillments: existingFulfillments } =
-      await claimServiceTx.retrieve(claim_id, {
+      await claimServiceTx.retrieve(store_id,claim_id, {
         relations: [
           "fulfillments",
           "fulfillments.items",
@@ -105,14 +105,14 @@ export default async (req, res) => {
       existingFulfillments.map((fulfillment) => fulfillment.id)
     )
 
-    await claimServiceTx.createFulfillment(claim_id, {
+    await claimServiceTx.createFulfillment(store_id,claim_id, {
       metadata: validated.metadata,
       no_notification: validated.no_notification,
       location_id: validated.location_id,
     })
 
     if (validated.location_id) {
-      const { fulfillments } = await claimServiceTx.retrieve(claim_id, {
+      const { fulfillments } = await claimServiceTx.retrieve(store_id,claim_id, {
         relations: [
           "fulfillments",
           "fulfillments.items",

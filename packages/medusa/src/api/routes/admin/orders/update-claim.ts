@@ -99,7 +99,7 @@ export default async (req, res) => {
   await manager.transaction(async (transactionManager) => {
     return await claimService
       .withTransaction(transactionManager)
-      .update(claim_id, validated)
+      .update(store_id,claim_id, validated)
   })
 
   const data = await orderService.retrieveWithTotals(store_id,id, req.retrieveConfig, {
@@ -202,6 +202,10 @@ export default async (req, res) => {
  *       url: "https://docs.medusajs.com/development/entities/overview#metadata-attribute"
  */
 export class AdminPostOrdersOrderClaimsClaimReq {
+  @IsString()
+  @IsOptional()
+  store_id: string
+
   @IsArray()
   @IsOptional()
   @Type(() => Item)
@@ -289,4 +293,8 @@ class Tag {
   value?: string
 }
 
-export class AdminPostOrdersOrderClaimsClaimParams extends FindParams {}
+export class AdminPostOrdersOrderClaimsClaimParams extends FindParams {
+  @IsString()
+  @IsNotEmpty()
+  store_id: string
+}

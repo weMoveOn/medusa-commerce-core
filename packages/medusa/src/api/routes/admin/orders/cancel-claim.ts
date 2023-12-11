@@ -71,7 +71,7 @@ export default async (req, res) => {
   const claimService: ClaimService = req.scope.resolve("claimService")
   const orderService: OrderService = req.scope.resolve("orderService")
 
-  const claim = await claimService.retrieve(claim_id)
+  const claim = await claimService.retrieve(store_id,claim_id)
 
   if (claim.order_id !== id) {
     throw new MedusaError(
@@ -84,7 +84,7 @@ export default async (req, res) => {
   await manager.transaction(async (transactionManager) => {
     return await claimService
       .withTransaction(transactionManager)
-      .cancel(claim_id)
+      .cancel(store_id,claim_id)
   })
 
   const order = await orderService.retrieveWithTotals(store_id,id, req.retrieveConfig, {

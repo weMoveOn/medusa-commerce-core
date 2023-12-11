@@ -123,13 +123,13 @@ export default class ClaimService extends TransactionBaseService {
     this.totalsService_ = totalsService
   }
 
-  async update(id: string, data: UpdateClaimInput): Promise<ClaimOrder> {
+  async update(storeId,id: string, data: UpdateClaimInput): Promise<ClaimOrder> {
     return await this.atomicPhase_(
       async (transactionManager: EntityManager) => {
         const claimRepo = transactionManager.withRepository(
           this.claimRepository_
         )
-        const claim = await this.retrieve(id, {
+        const claim = await this.retrieve(storeId,id, {
           relations: ["shipping_methods"],
         })
 
@@ -326,6 +326,7 @@ export default class ClaimService extends TransactionBaseService {
    * Creates a Claim on an Order. Claims consists of items that are claimed and
    * optionally items to be sent as replacement for the claimed items. The
    * shipping address that the new items will be shipped to
+   * @param storeId
    * @param data - the object containing all data required to create a claim
    * @return created claim
    */
@@ -512,6 +513,7 @@ export default class ClaimService extends TransactionBaseService {
    * @return created claim
    */
   async createFulfillment(
+      storeId: string,
     id: string,
     config: {
       metadata?: Record<string, unknown>
@@ -525,7 +527,7 @@ export default class ClaimService extends TransactionBaseService {
 
     return await this.atomicPhase_(
       async (transactionManager: EntityManager) => {
-        const claim = await this.retrieve(id, {
+        const claim = await this.retrieve(storeId,id, {
           relations: [
             "additional_items.tax_lines",
             "additional_items.variant.product.profiles",
@@ -661,7 +663,7 @@ export default class ClaimService extends TransactionBaseService {
     )
   }
 
-  async cancelFulfillment(fulfillmentId: string): Promise<ClaimOrder> {
+  async cancelFulfillment(storeId:string,fulfillmentId: string): Promise<ClaimOrder> {
     return await this.atomicPhase_(
       async (transactionManager: EntityManager) => {
         const canceled = await this.fulfillmentService_
@@ -675,7 +677,7 @@ export default class ClaimService extends TransactionBaseService {
           )
         }
 
-        const claim = await this.retrieve(canceled.claim_order_id)
+        const claim = await this.retrieve(storeId,canceled.claim_order_id)
 
         claim.fulfillment_status = ClaimFulfillmentStatus.CANCELED
 
@@ -687,10 +689,10 @@ export default class ClaimService extends TransactionBaseService {
     )
   }
 
-  async processRefund(id: string): Promise<ClaimOrder> {
+  async processRefund(storeId:string,id: string): Promise<ClaimOrder> {
     return await this.atomicPhase_(
       async (transactionManager: EntityManager) => {
-        const claim = await this.retrieve(id, {
+        const claim = await this.retrieve(storeId,id, {
           relations: ["order", "order.payments"],
         })
 
@@ -734,6 +736,7 @@ export default class ClaimService extends TransactionBaseService {
   }
 
   async createShipment(
+      storeId: string,
     id: string,
     fulfillmentId: string,
     trackingLinks: { tracking_number: string }[] = [],
@@ -746,7 +749,7 @@ export default class ClaimService extends TransactionBaseService {
 
     return await this.atomicPhase_(
       async (transactionManager: EntityManager) => {
-        const claim = await this.retrieve(id, {
+        const claim = await this.retrieve(storeId,id, {
           relations: ["additional_items"],
         })
 
@@ -813,10 +816,10 @@ export default class ClaimService extends TransactionBaseService {
     )
   }
 
-  async cancel(id: string): Promise<ClaimOrder> {
+  async cancel(storeId:string,id: string): Promise<ClaimOrder> {
     return await this.atomicPhase_(
       async (transactionManager: EntityManager) => {
-        const claim = await this.retrieve(id, {
+        const claim = await this.retrieve(storeId,id, {
           relations: ["return_order", "fulfillments", "order", "order.refunds"],
         })
         if (claim.refund_amount) {
@@ -889,6 +892,7 @@ export default class ClaimService extends TransactionBaseService {
    * @return the order document
    */
   async retrieve(
+      storeId: string,
     claimId: string,
     config: FindConfig<ClaimOrder> = {}
   ): Promise<ClaimOrder> {

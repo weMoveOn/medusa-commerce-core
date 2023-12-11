@@ -410,10 +410,12 @@ class OrderService extends TransactionBaseService {
     if (totalsToSelect?.length) {
       return await this.retrieveLegacy(orderId, config)
     }
-
+    console.log("retrieve order3", totalsToSelect)
     const orderRepo = this.activeManager_.withRepository(this.orderRepository_)
 
     const query = buildQuery({ id: orderId, store_id:storeId }, config)
+
+    console.log("retrieve order4", query)
 
     if (!(config.select || []).length) {
       query.select = undefined
@@ -430,7 +432,7 @@ class OrderService extends TransactionBaseService {
         `Order with id ${orderId} was not found`
       )
     }
-
+    console.log("retrieve order6", raw)
     return raw
   }
 

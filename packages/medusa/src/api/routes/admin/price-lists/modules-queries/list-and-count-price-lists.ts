@@ -10,7 +10,7 @@ export async function listAndCountPriceListPricingModule({
   container,
 }: {
   container: MedusaContainer
-  filters?: FilterablePriceListProps
+  filters?: FilterablePriceListProps & {store_id?: string}
   listConfig?: FindConfig<PriceList>
 }): Promise<[PriceList[], number]> {
   const remoteQuery = container.resolve("remoteQuery")
