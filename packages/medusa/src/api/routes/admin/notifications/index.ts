@@ -2,11 +2,12 @@ import { Notification } from "./../../../../"
 import { PaginatedResponse } from "@medusajs/types"
 import { Router } from "express"
 import middlewares from "../../../middlewares"
+import { processIdentifierMiddleware } from "../../../middlewares/validators/identifier-existence"
 
 const route = Router()
 
 export default (app) => {
-  app.use("/notifications", route)
+  app.use("/notifications", processIdentifierMiddleware, route)
 
   /**
    * List notifications
