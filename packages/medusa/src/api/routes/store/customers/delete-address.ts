@@ -59,6 +59,7 @@ export default async (req, res) => {
   const id = req.user.customer_id
 
   const { address_id } = req.params
+  const { store_id } = req.query
 
   const customerService: CustomerService = req.scope.resolve("customerService")
 

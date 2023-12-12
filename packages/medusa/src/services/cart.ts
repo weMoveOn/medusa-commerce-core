@@ -1408,9 +1408,9 @@ class CartService extends TransactionBaseService {
     let customer = await customerServiceTx
       .retrieveUnregisteredByEmail(validatedEmail)
       .catch(() => undefined)
-
     if (!customer) {
-      customer = await customerServiceTx.create(storeId,{ email: validatedEmail })
+      //#TODO: should_refactor
+      customer = await customerServiceTx.create(storeId,{ email: validatedEmail,store_id:storeId })
     }
 
     return customer
@@ -1542,6 +1542,7 @@ class CartService extends TransactionBaseService {
    * If discount besides free shipping is already applied, this
    * will be overwritten
    * Throws if discount regions does not include the cart region
+   * @param storeId
    * @param cart - the cart to update
    * @param discountCode - the discount code
    */

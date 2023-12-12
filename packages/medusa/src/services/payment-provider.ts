@@ -208,6 +208,7 @@ export default class PaymentProviderService extends TransactionBaseService {
 
   /**
    * Creates a payment session with the given provider.
+   * @param storeId
    * @param sessionInput
    */
   async createSession(

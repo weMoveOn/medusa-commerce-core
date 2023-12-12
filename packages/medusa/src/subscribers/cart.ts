@@ -16,16 +16,17 @@ class CartSubscriber {
     this.cartService_ = cartService
     this.eventBus_ = eventBusService
     this.manager_ = manager
-    //#TODO: should remove any
+
+      //#TODO: should remove any
     this.eventBus_.subscribe(
       CartService.Events.CUSTOMER_UPDATED,
-      async (storeId:any,cartId) => {
+      async (storeId:any,cartId:string) => {
         await this.onCustomerUpdated(storeId,cartId)
       }
     )
   }
 
-  async onCustomerUpdated(storeId:string,cartId) {
+  async onCustomerUpdated(storeId:string,cartId:string) {
     await this.manager_.transaction(
       "SERIALIZABLE",
       async (transactionManager) => {

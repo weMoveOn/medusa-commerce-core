@@ -83,9 +83,10 @@ import { validator } from "../../../../utils/validator"
 export default async (req, res) => {
   const { store_id } = req.query
   const { id } = req.params
+  const { store_id } = req.query
 
   const validatedBody = await validator(AdminPostCustomersCustomerReq, req.body)
-  const validatedQuery = await validator(FindParams, req.query)
+  const validatedQuery = await validator(UpdateAdminCustomerParams, req.query)
 
   const customerService: CustomerService = req.scope.resolve("customerService")
 
@@ -195,4 +196,10 @@ export class AdminPostCustomersCustomerReq {
   @Type(() => Group)
   @ValidateNested({ each: true })
   groups?: Group[]
+}
+
+
+export class UpdateAdminCustomerParams extends  FindParams{
+  @IsString()
+  store_id: string
 }

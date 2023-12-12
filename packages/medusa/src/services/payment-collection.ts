@@ -408,6 +408,7 @@ export default class PaymentCollectionService extends TransactionBaseService {
    * @return the new payment session created.
    */
   async refreshPaymentSession(
+    storeId: string,
     paymentCollectionId: string,
     sessionId: string,
     customerId: string

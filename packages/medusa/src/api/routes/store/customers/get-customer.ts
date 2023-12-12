@@ -53,6 +53,7 @@ import CustomerService from "../../../../services/customer"
 export default async (req, res) => {
   const { store_id } = req.query
   const id = req.user.customer_id
+  const {store_id} = req.query
 
   const customerService: CustomerService = req.scope.resolve("customerService")
 

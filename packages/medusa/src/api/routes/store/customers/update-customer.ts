@@ -70,6 +70,7 @@ import { IsType } from "../../../../utils/validators/is-type"
 export default async (req, res) => {
   const { store_id } = req.query
   const id = req.user.customer_id
+  const { store_id } = req.query
 
   const validated = await validator(StorePostCustomersCustomerReq, req.body)
 
@@ -123,9 +124,13 @@ export default async (req, res) => {
  *       url: "https://docs.medusajs.com/development/entities/overview#metadata-attribute"
  */
 export class StorePostCustomersCustomerReq {
+
   @IsOptional()
   @IsType([AddressPayload, String])
   billing_address?: AddressPayload | string
+
+  @IsString()
+  store_id: string
 
   @IsOptional()
   @IsString()

@@ -249,11 +249,11 @@ class CustomerService extends TransactionBaseService {
   }
 
   async listByEmail(
-      storeId: string,
+    store_id: string,
     email: string,
     config: FindConfig<Customer> = { relations: [], skip: 0, take: 2 }
   ): Promise<Customer[]> {
-    return await this.list({ email: email.toLowerCase(), store_id:storeId }, config)
+    return await this.list({ store_id: store_id,email: email.toLowerCase() }, config)
   }
   /**
    * Gets a customer by phone.
@@ -317,7 +317,7 @@ class CustomerService extends TransactionBaseService {
 
       customer.email = customer.email.toLowerCase()
 
-      const { email, password } = customer
+      const { email, password, store_id } = customer
 
       // should be a list of customers at this point
       const existing = await this.listByEmail(storeId,email).catch(() => undefined)
@@ -360,6 +360,7 @@ class CustomerService extends TransactionBaseService {
 
   /**
    * Updates a customer.
+   * @param storeId
    * @param {string} customerId - the id of the variant. Must be a string that
    *   can be casted to an ObjectId
    * @param {object} update - an object with the update values.
@@ -409,6 +410,7 @@ class CustomerService extends TransactionBaseService {
         customer.groups = groups as CustomerGroup[]
       }
 
+      customer.store_id = storeId
       const updated = await customerRepository.save(customer)
 
       await this.eventBusService_

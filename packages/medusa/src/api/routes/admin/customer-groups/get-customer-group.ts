@@ -2,6 +2,7 @@ import { Request, Response } from "express"
 
 import { CustomerGroupService } from "../../../../services"
 import { FindParams } from "../../../../types/common"
+import { IsString } from "class-validator"
 
 /**
  * @oas [get] /admin/customer-groups/{id}
@@ -60,12 +61,14 @@ import { FindParams } from "../../../../types/common"
  */
 export default async (req: Request, res: Response) => {
   const { id } = req.params
+  const store_id = req.query.store_id as string
 
   const customerGroupService: CustomerGroupService = req.scope.resolve(
     "customerGroupService"
   )
 
   const customerGroup = await customerGroupService.retrieve(
+      store_id,
     id,
     req.retrieveConfig
   )
@@ -73,4 +76,7 @@ export default async (req: Request, res: Response) => {
   res.json({ customer_group: customerGroup })
 }
 
-export class AdminGetCustomerGroupsGroupParams extends FindParams {}
+export class AdminGetCustomerGroupsGroupParams extends FindParams {
+  @IsString()
+  store_id: string
+}
