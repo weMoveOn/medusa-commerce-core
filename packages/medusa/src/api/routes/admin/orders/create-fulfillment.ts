@@ -20,7 +20,7 @@ import { Fulfillment, LineItem } from "../../../../models"
 import { FindParams } from "../../../../types/common"
 import { cleanResponseData } from "../../../../utils/clean-response-data"
 import { promiseAll } from "@medusajs/utils"
-
+import { validator } from "../../../../utils/validator"
 /**
  * @oas [post] /admin/orders/{id}/fulfillment
  * operationId: "PostOrdersOrderFulfillments"
@@ -107,6 +107,7 @@ export default async (req, res) => {
   const { validatedBody } = req as {
     validatedBody: AdminPostOrdersOrderFulfillmentsReq
   }
+  const { store_id } = await validator(AdminCreateFulfillmentQuery, req.query)
 
   const orderService: OrderService = req.scope.resolve("orderService")
   const pvInventoryService: ProductVariantInventoryService = req.scope.resolve(
@@ -125,7 +126,7 @@ export default async (req, res) => {
       existingFulfillments.map((fulfillment) => fulfillment.id)
     )
 
-    await orderServiceTx.createFulfillment(id, validatedBody.items, {
+    await orderServiceTx.createFulfillment(store_id, id, validatedBody.items, {
       metadata: validatedBody.metadata,
       no_notification: validatedBody.no_notification,
       location_id: validatedBody.location_id,
@@ -202,6 +203,11 @@ export const updateInventoryAndReservations = async (
       )
     })
   )
+}
+
+export class AdminCreateFulfillmentQuery {
+  @IsString()
+  store_id: string
 }
 
 /**

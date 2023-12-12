@@ -1,6 +1,8 @@
 import DiscountService from "../../../../services/discount"
 import { Request, Response } from "express"
 import { FindParams } from "../../../../types/common"
+import { IsString } from "class-validator"
+import { validator } from "../../../../utils/validator"
 
 /**
  * @oas [get] /admin/discounts/{id}
@@ -59,11 +61,17 @@ import { FindParams } from "../../../../types/common"
  */
 export default async (req: Request, res: Response) => {
   const { discount_id } = req.params
+  const { store_id } = await validator(AdminGetDiscountQuery, req.query)
 
   const discountService: DiscountService = req.scope.resolve("discountService")
-  const data = await discountService.retrieve(discount_id, req.retrieveConfig)
+  const data = await discountService.retrieve(store_id, discount_id, req.retrieveConfig)
 
   res.status(200).json({ discount: data })
 }
 
 export class AdminGetDiscountParams extends FindParams {}
+
+export class AdminGetDiscountQuery {
+  @IsString()
+  store_id: string
+}

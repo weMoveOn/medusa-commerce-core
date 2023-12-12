@@ -156,8 +156,8 @@ class LineItemAdjustmentService extends TransactionBaseService {
       | string
       | string[]
       | (FilterableLineItemAdjustmentProps & {
-          discount_id?: FindOperator<string | null>
-        })
+        discount_id?: FindOperator<string | null>
+      })
   ): Promise<void> {
     return this.atomicPhase_(async (manager) => {
       const lineItemAdjustmentRepo = manager.withRepository(
@@ -187,6 +187,7 @@ class LineItemAdjustmentService extends TransactionBaseService {
    * @return a line item adjustment or undefined if no adjustment was created
    */
   async generateAdjustments(
+    storeId: string,
     calculationContextData: CalculationContextData,
     generatedLineItem: LineItem,
     context: AdjustmentContext
@@ -234,6 +235,7 @@ class LineItemAdjustmentService extends TransactionBaseService {
       // In case of a generated line item the id is not available, it is mocked instead to be used for totals calculations
       lineItem.id = lineItem.id ?? new Date().getTime()
       const amount = await discountServiceTx.calculateDiscountForLineItem(
+        storeId,
         discount.id,
         lineItem,
         calculationContextData
@@ -261,10 +263,11 @@ class LineItemAdjustmentService extends TransactionBaseService {
    * @return a line item adjustment or undefined if no adjustment was created
    */
   async createAdjustmentForLineItem(
+    storeId: string,
     cart: Cart,
     lineItem: LineItem
   ): Promise<LineItemAdjustment[]> {
-    const adjustments = await this.generateAdjustments(cart, lineItem, {
+    const adjustments = await this.generateAdjustments(storeId, cart, lineItem, {
       variant: lineItem.variant,
     })
 
@@ -289,11 +292,12 @@ class LineItemAdjustmentService extends TransactionBaseService {
    * otherwise returns an array of line item adjustments for each line item in the cart
    */
   async createAdjustments(
+    storeId: string,
     cart: Cart,
     lineItem?: LineItem
   ): Promise<LineItemAdjustment[] | LineItemAdjustment[][]> {
     if (lineItem) {
-      return await this.createAdjustmentForLineItem(cart, lineItem)
+      return await this.createAdjustmentForLineItem(storeId, cart, lineItem)
     }
 
     if (!cart.items) {
@@ -301,7 +305,7 @@ class LineItemAdjustmentService extends TransactionBaseService {
     }
 
     return await promiseAll(
-      cart.items.map(async (li) => this.createAdjustmentForLineItem(cart, li))
+      cart.items.map(async (li) => this.createAdjustmentForLineItem(storeId, cart, li))
     )
   }
 }

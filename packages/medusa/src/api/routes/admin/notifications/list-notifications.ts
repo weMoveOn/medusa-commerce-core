@@ -89,7 +89,7 @@ export default async (req, res) => {
     store_id,
   } = await validator(AdminGetNotificationsParams, req.query)
 
-  const selector: Record<string, unknown> = {}
+  const selector: Record<string, unknown> = { store_id }
 
   let includeFields: string[] = []
   if (fields) {
@@ -155,9 +155,8 @@ export default async (req, res) => {
  * Parameters used to filter and configure the pagination of the retrieved notifications.
  */
 export class AdminGetNotificationsParams {
-
   @IsString()
-  store_id:string,
+  store_id: string
   /**
    * {@inheritDoc FindPaginationParams.limit}
    * @defaultValue 50

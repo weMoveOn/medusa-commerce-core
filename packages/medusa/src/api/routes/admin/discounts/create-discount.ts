@@ -107,18 +107,18 @@ import { FindParams } from "../../../../types/common"
  */
 
 export default async (req, res) => {
-  const { store_id } = req.query as { store_id: string }
   const discountService: DiscountService = req.scope.resolve("discountService")
-  const validateBody = req.validateBody as AdminPostDiscountsReq
-
+  const validateBody = req.validatedBody as AdminPostDiscountsReq
+  
   const manager: EntityManager = req.scope.resolve("manager")
   const created = await manager.transaction(async (transactionManager) => {
     return await discountService
       .withTransaction(transactionManager)
-      .create({ ...validateBody, store_id })
+      .create({ ...validateBody })
   })
 
   const discount = await discountService.retrieve(
+    validateBody.store_id,
     created.id,
     req.retrieveConfig
   )
@@ -239,6 +239,10 @@ export default async (req, res) => {
 export class AdminPostDiscountsReq {
   @IsString()
   @IsNotEmpty()
+  store_id: string
+
+  @IsString()
+  @IsNotEmpty()
   code: string
 
   @IsNotEmpty()
@@ -340,4 +344,7 @@ export class AdminCreateCondition extends AdminUpsertConditionsReq {
 /**
  * {@inheritDoc FindParams}
  */
-export class AdminPostDiscountsParams extends FindParams {}
+export class AdminPostDiscountsParams extends FindParams {
+  @IsString()
+  store_id: string
+}

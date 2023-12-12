@@ -36,6 +36,7 @@ export const defaultAdminNotificationsFields = [
   "provider_id",
   "created_at",
   "updated_at",
+  "store_id",
 ]
 
 /**

@@ -90,6 +90,10 @@ export default async (req, res) => {
     AdminPostOrdersOrderSwapsSwapShipmentsReq,
     req.body
   )
+  const { store_id } = await validator(
+    AdminPostOrdersOrderSwapsShipmentsQuery,
+    req.query
+  )
 
   const orderService: OrderService = req.scope.resolve("orderService")
   const swapService: SwapService = req.scope.resolve("swapService")
@@ -97,6 +101,7 @@ export default async (req, res) => {
   const manager: EntityManager = req.scope.resolve("manager")
   await manager.transaction(async (transactionManager) => {
     return await swapService.withTransaction(transactionManager).createShipment(
+      store_id,
       swap_id,
       validated.fulfillment_id,
       validated.tracking_numbers?.map((n) => ({ tracking_number: n })),
@@ -145,3 +150,8 @@ export class AdminPostOrdersOrderSwapsSwapShipmentsReq {
 }
 
 export class AdminPostOrdersOrderSwapsSwapShipmentsParams extends FindParams {}
+
+export class AdminPostOrdersOrderSwapsShipmentsQuery {
+  @IsString()
+  store_id: string
+}

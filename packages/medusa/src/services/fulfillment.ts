@@ -166,6 +166,7 @@ class FulfillmentService extends TransactionBaseService {
    * @return the fulfillment
    */
   async retrieve(
+    storeId: string,
     fulfillmentId: string,
     config: FindConfig<Fulfillment> = {}
   ): Promise<Fulfillment> {
@@ -180,7 +181,7 @@ class FulfillmentService extends TransactionBaseService {
       this.fulfillmentRepository_
     )
 
-    const query = buildQuery({ id: fulfillmentId }, config)
+    const query = buildQuery({ id: fulfillmentId, store_id: storeId }, config)
 
     const fulfillment = await fulfillmentRepository.findOne(query)
 
@@ -204,6 +205,7 @@ class FulfillmentService extends TransactionBaseService {
    * @return the created fulfillments
    */
   async createFulfillment(
+    storeId: string,
     order: CreateFulfillmentOrder,
     itemsToFulfill: FulFillmentItemType[],
     custom: Partial<Fulfillment> = {}
@@ -230,6 +232,7 @@ class FulfillmentService extends TransactionBaseService {
             provider_id: shipping_method.shipping_option.provider_id,
             items: items.map((i) => ({ item_id: i.id, quantity: i.quantity })),
             data: {},
+            store_id: storeId,
           })
 
           const result = await fulfillmentRepository.save(ful)
@@ -259,6 +262,7 @@ class FulfillmentService extends TransactionBaseService {
    *
    */
   async cancelFulfillment(
+    storeId: string,
     fulfillmentOrId: Fulfillment | string
   ): Promise<Fulfillment> {
     return await this.atomicPhase_(async (manager) => {
@@ -267,7 +271,7 @@ class FulfillmentService extends TransactionBaseService {
           ? fulfillmentOrId
           : fulfillmentOrId.id
 
-      const fulfillment = await this.retrieve(id, {
+      const fulfillment = await this.retrieve(storeId, id, {
         relations: ["items", "claim_order", "swap"],
       })
 
@@ -311,6 +315,7 @@ class FulfillmentService extends TransactionBaseService {
    * @return  the shipped fulfillment
    */
   async createShipment(
+    storeId: string,
     fulfillmentId: string,
     trackingLinks?: { tracking_number: string }[],
     config: CreateShipmentConfig = {
@@ -328,7 +333,7 @@ class FulfillmentService extends TransactionBaseService {
         this.trackingLinkRepository_
       )
 
-      const fulfillment = await this.retrieve(fulfillmentId, {
+      const fulfillment = await this.retrieve(storeId, fulfillmentId, {
         relations: ["items"],
       })
 

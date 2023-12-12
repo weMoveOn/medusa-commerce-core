@@ -110,6 +110,8 @@ export class AdminGetDiscountsParams extends extendedFindParamsMixin({
   limit: 20,
   offset: 0,
 }) {
+  @IsString()
+  store_id: string
   /**
    * Filter discounts by their associated rule.
    */

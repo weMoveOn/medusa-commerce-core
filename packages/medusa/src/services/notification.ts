@@ -117,6 +117,7 @@ class NotificationService extends TransactionBaseService {
    * @return the notification
    */
   async retrieve(
+    storeId: string,
     id: string,
     config: FindConfig<Notification> = {}
   ): Promise<Notification | never> {
@@ -124,7 +125,7 @@ class NotificationService extends TransactionBaseService {
       this.notificationRepository_
     )
 
-    const query = buildQuery({ id }, config)
+    const query = buildQuery({ id, store_id: storeId }, config)
 
     const notification = await notiRepository.findOne(query)
 
@@ -264,11 +265,12 @@ class NotificationService extends TransactionBaseService {
    * @return {Notification} the newly created notification
    */
   async resend(
+    storeId: string,
     id: string,
     config: FindConfig<Notification> = {}
   ): Promise<Notification> {
     return await this.atomicPhase_(async (transactionManager) => {
-      const notification = await this.retrieve(id)
+      const notification = await this.retrieve(storeId, id)
 
       const provider = this.retrieveProvider_(notification.provider_id)
       const { to, data } = await provider.resendNotification(

@@ -512,6 +512,7 @@ export default class ClaimService extends TransactionBaseService {
    * @return created claim
    */
   async createFulfillment(
+    storeId: string,
     id: string,
     config: {
       metadata?: Record<string, unknown>
@@ -582,6 +583,7 @@ export default class ClaimService extends TransactionBaseService {
         const fulfillments = await this.fulfillmentService_
           .withTransaction(transactionManager)
           .createFulfillment(
+            storeId,
             {
               ...claim,
               email: order.email,
@@ -661,12 +663,15 @@ export default class ClaimService extends TransactionBaseService {
     )
   }
 
-  async cancelFulfillment(fulfillmentId: string): Promise<ClaimOrder> {
+  async cancelFulfillment(
+    storeId: string,
+    fulfillmentId: string
+  ): Promise<ClaimOrder> {
     return await this.atomicPhase_(
       async (transactionManager: EntityManager) => {
         const canceled = await this.fulfillmentService_
           .withTransaction(transactionManager)
-          .cancelFulfillment(fulfillmentId)
+          .cancelFulfillment(storeId, fulfillmentId)
 
         if (!canceled.claim_order_id) {
           throw new MedusaError(
@@ -734,6 +739,7 @@ export default class ClaimService extends TransactionBaseService {
   }
 
   async createShipment(
+    storeId: string,
     id: string,
     fulfillmentId: string,
     trackingLinks: { tracking_number: string }[] = [],
@@ -763,7 +769,7 @@ export default class ClaimService extends TransactionBaseService {
 
         const shipment = await this.fulfillmentService_
           .withTransaction(transactionManager)
-          .createShipment(fulfillmentId, trackingLinks, {
+          .createShipment(storeId, fulfillmentId, trackingLinks, {
             metadata,
             no_notification: evaluatedNoNotification,
           })

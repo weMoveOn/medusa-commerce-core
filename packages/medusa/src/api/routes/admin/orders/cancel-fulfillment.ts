@@ -11,6 +11,8 @@ import { Fulfillment } from "../../../../models"
 import { FindParams } from "../../../../types/common"
 import { cleanResponseData } from "../../../../utils/clean-response-data"
 import { promiseAll } from "@medusajs/utils"
+import { IsString } from "class-validator"
+import { validator } from "../../../../utils/validator"
 
 /**
  * @oas [post] /admin/orders/{id}/fulfillments/{fulfillment_id}/cancel
@@ -70,6 +72,7 @@ import { promiseAll } from "@medusajs/utils"
  */
 export default async (req, res) => {
   const { id, fulfillment_id } = req.params
+  const { store_id } = await validator(AdminCancelFulfillmentQuery, req.query)
 
   const orderService: OrderService = req.scope.resolve("orderService")
   const inventoryService: IInventoryService =
@@ -80,7 +83,10 @@ export default async (req, res) => {
   const fulfillmentService: FulfillmentService =
     req.scope.resolve("fulfillmentService")
 
-  const fulfillment = await fulfillmentService.retrieve(fulfillment_id)
+  const fulfillment = await fulfillmentService.retrieve(
+    store_id,
+    fulfillment_id
+  )
 
   if (fulfillment.order_id !== id) {
     throw new MedusaError(
@@ -93,11 +99,13 @@ export default async (req, res) => {
   await manager.transaction(async (transactionManager) => {
     await orderService
       .withTransaction(transactionManager)
-      .cancelFulfillment(fulfillment_id)
+      .cancelFulfillment(store_id, fulfillment_id)
 
     const fulfillment = await fulfillmentService
       .withTransaction(transactionManager)
-      .retrieve(fulfillment_id, { relations: ["items", "items.item"] })
+      .retrieve(store_id, fulfillment_id, {
+        relations: ["items", "items.item"],
+      })
 
     if (fulfillment.location_id && inventoryService) {
       await adjustInventoryForCancelledFulfillment(fulfillment, {
@@ -135,3 +143,8 @@ export const adjustInventoryForCancelledFulfillment = async (
 }
 
 export class AdminPostOrdersOrderFulfillementsCancelParams extends FindParams {}
+
+export class AdminCancelFulfillmentQuery {
+  @IsString()
+  store_id: string
+}

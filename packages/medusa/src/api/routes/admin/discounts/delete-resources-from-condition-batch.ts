@@ -5,9 +5,9 @@ import {
   DiscountConditionInput,
   DiscountConditionMapTypeToProperty,
 } from "../../../../types/discount"
-import { IsArray } from "class-validator"
+import { IsArray, IsString } from "class-validator"
 import { FindParams } from "../../../../types/common"
-
+import { validator } from "../../../../utils/validator"
 /**
  * @oas [delete] /admin/discounts/{discount_id}/conditions/{condition_id}/batch
  * operationId: "DeleteDiscountsDiscountConditionsConditionBatch"
@@ -77,6 +77,10 @@ import { FindParams } from "../../../../types/common"
 export default async (req: Request, res: Response) => {
   const { discount_id, condition_id } = req.params
 
+
+  const { store_id } = await validator(AdminResourceFromConditionQuery, req.query)
+
+
   const conditionService: DiscountConditionService = req.scope.resolve(
     "discountConditionService"
   )
@@ -103,6 +107,7 @@ export default async (req: Request, res: Response) => {
 
   const discountService: DiscountService = req.scope.resolve("discountService")
   const discount = await discountService.retrieve(
+    store_id,
     discount_id,
     req.retrieveConfig
   )
@@ -115,6 +120,11 @@ export default async (req: Request, res: Response) => {
  */
 // eslint-disable-next-line max-len
 export class AdminDeleteDiscountsDiscountConditionsConditionBatchParams extends FindParams {}
+
+export class AdminResourceFromConditionQuery {
+  @IsString()
+  store_id: string
+}
 
 /**
  * @schema AdminDeleteDiscountsDiscountConditionsConditionBatchReq

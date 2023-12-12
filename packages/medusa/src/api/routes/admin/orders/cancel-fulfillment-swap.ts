@@ -8,7 +8,8 @@ import { EntityManager } from "typeorm"
 import { MedusaError } from "medusa-core-utils"
 import { FindParams } from "../../../../types/common"
 import { cleanResponseData } from "../../../../utils/clean-response-data"
-
+import { IsString } from "class-validator"
+import { validator } from "../../../../utils/validator"
 /**
  * @oas [post] /admin/orders/{id}/swaps/{swap_id}/fulfillments/{fulfillment_id}/cancel
  * operationId: "PostOrdersSwapFulfillmentsCancel"
@@ -68,13 +69,20 @@ import { cleanResponseData } from "../../../../utils/clean-response-data"
  */
 export default async (req, res) => {
   const { id, swap_id, fulfillment_id } = req.params
+  const { store_id } = await validator(
+    AdminCancelFulfillmentSwapQuery,
+    req.query
+  )
 
   const swapService: SwapService = req.scope.resolve("swapService")
   const orderService: OrderService = req.scope.resolve("orderService")
   const fulfillmentService: FulfillmentService =
     req.scope.resolve("fulfillmentService")
 
-  const fulfillment = await fulfillmentService.retrieve(fulfillment_id)
+  const fulfillment = await fulfillmentService.retrieve(
+    store_id,
+    fulfillment_id
+  )
 
   if (fulfillment.swap_id !== swap_id) {
     throw new MedusaError(
@@ -96,7 +104,7 @@ export default async (req, res) => {
   await manager.transaction(async (transactionManager) => {
     return await swapService
       .withTransaction(transactionManager)
-      .cancelFulfillment(fulfillment_id)
+      .cancelFulfillment(store_id, fulfillment_id)
   })
 
   const order = await orderService.retrieveWithTotals(id, req.retrieveConfig, {
@@ -108,3 +116,8 @@ export default async (req, res) => {
 
 // eslint-disable-next-line max-len
 export class AdminPostOrdersOrderSwapFulfillementsCancelParams extends FindParams {}
+
+export class AdminCancelFulfillmentSwapQuery {
+  @IsString()
+  store_id: string
+}

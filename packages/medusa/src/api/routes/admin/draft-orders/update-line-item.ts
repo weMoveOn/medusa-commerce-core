@@ -110,7 +110,7 @@ export default async (req, res) => {
     if (validated.quantity === 0) {
       await cartService
         .withTransaction(manager)
-        .removeLineItem(draftOrder.cart.id, line_id)
+        .removeLineItem(store_id, draftOrder.cart.id, line_id)
     } else {
       const existing = draftOrder.cart.items.find((i) => i.id === line_id)
 

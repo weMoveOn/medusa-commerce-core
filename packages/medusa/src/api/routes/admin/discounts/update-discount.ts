@@ -21,7 +21,7 @@ import { IsGreaterThan } from "../../../../utils/validators/greater-than"
 import { IsISO8601Duration } from "../../../../utils/validators/iso8601-duration"
 import { Type } from "class-transformer"
 import { FindParams } from "../../../../types/common"
-
+import { validator } from "../../../../utils/validator"
 /**
  * @oas [post] /admin/discounts/{id}
  * operationId: "PostDiscountsDiscount"
@@ -90,9 +90,8 @@ import { FindParams } from "../../../../types/common"
  */
 export default async (req: Request, res: Response) => {
   const { discount_id } = req.params
-  const { store_id } = req.query as {
-    store_id: string
-  }
+  const { store_id } = await validator(AdminUpdateDiscountQuery, req.query)
+
 
   const discountService: DiscountService = req.scope.resolve("discountService")
 
@@ -108,11 +107,17 @@ export default async (req: Request, res: Response) => {
   })
 
   const discount = await discountService.retrieve(
+    store_id,
     discount_id,
     req.retrieveConfig
   )
 
   res.status(200).json({ discount })
+}
+
+export class AdminUpdateDiscountQuery {
+  @IsString()
+  store_id: string
 }
 
 /**

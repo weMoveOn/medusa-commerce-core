@@ -181,7 +181,7 @@ class SwapService extends TransactionBaseService {
         )
 
         select = foundCartId ? swapSelects : [...swapSelects, "cart_id"]
-        ;(cartSelects as string[]) = cartSels
+          ; (cartSelects as string[]) = cartSels
       }
     }
 
@@ -682,6 +682,7 @@ class SwapService extends TransactionBaseService {
         cart.items.map(async (item) => {
           // we generate adjustments in case the cart has any discounts that should be applied to the additional items
           await lineItemAdjustmentServiceTx.createAdjustmentForLineItem(
+            storeId,
             cart,
             item
           )
@@ -1065,12 +1066,15 @@ class SwapService extends TransactionBaseService {
    * @param fulfillmentId - the ID of the fulfillment to cancel
    * @return updated swap
    */
-  async cancelFulfillment(fulfillmentId: string): Promise<Swap | never> {
+  async cancelFulfillment(
+    storeId: string,
+    fulfillmentId: string
+  ): Promise<Swap | never> {
     return await this.atomicPhase_(async (manager) => {
       const swapRepo = manager.withRepository(this.swapRepository_)
       const canceled = await this.fulfillmentService_
         .withTransaction(manager)
-        .cancelFulfillment(fulfillmentId)
+        .cancelFulfillment(storeId, fulfillmentId)
 
       if (!canceled.swap_id) {
         throw new MedusaError(
@@ -1097,6 +1101,7 @@ class SwapService extends TransactionBaseService {
    * @return the updated swap with new fulfillments and status.
    */
   async createShipment(
+    storeId: string,
     swapId: string,
     fulfillmentId: string,
     trackingLinks?: { tracking_number: string }[],
@@ -1125,7 +1130,7 @@ class SwapService extends TransactionBaseService {
       // Update the fulfillment to register
       const shipment = await this.fulfillmentService_
         .withTransaction(manager)
-        .createShipment(fulfillmentId, trackingLinks, {
+        .createShipment(storeId, fulfillmentId, trackingLinks, {
           metadata,
           no_notification: evaluatedNoNotification,
         })
