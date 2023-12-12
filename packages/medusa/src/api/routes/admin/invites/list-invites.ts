@@ -56,7 +56,7 @@ export default async (req, res) => {
   const query = await validator(AdminListInvitesQuery, req.query)
 
   const inviteService: InviteService = req.scope.resolve("inviteService")
-  const invites = await inviteService.list({store_id : query.store_id})
+  const invites = await inviteService.list({ store_id: query.store_id })
 
   res.status(200).json({ invites })
 }

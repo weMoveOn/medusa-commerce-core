@@ -1,10 +1,12 @@
-import { defaultAdminDiscountsFields, defaultAdminDiscountsRelations } from "."
 
+import { defaultAdminDiscountsFields, defaultAdminDiscountsRelations } from "."
 import { Discount } from "../../../.."
 import DiscountService from "../../../../services/discount"
 import { EntityManager } from "typeorm"
-
+import { validator } from "../../../../utils/validator"
+import { IsString } from "class-validator"
 /**
+
  * @oas [post] /admin/discounts/{id}/regions/{region_id}
  * operationId: "PostDiscountsDiscountRegionsRegion"
  * summary: "Add Region to Discount"
@@ -59,7 +61,7 @@ import { EntityManager } from "typeorm"
  */
 export default async (req, res) => {
   const { discount_id, region_id } = req.params
-  const { store_id } = req.query
+  const { store_id } = await validator(AdminAddRegionInDiscountQuery, req.query)
 
   const discountService: DiscountService = req.scope.resolve("discountService")
 
@@ -70,10 +72,19 @@ export default async (req, res) => {
       .addRegion(store_id, discount_id, region_id)
   })
 
-  const discount: Discount = await discountService.retrieve(discount_id, {
+  const discount: Discount = await discountService.retrieve(store_id, discount_id, {
     select: defaultAdminDiscountsFields,
     relations: defaultAdminDiscountsRelations,
   })
 
   res.status(200).json({ discount })
 }
+
+
+export class AdminAddRegionInDiscountQuery {
+  @IsString()
+  store_id: string
+}
+
+
+

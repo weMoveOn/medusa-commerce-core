@@ -3,6 +3,7 @@ import { DiscountConditionService, DiscountService } from "../../../services"
 
 export async function doesConditionBelongToDiscount(req, res, next) {
   try {
+    const { store_id } = req.query
     const { discount_id, condition_id } = req.params
     const conditionService: DiscountConditionService = req.scope.resolve(
       "discountConditionService"
@@ -10,7 +11,7 @@ export async function doesConditionBelongToDiscount(req, res, next) {
     const discountService: DiscountService =
       req.scope.resolve("discountService")
 
-    const discount = await discountService.retrieve(discount_id, {
+    const discount = await discountService.retrieve(store_id, discount_id, {
       select: ["id", "rule_id"],
     })
     const condition = await conditionService.retrieve(condition_id, {

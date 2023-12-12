@@ -72,6 +72,7 @@ import {
  */
 export default async (req: Request, res: Response) => {
   const { id, item_id } = req.params
+  const { store_id } = req.query
 
   const validatedBody =
     req.validatedBody as AdminPostOrderEditsEditLineItemsLineItemReq
@@ -85,7 +86,7 @@ export default async (req: Request, res: Response) => {
     async (transactionManager) => {
       const orderEditTx = orderEditService.withTransaction(transactionManager)
 
-      await orderEditTx.updateLineItem(id, item_id, validatedBody)
+      await orderEditTx.updateLineItem(store_id as string, id, item_id, validatedBody)
 
       const orderEdit = await orderEditTx.retrieve(id, {
         select: defaultOrderEditFields,

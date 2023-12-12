@@ -17,9 +17,19 @@ import { Order } from "./order"
 import { Swap } from "./swap"
 import { TrackingLink } from "./tracking-link"
 import { generateEntityId } from "../utils/generate-entity-id"
+import { Store } from "./store"
 
 @Entity()
 export class Fulfillment extends BaseEntity {
+  // new added filed
+
+  @Column({ type: "text", nullable: true })
+  store_id: string | null
+
+  @ManyToOne(() => Store, { onDelete: "CASCADE" })
+  @JoinColumn({ name: "store_id" })
+  store: Store
+
   @Index()
   @Column({ nullable: true })
   claim_order_id: string

@@ -1,5 +1,6 @@
 import { defaultAdminDiscountsFields, defaultAdminDiscountsRelations } from "."
-
+import { validator } from "../../../../utils/validator"
+import { IsString } from "class-validator"
 import DiscountService from "../../../../services/discount"
 import { EntityManager } from "typeorm"
 
@@ -58,6 +59,7 @@ import { EntityManager } from "typeorm"
  */
 export default async (req, res) => {
   const { discount_id, code } = req.params
+  const { store_id } = await validator(AdminDeleteDynamicCodeQuery, req.query)
 
   const discountService: DiscountService = req.scope.resolve("discountService")
   const manager: EntityManager = req.scope.resolve("manager")
@@ -67,10 +69,18 @@ export default async (req, res) => {
       .deleteDynamicCode(discount_id, code)
   })
 
-  const discount = await discountService.retrieve(discount_id, {
+  const discount = await discountService.retrieve(store_id, discount_id, {
     select: defaultAdminDiscountsFields,
     relations: defaultAdminDiscountsRelations,
   })
 
   res.status(200).json({ discount })
 }
+
+
+export class AdminDeleteDynamicCodeQuery {
+  @IsString()
+  store_id: string
+}
+
+

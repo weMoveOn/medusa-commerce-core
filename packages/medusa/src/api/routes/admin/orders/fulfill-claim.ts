@@ -9,7 +9,7 @@ import { EntityManager } from "typeorm"
 import { FindParams } from "../../../../types/common"
 import { cleanResponseData } from "../../../../utils/clean-response-data"
 import { updateInventoryAndReservations } from "./create-fulfillment"
-
+import { validator } from "../../../../utils/validator"
 /**
  * @oas [post] /admin/orders/{id}/claims/{claim_id}/fulfillments
  * operationId: "PostOrdersOrderClaimsClaimFulfillments"
@@ -78,6 +78,10 @@ import { updateInventoryAndReservations } from "./create-fulfillment"
  */
 export default async (req, res) => {
   const { id, claim_id } = req.params
+  const { store_id } = await validator(
+    AdminPostOrdersOrderClaimsClaimFulfillmentsQuery,
+    req.query
+  )
 
   const validated = req.validatedBody
 
@@ -104,7 +108,7 @@ export default async (req, res) => {
       existingFulfillments.map((fulfillment) => fulfillment.id)
     )
 
-    await claimServiceTx.createFulfillment(claim_id, {
+    await claimServiceTx.createFulfillment(store_id, claim_id, {
       metadata: validated.metadata,
       no_notification: validated.no_notification,
       location_id: validated.location_id,
@@ -172,3 +176,8 @@ export class AdminPostOrdersOrderClaimsClaimFulfillmentsReq {
 
 // eslint-disable-next-line max-len
 export class AdminPostOrdersOrderClaimsClaimFulfillmentsParams extends FindParams {}
+
+export class AdminPostOrdersOrderClaimsClaimFulfillmentsQuery {
+  @IsString()
+  store_id: string
+}

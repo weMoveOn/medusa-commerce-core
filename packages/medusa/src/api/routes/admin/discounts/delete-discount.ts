@@ -1,6 +1,7 @@
+import { IsString } from "class-validator"
 import DiscountService from "../../../../services/discount"
 import { EntityManager } from "typeorm"
-
+import { validator } from "../../../../utils/validator"
 /**
  * @oas [delete] /admin/discounts/{id}
  * operationId: "DeleteDiscountsDiscount"
@@ -55,13 +56,14 @@ import { EntityManager } from "typeorm"
  */
 export default async (req, res) => {
   const { discount_id } = req.params
+  const { store_id } = await validator(AdminDeleteDiscountQuery, req.query)
 
   const discountService: DiscountService = req.scope.resolve("discountService")
   const manager: EntityManager = req.scope.resolve("manager")
   await manager.transaction(async (transactionManager) => {
     return await discountService
       .withTransaction(transactionManager)
-      .delete(discount_id)
+      .delete(store_id, discount_id)
   })
 
   res.json({
@@ -69,4 +71,9 @@ export default async (req, res) => {
     object: "discount",
     deleted: true,
   })
+}
+
+export class AdminDeleteDiscountQuery {
+  @IsString()
+  store_id: string
 }

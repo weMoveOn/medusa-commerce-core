@@ -1,7 +1,8 @@
 import { Request, Response } from "express"
 import DiscountConditionService from "../../../../services/discount-condition"
 import { FindParams } from "../../../../types/common"
-
+import { validator } from "../../../../utils/validator"
+import { IsString } from "class-validator"
 /**
  * @oas [get] /admin/discounts/{discount_id}/conditions/{condition_id}
  * operationId: "GetDiscountsDiscountConditionsCondition"
@@ -61,6 +62,7 @@ import { FindParams } from "../../../../types/common"
 
 export default async (req: Request, res: Response) => {
   const { condition_id } = req.params
+  const { store_id } = await validator(AdminGetConditionQuery, req.query)
 
   const conditionService: DiscountConditionService = req.scope.resolve(
     "discountConditionService"
@@ -75,3 +77,9 @@ export default async (req: Request, res: Response) => {
 }
 
 export class AdminGetDiscountsDiscountConditionsConditionParams extends FindParams {}
+
+export class AdminGetConditionQuery {
+  @IsString()
+  store_id: string
+}
+

@@ -399,10 +399,10 @@ class CartService extends TransactionBaseService {
         const region = data.region
           ? data.region
           : await this.regionService_
-              .withTransaction(transactionManager)
-              .retrieve(data.store_id, data.region_id!, {
-                relations: ["countries"],
-              })
+            .withTransaction(transactionManager)
+            .retrieve(data.store_id, data.region_id!, {
+              relations: ["countries"],
+            })
         const regCountries = region.countries.map(({ iso_2 }) => iso_2)
 
         if (!data.shipping_address && !data.shipping_address_id) {
@@ -520,7 +520,7 @@ class CartService extends TransactionBaseService {
    * @param lineItemId - the line item to remove.
    * @return the result of the update operation
    */
-  async removeLineItem(cartId: string, lineItemId: string): Promise<Cart> {
+  async removeLineItem(storeId: string, cartId: string, lineItemId: string): Promise<Cart> {
     return await this.atomicPhase_(
       async (transactionManager: EntityManager) => {
         const cart = await this.retrieve(cartId, {
@@ -567,7 +567,7 @@ class CartService extends TransactionBaseService {
           ],
         })
 
-        await this.refreshAdjustments_(result)
+        await this.refreshAdjustments_(storeId, result)
 
         // Notify subscribers
         await this.eventBus_
@@ -630,8 +630,8 @@ class CartService extends TransactionBaseService {
     const lineItemVariant = lineItem.variant?.product_id
       ? lineItem.variant
       : await this.productVariantService_
-          .withTransaction(this.activeManager_)
-          .retrieve(lineItem.variant_id, { select: ["id", "product_id"] })
+        .withTransaction(this.activeManager_)
+        .retrieve(lineItem.variant_id, { select: ["id", "product_id"] })
 
     return !!(
       await this.productService_
@@ -777,7 +777,7 @@ class CartService extends TransactionBaseService {
           ],
         })
 
-        await this.refreshAdjustments_(cart)
+        await this.refreshAdjustments_(storeId, cart)
 
         await this.eventBus_
           .withTransaction(transactionManager)
@@ -990,7 +990,7 @@ class CartService extends TransactionBaseService {
           ],
         })
 
-        await this.refreshAdjustments_(cart)
+        await this.refreshAdjustments_(storeId, cart)
 
         await this.eventBus_
           .withTransaction(transactionManager)
@@ -1099,7 +1099,7 @@ class CartService extends TransactionBaseService {
           ],
         })
 
-        await this.refreshAdjustments_(updatedCart)
+        await this.refreshAdjustments_(storeId, updatedCart)
 
         // Update the line item
         await this.eventBus_
@@ -1187,8 +1187,8 @@ class CartService extends TransactionBaseService {
         const cart = !isString(cartOrId)
           ? cartOrId
           : await this.retrieve(cartOrId, {
-              relations,
-            })
+            relations,
+          })
 
         const originalCartCustomer = { ...(cart.customer ?? {}) }
         if (data.customer_id) {
@@ -1252,6 +1252,7 @@ class CartService extends TransactionBaseService {
           cart.discounts.length = 0
 
           await this.applyDiscounts(
+            storeId,
             cart,
             data.discounts.map((d) => d.code)
           )
@@ -1276,7 +1277,7 @@ class CartService extends TransactionBaseService {
           }
         } else if (isDefined(data.discounts) && !data.discounts.length) {
           cart.discounts.length = 0
-          await this.refreshAdjustments_(cart)
+          await this.refreshAdjustments_(storeId, cart)
         }
 
         if ("gift_cards" in data) {
@@ -1361,7 +1362,7 @@ class CartService extends TransactionBaseService {
     if (itemsToRemove.length) {
       const results = await promiseAll(
         itemsToRemove.map(async (item) => {
-          return this.removeLineItem(cart.id, item.id)
+          return this.removeLineItem(storeId, cart.id, item.id)
         })
       )
       cart.items = results.pop()?.items ?? []
@@ -1541,8 +1542,8 @@ class CartService extends TransactionBaseService {
    * @param cart - the cart to update
    * @param discountCode - the discount code
    */
-  async applyDiscount(cart: Cart, discountCode: string): Promise<void> {
-    return await this.applyDiscounts(cart, [discountCode])
+  async applyDiscount(storeId: string, cart: Cart, discountCode: string): Promise<void> {
+    return await this.applyDiscounts(storeId, cart, [discountCode])
   }
 
   /**
@@ -1553,18 +1554,18 @@ class CartService extends TransactionBaseService {
    * @param cart - the cart to update
    * @param discountCodes - the discount code(s) to apply
    */
-  async applyDiscounts(cart: Cart, discountCodes: string[]): Promise<void> {
+  async applyDiscounts(storeId: string, cart: Cart, discountCodes: string[]): Promise<void> {
     return await this.atomicPhase_(
       async (transactionManager: EntityManager) => {
         const discounts = await this.discountService_
           .withTransaction(transactionManager)
-          .listByCodes(discountCodes, {
+          .listByCodes(storeId, discountCodes, {
             relations: ["rule", "rule.conditions", "regions"],
           })
 
         await this.discountService_
           .withTransaction(transactionManager)
-          .validateDiscountForCartOrThrow(cart, discounts)
+          .validateDiscountForCartOrThrow(storeId, cart, discounts)
 
         const rules: Map<string, DiscountRule> = new Map()
         const discountsMap = new Map(
@@ -1619,7 +1620,7 @@ class CartService extends TransactionBaseService {
         )
 
         if (hadNonFreeShippingDiscounts && cart?.items) {
-          await this.refreshAdjustments_(cart)
+          await this.refreshAdjustments_(storeId, cart)
         }
       }
     )
@@ -1631,7 +1632,7 @@ class CartService extends TransactionBaseService {
    * @param discountCode - the discount code to remove
    * @return the resulting cart
    */
-  async removeDiscount(cartId: string, discountCode: string): Promise<Cart> {
+  async removeDiscount(storeId: string, cartId: string, discountCode: string): Promise<Cart> {
     return await this.atomicPhase_(
       async (transactionManager: EntityManager) => {
         const cart = await this.retrieve(cartId, {
@@ -1661,7 +1662,7 @@ class CartService extends TransactionBaseService {
         const cartRepo = transactionManager.withRepository(this.cartRepository_)
         const updatedCart = await cartRepo.save(cart)
 
-        await this.refreshAdjustments_(updatedCart)
+        await this.refreshAdjustments_(storeId, updatedCart)
 
         if (cart.payment_sessions?.length) {
           await this.setPaymentSessions(cartId)
@@ -2206,13 +2207,13 @@ class CartService extends TransactionBaseService {
         const cart = !isString(cartOrId)
           ? cartOrId
           : await this.retrieveWithTotals(cartOrId, {
-              relations: [
-                "shipping_methods",
-                "shipping_methods.shipping_option",
-                "items.variant.product.profiles",
-                "payment_sessions",
-              ],
-            })
+            relations: [
+              "shipping_methods",
+              "shipping_methods.shipping_option",
+              "items.variant.product.profiles",
+              "payment_sessions",
+            ],
+          })
 
         const cartCustomShippingOptions =
           await this.customShippingOptionService_
@@ -2540,7 +2541,7 @@ class CartService extends TransactionBaseService {
 
     if (cart?.items?.length) {
       // line item adjustments should be refreshed on region change after having filtered out inapplicable discounts
-      await this.refreshAdjustments_(cart)
+      await this.refreshAdjustments_(storeId, cart)
     }
 
     cart.gift_cards = []
@@ -2651,20 +2652,20 @@ class CartService extends TransactionBaseService {
         const cart = isCart(cartOrId)
           ? cartOrId
           : await this.retrieve(cartOrId, {
-              relations: [
-                "customer",
-                "discounts",
-                "discounts.rule",
-                "gift_cards",
-                "items.variant.product.profiles",
-                "items.adjustments",
-                "region",
-                "region.tax_rates",
-                "shipping_address",
-                "shipping_methods",
-                "shipping_methods.shipping_option",
-              ],
-            })
+            relations: [
+              "customer",
+              "discounts",
+              "discounts.rule",
+              "gift_cards",
+              "items.variant.product.profiles",
+              "items.adjustments",
+              "region",
+              "region.tax_rates",
+              "shipping_address",
+              "shipping_methods",
+              "shipping_methods.shipping_option",
+            ],
+          })
 
         const calculationContext = await this.totalsService_
           .withTransaction(transactionManager)
@@ -2804,7 +2805,7 @@ class CartService extends TransactionBaseService {
     return cart as Cart & { total: number }
   }
 
-  protected async refreshAdjustments_(cart: Cart): Promise<void> {
+  protected async refreshAdjustments_(storeId: string, cart: Cart): Promise<void> {
     const nonReturnLineIDs = cart.items
       .filter((item) => !item.is_return)
       .map((i) => i.id)
@@ -2819,7 +2820,7 @@ class CartService extends TransactionBaseService {
     })
 
     // potentially create/update line item adjustments
-    await lineItemAdjustmentServiceTx.createAdjustments(cart)
+    await lineItemAdjustmentServiceTx.createAdjustments(storeId, cart)
   }
 
   protected transformQueryForTotals_(

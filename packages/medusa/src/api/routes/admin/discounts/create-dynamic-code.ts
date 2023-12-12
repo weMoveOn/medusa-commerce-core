@@ -10,6 +10,7 @@ import { defaultAdminDiscountsFields, defaultAdminDiscountsRelations } from "."
 
 import DiscountService from "../../../../services/discount"
 import { EntityManager } from "typeorm"
+import { validator } from "../../../../utils/validator"
 
 /**
  * @oas [post] /admin/discounts/{id}/dynamic-codes
@@ -78,23 +79,32 @@ import { EntityManager } from "typeorm"
 export default async (req: Request, res: Response) => {
   const { discount_id } = req.params
 
+  const { store_id } = await validator(AdminCreateDynamicCodeQuery, req.query)
+
   const discountService: DiscountService = req.scope.resolve("discountService")
   const manager: EntityManager = req.scope.resolve("manager")
   const created = await manager.transaction(async (transactionManager) => {
     return await discountService
       .withTransaction(transactionManager)
       .createDynamicCode(
+        store_id,
         discount_id,
         req.validatedBody as AdminPostDiscountsDiscountDynamicCodesReq
       )
   })
 
-  const discount = await discountService.retrieve(created.id, {
+  const discount = await discountService.retrieve(store_id, created.id, {
     select: defaultAdminDiscountsFields,
     relations: defaultAdminDiscountsRelations,
   })
 
   res.status(200).json({ discount })
+}
+
+
+export class AdminCreateDynamicCodeQuery {
+  @IsString()
+  store_id: string
 }
 
 /**
