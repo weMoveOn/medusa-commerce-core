@@ -72,6 +72,7 @@ import { EntityManager } from "typeorm"
  *     $ref: "#/components/responses/500_error"
  */
 export default async (req, res) => {
+  const {store_id} = req.query
   const validated = await validator(AdminPostCustomersReq, req.body)
 
   const customerService: CustomerService = req.scope.resolve("customerService")
@@ -79,7 +80,7 @@ export default async (req, res) => {
   const customer = await manager.transaction(async (transactionManager) => {
     return await customerService
       .withTransaction(transactionManager)
-      .create(validated)
+      .create(store_id,validated)
   })
   res.status(201).json({ customer })
 }

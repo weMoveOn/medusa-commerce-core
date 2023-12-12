@@ -96,6 +96,7 @@ class PricingService extends TransactionBaseService {
   /**
    * Collects additional information necessary for completing the price
    * selection.
+   * @param storeId
    * @param context - the price selection context to use
    * @return The pricing context
    */
@@ -199,6 +200,7 @@ class PricingService extends TransactionBaseService {
   }
 
   private async getProductVariantPricingModulePricing_(
+      storeId: string,
     variantPriceData: {
       variantId: string
       quantity?: number
@@ -235,7 +237,7 @@ class PricingService extends TransactionBaseService {
     } = removeNullish(context.price_selection)
 
     if (queryContext.customer_id) {
-      const { groups } = await this.customerService_.retrieve(
+      const { groups } = await this.customerService_.retrieve(storeId,
         queryContext.customer_id,
         { relations: ["groups"] }
       )
@@ -321,6 +323,7 @@ class PricingService extends TransactionBaseService {
   }
 
   private async getProductVariantPricing_(
+      storeId: string,
     data: {
       variantId: string
       quantity?: number
@@ -328,7 +331,7 @@ class PricingService extends TransactionBaseService {
     context: PricingContext
   ): Promise<Map<string, ProductVariantPricing>> {
     if (this.featureFlagRouter.isFeatureEnabled(MedusaV2Flag.key)) {
-      return await this.getProductVariantPricingModulePricing_(data, context)
+      return await this.getProductVariantPricingModulePricing_(storeId,data, context)
     }
 
     const variantsPricing = await this.priceSelectionStrategy
@@ -407,7 +410,7 @@ class PricingService extends TransactionBaseService {
       pricingContext.price_selection.tax_rates = productRates.get(productId)
     }
 
-    const productVariantPricing = await this.getProductVariantPricing_(
+    const productVariantPricing = await this.getProductVariantPricing_(storeId,
       [
         {
           variantId: variant.id,
@@ -460,6 +463,7 @@ class PricingService extends TransactionBaseService {
 
     pricingContext.price_selection.tax_rates = productRates
     const productVariantPricing = await this.getProductVariantPricing_(
+        storeId,
       [{ variantId }],
       pricingContext
     )
@@ -510,7 +514,7 @@ class PricingService extends TransactionBaseService {
         productsRatesMap.get(productId)!
     }
 
-    const variantsPricingMap = await this.getProductVariantPricing_(
+    const variantsPricingMap = await this.getProductVariantPricing_(storeId,
       variants.map((v) => ({
         variantId: v.id,
         quantity: dataMap.get(v.id)!.quantity,
@@ -527,6 +531,7 @@ class PricingService extends TransactionBaseService {
   }
 
   private async getProductPricing_(
+      storeId: string,
     data: { productId: string; variants: ProductVariant[] }[],
     context: PricingContext
   ): Promise<Map<string, Record<string, ProductVariantPricing>>> {
@@ -560,7 +565,7 @@ class PricingService extends TransactionBaseService {
           context_.price_selection.tax_rates = taxRatesMap.get(productId)!
         }
 
-        const variantsPricingMap = await this.getProductVariantPricing_(
+        const variantsPricingMap = await this.getProductVariantPricing_(storeId,
           pricingData,
           context_
         )
@@ -590,6 +595,7 @@ class PricingService extends TransactionBaseService {
   ): Promise<Record<string, ProductVariantPricing>> {
     const pricingContext = await this.collectPricingContext(storeId, context)
     const productPricing = await this.getProductPricing_(
+        storeId,
       [{ productId: product.id, variants: product.variants }],
       pricingContext
     )
@@ -613,6 +619,7 @@ class PricingService extends TransactionBaseService {
       { select: ["id"] }
     )
     const productPricing = await this.getProductPricing_(
+        storeId,
       [{ productId, variants }],
       pricingContext
     )
@@ -669,6 +676,7 @@ class PricingService extends TransactionBaseService {
       }))
 
     const productsVariantsPricingMap = await this.getProductPricing_(
+        storeId,
       pricingData,
       pricingContext
     )

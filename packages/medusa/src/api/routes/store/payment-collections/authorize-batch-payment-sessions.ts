@@ -58,6 +58,7 @@ import { PaymentCollectionService } from "../../../../services"
  */
 export default async (req, res) => {
   const { id } = req.params
+  const { store_id } = req.query
   const data =
     req.validatedBody as StorePostPaymentCollectionsBatchSessionsAuthorizeReq
 
@@ -67,6 +68,7 @@ export default async (req, res) => {
 
   const payment_collection =
     await paymentCollectionService.authorizePaymentSessions(
+        store_id,
       id,
       data.session_ids,
       req.request_context

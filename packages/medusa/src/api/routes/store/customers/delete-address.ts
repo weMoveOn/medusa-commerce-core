@@ -55,6 +55,7 @@ import CustomerService from "../../../../services/customer"
  *     $ref: "#/components/responses/500_error"
  */
 export default async (req, res) => {
+  const { store_id } = req.query
   const id = req.user.customer_id
 
   const { address_id } = req.params
@@ -65,13 +66,13 @@ export default async (req, res) => {
   await manager.transaction(async (transactionManager) => {
     return await customerService
       .withTransaction(transactionManager)
-      .removeAddress(id, address_id)
+      .removeAddress(store_id,id, address_id)
   })
 
-  const customer = await customerService.retrieve(id, {
+  const customer = await customerService.retrieve(store_id,id, {
     relations: defaultStoreCustomersRelations,
     select: defaultStoreCustomersFields,
   })
 
-  res.json({ customer })
+  res.json({ message: "Address deleted", customer })
 }

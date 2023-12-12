@@ -64,6 +64,8 @@ import { defaultRelations } from "."
  *    $ref: "#/components/responses/500_error"
  */
 export default async (req, res) => {
+  const { store_id } = req.query
+  req.body.store_id = store_id
   const validated = await validator(StorePostAuthReq, req.body)
 
   const authService: AuthService = req.scope.resolve("authService")
@@ -71,7 +73,7 @@ export default async (req, res) => {
   const result = await manager.transaction(async (transactionManager) => {
     return await authService
       .withTransaction(transactionManager)
-      .authenticateCustomer(validated.email, validated.password)
+      .authenticateCustomer(store_id,validated.email, validated.password)
   })
 
   if (!result.success) {
@@ -83,7 +85,7 @@ export default async (req, res) => {
   req.session.customer_id = result.customer?.id
 
   const customerService: CustomerService = req.scope.resolve("customerService")
-  const customer = await customerService.retrieve(result.customer?.id || "", {
+  const customer = await customerService.retrieve(store_id,result.customer?.id || "", {
     relations: defaultRelations,
   })
 
@@ -110,4 +112,7 @@ export class StorePostAuthReq {
 
   @IsNotEmpty()
   password: string
+
+  @IsNotEmpty()
+  store_id: string
 }

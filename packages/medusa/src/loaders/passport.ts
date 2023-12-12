@@ -24,9 +24,10 @@ export default async ({
         usernameField: "email",
         passwordField: "password",
       },
-      async (email, password, done) => {
+      async (storeId,email, password, done) => {
         try {
           const { success, user } = await authService.authenticate(
+              storeId,
             email,
             password
           )

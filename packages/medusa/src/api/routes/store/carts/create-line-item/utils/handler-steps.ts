@@ -79,6 +79,7 @@ export async function handleAddOrUpdateLineItem(
 
   if (cart.payment_sessions?.length) {
     await txCartService.setPaymentSessions(
+        storeId,
       cart as WithRequiredProperty<Cart, "total">
     )
   }

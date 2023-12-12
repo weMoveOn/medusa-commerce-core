@@ -21,6 +21,10 @@ import { generateEntityId } from "../utils/generate-entity-id"
 @Entity()
 @Unique(["email", "has_account"])
 export class Customer extends SoftDeletableEntity {
+
+  @Column()
+  store_id: string
+
   @Index()
   @Column()
   email: string

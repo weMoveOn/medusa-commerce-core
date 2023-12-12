@@ -54,6 +54,7 @@ import { PaymentCollectionService } from "../../../../services"
  *     $ref: "#/components/responses/500_error"
  */
 export default async (req, res) => {
+  const {store_id} = req.query
   const { id, session_id } = req.params
 
   const paymentCollectionService: PaymentCollectionService = req.scope.resolve(
@@ -62,6 +63,7 @@ export default async (req, res) => {
 
   const payment_collection =
     await paymentCollectionService.authorizePaymentSessions(
+        store_id,
       id,
       [session_id],
       req.request_context

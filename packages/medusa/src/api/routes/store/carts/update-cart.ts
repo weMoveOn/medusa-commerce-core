@@ -109,7 +109,7 @@ export default async (req, res) => {
     if (updated.payment_sessions?.length && !validated.region_id) {
       await cartService
         .withTransaction(transactionManager)
-        .setPaymentSessions(id)
+        .setPaymentSessions(store_id,id)
     }
   })
 

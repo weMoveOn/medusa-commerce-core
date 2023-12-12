@@ -58,6 +58,7 @@ import { validator } from "../../../../utils/validator"
  *     $ref: "#/components/responses/500_error"
  */
 export default async (req, res) => {
+  const { store_id } = req.query
   const { id } = req.params
 
   const validated = await validator(FindParams, req.query)
@@ -75,7 +76,7 @@ export default async (req, res) => {
       : defaultAdminCustomersRelations,
   }
 
-  const customer = await customerService.retrieve(id, findConfig)
+  const customer = await customerService.retrieve(store_id,id, findConfig)
 
   res.json({ customer })
 }

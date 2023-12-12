@@ -54,9 +54,10 @@ import UserService from "../../../../services/user"
  */
 export default async (req, res) => {
   const { user_id } = req.params
+  const { store_id } = req.query
 
   const userService: UserService = req.scope.resolve("userService")
 
-  const user = await userService.retrieve(user_id)
+  const user = await userService.retrieve(store_id,user_id)
   res.json({ user })
 }

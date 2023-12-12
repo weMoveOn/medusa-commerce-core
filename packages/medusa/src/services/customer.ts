@@ -62,12 +62,13 @@ class CustomerService extends TransactionBaseService {
    * The token will be signed with the customer's current password hash as a
    * secret a long side a payload with userId and the expiry time for the token,
    * which is always 15 minutes.
+   * @param storeId
    * @param {string} customerId - the customer to reset the password for
    * @return {string} the generated JSON web token
    */
-  async generateResetPasswordToken(customerId: string): Promise<string> {
+  async generateResetPasswordToken(storeId:string,customerId: string): Promise<string> {
     return await this.atomicPhase_(async (manager) => {
-      const customer = await this.retrieve(customerId, {
+      const customer = await this.retrieve(storeId,customerId, {
         select: [
           "id",
           "has_account",
@@ -237,20 +238,22 @@ class CustomerService extends TransactionBaseService {
     )
   }
   async retrieveRegisteredByEmail(
+      storeId: string,
     email: string,
     config: FindConfig<Customer> = {}
   ): Promise<Customer | never> {
     return await this.retrieve_(
-      { email: email.toLowerCase(), has_account: true },
+      { store_id:storeId,email: email.toLowerCase(), has_account: true },
       config
     )
   }
 
   async listByEmail(
+      storeId: string,
     email: string,
     config: FindConfig<Customer> = { relations: [], skip: 0, take: 2 }
   ): Promise<Customer[]> {
-    return await this.list({ email: email.toLowerCase() }, config)
+    return await this.list({ email: email.toLowerCase(), store_id:storeId }, config)
   }
   /**
    * Gets a customer by phone.
@@ -267,11 +270,13 @@ class CustomerService extends TransactionBaseService {
 
   /**
    * Gets a customer by id.
+   * @param storeId
    * @param {string} customerId - the id of the customer to get.
    * @param {Object} config - the config object containing query settings
    * @return {Promise<Customer>} the customer document.
    */
   async retrieve(
+      storeId: string,
     customerId: string,
     config: FindConfig<Customer> = {}
   ): Promise<Customer> {
@@ -282,7 +287,7 @@ class CustomerService extends TransactionBaseService {
       )
     }
 
-    return this.retrieve_({ id: customerId }, config)
+    return this.retrieve_({ store_id:storeId,id: customerId }, config)
   }
 
   /**
@@ -300,10 +305,11 @@ class CustomerService extends TransactionBaseService {
    * e.g. to login and view order history, etc. If a password is provided the
    * customer will automatically get an account, otherwise the customer is just
    * used to hold details of customers.
+   * @param storeId
    * @param {object} customer - the customer to create
    * @return {Promise} the result of create
    */
-  async create(customer: CreateCustomerInput): Promise<Customer> {
+  async create(storeId:string,customer: CreateCustomerInput): Promise<Customer> {
     return await this.atomicPhase_(async (manager) => {
       const customerRepository = manager.withRepository(
         this.customerRepository_
@@ -314,7 +320,7 @@ class CustomerService extends TransactionBaseService {
       const { email, password } = customer
 
       // should be a list of customers at this point
-      const existing = await this.listByEmail(email).catch(() => undefined)
+      const existing = await this.listByEmail(storeId,email).catch(() => undefined)
 
       // should validate that "existing.some(acc => acc.has_account) && password"
       if (existing) {
@@ -360,6 +366,7 @@ class CustomerService extends TransactionBaseService {
    * @return {Promise} resolves to the update result.
    */
   async update(
+      storeId: string,
     customerId: string,
     update: UpdateCustomerInput
   ): Promise<Customer> {
@@ -368,7 +375,7 @@ class CustomerService extends TransactionBaseService {
         this.customerRepository_
       )
 
-      const customer = await this.retrieve(customerId)
+      const customer = await this.retrieve(storeId,customerId)
 
       const {
         password,
@@ -499,13 +506,13 @@ class CustomerService extends TransactionBaseService {
     })
   }
 
-  async removeAddress(customerId: string, addressId: string): Promise<void> {
+  async removeAddress(storeId:string,customerId: string, addressId: string): Promise<void> {
     return await this.atomicPhase_(async (manager) => {
       const addressRepo = manager.withRepository(this.addressRepository_)
 
       // Should not fail, if user does not exist, since delete is idempotent
       const address = await addressRepo.findOne({
-        where: { id: addressId, customer_id: customerId },
+        where: { store_id:storeId,id: addressId, customer_id: customerId },
       })
 
       if (!address) {
@@ -517,6 +524,7 @@ class CustomerService extends TransactionBaseService {
   }
 
   async addAddress(
+      storeId: string,
     customerId: string,
     address: AddressCreatePayload
   ): Promise<Customer | Address> {
@@ -525,7 +533,7 @@ class CustomerService extends TransactionBaseService {
 
       address.country_code = address.country_code.toLowerCase()
 
-      const customer = await this.retrieve(customerId, {
+      const customer = await this.retrieve(storeId,customerId, {
         relations: ["shipping_addresses"],
       })
 
@@ -547,6 +555,7 @@ class CustomerService extends TransactionBaseService {
         const created = addressRepository.create({
           ...address,
           customer_id: customerId,
+          store_id:storeId
         })
         const result = await addressRepository.save(created)
         return result

@@ -53,6 +53,7 @@ import { cleanResponseData } from "../../../../utils/clean-response-data"
  *     $ref: "#/components/responses/500_error"
  */
 export default async (req, res) => {
+  const { store_id } = req.query
   const { id } = req.params
 
   const cartService: CartService = req.scope.resolve("cartService")
@@ -97,7 +98,7 @@ export default async (req, res) => {
                 async (stageManager) => {
                   await cartService
                     .withTransaction(stageManager)
-                    .setPaymentSessions(id)
+                    .setPaymentSessions(store_id,id)
 
                   const cart = await cartService
                     .withTransaction(stageManager)
