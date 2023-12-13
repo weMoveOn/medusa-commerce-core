@@ -17,6 +17,7 @@ import { Order } from "./order"
 import { ReturnItem } from "./return-item"
 import { ShippingMethod } from "./shipping-method"
 import { Swap } from "./swap"
+import { Store } from "./store"
 
 /**
  * @enum
@@ -44,6 +45,14 @@ export enum ReturnStatus {
 
 @Entity()
 export class Return extends BaseEntity {
+  @Column({ type: "text", nullable: true })
+  store_id: string | null
+
+  @ManyToOne(() => Store, { onDelete: "CASCADE" })
+  @JoinColumn({ name: "store_id" })
+  store: Store
+
+
   @DbAwareColumn({
     type: "enum",
     enum: ReturnStatus,

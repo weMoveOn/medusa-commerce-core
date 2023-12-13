@@ -7,11 +7,12 @@ import {
   defaultAdminOrdersFields,
   defaultAdminOrdersRelations,
 } from "../../../../types/orders"
+import { processIdentifierMiddleware } from "../../../middlewares/validators/identifier-existence"
 
 const route = Router()
 
 export default (app) => {
-  app.use("/returns", route)
+  app.use("/returns", processIdentifierMiddleware, route)
 
   /**
    * List returns
@@ -34,7 +35,7 @@ export default (app) => {
 export const defaultRelations = ["swap"]
 export const defaultRelationsList = ["swap", "order"]
 export const defaultReturnCancelRelations = [...defaultAdminOrdersRelations]
-export const defaultReturnCancelFields = [...defaultAdminOrdersFields]
+export const defaultReturnCancelFields = [...defaultAdminOrdersFields, "store_id"]
 
 /**
  * @schema AdminReturnsCancelRes

@@ -1,15 +1,14 @@
 import { MigrationInterface, QueryRunner } from "typeorm"
 
 export class DiscoutConnectWithStore1702371700842
-  implements MigrationInterface
-{
+  implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
     // Step 1: Add store_id column to the tracking_link table
     await queryRunner.query(`
                       ALTER TABLE "discount"
                       ADD COLUMN "store_id" character varying NOT NULL,
                       ADD CONSTRAINT "FK_store_id_in_discount" FOREIGN KEY ("store_id") REFERENCES "store"("id") ON DELETE CASCADE ON UPDATE NO ACTION;
-                      
+
                       CREATE INDEX "IDX_store_id_in_discount" ON "discount" ("store_id");
                     `)
   }

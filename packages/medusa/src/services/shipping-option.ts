@@ -100,8 +100,8 @@ class ShippingOptionService extends TransactionBaseService {
 
       const existingReq = requirement.id
         ? await reqRepo.findOne({
-            where: { id: requirement.id },
-          })
+          where: { id: requirement.id },
+        })
         : undefined
 
       if (!existingReq && requirement.id) {
@@ -175,6 +175,7 @@ class ShippingOptionService extends TransactionBaseService {
    * @return {Promise<Product>} the profile document.
    */
   async retrieve(
+    storeId,
     optionId,
     options: FindConfig<ShippingOption> = {}
   ): Promise<ShippingOption> {
@@ -187,7 +188,7 @@ class ShippingOptionService extends TransactionBaseService {
 
     const soRepo = this.activeManager_.withRepository(this.optionRepository_)
 
-    const query = buildQuery({ id: optionId }, options)
+    const query = buildQuery({ id: optionId, store_id: storeId }, options)
 
     const option = await soRepo.findOne(query)
 
@@ -429,8 +430,7 @@ class ShippingOptionService extends TransactionBaseService {
    * @return {Promise<ShippingOption>} the result of the create operation
    */
   async create(
-    storeId: string,
-    data: CreateShippingOptionInput
+    data: CreateShippingOptionInput & { store_id: string }
   ): Promise<ShippingOption> {
     return this.atomicPhase_(async (manager) => {
       const optionWithValidatedPrice = await this.validateAndMutatePrice(data, {
@@ -442,7 +442,7 @@ class ShippingOptionService extends TransactionBaseService {
 
       const region = await this.regionService_
         .withTransaction(manager)
-        .retrieve(storeId, option.region_id, {
+        .retrieve(data.store_id, option.region_id, {
           relations: ["fulfillment_providers"],
         })
 
@@ -560,11 +560,12 @@ class ShippingOptionService extends TransactionBaseService {
    * @return {Promise} resolves to the update result.
    */
   async update(
+    storeId: string,
     optionId: string,
     update: UpdateShippingOptionInput
   ): Promise<ShippingOption> {
     return this.atomicPhase_(async (manager) => {
-      const option = await this.retrieve(optionId, {
+      const option = await this.retrieve(storeId, optionId, {
         relations: ["requirements"],
       })
 
@@ -671,10 +672,10 @@ class ShippingOptionService extends TransactionBaseService {
    *   castable as an ObjectId
    * @return {Promise} the result of the delete operation.
    */
-  async delete(optionId: string): Promise<ShippingOption | void> {
+  async delete(storeId: string, optionId: string): Promise<ShippingOption | void> {
     return await this.atomicPhase_(async (manager) => {
       try {
-        const option = await this.retrieve(optionId)
+        const option = await this.retrieve(storeId, optionId)
 
         const optionRepo = manager.withRepository(this.optionRepository_)
 

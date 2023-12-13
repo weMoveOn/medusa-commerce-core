@@ -1,4 +1,6 @@
+import { IsString } from "class-validator"
 import { EntityManager } from "typeorm"
+import { validator } from "../../../../utils"
 
 /**
  * @oas [delete] /admin/shipping-options/{id}
@@ -55,12 +57,13 @@ import { EntityManager } from "typeorm"
 export default async (req, res) => {
   const { option_id } = req.params
   const optionService = req.scope.resolve("shippingOptionService")
+  const { store_id } = await validator(AdminDeleteShippingOptionQuery, req.query)
 
   const manager: EntityManager = req.scope.resolve("manager")
   await manager.transaction(async (transactionManager) => {
     return await optionService
       .withTransaction(transactionManager)
-      .delete(option_id)
+      .delete(store_id, option_id)
   })
 
   res.json({
@@ -68,4 +71,9 @@ export default async (req, res) => {
     object: "shipping-option",
     deleted: true,
   })
+}
+
+class AdminDeleteShippingOptionQuery {
+  @IsString()
+  store_id: string
 }

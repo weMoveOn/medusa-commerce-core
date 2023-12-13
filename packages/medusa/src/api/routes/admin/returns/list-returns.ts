@@ -1,4 +1,4 @@
-import { IsNumber, IsOptional } from "class-validator"
+import { IsNumber, IsOptional, IsString } from "class-validator"
 
 import { FindConfig } from "../../../../types/common"
 import { Return } from "../../../../models"
@@ -65,7 +65,7 @@ export default async (req, res) => {
 
   const validated = await validator(AdminGetReturnsParams, req.query)
 
-  const selector = {}
+  const selector = { store_id: validated.store_id }
 
   const listConfig = {
     relations: defaultRelationsList,
@@ -90,6 +90,9 @@ export default async (req, res) => {
  * {@inheritDoc FindPaginationParams}
  */
 export class AdminGetReturnsParams {
+
+  @IsString()
+  store_id: string
   /**
    * {@inheritDoc FindPaginationParams.limit}
    * @defaultValue 50
