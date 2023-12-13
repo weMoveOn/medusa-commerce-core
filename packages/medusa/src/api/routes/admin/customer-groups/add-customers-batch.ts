@@ -4,7 +4,7 @@ import { CustomerGroupService } from "../../../../services"
 import { CustomerGroupsBatchCustomer } from "../../../../types/customer-groups"
 import { EntityManager } from "typeorm"
 import { Type } from "class-transformer"
-import { ValidateNested } from "class-validator"
+import { ValidateNested , IsString} from "class-validator"
 import { validator } from "../../../../utils/validator"
 
 /**
@@ -81,6 +81,8 @@ import { validator } from "../../../../utils/validator"
 
 export default async (req: Request, res: Response) => {
   const { id } = req.params
+  const store_id = req.query.store_id as string
+  req.body.store_id = store_id
   const validated = await validator(
     AdminPostCustomerGroupsGroupCustomersBatchReq,
     req.body
@@ -96,6 +98,7 @@ export default async (req: Request, res: Response) => {
       return await customerGroupService
         .withTransaction(transactionManager)
         .addCustomers(
+            store_id,
           id,
           validated.customer_ids.map(({ id }) => id)
         )
@@ -127,4 +130,7 @@ export class AdminPostCustomerGroupsGroupCustomersBatchReq {
   @ValidateNested({ each: true })
   @Type(() => CustomerGroupsBatchCustomer)
   customer_ids: CustomerGroupsBatchCustomer[]
+
+  @IsString()
+  store_id: string
 }

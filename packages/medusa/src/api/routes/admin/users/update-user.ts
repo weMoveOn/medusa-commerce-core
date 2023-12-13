@@ -70,6 +70,7 @@ import { EntityManager } from "typeorm"
  */
 export default async (req, res) => {
   const { user_id } = req.params
+  const { store_id } = req.query
 
   const validated = await validator(AdminUpdateUserRequest, req.body)
 
@@ -78,7 +79,7 @@ export default async (req, res) => {
   const data = await manager.transaction(async (transactionManager) => {
     return await userService
       .withTransaction(transactionManager)
-      .update(user_id, validated)
+      .update(store_id,user_id, validated)
   })
 
   res.status(200).json({ user: data })

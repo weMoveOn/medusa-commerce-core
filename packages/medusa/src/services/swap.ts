@@ -202,6 +202,7 @@ class SwapService extends TransactionBaseService {
    * @return the swap
    */
   async retrieve(
+      storeId: string,
     swapId: string,
     config: Omit<FindConfig<Swap>, "select"> & { select?: string[] } = {}
   ): Promise<Swap | never> {
@@ -228,7 +229,7 @@ class SwapService extends TransactionBaseService {
     if (cartRelations || cartSelects) {
       swap.cart = await this.cartService_
         .withTransaction(this.activeManager_)
-        .retrieve(swap.cart_id, {
+        .retrieve(swap.cart_id, storeId,{
           select: cartSelects,
           relations: cartRelations,
         })
@@ -395,7 +396,7 @@ class SwapService extends TransactionBaseService {
 
       const result = await swapRepo.save(created)
 
-      await this.returnService_.withTransaction(manager).create({
+      await this.returnService_.withTransaction(manager).create(storeId,{
         swap_id: result.id,
         order_id: order.id,
         items: returnItems as OrdersReturnItem[],
@@ -419,11 +420,12 @@ class SwapService extends TransactionBaseService {
    * Process difference for the requested swap.
    *
    * @param swapId id of a swap being processed
+   * @param storeId
    * @return processed swap
    */
-  async processDifference(swapId: string): Promise<Swap | never> {
+  async processDifference(swapId: string, storeId:string): Promise<Swap | never> {
     return await this.atomicPhase_(async (manager) => {
-      const swap = await this.retrieve(swapId, {
+      const swap = await this.retrieve(swapId, storeId,{
         relations: ["payment", "order", "order.payments"],
       })
 
@@ -540,13 +542,14 @@ class SwapService extends TransactionBaseService {
   /**
    * Update the swap record.
    *
+   * @param storeId
    * @param swapId id of a swap to update
    * @param update new data
    * @return updated swap record
    */
-  async update(swapId: string, update: Partial<Swap>): Promise<Swap> {
+  async update(storeId,swapId: string, update: Partial<Swap>): Promise<Swap> {
     return await this.atomicPhase_(async (manager) => {
-      const swap = await this.retrieve(swapId)
+      const swap = await this.retrieve(storeId,swapId)
 
       if ("metadata" in update) {
         swap.metadata = setMetadata(swap, update.metadata!)
@@ -586,7 +589,7 @@ class SwapService extends TransactionBaseService {
     return await this.atomicPhase_(async (manager) => {
       const swapRepo = manager.withRepository(this.swapRepository_)
 
-      const swap = await this.retrieve(swapId, {
+      const swap = await this.retrieve(storeId,swapId, {
         relations: [
           "order.items.variant.product.profiles",
           "order.swaps",
@@ -668,7 +671,7 @@ class SwapService extends TransactionBaseService {
 
       cart = await this.cartService_
         .withTransaction(manager)
-        .retrieve(cart.id, {
+        .retrieve(cart.id, storeId,{
           relations: [
             "items",
             "items.variant",
@@ -724,6 +727,7 @@ class SwapService extends TransactionBaseService {
   /**
    * Register a cart completion
    *
+   * @param storeId
    * @param swapId - The id of the swap
    * @return swap related to the cart
    */
@@ -732,7 +736,7 @@ class SwapService extends TransactionBaseService {
     swapId: string
   ): Promise<Swap | never> {
     return await this.atomicPhase_(async (manager) => {
-      const swap = await this.retrieve(swapId, {
+      const swap = await this.retrieve(storeId,swapId, {
         select: [
           "id",
           "order_id",
@@ -758,7 +762,7 @@ class SwapService extends TransactionBaseService {
 
       const cart = await this.cartService_
         .withTransaction(manager)
-        .retrieveWithTotals(swap.cart_id, {
+        .retrieveWithTotals( storeId,swap.cart_id,{
           relations: ["payment"],
         })
 
@@ -862,13 +866,14 @@ class SwapService extends TransactionBaseService {
    * is associated with a refund, it cannot be canceled.
    *
    * @param swapId - the id of the swap to cancel.
+   * @param storeId
    * @return the canceled swap.
    */
-  async cancel(swapId: string): Promise<Swap | never> {
+  async cancel(swapId: string, storeId:string): Promise<Swap | never> {
     return await this.atomicPhase_(async (manager) => {
       const swapRepo = manager.withRepository(this.swapRepository_)
 
-      const swap = await this.retrieve(swapId, {
+      const swap = await this.retrieve(storeId,swapId, {
         relations: ["payment", "fulfillments", "return_order"],
       })
 
@@ -927,6 +932,7 @@ class SwapService extends TransactionBaseService {
    * @return {Promise<Swap>} the updated swap with new status and fulfillments.
    */
   async createFulfillment(
+      storeId: string,
     swapId: string,
     config: CreateShipmentConfig = {
       metadata: {},
@@ -937,7 +943,7 @@ class SwapService extends TransactionBaseService {
       const { metadata, no_notification } = config
       const swapRepo = manager.withRepository(this.swapRepository_)
 
-      const swap = await this.retrieve(swapId, {
+      const swap = await this.retrieve(storeId,swapId, {
         relations: [
           "payment",
           "shipping_address",
@@ -1063,6 +1069,7 @@ class SwapService extends TransactionBaseService {
   /**
    * Cancels a fulfillment (if related to a swap)
    *
+   * @param storeId
    * @param fulfillmentId - the ID of the fulfillment to cancel
    * @return updated swap
    */
@@ -1083,7 +1090,7 @@ class SwapService extends TransactionBaseService {
         )
       }
 
-      const swap = await this.retrieve(canceled.swap_id)
+      const swap = await this.retrieve(storeId,canceled.swap_id)
 
       swap.fulfillment_status = SwapFulfillmentStatus.CANCELED
 
@@ -1094,6 +1101,7 @@ class SwapService extends TransactionBaseService {
   /**
    * Marks a fulfillment as shipped and attaches tracking numbers.
    *
+   * @param storeId
    * @param swapId - the id of the swap that has been shipped.
    * @param fulfillmentId - the id of the specific fulfillment that has been shipped
    * @param trackingLinks - the tracking numbers associated with the shipment
@@ -1114,7 +1122,7 @@ class SwapService extends TransactionBaseService {
       const { metadata, no_notification } = config
       const swapRepo = manager.withRepository(this.swapRepository_)
 
-      const swap = await this.retrieve(swapId, {
+      const swap = await this.retrieve(storeId,swapId, {
         relations: ["additional_items"],
       })
 
@@ -1217,9 +1225,9 @@ class SwapService extends TransactionBaseService {
    * @param id - the id of the order with the swap.
    * @return the resulting order
    */
-  async registerReceived(id): Promise<Swap | never> {
+  async registerReceived(id:string, storeId:string): Promise<Swap | never> {
     return await this.atomicPhase_(async (manager) => {
-      const swap = await this.retrieve(id, {
+      const swap = await this.retrieve(storeId,id, {
         relations: ["return_order", "return_order.items"],
       })
 
@@ -1237,7 +1245,7 @@ class SwapService extends TransactionBaseService {
         )
       }
 
-      const result = await this.retrieve(id)
+      const result = await this.retrieve(storeId,id)
 
       await this.eventBus_
         .withTransaction(manager)

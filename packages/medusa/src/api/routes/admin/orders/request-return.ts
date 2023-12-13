@@ -100,6 +100,7 @@ import { cleanResponseData } from "../../../../utils/clean-response-data"
  */
 export default async (req, res) => {
   const { id } = req.params
+  const { store_id } = req.query
 
   const value = req.validatedBody as AdminPostOrdersOrderReturnsReq
 
@@ -168,7 +169,7 @@ export default async (req, res) => {
                   if (!isDefined(evaluatedNoNotification)) {
                     const order = await orderService
                       .withTransaction(manager)
-                      .retrieve(id)
+                      .retrieve(store_id, id)
 
                     evaluatedNoNotification = order.no_notification
                   }
@@ -177,12 +178,12 @@ export default async (req, res) => {
 
                   const createdReturn = await returnService
                     .withTransaction(manager)
-                    .create(returnObj)
+                    .create(store_id, returnObj)
 
                   if (value.return_shipping) {
                     await returnService
                       .withTransaction(manager)
-                      .fulfill(createdReturn.id)
+                      .fulfill(store_id, createdReturn.id)
                   }
 
                   await eventBus
@@ -235,12 +236,17 @@ export default async (req, res) => {
 
                     order = await returnService
                       .withTransaction(manager)
-                      .receive(returnOrder.id, value.items, value.refund)
+                      .receive(
+                        store_id,
+                        returnOrder.id,
+                        value.items,
+                        value.refund
+                      )
                   }
 
                   order = await orderService
                     .withTransaction(manager)
-                    .retrieveWithTotals(id, req.retrieveConfig, {
+                    .retrieveWithTotals(store_id, id, req.retrieveConfig, {
                       includes: req.includes,
                     })
 
@@ -384,6 +390,9 @@ export class AdminPostOrdersOrderReturnsReq {
   @IsOptional()
   @IsString()
   location_id?: string
+
+  @IsString()
+  store_id: string
 }
 
 /**
@@ -405,4 +414,5 @@ class ReturnShipping {
   price?: number
 }
 
-export class AdminPostOrdersOrderReturnsParams extends FindParams {}
+// eslint-disable-next-line prettier/prettier
+export class AdminPostOrdersOrderReturnsParams extends FindParams { }

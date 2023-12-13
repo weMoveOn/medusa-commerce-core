@@ -186,15 +186,18 @@ import { DateComparisonOperator } from "../../../../types/common"
  */
 export default async (req: Request, res: Response) => {
   const id: string | undefined = req.user?.customer_id
+  const store_id = req.query.store_id as string
 
   const orderService: OrderService = req.scope.resolve("orderService")
 
   req.filterableFields = {
     ...req.filterableFields,
     customer_id: id,
+    store_id,
   }
 
   const [orders, count] = await orderService.listAndCount(
+      store_id,
     req.filterableFields,
     req.listConfig
   )
@@ -252,6 +255,12 @@ export class StoreGetCustomersCustomerOrdersParams extends StoreGetCustomersCust
   @IsString()
   @IsOptional()
   id?: string
+
+  /**
+   * StoreID to identify store.
+   */
+  @IsString()
+  store_id?: string
 
   /**
    * Search term to search orders' display ID, email, shipping address's first name, customer's first name, customer's last name, and customer's phone number.

@@ -90,7 +90,6 @@ export default async (req, res) => {
  * {@inheritDoc FindPaginationParams}
  */
 export class AdminGetReturnsParams {
-
   @IsString()
   store_id: string
   /**

@@ -93,7 +93,7 @@ export default async (req: Request, res: Response) => {
         relations: defaultOrderEditRelations,
       })
 
-      await orderEditTx.decorateTotals(orderEdit)
+      await orderEditTx.decorateTotals(store_id as string,orderEdit)
 
       return orderEdit
     }

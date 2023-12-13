@@ -6,6 +6,7 @@ import {
   JoinColumn,
   JoinTable,
   ManyToMany,
+  ManyToOne,
   OneToMany,
   OneToOne,
   Unique,
@@ -17,10 +18,19 @@ import { DbAwareColumn } from "../utils/db-aware-column"
 import { Order } from "./order"
 import { SoftDeletableEntity } from "../interfaces/models/soft-deletable-entity"
 import { generateEntityId } from "../utils/generate-entity-id"
+import {Store} from "./store";
 
 @Entity()
 @Unique(["email", "has_account"])
 export class Customer extends SoftDeletableEntity {
+
+  // new filed added start
+  @Column({ nullable: true })
+  store_id: string
+  @ManyToOne(() => Store, (store) => store.customers)
+  @JoinColumn({ name: "store_id", referencedColumnName: "id" })
+  store: Store
+  // new filed added end
   @Index()
   @Column()
   email: string

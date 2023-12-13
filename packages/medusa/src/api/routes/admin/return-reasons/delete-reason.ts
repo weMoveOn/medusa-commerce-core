@@ -1,5 +1,7 @@
 import { EntityManager } from "typeorm"
 import { ReturnReasonService } from "../../../../services"
+import { IsString } from "class-validator"
+import { validator } from "../../../../utils/validator"
 
 /**
  * @oas [delete] /admin/return-reasons/{id}
@@ -55,6 +57,8 @@ import { ReturnReasonService } from "../../../../services"
  */
 export default async (req, res) => {
   const { id } = req.params
+  const { store_id } = await validator(AdminReturnReasonQuery, req.query)
+
 
   const returnReasonService: ReturnReasonService = req.scope.resolve(
     "returnReasonService"
@@ -63,7 +67,7 @@ export default async (req, res) => {
   await manager.transaction(async (transactionManager) => {
     return await returnReasonService
       .withTransaction(transactionManager)
-      .delete(id)
+      .delete(store_id, id)
   })
 
   res.json({
@@ -71,4 +75,12 @@ export default async (req, res) => {
     object: "return_reason",
     deleted: true,
   })
+}
+
+
+
+
+class AdminReturnReasonQuery {
+  @IsString()
+  store_id: string
 }

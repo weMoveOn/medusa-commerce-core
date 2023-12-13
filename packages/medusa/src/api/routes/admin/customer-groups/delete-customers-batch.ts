@@ -81,6 +81,7 @@ import { validator } from "../../../../utils/validator"
 
 export default async (req: Request, res: Response) => {
   const { id } = req.params
+  const store_id = req.query.store_id as string
   const validated = await validator(
     AdminDeleteCustomerGroupsGroupCustomerBatchReq,
     req.body
@@ -96,6 +97,7 @@ export default async (req: Request, res: Response) => {
       return await customerGroupService
         .withTransaction(transactionManager)
         .removeCustomer(
+            store_id,
           id,
           validated.customer_ids.map(({ id }) => id)
         )

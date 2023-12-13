@@ -42,7 +42,6 @@ export function buildQuery<TWhereKeys extends object, TEntity = unknown>(
   const query: ExtendedFindConfig<TEntity> = {
     where: buildWhere<TWhereKeys, TEntity>(selector),
   }
-
   if ("deleted_at" in selector) {
     query.withDeleted = true
   }
@@ -105,6 +104,8 @@ function buildWhere<TWhereKeys extends object, TEntity>(
 ): FindOptionsWhere<TEntity> {
   const where: FindOptionsWhere<TEntity> = {}
   for (const [key, value] of Object.entries(constraints)) {
+
+    console.log(constraints,'constraints')
     if (value === undefined) {
       continue
     }

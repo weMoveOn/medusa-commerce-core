@@ -38,7 +38,7 @@ export async function handleAddOrUpdateLineItem(
 
   const txCartService = cartService.withTransaction(manager)
 
-  let cart = await txCartService.retrieve(cartId, {
+  let cart = await txCartService.retrieve(cartId, storeId,{
     select: ["id", "region_id", "customer_id"],
   })
 
@@ -65,7 +65,7 @@ export async function handleAddOrUpdateLineItem(
     relations?.some((rel) => rel.includes("variant")) &&
     featureFlagRouter.isFeatureEnabled(SalesChannelFeatureFlag.key)
 
-  cart = await txCartService.retrieveWithTotals(cart.id, {
+  cart = await txCartService.retrieveWithTotals( storeId,cart.id,{
     select: defaultStoreCartFields,
     relations,
   })
@@ -79,6 +79,7 @@ export async function handleAddOrUpdateLineItem(
 
   if (cart.payment_sessions?.length) {
     await txCartService.setPaymentSessions(
+        storeId,
       cart as WithRequiredProperty<Cart, "total">
     )
   }

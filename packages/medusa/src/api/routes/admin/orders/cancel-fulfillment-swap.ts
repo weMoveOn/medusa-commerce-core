@@ -91,7 +91,7 @@ export default async (req, res) => {
     )
   }
 
-  const swap = await swapService.retrieve(swap_id)
+  const swap = await swapService.retrieve(store_id,swap_id)
 
   if (swap.order_id !== id) {
     throw new MedusaError(
@@ -107,7 +107,7 @@ export default async (req, res) => {
       .cancelFulfillment(store_id, fulfillment_id)
   })
 
-  const order = await orderService.retrieveWithTotals(id, req.retrieveConfig, {
+  const order = await orderService.retrieveWithTotals(store_id,id, req.retrieveConfig, {
     includes: req.includes,
   })
 

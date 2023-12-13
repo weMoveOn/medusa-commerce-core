@@ -47,6 +47,7 @@ import { OrderEditService } from "../../../../services"
  *     $ref: "#/components/responses/500_error"
  */
 export default async (req: Request, res: Response) => {
+  const {store_id} = req.query as {store_id: string}
   const orderEditService: OrderEditService =
     req.scope.resolve("orderEditService")
 
@@ -54,7 +55,7 @@ export default async (req: Request, res: Response) => {
   const retrieveConfig = req.retrieveConfig
 
   let orderEdit = await orderEditService.retrieve(id, retrieveConfig)
-  orderEdit = await orderEditService.decorateTotals(orderEdit)
+  orderEdit = await orderEditService.decorateTotals(store_id,orderEdit)
 
   return res.json({ order_edit: orderEdit })
 }

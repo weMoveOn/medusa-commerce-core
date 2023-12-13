@@ -469,6 +469,9 @@ export class AddressPayload {
  */
 export class AddressCreatePayload {
   @IsString()
+  store_id: string
+
+  @IsString()
   first_name: string
 
   @IsString()
@@ -510,6 +513,9 @@ export class AddressCreatePayload {
  * Parameters that can be used to configure how data is retrieved.
  */
 export class FindParams {
+  @IsString()
+  @IsOptional()
+  store_id?: string
   /**
    * Comma-separated relations that should be expanded in the returned data.
    */

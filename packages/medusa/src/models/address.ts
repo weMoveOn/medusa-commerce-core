@@ -15,6 +15,9 @@ import { generateEntityId } from "../utils/generate-entity-id"
 
 @Entity()
 export class Address extends SoftDeletableEntity {
+  @Column()
+  store_id: string
+
   @Index()
   @Column({ type: "varchar", nullable: true })
   customer_id: string | null

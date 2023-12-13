@@ -68,9 +68,10 @@ import { validator } from "../../../../utils/validator"
  *    $ref: "#/components/responses/500_error"
  */
 export default async (req, res) => {
+  const { store_id } = req.query
   const id = req.user.customer_id
-
   const { address_id } = req.params
+
 
   const validated = await validator(
     StorePostCustomersCustomerAddressesAddressReq,
@@ -88,7 +89,7 @@ export default async (req, res) => {
       .updateAddress(id, address_id, validated)
   })
 
-  const customer = await customerService.retrieve(id, {
+  const customer = await customerService.retrieve(store_id,id, {
     relations: defaultStoreCustomersRelations,
     select: defaultStoreCustomersFields,
   })

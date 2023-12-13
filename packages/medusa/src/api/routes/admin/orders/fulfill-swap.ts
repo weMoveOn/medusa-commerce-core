@@ -80,6 +80,7 @@ import { updateInventoryAndReservations } from "./create-fulfillment"
  */
 export default async (req, res) => {
   const { id, swap_id } = req.params
+  const {store_id} = req.query
 
   const validated = await validator(
     AdminPostOrdersOrderSwapsSwapFulfillmentsReq,
@@ -97,6 +98,7 @@ export default async (req, res) => {
     const swapServiceTx = swapService.withTransaction(manager)
 
     const { fulfillments: existingFulfillments } = await swapServiceTx.retrieve(
+      store_id,
       swap_id,
       {
         relations: [
@@ -111,14 +113,14 @@ export default async (req, res) => {
       existingFulfillments.map((fulfillment) => fulfillment.id)
     )
 
-    await swapServiceTx.createFulfillment(swap_id, {
+    await swapServiceTx.createFulfillment(store_id,swap_id, {
       metadata: validated.metadata,
       no_notification: validated.no_notification,
       location_id: validated.location_id,
     })
 
     if (validated.location_id) {
-      const { fulfillments } = await swapServiceTx.retrieve(swap_id, {
+      const { fulfillments } = await swapServiceTx.retrieve(store_id,swap_id, {
         relations: [
           "fulfillments",
           "fulfillments.items",
@@ -138,7 +140,7 @@ export default async (req, res) => {
     }
   })
 
-  const order = await orderService.retrieveWithTotals(id, req.retrieveConfig, {
+  const order = await orderService.retrieveWithTotals(store_id,id, req.retrieveConfig, {
     includes: req.includes,
   })
 

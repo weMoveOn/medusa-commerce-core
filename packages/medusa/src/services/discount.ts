@@ -684,7 +684,7 @@ class DiscountService extends TransactionBaseService {
   }
 
   async validateDiscountForCartOrThrow(
-    storeId: string,
+      storeId: string,
     cart: Cart,
     discount: Discount | Discount[]
   ): Promise<void> {
@@ -741,6 +741,7 @@ class DiscountService extends TransactionBaseService {
 
           if (cart.customer_id) {
             const canApplyForCustomer = await this.canApplyForCustomer(
+                storeId,
               disc.rule.id,
               cart.customer_id
             )
@@ -806,6 +807,7 @@ class DiscountService extends TransactionBaseService {
   }
 
   async canApplyForCustomer(
+      storeId: string,
     discountRuleId: string,
     customerId: string | undefined
   ): Promise<boolean> {
@@ -821,7 +823,7 @@ class DiscountService extends TransactionBaseService {
 
       const customer = await this.customerService_
         .withTransaction(manager)
-        .retrieve(customerId, {
+        .retrieve(storeId,customerId, {
           relations: ["groups"],
         })
 

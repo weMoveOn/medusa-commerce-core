@@ -62,6 +62,7 @@ import {
  */
 export default async (req, res) => {
   const { id } = req.params
+  const { store_id } = req.query
   const validatedBody =
     req.validatedBody as AdminPostOrderEditsRequestConfirmationReq
 
@@ -86,12 +87,12 @@ export default async (req, res) => {
       requestedBy: loggedInUser,
     })
 
-    const total = await orderEditServiceTx.decorateTotals(orderEdit)
+    const total = await orderEditServiceTx.decorateTotals(store_id,orderEdit)
 
     if (total.difference_due > 0) {
       const order = await orderService
         .withTransaction(transactionManager)
-        .retrieve(orderEdit.order_id, {
+        .retrieve(store_id,orderEdit.order_id, {
           select: ["currency_code", "region_id"],
         })
 
@@ -118,7 +119,7 @@ export default async (req, res) => {
     relations: defaultOrderEditRelations,
     select: defaultOrderEditFields,
   })
-  orderEdit = await orderEditService.decorateTotals(orderEdit)
+  orderEdit = await orderEditService.decorateTotals(store_id,orderEdit)
 
   res.status(200).send({
     order_edit: orderEdit,

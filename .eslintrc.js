@@ -8,6 +8,13 @@ module.exports = {
     },
   },
   plugins: ["prettier"],
+  "prettier/prettier": [
+    "error",
+    {
+      singleQuote: true,
+      parser: "flow",
+    },
+  ],
   extends: ["eslint:recommended", "google", "plugin:prettier/recommended"],
   rules: {
     curly: ["error", "all"],

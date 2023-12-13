@@ -67,6 +67,7 @@ import { cleanResponseData } from "../../../../utils/clean-response-data"
  *     $ref: "#/components/responses/500_error"
  */
 export default async (req, res) => {
+  const { store_id } = req.query
   const { id, provider_id } = req.params
 
   const validated = req.validatedBody
@@ -79,13 +80,13 @@ export default async (req, res) => {
   await manager.transaction(async (transactionManager) => {
     await cartService
       .withTransaction(transactionManager)
-      .setPaymentSession(id, provider_id)
+      .setPaymentSession(store_id,id, provider_id)
     await cartService
       .withTransaction(transactionManager)
-      .updatePaymentSession(id, validated.data)
+      .updatePaymentSession(store_id,id, validated.data)
   })
 
-  const data = await cartService.retrieveWithTotals(id, {
+  const data = await cartService.retrieveWithTotals(store_id,id,{
     select: defaultStoreCartFields,
     relations: defaultStoreCartRelations,
   })

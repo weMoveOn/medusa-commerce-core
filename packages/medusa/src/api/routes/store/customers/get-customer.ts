@@ -51,11 +51,12 @@ import CustomerService from "../../../../services/customer"
  *     $ref: "#/components/responses/500_error"
  */
 export default async (req, res) => {
+  const { store_id } = req.query
   const id = req.user.customer_id
 
   const customerService: CustomerService = req.scope.resolve("customerService")
 
-  const customer = await customerService.retrieve(id, {
+  const customer = await customerService.retrieve(store_id,id, {
     relations: defaultStoreCustomersRelations,
     select: defaultStoreCustomersFields,
   })

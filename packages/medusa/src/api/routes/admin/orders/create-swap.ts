@@ -146,7 +146,7 @@ export default async (req, res) => {
               .workStage(idempotencyKey.idempotency_key, async (manager) => {
                 const order = await orderService
                   .withTransaction(manager)
-                  .retrieveWithTotals(id, {
+                  .retrieveWithTotals(store_id, id, {
                     relations: [
                       "cart",
                       "items",
@@ -192,7 +192,7 @@ export default async (req, res) => {
 
                 await returnService
                   .withTransaction(manager)
-                  .fulfill(returnOrder.id)
+                  .fulfill(store_id, returnOrder.id)
 
                 return {
                   recovery_point: "swap_created",
@@ -227,7 +227,7 @@ export default async (req, res) => {
 
                 const order = await orderService
                   .withTransaction(transactionManager)
-                  .retrieveWithTotals(id, req.retrieveConfig, {
+                  .retrieveWithTotals(store_id, id, req.retrieveConfig, {
                     includes: req.includes,
                   })
 
@@ -457,4 +457,4 @@ class AdditionalItem {
   quantity: number
 }
 
-export class AdminPostOrdersOrderSwapsParams extends FindParams {}
+export class AdminPostOrdersOrderSwapsParams extends FindParams { }

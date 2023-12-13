@@ -170,6 +170,7 @@ export default class PaymentProviderService extends TransactionBaseService {
    * @param relations
    */
   async retrieveSession(
+      storeId: string,
     paymentSessionId: string,
     relations: string[] = []
   ): Promise<PaymentSession | never> {
@@ -199,21 +200,25 @@ export default class PaymentProviderService extends TransactionBaseService {
 
   /**
    * @deprecated
+   * @param storeId
    * @param providerId
    * @param cart
    */
-  async createSession(providerId: string, cart: Cart): Promise<PaymentSession>
+  async createSession(storeId: string,providerId: string, cart: Cart): Promise<PaymentSession>
 
   /**
    * Creates a payment session with the given provider.
+   * @param storeId
    * @param sessionInput
    */
   async createSession(
+      storeId: string,
     sessionInput: PaymentSessionInput
   ): Promise<PaymentSession>
 
   /**
    * Creates a payment session with the given provider.
+   * @param storeId
    * @param providerIdOrSessionInput - the id of the provider to create payment with or the input data
    * @param cart - a cart object used to calculate the amount, etc. from
    * @return the payment session
@@ -221,6 +226,7 @@ export default class PaymentProviderService extends TransactionBaseService {
   async createSession<
     TInput extends string | PaymentSessionInput = string | PaymentSessionInput
   >(
+      storeId: string,
     providerIdOrSessionInput: TInput,
     ...[cart]: TInput extends string ? [Cart] : [never?]
   ): Promise<PaymentSession> {
@@ -270,14 +276,14 @@ export default class PaymentProviderService extends TransactionBaseService {
 
       const sessionData = paymentResponse.session_data ?? paymentResponse
 
-      await this.processUpdateRequestsData(
+      await this.processUpdateRequestsData(storeId,
         {
           customer: { id: context.customer?.id },
         },
         paymentResponse
       )
 
-      return await this.saveSession(providerId, {
+      return await this.saveSession(storeId,providerId, {
         payment_session_id: !isString(providerIdOrSessionInput)
           ? providerIdOrSessionInput.payment_session_id
           : undefined,
@@ -293,12 +299,14 @@ export default class PaymentProviderService extends TransactionBaseService {
   /**
    * Refreshes a payment session with the given provider.
    * This means, that we delete the current one and create a new.
-   * @param paymentSession - the payment session object to
    *    update
-   * @param sessionInput
    * @return the payment session
+   * @param storeId
+   * @param paymentSession
+   * @param sessionInput
    */
   async refreshSession(
+      storeId: string,
     paymentSession: {
       id: string
       data: Record<string, unknown>
@@ -307,7 +315,7 @@ export default class PaymentProviderService extends TransactionBaseService {
     sessionInput: PaymentSessionInput
   ): Promise<PaymentSession> {
     return this.atomicPhase_(async (transactionManager) => {
-      const session = await this.retrieveSession(paymentSession.id)
+      const session = await this.retrieveSession(storeId,paymentSession.id)
 
       const provider = this.retrieveProvider<
         AbstractPaymentService | AbstractPaymentProcessor
@@ -329,17 +337,19 @@ export default class PaymentProviderService extends TransactionBaseService {
       )
 
       await sessionRepo.remove(session)
-      return await this.createSession(sessionInput)
+      return await this.createSession(storeId,sessionInput)
     })
   }
 
   /**
    * Update a payment session with the given provider.
+   * @param storeId
    * @param paymentSession - The paymentSession to update
    * @param sessionInput
    * @return the payment session
    */
   async updateSession(
+      storeId: string,
     paymentSession: {
       id: string
       data: Record<string, unknown>
@@ -380,17 +390,18 @@ export default class PaymentProviderService extends TransactionBaseService {
 
       // If no update occurs, return the original session
       if (!sessionData) {
-        return await this.retrieveSession(paymentSession.id)
+        return await this.retrieveSession(storeId,paymentSession.id)
       }
 
       await this.processUpdateRequestsData(
+          storeId,
         {
           customer: { id: context.customer?.id },
         },
         paymentResponse
       )
 
-      return await this.saveSession(paymentSession.provider_id, {
+      return await this.saveSession(storeId,paymentSession.provider_id, {
         payment_session_id: paymentSession.id,
         sessionData,
         isInitiated: true,
@@ -400,10 +411,11 @@ export default class PaymentProviderService extends TransactionBaseService {
   }
 
   async deleteSession(
+      storeId: string,
     paymentSession: PaymentSession
   ): Promise<PaymentSession | undefined> {
     return await this.atomicPhase_(async (transactionManager) => {
-      const session = await this.retrieveSession(paymentSession.id).catch(
+      const session = await this.retrieveSession(storeId,paymentSession.id).catch(
         () => void 0
       )
 
@@ -521,11 +533,12 @@ export default class PaymentProviderService extends TransactionBaseService {
   }
 
   async authorizePayment(
+      storeId: string,
     paymentSession: PaymentSession,
     context: Record<string, unknown>
   ): Promise<PaymentSession | undefined> {
     return await this.atomicPhase_(async (transactionManager) => {
-      const session = await this.retrieveSession(paymentSession.id).catch(
+      const session = await this.retrieveSession(storeId,paymentSession.id).catch(
         () => void 0
       )
 
@@ -567,11 +580,12 @@ export default class PaymentProviderService extends TransactionBaseService {
   }
 
   async updateSessionData(
+      storeId:string,
     paymentSession: PaymentSession,
     data: Record<string, unknown>
   ): Promise<PaymentSession> {
     return await this.atomicPhase_(async (transactionManager) => {
-      const session = await this.retrieveSession(paymentSession.id)
+      const session = await this.retrieveSession(storeId,paymentSession.id)
 
       const provider = this.retrieveProvider(paymentSession.provider_id)
 
@@ -880,11 +894,13 @@ export default class PaymentProviderService extends TransactionBaseService {
 
   /**
    * Create or update a Payment session data.
+   * @protected
+   * @param storeId
    * @param providerId
    * @param data
-   * @protected
    */
   protected async saveSession(
+      storeId: string,
     providerId: string,
     data: {
       payment_session_id?: string
@@ -902,7 +918,7 @@ export default class PaymentProviderService extends TransactionBaseService {
 
     // Update an existing session
     if (data.payment_session_id) {
-      const session = await this.retrieveSession(data.payment_session_id)
+      const session = await this.retrieveSession(storeId,data.payment_session_id)
       session.data = data.sessionData ?? session.data
       session.status = data.status ?? session.status
       session.amount = data.amount ?? session.amount
@@ -928,11 +944,13 @@ export default class PaymentProviderService extends TransactionBaseService {
 
   /**
    * Process the collected data. Can be used every time we need to process some collected data returned by the provider
+   * @param storeId
    * @param data
    * @param paymentResponse
    * @protected
    */
   protected async processUpdateRequestsData(
+      storeId: string,
     data: { customer?: { id?: string } } = {},
     paymentResponse: PaymentSessionResponse | Record<string, unknown>
   ): Promise<void> {
@@ -945,7 +963,7 @@ export default class PaymentProviderService extends TransactionBaseService {
     if (update_requests.customer_metadata && data.customer?.id) {
       await this.customerService_
         .withTransaction(this.activeManager_)
-        .update(data.customer.id, {
+        .update(storeId,data.customer.id, {
           metadata: update_requests.customer_metadata,
         })
     }

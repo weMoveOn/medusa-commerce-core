@@ -66,11 +66,12 @@ import { cleanResponseData } from "../../../../utils/clean-response-data"
  */
 export default async (req, res) => {
   const { id, swap_id } = req.params
+  const { store_id } = req.query
 
   const swapService: SwapService = req.scope.resolve("swapService")
   const orderService: OrderService = req.scope.resolve("orderService")
 
-  const swap = await swapService.retrieve(swap_id)
+  const swap = await swapService.retrieve(store_id, swap_id)
 
   if (swap.order_id !== id) {
     throw new MedusaError(
@@ -81,14 +82,21 @@ export default async (req, res) => {
 
   const manager: EntityManager = req.scope.resolve("manager")
   await manager.transaction(async (transactionManager) => {
-    return await swapService.withTransaction(transactionManager).cancel(swap_id)
+    return await swapService
+      .withTransaction(transactionManager)
+      .cancel(swap_id, store_id)
   })
 
-  const order = await orderService.retrieveWithTotals(id, req.retrieveConfig, {
-    includes: req.includes,
-  })
+  const order = await orderService.retrieveWithTotals(
+    store_id,
+    id,
+    req.retrieveConfig,
+    {
+      includes: req.includes,
+    }
+  )
 
   res.json({ order: cleanResponseData(order, []) })
 }
 
-export class AdminPostOrdersSwapCancelParams extends FindParams {}
+export class AdminPostOrdersSwapCancelParams extends FindParams { }

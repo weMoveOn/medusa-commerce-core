@@ -102,6 +102,7 @@ import { PaymentCollectionService } from "../../../../services"
  *     $ref: "#/components/responses/500_error"
  */
 export default async (req, res) => {
+  const { store_id } = req.query
   const data = req.validatedBody as StorePostPaymentCollectionsBatchSessionsReq
   const { id } = req.params
 
@@ -116,7 +117,7 @@ export default async (req, res) => {
     async (transactionManager) => {
       return await paymentCollectionService
         .withTransaction(transactionManager)
-        .setPaymentSessionsBatch(id, data.sessions, customerId)
+        .setPaymentSessionsBatch(store_id,id, data.sessions, customerId)
     }
   )
 

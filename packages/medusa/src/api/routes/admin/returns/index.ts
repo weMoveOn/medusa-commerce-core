@@ -35,7 +35,7 @@ export default (app) => {
 export const defaultRelations = ["swap"]
 export const defaultRelationsList = ["swap", "order"]
 export const defaultReturnCancelRelations = [...defaultAdminOrdersRelations]
-export const defaultReturnCancelFields = [...defaultAdminOrdersFields, "store_id"]
+export const defaultReturnCancelFields = [...defaultAdminOrdersFields]
 
 /**
  * @schema AdminReturnsCancelRes

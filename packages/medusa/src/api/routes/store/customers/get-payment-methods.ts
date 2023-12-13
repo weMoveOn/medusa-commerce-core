@@ -57,6 +57,7 @@ import { promiseAll } from "@medusajs/utils"
  */
 export default async (req, res) => {
   const id = req.user.customer_id
+  const { store_id } = req.query
 
   const paymentProviderService: PaymentProviderService = req.scope.resolve(
     "paymentProviderService"
@@ -64,7 +65,7 @@ export default async (req, res) => {
 
   const customerService: CustomerService = req.scope.resolve("customerService")
 
-  const customer: Customer = await customerService.retrieve(id)
+  const customer: Customer = await customerService.retrieve(store_id,id)
 
   const paymentProviders: PaymentProvider[] =
     await paymentProviderService.list()

@@ -51,6 +51,7 @@ import { PaymentCollectionService } from "../../../../services"
  */
 export default async (req, res) => {
   const { id, session_id } = req.params
+  const { store_id } = req.query
 
   const paymentCollectionService: PaymentCollectionService = req.scope.resolve(
     "paymentCollectionService"
@@ -63,7 +64,7 @@ export default async (req, res) => {
     async (transactionManager) => {
       return await paymentCollectionService
         .withTransaction(transactionManager)
-        .refreshPaymentSession(id, session_id, customerId)
+        .refreshPaymentSession(store_id,id, session_id, customerId)
     }
   )
 

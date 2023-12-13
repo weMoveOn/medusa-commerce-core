@@ -68,6 +68,7 @@ import { IsType } from "../../../../utils/validators/is-type"
  *     $ref: "#/components/responses/500_error"
  */
 export default async (req, res) => {
+  const { store_id } = req.query
   const id = req.user.customer_id
 
   const validated = await validator(StorePostCustomersCustomerReq, req.body)
@@ -77,10 +78,10 @@ export default async (req, res) => {
   await manager.transaction(async (transactionManager) => {
     return await customerService
       .withTransaction(transactionManager)
-      .update(id, validated)
+      .update(store_id,id, validated)
   })
 
-  const customer = await customerService.retrieve(id, {
+  const customer = await customerService.retrieve(store_id,id, {
     relations: defaultStoreCustomersRelations,
     select: defaultStoreCustomersFields,
   })
@@ -122,9 +123,13 @@ export default async (req, res) => {
  *       url: "https://docs.medusajs.com/development/entities/overview#metadata-attribute"
  */
 export class StorePostCustomersCustomerReq {
+
   @IsOptional()
   @IsType([AddressPayload, String])
   billing_address?: AddressPayload | string
+
+  @IsString()
+  store_id: string
 
   @IsOptional()
   @IsString()

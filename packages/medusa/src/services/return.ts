@@ -181,9 +181,9 @@ class ReturnService extends TransactionBaseService {
    * @param returnId - the id of the return to cancel.
    * @return the updated Return
    */
-  async cancel(returnId: string): Promise<Return | never> {
+  async cancel(storeId: string, returnId: string): Promise<Return | never> {
     return await this.atomicPhase_(async (manager) => {
-      const ret = await this.retrieve(returnId)
+      const ret = await this.retrieve(storeId, returnId)
 
       if (ret.status === ReturnStatus.RECEIVED) {
         throw new MedusaError(
@@ -280,6 +280,7 @@ class ReturnService extends TransactionBaseService {
    * @return the return
    */
   async retrieve(
+    storeId: string,
     returnId: string,
     config: FindConfig<Return> = {}
   ): Promise<Return | never> {
@@ -294,7 +295,7 @@ class ReturnService extends TransactionBaseService {
       this.returnRepository_
     )
 
-    const query = buildQuery({ id: returnId }, config)
+    const query = buildQuery({ id: returnId, store_id: storeId }, config)
 
     const returnObj = await returnRepository.findOne(query)
 
@@ -332,9 +333,9 @@ class ReturnService extends TransactionBaseService {
     return returnObj
   }
 
-  async update(returnId: string, update: UpdateReturnInput): Promise<Return> {
+  async update(storeId: string, returnId: string, update: UpdateReturnInput): Promise<Return> {
     return await this.atomicPhase_(async (manager) => {
-      const ret = await this.retrieve(returnId)
+      const ret = await this.retrieve(storeId, returnId)
 
       if (ret.status === "canceled") {
         throw new MedusaError(
@@ -366,7 +367,7 @@ class ReturnService extends TransactionBaseService {
    *    items or refund_amount
    * @return the created return
    */
-  async create(data: CreateReturnInput): Promise<Return | never> {
+  async create(storeId: string, data: CreateReturnInput): Promise<Return | never> {
     return await this.atomicPhase_(async (manager) => {
       const returnRepository = manager.withRepository(this.returnRepository_)
 
@@ -396,7 +397,7 @@ class ReturnService extends TransactionBaseService {
 
       const order = await this.orderService_
         .withTransaction(manager)
-        .retrieve(orderId, {
+        .retrieve(storeId, orderId, {
           select: ["refunded_total", "total", "refundable_amount"],
           relations: [
             "swaps",
@@ -504,12 +505,12 @@ class ReturnService extends TransactionBaseService {
         const taxAmountIncludedInPrice = !includesTax
           ? 0
           : Math.round(
-              calculatePriceTaxAmount({
-                price: shippingMethod.price,
-                taxRate,
-                includesTax,
-              })
-            )
+            calculatePriceTaxAmount({
+              price: shippingMethod.price,
+              taxRate,
+              includesTax,
+            })
+          )
 
         const shippingPriceWithoutTax =
           shippingMethod.price - taxAmountIncludedInPrice
@@ -532,9 +533,9 @@ class ReturnService extends TransactionBaseService {
     })
   }
 
-  async fulfill(returnId: string): Promise<Return | never> {
+  async fulfill(storeId, returnId: string): Promise<Return | never> {
     return await this.atomicPhase_(async (manager) => {
-      const returnOrder = await this.retrieve(returnId, {
+      const returnOrder = await this.retrieve(storeId, returnId, {
         relations: [
           "items",
           "shipping_method",
@@ -606,6 +607,7 @@ class ReturnService extends TransactionBaseService {
    * @return the result of the update operation
    */
   async receive(
+    storeId: string,
     returnId: string,
     receivedItems: OrdersReturnItem[],
     refundAmount?: number,
@@ -615,7 +617,7 @@ class ReturnService extends TransactionBaseService {
     return await this.atomicPhase_(async (manager) => {
       const returnRepository = manager.withRepository(this.returnRepository_)
 
-      const returnObj = await this.retrieve(returnId, {
+      const returnObj = await this.retrieve(storeId, returnId, {
         relations: ["items", "swap", "swap.additional_items"],
       })
 
@@ -634,7 +636,7 @@ class ReturnService extends TransactionBaseService {
 
       const order = await this.orderService_
         .withTransaction(manager)
-        .retrieve(orderId!, {
+        .retrieve(storeId, orderId!, {
           relations: [
             "items",
             "returns",

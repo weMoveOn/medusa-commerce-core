@@ -66,14 +66,16 @@ import { validator } from "../../../../utils/validator"
  *    $ref: "#/components/responses/500_error"
  */
 export default async (req, res) => {
+  const { store_id } = req.query
+  req.body.store_id = store_id
   const validated = await validator(AdminPostAuthReq, req.body)
-
+  console.log('validated',validated)
   const authService: AuthService = req.scope.resolve("authService")
   const manager: EntityManager = req.scope.resolve("manager")
   const result = await manager.transaction(async (transactionManager) => {
     return await authService
       .withTransaction(transactionManager)
-      .authenticate(validated.email, validated.password)
+      .authenticate(store_id,validated.email, validated.password)
   })
 
   if (result.success && result.user) {
@@ -112,4 +114,8 @@ export class AdminPostAuthReq {
   @IsString()
   @IsNotEmpty()
   password: string
+
+    @IsString()
+    @IsNotEmpty()
+    store_id: string
 }

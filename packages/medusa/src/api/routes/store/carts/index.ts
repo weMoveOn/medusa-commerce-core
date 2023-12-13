@@ -16,6 +16,7 @@ import { StorePostCartsCartShippingMethodReq } from "./add-shipping-method"
 import { StorePostCartsCartPaymentSessionReq } from "./set-payment-session"
 import { StorePostCartsCartLineItemsItemReq } from "./update-line-item"
 import { StorePostCartsCartPaymentSessionUpdateReq } from "./update-payment-session"
+import { processIdentifierMiddleware } from "../../../middlewares/validators/identifier-existence"
 
 const route = Router()
 

@@ -1,8 +1,9 @@
+import { IsString } from "class-validator"
 import {
   defaultAdminReturnReasonsFields,
   defaultAdminReturnReasonsRelations,
 } from "."
-
+import { validator } from "../../../../utils/validator"
 import { ReturnReasonService } from "../../../../services"
 
 /**
@@ -59,14 +60,23 @@ import { ReturnReasonService } from "../../../../services"
  */
 export default async (req, res) => {
   const { id } = req.params
+  const { store_id } = await validator(AdminReturnReasonQuery, req.query)
+
   const returnReasonService: ReturnReasonService = req.scope.resolve(
     "returnReasonService"
   )
 
-  const data = await returnReasonService.retrieve(id, {
+  const data = await returnReasonService.retrieve(store_id, id, {
     select: defaultAdminReturnReasonsFields,
     relations: defaultAdminReturnReasonsRelations,
   })
 
   res.status(200).json({ return_reason: data })
+}
+
+
+
+class AdminReturnReasonQuery {
+  @IsString()
+  store_id: string
 }
