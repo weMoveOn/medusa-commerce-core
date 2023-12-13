@@ -85,7 +85,7 @@ export default async (req, res) => {
               .workStage(idempotencyKey.idempotency_key, async (manager) => {
                 const cart = await cartService
                   .withTransaction(manager)
-                  .retrieveWithTotals(id, store_id,{}, { force_taxes: true })
+                  .retrieveWithTotals( store_id,id,{}, { force_taxes: true })
 
                 return {
                   response_code: 200,

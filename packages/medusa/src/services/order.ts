@@ -628,7 +628,7 @@ class OrderService extends TransactionBaseService {
       }
 
       const cart = isString(cartOrId)
-        ? await cartServiceTx.retrieveWithTotals(cartOrId, storeId,{
+        ? await cartServiceTx.retrieveWithTotals( storeId,cartOrId,{
             relations: ["region", "payment", "items"],
           })
         : cartOrId

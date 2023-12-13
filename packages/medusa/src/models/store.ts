@@ -25,6 +25,8 @@ import { Region } from "./region"
 import { User } from "./user"
 import {Cart} from "./cart";
 import { ProductCollection } from "./product-collection"
+import {Customer} from "./customer";
+import {CustomerGroup} from "./customer-group";
 
 @Entity()
 export class Store extends BaseEntity {
@@ -61,6 +63,15 @@ export class Store extends BaseEntity {
     (productCollection) => productCollection.store
   )
   product_collections: ProductCollection[]
+
+  @OneToMany(
+      () => Customer,
+      (customer) => customer.store
+  )
+  customers: Customer[]
+
+  @OneToMany(()=> CustomerGroup, (customerGroup) => customerGroup.store)
+  customer_groups: CustomerGroup[]
 
   // new filed added end
   @Column({ default: "Medusa Store" })

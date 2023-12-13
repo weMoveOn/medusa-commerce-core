@@ -79,6 +79,7 @@ class AuthService extends TransactionBaseService {
    *    error: a string with the error message
    */
   async authenticate(
+      storeId: string,
     email: string,
     password: string
   ): Promise<AuthenticateResult> {
@@ -86,7 +87,7 @@ class AuthService extends TransactionBaseService {
       try {
         const userPasswordHash: User = await this.userService_
           .withTransaction(transactionManager)
-          .retrieveByEmail(email, {
+          .retrieveByEmail(storeId,email, {
             select: ["password_hash"],
           })
 
@@ -98,7 +99,7 @@ class AuthService extends TransactionBaseService {
         if (passwordsMatch) {
           const user = await this.userService_
             .withTransaction(transactionManager)
-            .retrieveByEmail(email)
+            .retrieveByEmail(storeId,email)
 
           return {
             success: true,
@@ -120,6 +121,7 @@ class AuthService extends TransactionBaseService {
   /**
    * Authenticates a customer based on an email, password combination. Uses
    * scrypt to match password with hashed value.
+   * @param storeId
    * @param {string} email - the email of the user
    * @param {string} password - the password of the user
    * @return {{ success: (bool), customer: (object | undefined) }}
@@ -128,6 +130,7 @@ class AuthService extends TransactionBaseService {
    *    error: a string with the error message
    */
   async authenticateCustomer(
+      storeId: string,
     email: string,
     password: string
   ): Promise<AuthenticateResult> {
@@ -135,7 +138,7 @@ class AuthService extends TransactionBaseService {
       try {
         const customer: Customer = await this.customerService_
           .withTransaction(transactionManager)
-          .retrieveRegisteredByEmail(email, {
+          .retrieveRegisteredByEmail(storeId,email, {
             select: ["id", "password_hash"],
           })
         if (customer.password_hash) {
@@ -147,7 +150,7 @@ class AuthService extends TransactionBaseService {
           if (passwordsMatch) {
             const customer = await this.customerService_
               .withTransaction(transactionManager)
-              .retrieveRegisteredByEmail(email)
+              .retrieveRegisteredByEmail(storeId,email)
 
             return {
               success: true,

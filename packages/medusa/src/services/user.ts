@@ -70,11 +70,12 @@ class UserService extends TransactionBaseService {
   /**
    * Gets a user by id.
    * Throws in case of DB Error and if user was not found.
+   * @param storeId
    * @param {string} userId - the id of the user to get.
    * @param {FindConfig} config - query configs
    * @return {Promise<User>} the user document.
    */
-  async retrieve(userId: string, config: FindConfig<User> = {}): Promise<User> {
+  async retrieve(storeId:string ,userId: string, config: FindConfig<User> = {}): Promise<User> {
     if (!isDefined(userId)) {
       throw new MedusaError(
         MedusaError.Types.NOT_FOUND,
@@ -83,8 +84,8 @@ class UserService extends TransactionBaseService {
     }
 
     const userRepo = this.activeManager_.withRepository(this.userRepository_)
-    const query = buildQuery({ id: userId }, config)
-
+    const query = buildQuery({ id: userId, store_id:storeId }, config)
+    console.log('query',query)
     const users = await userRepo.find(query)
 
     if (!users.length) {
@@ -128,17 +129,19 @@ class UserService extends TransactionBaseService {
   /**
    * Gets a user by email.
    * Throws in case of DB Error and if user was not found.
+   * @param storeId
    * @param {string} email - the email of the user to get.
    * @param {FindConfig} config - query config
    * @return {Promise<User>} the user document.
    */
   async retrieveByEmail(
+      storeId:string,
     email: string,
     config: FindConfig<User> = {}
   ): Promise<User> {
     const userRepo = this.activeManager_.withRepository(this.userRepository_)
 
-    const query = buildQuery({ email: email.toLowerCase() }, config)
+    const query = buildQuery({ email: email.toLowerCase(), store_id:storeId }, config)
     const user = await userRepo.findOne(query)
 
     if (!user) {
@@ -210,15 +213,16 @@ class UserService extends TransactionBaseService {
 
   /**
    * Updates a user.
+   * @param storeId
    * @param {object} userId - id of the user to update
    * @param {object} update - the values to be updated on the user
    * @return {Promise} the result of create
    */
-  async update(userId: string, update: UpdateUserInput): Promise<User> {
+  async update(storeId:string,userId: string, update: UpdateUserInput): Promise<User> {
     return await this.atomicPhase_(async (manager: EntityManager) => {
       const userRepo = manager.withRepository(this.userRepository_)
 
-      const user = await this.retrieve(userId)
+      const user = await this.retrieve(storeId,userId)
 
       const { email, password_hash, metadata, ...rest } = update
 
@@ -295,11 +299,11 @@ class UserService extends TransactionBaseService {
    * @param {string} password - the old password to set
    * @return {Promise} the result of the update operation
    */
-  async setPassword_(userId: string, password: string): Promise<User> {
+  async setPassword_(storeId:string,userId: string, password: string): Promise<User> {
     return await this.atomicPhase_(async (manager: EntityManager) => {
       const userRepo = manager.withRepository(this.userRepository_)
 
-      const user = await this.retrieve(userId)
+      const user = await this.retrieve(storeId,userId)
 
       const hashedPassword = await this.hashPassword_(password)
       if (!hashedPassword) {
@@ -324,9 +328,9 @@ class UserService extends TransactionBaseService {
    * @param {string} userId - the id of the user to reset password for
    * @return {string} the generated JSON web token
    */
-  async generateResetPasswordToken(userId: string): Promise<string> {
+  async generateResetPasswordToken(storeId:string,userId: string): Promise<string> {
     return await this.atomicPhase_(async (transactionManager) => {
-      const user = await this.retrieve(userId, {
+      const user = await this.retrieve(storeId, userId,{
         select: ["id", "email", "password_hash"],
       })
       const secret = user.password_hash

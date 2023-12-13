@@ -469,6 +469,9 @@ export class AddressPayload {
  */
 export class AddressCreatePayload {
   @IsString()
+  store_id: string
+
+  @IsString()
   first_name: string
 
   @IsString()

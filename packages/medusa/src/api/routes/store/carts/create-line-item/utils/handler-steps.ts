@@ -65,7 +65,7 @@ export async function handleAddOrUpdateLineItem(
     relations?.some((rel) => rel.includes("variant")) &&
     featureFlagRouter.isFeatureEnabled(SalesChannelFeatureFlag.key)
 
-  cart = await txCartService.retrieveWithTotals(cart.id, storeId,{
+  cart = await txCartService.retrieveWithTotals( storeId,cart.id,{
     select: defaultStoreCartFields,
     relations,
   })
@@ -79,8 +79,8 @@ export async function handleAddOrUpdateLineItem(
 
   if (cart.payment_sessions?.length) {
     await txCartService.setPaymentSessions(
-      cart as WithRequiredProperty<Cart, "total">,
-        storeId
+        storeId,
+      cart as WithRequiredProperty<Cart, "total">
     )
   }
 

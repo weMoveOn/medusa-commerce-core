@@ -221,7 +221,7 @@ export default async (req, res) => {
     })
   }
 
-  cart = await cartService.retrieveWithTotals(cart!.id,store_id, {
+  cart = await cartService.retrieveWithTotals(store_id,cart!.id, {
     select: defaultStoreCartFields,
     relations: defaultStoreCartRelations,
   })

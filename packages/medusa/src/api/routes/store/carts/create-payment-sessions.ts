@@ -53,8 +53,8 @@ import { cleanResponseData } from "../../../../utils/clean-response-data"
  *     $ref: "#/components/responses/500_error"
  */
 export default async (req, res) => {
-  const { id } = req.params
   const { store_id } = req.query
+  const { id } = req.params
 
   const cartService: CartService = req.scope.resolve("cartService")
   const idempotencyKeyService: IdempotencyKeyService = req.scope.resolve(
@@ -98,11 +98,11 @@ export default async (req, res) => {
                 async (stageManager) => {
                   await cartService
                     .withTransaction(stageManager)
-                    .setPaymentSessions(id, store_id)
+                    .setPaymentSessions(store_id,id)
 
                   const cart = await cartService
                     .withTransaction(stageManager)
-                    .retrieveWithTotals(id, store_id,{
+                    .retrieveWithTotals( store_id,id,{
                       select: defaultStoreCartFields,
                       relations: defaultStoreCartRelations,
                     })

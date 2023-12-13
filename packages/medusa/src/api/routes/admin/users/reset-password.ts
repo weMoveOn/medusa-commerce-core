@@ -75,6 +75,7 @@ import { EntityManager } from "typeorm"
  *     $ref: "#/components/responses/500_error"
  */
 export default async (req, res) => {
+  const { store_id } = req.query
   const validated = await validator(AdminResetPasswordRequest, req.body)
 
   try {
@@ -84,7 +85,7 @@ export default async (req, res) => {
 
     let user: User
     try {
-      user = await userService.retrieveByEmail(
+      user = await userService.retrieveByEmail(store_id,
         validated.email || decoded?.email,
         {
           select: ["id", "password_hash"],
@@ -107,7 +108,7 @@ export default async (req, res) => {
     const userResult = await manager.transaction(async (transactionManager) => {
       return await userService
         .withTransaction(transactionManager)
-        .setPassword_(user.id, validated.password)
+        .setPassword_(store_id,user.id, validated.password)
     })
 
     res.status(200).json({ user: _.omit(userResult, ["password_hash"]) })

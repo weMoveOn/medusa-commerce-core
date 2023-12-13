@@ -72,14 +72,15 @@ import { EntityManager } from "typeorm"
  *     $ref: "#/components/responses/500_error"
  */
 export default async (req, res) => {
+  const {store_id}= req.query
+  req.body.store_id = store_id
   const validated = await validator(AdminPostCustomersReq, req.body)
-
   const customerService: CustomerService = req.scope.resolve("customerService")
   const manager: EntityManager = req.scope.resolve("manager")
   const customer = await manager.transaction(async (transactionManager) => {
     return await customerService
       .withTransaction(transactionManager)
-      .create(validated)
+      .create(store_id,validated)
   })
   res.status(201).json({ customer })
 }
@@ -118,6 +119,10 @@ export default async (req, res) => {
  *       url: "https://docs.medusajs.com/development/entities/overview#metadata-attribute"
  */
 export class AdminPostCustomersReq {
+
+  @IsString()
+  store_id: string
+
   @IsEmail()
   email: string
 

@@ -54,9 +54,10 @@ import _ from "lodash"
 export default async (req, res) => {
   try {
     const userId = req.user.id || req.user.userId
+    const {store_id} = req.query
 
     const userService: UserService = req.scope.resolve("userService")
-    const user = await userService.retrieve(userId)
+    const user = await userService.retrieve(store_id,userId)
 
     const cleanRes = _.omit(user, ["password_hash"])
     res.status(200).json({ user: cleanRes })

@@ -296,7 +296,7 @@ class CartCompletionStrategy extends AbstractCartCompletionStrategy {
     const swapServiceTx = this.swapService_.withTransaction(manager)
     const cartServiceTx = this.cartService_.withTransaction(manager)
 
-    const cart = await cartServiceTx.retrieveWithTotals(id, storeId,{
+    const cart = await cartServiceTx.retrieveWithTotals( storeId,id,{
       relations: [
         "region",
         "payment",

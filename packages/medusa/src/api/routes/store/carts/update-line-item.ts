@@ -113,11 +113,11 @@ export default async (req, res) => {
     })
 
     if (updated.payment_sessions?.length) {
-      await cartService.withTransaction(m).setPaymentSessions(id,store_id)
+      await cartService.withTransaction(m).setPaymentSessions(store_id,id)
     }
   })
 
-  const data = await cartService.retrieveWithTotals(id, store_id,{
+  const data = await cartService.retrieveWithTotals( store_id,id,{
     select: defaultStoreCartFields,
     relations: defaultStoreCartRelations,
   })

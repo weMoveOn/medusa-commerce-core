@@ -162,7 +162,7 @@ export default async (req: Request, res) => {
     priceList = await manager.transaction(async (transactionManager) => {
       return await priceListService
         .withTransaction(transactionManager)
-        .create(itemData)
+        .create(itemData.store_id,itemData)
     })
 
     priceList = await priceListService.retrieve(

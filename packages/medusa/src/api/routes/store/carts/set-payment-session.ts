@@ -78,10 +78,10 @@ export default async (req, res) => {
   await manager.transaction(async (transactionManager) => {
     return await cartService
       .withTransaction(transactionManager)
-      .setPaymentSession(id, store_id,validated.provider_id)
+      .setPaymentSession(store_id,id, validated.provider_id)
   })
 
-  const data = await cartService.retrieveWithTotals(id, store_id,{
+  const data = await cartService.retrieveWithTotals( store_id,id,{
     select: defaultStoreCartFields,
     relations: defaultStoreCartRelations,
   })

@@ -63,6 +63,7 @@ import { AdminPostAuthReq } from "./create-session"
  *    $ref: "#/components/responses/500_error"
  */
 export default async (req, res) => {
+  const {store_id} = req.query
   const {
     projectConfig: { jwt_secret },
   } = req.scope.resolve("configModule")
@@ -79,7 +80,7 @@ export default async (req, res) => {
   const result = await manager.transaction(async (transactionManager) => {
     return await authService
       .withTransaction(transactionManager)
-      .authenticate(validated.email, validated.password)
+      .authenticate(store_id,validated.email, validated.password)
   })
 
   if (result.success && result.user) {

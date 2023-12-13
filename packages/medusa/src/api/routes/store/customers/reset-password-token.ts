@@ -61,6 +61,7 @@ import { EntityManager } from "typeorm"
  *     $ref: "#/components/responses/500_error"
  */
 export default async (req, res) => {
+  const {store_id} = req.query
   const validated = (await validator(
     StorePostCustomersCustomerPasswordTokenReq,
     req.body
@@ -71,7 +72,7 @@ export default async (req, res) => {
   ) as CustomerService
 
   const customer = await customerService
-    .retrieveRegisteredByEmail(validated.email)
+    .retrieveRegisteredByEmail(store_id,validated.email)
     .catch(() => undefined)
 
   if (customer) {
@@ -80,7 +81,7 @@ export default async (req, res) => {
     await manager.transaction(async (transactionManager) => {
       return await customerService
         .withTransaction(transactionManager)
-        .generateResetPasswordToken(customer.id)
+        .generateResetPasswordToken(store_id,customer.id)
     })
   }
 

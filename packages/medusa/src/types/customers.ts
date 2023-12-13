@@ -31,6 +31,7 @@ export class AdminListCustomerSelector {
 }
 
 export type CreateCustomerInput = {
+  store_id: string
   email: string
   password?: string
   password_hash?: string

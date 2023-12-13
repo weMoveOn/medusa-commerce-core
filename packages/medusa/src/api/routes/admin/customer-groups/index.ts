@@ -4,11 +4,12 @@ import { DeleteResponse, PaginatedResponse } from "../../../../types/common"
 import middlewares, { transformQuery } from "../../../middlewares"
 import { AdminGetCustomerGroupsGroupParams } from "./get-customer-group"
 import { AdminGetCustomerGroupsParams } from "./list-customer-groups"
+import {processIdentifierMiddleware} from "../../../middlewares/validators/identifier-existence";
 
 const route = Router()
 
 export default (app) => {
-  app.use("/customer-groups", route)
+  app.use("/customer-groups", processIdentifierMiddleware, route)
 
   route.post("/", middlewares.wrap(require("./create-customer-group").default))
   route.get(

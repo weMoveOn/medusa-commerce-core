@@ -68,6 +68,9 @@ import { validator } from "../../../../utils/validator"
  */
 
 export default async (req: Request, res: Response) => {
+    const { store_id } = req.query
+  console.log("store_id", store_id)
+    req.body.store_id = store_id
   const validated = await validator(AdminPostCustomerGroupsReq, req.body)
 
   const customerGroupService: CustomerGroupService = req.scope.resolve(
@@ -103,6 +106,10 @@ export default async (req: Request, res: Response) => {
  *       url: "https://docs.medusajs.com/development/entities/overview#metadata-attribute"
  */
 export class AdminPostCustomerGroupsReq {
+
+  @IsString()
+  store_id: string
+
   @IsString()
   name: string
 

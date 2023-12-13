@@ -1,13 +1,23 @@
-import { BeforeInsert, Column, Entity, Index, ManyToMany } from "typeorm"
+import { BeforeInsert, Column, Entity, Index, JoinColumn, ManyToMany, ManyToOne } from "typeorm"
 
 import { Customer } from "./customer"
 import { DbAwareColumn } from "../utils/db-aware-column"
 import { PriceList } from "./price-list"
 import { SoftDeletableEntity } from "../interfaces/models/soft-deletable-entity"
 import { generateEntityId } from "../utils/generate-entity-id"
+import {Store} from "./store";
 
 @Entity()
 export class CustomerGroup extends SoftDeletableEntity {
+
+  // new filed added start
+  @Column({ nullable: true })
+  store_id?: string
+  @ManyToOne(() => Store, (store) => store.customer_groups)
+  @JoinColumn({ name: "store_id", referencedColumnName: "id" })
+  store?: Store
+  // new filed added end
+
   @Index({ unique: true, where: "deleted_at IS NULL" })
   @Column()
   name: string

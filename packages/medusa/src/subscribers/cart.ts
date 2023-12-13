@@ -17,16 +17,16 @@ class CartSubscriber {
     this.eventBus_ = eventBusService
     this.manager_ = manager
 
+      //#TODO: should remove any
     this.eventBus_.subscribe(
       CartService.Events.CUSTOMER_UPDATED,
-      async (cartId) => {
-        //@ts-ignore
-        await this.onCustomerUpdated(cartId,'storeId')
+      async (storeId:any,cartId:string) => {
+        await this.onCustomerUpdated(storeId,cartId)
       }
     )
   }
 
-  async onCustomerUpdated(cartId:string, storeId:string) {
+  async onCustomerUpdated(storeId:string,cartId:string) {
     await this.manager_.transaction(
       "SERIALIZABLE",
       async (transactionManager) => {
@@ -41,7 +41,7 @@ class CartSubscriber {
           return
         }
 
-        return await cartServiceTx.setPaymentSessions(cart.id,storeId)
+        return await cartServiceTx.setPaymentSessions(storeId,cart.id)
       }
     )
   }

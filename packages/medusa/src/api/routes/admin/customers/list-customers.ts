@@ -83,6 +83,9 @@ export default async (req, res) => {
  * Parameters used to filter and configure the pagination of the retrieved customers.
  */
 export class AdminGetCustomersParams extends AdminListCustomerSelector {
+  @IsString()
+  store_id?: string
+
   /**
    * {@inheritDoc FindPaginationParams.limit}
    * @defaultValue 50

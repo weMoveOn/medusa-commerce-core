@@ -94,7 +94,7 @@ export default async (req, res) => {
     select.push("sales_channel_id")
   }
 
-  const data = await cartService.retrieveWithTotals(id,store_id, req.retrieveConfig)
+  const data = await cartService.retrieveWithTotals(store_id, id, req.retrieveConfig)
 
   if (shouldSetAvailability) {
     await productVariantInventoryService.setVariantAvailability(
