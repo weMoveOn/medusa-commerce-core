@@ -85,6 +85,7 @@ import { cleanResponseData } from "../../../../utils/clean-response-data"
  */
 export default async (req, res) => {
   const { id, swap_id } = req.params
+  const {store_id}= req.query;
 
   const validated = await validator(
     AdminPostOrdersOrderSwapsSwapShipmentsReq,

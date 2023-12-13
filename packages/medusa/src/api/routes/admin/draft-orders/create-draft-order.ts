@@ -152,7 +152,7 @@ export default async (req, res) => {
 
   draftOrder.cart = await cartService
     .withTransaction(manager)
-    .retrieveWithTotals(draftOrder.cart_id, {
+    .retrieveWithTotals(draftOrder.cart_id, storeId,{
       relations: defaultAdminDraftOrdersCartRelations,
       select: defaultAdminDraftOrdersCartFields,
     })

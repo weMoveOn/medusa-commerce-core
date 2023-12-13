@@ -54,6 +54,7 @@ import { cleanResponseData } from "../../../../utils/clean-response-data"
  */
 export default async (req, res) => {
   const { id } = req.params
+  const { store_id } = req.query
 
   const cartService: CartService = req.scope.resolve("cartService")
   const idempotencyKeyService: IdempotencyKeyService = req.scope.resolve(
@@ -97,11 +98,11 @@ export default async (req, res) => {
                 async (stageManager) => {
                   await cartService
                     .withTransaction(stageManager)
-                    .setPaymentSessions(id)
+                    .setPaymentSessions(id, store_id)
 
                   const cart = await cartService
                     .withTransaction(stageManager)
-                    .retrieveWithTotals(id, {
+                    .retrieveWithTotals(id, store_id,{
                       select: defaultStoreCartFields,
                       relations: defaultStoreCartRelations,
                     })
