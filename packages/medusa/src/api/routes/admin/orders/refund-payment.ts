@@ -81,6 +81,7 @@ import { cleanResponseData } from "../../../../utils/clean-response-data"
  */
 export default async (req, res) => {
   const { id } = req.params
+  const {store_id} = req.query
 
   const validated = req.validatedBody
 
@@ -90,12 +91,12 @@ export default async (req, res) => {
   await manager.transaction(async (transactionManager) => {
     return await orderService
       .withTransaction(transactionManager)
-      .createRefund(id, validated.amount, validated.reason, validated.note, {
+      .createRefund(store_id,id, validated.amount, validated.reason, validated.note, {
         no_notification: validated.no_notification,
       })
   })
 
-  const order = await orderService.retrieveWithTotals(id, req.retrieveConfig, {
+  const order = await orderService.retrieveWithTotals(store_id,id, req.retrieveConfig, {
     includes: req.includes,
   })
 

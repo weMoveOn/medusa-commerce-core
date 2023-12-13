@@ -88,7 +88,7 @@ export default async (req, res) => {
     )
   }
 
-  const claim = await claimService.retrieve(claim_id)
+  const claim = await claimService.retrieve(store_id,claim_id)
 
   if (claim.order_id !== id) {
     throw new MedusaError(
@@ -104,7 +104,7 @@ export default async (req, res) => {
       .cancelFulfillment(store_id, fulfillment_id)
   })
 
-  const order = await orderService.retrieveWithTotals(id, req.retrieveConfig, {
+  const order = await orderService.retrieveWithTotals(store_id,id, req.retrieveConfig, {
     includes: req.includes,
   })
 

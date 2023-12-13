@@ -1,3 +1,4 @@
+import { IsString } from "class-validator"
 import { Order } from "../../../../models"
 import { OrderService } from "../../../../services"
 import { FindParams } from "../../../../types/common"
@@ -60,10 +61,12 @@ import { cleanResponseData } from "../../../../utils/clean-response-data"
  */
 export default async (req, res) => {
   const { id } = req.params
+  const {store_id} = req.query
 
   const orderService: OrderService = req.scope.resolve("orderService")
 
   let order: Partial<Order> = await orderService.retrieveWithTotals(
+      store_id,
     id,
     req.retrieveConfig,
     {
@@ -76,4 +79,7 @@ export default async (req, res) => {
   res.json({ order: order })
 }
 
-export class AdminGetOrdersOrderParams extends FindParams {}
+export class AdminGetOrdersOrderParams extends FindParams {
+  @IsString()
+  store_id: string
+}

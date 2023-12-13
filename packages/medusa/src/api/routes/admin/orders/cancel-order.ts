@@ -2,6 +2,7 @@ import { OrderService } from "../../../../services"
 import { EntityManager } from "typeorm"
 import { FindParams } from "../../../../types/common"
 import { cleanResponseData } from "../../../../utils/clean-response-data"
+import { IsNotEmpty, IsString } from "class-validator"
 
 /**
  * @oas [post] /admin/orders/{id}/cancel
@@ -60,18 +61,23 @@ import { cleanResponseData } from "../../../../utils/clean-response-data"
  */
 export default async (req, res) => {
   const { id } = req.params
+  const { store_id } = req.query
 
   const orderService: OrderService = req.scope.resolve("orderService")
   const manager: EntityManager = req.scope.resolve("manager")
   await manager.transaction(async (transactionManager) => {
-    return await orderService.withTransaction(transactionManager).cancel(id)
+    return await orderService.withTransaction(transactionManager).cancel(store_id,id)
   })
 
-  const order = await orderService.retrieveWithTotals(id, req.retrieveConfig, {
+  const order = await orderService.retrieveWithTotals(store_id,id, req.retrieveConfig, {
     includes: req.includes,
   })
 
   res.json({ order: cleanResponseData(order, []) })
 }
 
-export class AdminPostOrdersOrderCancel extends FindParams {}
+export class AdminPostOrdersOrderCancel extends FindParams {
+  @IsNotEmpty()
+    @IsString()
+  store_id: string
+}

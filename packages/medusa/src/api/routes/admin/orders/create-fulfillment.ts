@@ -103,7 +103,6 @@ import { validator } from "../../../../utils/validator"
  */
 export default async (req, res) => {
   const { id } = req.params
-
   const { validatedBody } = req as {
     validatedBody: AdminPostOrdersOrderFulfillmentsReq
   }
@@ -119,7 +118,7 @@ export default async (req, res) => {
     const orderServiceTx = orderService.withTransaction(transactionManager)
 
     const { fulfillments: existingFulfillments } =
-      await orderServiceTx.retrieve(id, {
+      await orderServiceTx.retrieve(store_id,id, {
         relations: ["fulfillments"],
       })
     const existingFulfillmentSet = new Set(
@@ -133,7 +132,7 @@ export default async (req, res) => {
     })
 
     if (validatedBody.location_id) {
-      const { fulfillments } = await orderServiceTx.retrieve(id, {
+      const { fulfillments } = await orderServiceTx.retrieve(store_id,id, {
         relations: [
           "fulfillments",
           "fulfillments.items",
@@ -154,7 +153,7 @@ export default async (req, res) => {
     }
   })
 
-  const order = await orderService.retrieveWithTotals(id, req.retrieveConfig, {
+  const order = await orderService.retrieveWithTotals(store_id,id, req.retrieveConfig, {
     includes: req.includes,
   })
 

@@ -107,7 +107,7 @@ export default async (req, res) => {
       .cancelFulfillment(store_id, fulfillment_id)
   })
 
-  const order = await orderService.retrieveWithTotals(id, req.retrieveConfig, {
+  const order = await orderService.retrieveWithTotals(store_id,id, req.retrieveConfig, {
     includes: req.includes,
   })
 

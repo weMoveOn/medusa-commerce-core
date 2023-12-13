@@ -1,7 +1,7 @@
 import { FlagRouter } from "@medusajs/utils"
 import { Router } from "express"
 import "reflect-metadata"
-import { Order } from "../../../.."
+import {AdminGetOrdersOrderParams, Order} from "../../../.."
 import SalesChannelFeatureFlag from "../../../../loaders/feature-flags/sales-channels"
 import { FindParams, PaginatedResponse } from "../../../../types/common"
 import {
@@ -76,11 +76,12 @@ import {
   AdminPostOrdersOrderParams,
   AdminPostOrdersOrderReq,
 } from "./update-order"
+import {processIdentifierMiddleware} from "../../../middlewares/validators/identifier-existence";
 
 const route = Router()
 
 export default (app, featureFlagRouter: FlagRouter) => {
-  app.use("/orders", route)
+  app.use("/orders", processIdentifierMiddleware, route)
 
   const relations = [...defaultAdminOrdersRelations]
   const defaultFields = [...defaultAdminOrdersFields]
@@ -112,11 +113,12 @@ export default (app, featureFlagRouter: FlagRouter) => {
     transformIncludesOptions(allowedOrderIncludes, [
       AvailableOrderIncludes.RETURNABLE_ITEMS,
     ]),
-    transformQuery(AdminPostOrdersOrderParams, {
-      defaultRelations: relations,
-      defaultFields: defaultFields,
-      isList: false,
-    }),
+    //#TODO: SHOULD uncomment transformQuery
+    // transformQuery(AdminGetOrdersOrderParams, {
+    //   defaultRelations: relations,
+    //   defaultFields: defaultFields,
+    //   isList: false,
+    // }),
     middlewares.wrap(require("./get-order").default)
   )
 
