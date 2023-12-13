@@ -1,6 +1,8 @@
 import { OrderService, ReturnService } from "../../../../services"
 import { EntityManager } from "typeorm"
 import { defaultReturnCancelFields, defaultReturnCancelRelations } from "."
+import { IsString } from "class-validator"
+import { validator } from "../../../../utils/validator"
 
 /**
  * @oas [post] /admin/returns/{id}/cancel
@@ -55,14 +57,14 @@ import { defaultReturnCancelFields, defaultReturnCancelRelations } from "."
  */
 export default async (req, res) => {
   const { id } = req.params
-  const { store_id } = req.query
+  const { store_id } = await validator(AdminCancelReturnQuery, req.query)
 
   const returnService: ReturnService = req.scope.resolve("returnService")
   const orderService: OrderService = req.scope.resolve("orderService")
 
   const manager: EntityManager = req.scope.resolve("manager")
   let result = await manager.transaction(async (transactionManager) => {
-    return await returnService.withTransaction(transactionManager).cancel(id)
+    return await returnService.withTransaction(transactionManager).cancel(store_id, id)
   })
 
   if (result.swap_id) {
@@ -73,10 +75,16 @@ export default async (req, res) => {
     result = await claimService.retrieve(result.claim_order_id)
   }
 
-  const order = await orderService.retrieve(store_id,result.order_id!, {
+  const order = await orderService.retrieve(store_id, result.order_id!, {
     select: defaultReturnCancelFields,
     relations: defaultReturnCancelRelations,
   })
 
   res.status(200).json({ order })
+}
+
+
+class AdminCancelReturnQuery {
+  @IsString()
+  store_id: string
 }

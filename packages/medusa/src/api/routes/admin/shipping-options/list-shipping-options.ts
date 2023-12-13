@@ -36,7 +36,8 @@ import { validator } from "../../../../utils/validator"
  *     label: JS Client
  *     source: |
  *       import Medusa from "@medusajs/medusa-js"
- *       const medusa = new Medusa({ baseUrl: MEDUSA_BACKEND_URL, maxRetries: 3 })
+ *       import { store } from '../../../../services/__mocks__/store';
+const medusa = new Medusa({ baseUrl: MEDUSA_BACKEND_URL, maxRetries: 3 })
  *       // must be previously logged in or use api token
  *       medusa.admin.shippingOptions.list()
  *       .then(({ shipping_options, count }) => {
@@ -74,7 +75,6 @@ import { validator } from "../../../../utils/validator"
  *     $ref: "#/components/responses/500_error"
  */
 export default async (req, res) => {
-  const { store_id } = req.query
   const validatedParams = await validator(
     AdminGetShippingOptionsParams,
     req.query
@@ -87,7 +87,7 @@ export default async (req, res) => {
     relations: defaultRelations,
   })
 
-  const options = await pricingService.setShippingOptionPrices(store_id, data)
+  const options = await pricingService.setShippingOptionPrices(validatedParams.store_id, data)
 
   res.status(200).json({ shipping_options: options, count })
 }
@@ -96,6 +96,8 @@ export default async (req, res) => {
  * Parameters used to filter the retrieved shipping options.
  */
 export class AdminGetShippingOptionsParams {
+  @IsString()
+  store_id: string
   /**
    * Filter shipping options by the ID of the region they belong to.
    */

@@ -1,3 +1,4 @@
+import { IsString } from "class-validator"
 import {
   defaultAdminReturnReasonsFields,
   defaultAdminReturnReasonsRelations,
@@ -5,6 +6,7 @@ import {
 import { ReturnReason } from "../../../../models"
 import { ReturnReasonService } from "../../../../services"
 import { Selector } from "../../../../types/common"
+import { validator } from "../../../../utils/validator"
 
 /**
  * @oas [get] /admin/return-reasons
@@ -57,15 +59,26 @@ import { Selector } from "../../../../types/common"
  *     $ref: "#/components/responses/500_error"
  */
 export default async (req, res) => {
+
+  const { store_id } = await validator(AdminReturnReasonQuery, req.query)
+
+
   const returnReasonService: ReturnReasonService = req.scope.resolve(
     "returnReasonService"
   )
 
-  const query: Selector<ReturnReason> = { parent_return_reason_id: null }
+  const query: Selector<ReturnReason> = { parent_return_reason_id: null, store_id }
   const data = await returnReasonService.list(query, {
     select: defaultAdminReturnReasonsFields,
     relations: defaultAdminReturnReasonsRelations,
   })
 
   res.status(200).json({ return_reasons: data })
+}
+
+
+
+class AdminReturnReasonQuery {
+  @IsString()
+  store_id: string
 }

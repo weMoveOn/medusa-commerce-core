@@ -32,7 +32,11 @@ class CustomerGroupService extends TransactionBaseService {
     this.customerService_ = customerService
   }
 
-  async retrieve(storeId:string,customerGroupId: string, config = {}): Promise<CustomerGroup> {
+  async retrieve(
+    storeId: string,
+    customerGroupId: string,
+    config = {}
+  ): Promise<CustomerGroup> {
     if (!isDefined(customerGroupId)) {
       throw new MedusaError(
         MedusaError.Types.NOT_FOUND,
@@ -44,7 +48,7 @@ class CustomerGroupService extends TransactionBaseService {
       this.customerGroupRepository_
     )
 
-    const query = buildQuery({ id: customerGroupId, store_id:storeId }, config)
+    const query = buildQuery({ id: customerGroupId, store_id: storeId }, config)
 
     const customerGroup = await cgRepo.findOne(query)
     if (!customerGroup) {
@@ -88,7 +92,7 @@ class CustomerGroupService extends TransactionBaseService {
    * @param customerIds
    */
   async addCustomers(
-      storeId: string,
+    storeId: string,
     id: string,
     customerIds: string | string[]
   ): Promise<CustomerGroup> {
@@ -129,7 +133,7 @@ class CustomerGroupService extends TransactionBaseService {
         return await cgRepo.addCustomers(id, ids)
       },
       async (e: any) => {
-        await this.handleCreationFail(storeId,id, ids, e)
+        await this.handleCreationFail(storeId, id, ids, e)
       }
     )
   }
@@ -142,7 +146,7 @@ class CustomerGroupService extends TransactionBaseService {
    * @returns resulting customer group
    */
   async update(
-      storeId: string,
+    storeId: string,
     customerGroupId: string,
     update: CustomerGroupUpdate
   ): Promise<CustomerGroup> {
@@ -153,7 +157,7 @@ class CustomerGroupService extends TransactionBaseService {
         this.customerGroupRepository_
       )
 
-      const customerGroup = await this.retrieve(storeId,customerGroupId)
+      const customerGroup = await this.retrieve(storeId, customerGroupId)
 
       for (const key in properties) {
         if (isDefined(properties[key])) {
@@ -176,17 +180,19 @@ class CustomerGroupService extends TransactionBaseService {
    * @param groupId id of the customer group to delete
    * @return a promise
    */
-  async delete(storeId:string,groupId: string): Promise<void> {
+  async delete(storeId: string, groupId: string): Promise<void> {
     return await this.atomicPhase_(async (manager) => {
       const cgRepo: typeof CustomerGroupRepository = manager.withRepository(
         this.customerGroupRepository_
       )
 
-      const customerGroup = await cgRepo.findOne({ where: { id: groupId, store_id:storeId } })
+      const customerGroup = await cgRepo.findOne({
+        where: { id: groupId, store_id: storeId },
+      })
 
       if (customerGroup) {
         await cgRepo.remove(customerGroup)
-      }else {
+      } else {
         throw new MedusaError(
           MedusaError.Types.NOT_FOUND,
           `CustomerGroup with id ${groupId} was not found`
@@ -265,7 +271,7 @@ class CustomerGroupService extends TransactionBaseService {
    * @return the customergroup with the provided id
    */
   async removeCustomer(
-      storeId: string,
+    storeId: string,
     id: string,
     customerIds: string[] | string
   ): Promise<CustomerGroup> {
@@ -279,7 +285,7 @@ class CustomerGroupService extends TransactionBaseService {
       ids = customerIds
     }
 
-    const customerGroup = await this.retrieve(storeId,id)
+    const customerGroup = await this.retrieve(storeId, id)
 
     await cgRepo.removeCustomers(id, ids)
 
@@ -287,13 +293,13 @@ class CustomerGroupService extends TransactionBaseService {
   }
 
   private async handleCreationFail(
-      storeId: string,
+    storeId: string,
     id: string,
     ids: string[],
     error: any
   ): Promise<never> {
     if (error.code === PostgresError.FOREIGN_KEY_ERROR) {
-      await this.retrieve(storeId,id)
+      await this.retrieve(storeId, id)
 
       const existingCustomers = await this.customerService_.list({
         id: ids,

@@ -18,6 +18,7 @@ import { SoftDeletableEntity } from "../interfaces/models/soft-deletable-entity"
 import { generateEntityId } from "../utils/generate-entity-id"
 import { FeatureFlagColumn } from "../utils/feature-flag-decorators"
 import TaxInclusivePricingFeatureFlag from "../loaders/feature-flags/tax-inclusive-pricing"
+import { Store } from "./store"
 
 /**
  * @enum
@@ -38,6 +39,16 @@ export enum ShippingOptionPriceType {
 @Check(`"amount" >= 0`)
 @Entity()
 export class ShippingOption extends SoftDeletableEntity {
+
+  // new added filed
+
+  @Column({ type: "text", nullable: true })
+  store_id: string | null
+
+  @ManyToOne(() => Store, { onDelete: "CASCADE" })
+  @JoinColumn({ name: "store_id" })
+  store: Store
+
   @Column()
   name: string
 

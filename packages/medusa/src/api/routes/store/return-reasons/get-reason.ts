@@ -49,12 +49,13 @@ import ReturnReasonService from "../../../../services/return-reason"
  */
 export default async (req, res) => {
   const { id } = req.params
+  const { store_id } = req.query
 
   const returnReasonService: ReturnReasonService = req.scope.resolve(
     "returnReasonService"
   )
 
-  const return_reason = await returnReasonService.retrieve(id, {
+  const return_reason = await returnReasonService.retrieve(store_id, id, {
     select: defaultStoreReturnReasonFields,
     relations: defaultStoreReturnReasonRelations,
   })

@@ -146,7 +146,7 @@ export default async (req, res) => {
               .workStage(idempotencyKey.idempotency_key, async (manager) => {
                 const order = await orderService
                   .withTransaction(manager)
-                  .retrieve(store_id,swapDto.order_id, {
+                  .retrieve(store_id, swapDto.order_id, {
                     select: ["refunded_total", "total"],
                     relations: [
                       "items.variant",
@@ -186,7 +186,7 @@ export default async (req, res) => {
 
                 await returnService
                   .withTransaction(manager)
-                  .fulfill(returnOrder.id)
+                  .fulfill(store_id, returnOrder.id)
 
                 return {
                   recovery_point: "swap_created",
@@ -221,7 +221,7 @@ export default async (req, res) => {
 
                 const swap = await swapService
                   .withTransaction(transactionManager)
-                  .retrieve(store_id,swaps[0].id, {
+                  .retrieve(store_id, swaps[0].id, {
                     select: defaultStoreSwapFields,
                     relations: defaultStoreSwapRelations,
                   })

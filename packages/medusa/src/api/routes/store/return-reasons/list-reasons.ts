@@ -46,11 +46,13 @@ import ReturnReasonService from "../../../../services/return-reason"
  *     $ref: "#/components/responses/500_error"
  */
 export default async (req, res) => {
+
+  const { store_id } = req.query
   const returnReasonService: ReturnReasonService = req.scope.resolve(
     "returnReasonService"
   )
 
-  const query = { parent_return_reason_id: null }
+  const query = { parent_return_reason_id: null, store_id }
 
   const return_reasons = await returnReasonService.list(query, {
     select: defaultStoreReturnReasonFields,

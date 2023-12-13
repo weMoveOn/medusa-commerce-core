@@ -3,7 +3,6 @@ import {
   defaultAdminReturnReasonsFields,
   defaultAdminReturnReasonsRelations,
 } from "."
-
 import { ReturnReasonService } from "../../../../services"
 import { validator } from "../../../../utils/validator"
 import { EntityManager } from "typeorm"
@@ -75,6 +74,8 @@ export default async (req, res) => {
   const { id } = req.params
 
   const validated = await validator(AdminPostReturnReasonsReasonReq, req.body)
+  const { store_id } = await validator(AdminReturnReasonQuery, req.query)
+
 
   const returnReasonService: ReturnReasonService = req.scope.resolve(
     "returnReasonService"
@@ -84,10 +85,10 @@ export default async (req, res) => {
   await manager.transaction(async (transactionManager) => {
     return await returnReasonService
       .withTransaction(transactionManager)
-      .update(id, validated)
+      .update(store_id, id, validated)
   })
 
-  const reason = await returnReasonService.retrieve(id, {
+  const reason = await returnReasonService.retrieve(store_id, id, {
     select: defaultAdminReturnReasonsFields,
     relations: defaultAdminReturnReasonsRelations,
   })
@@ -130,4 +131,9 @@ export class AdminPostReturnReasonsReasonReq {
 
   @IsOptional()
   metadata?: Record<string, unknown>
+}
+
+class AdminReturnReasonQuery {
+  @IsString()
+  store_id: string
 }

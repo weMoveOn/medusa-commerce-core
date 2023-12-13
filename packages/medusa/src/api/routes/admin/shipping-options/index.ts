@@ -4,11 +4,12 @@ import { ShippingOption } from "../../../.."
 import TaxInclusivePricingFeatureFlag from "../../../../loaders/feature-flags/tax-inclusive-pricing"
 import { DeleteResponse, PaginatedResponse } from "../../../../types/common"
 import middlewares from "../../../middlewares"
+import { processIdentifierMiddleware } from "../../../middlewares/validators/identifier-existence"
 
 const route = Router()
 
 export default (app, featureFlagRouter: FlagRouter) => {
-  app.use("/shipping-options", route)
+  app.use("/shipping-options", processIdentifierMiddleware, route)
 
   if (featureFlagRouter.isFeatureEnabled(TaxInclusivePricingFeatureFlag.key)) {
     defaultFields.push("includes_tax")
@@ -48,9 +49,11 @@ export const defaultFields: (keyof ShippingOption)[] = [
   "updated_at",
   "deleted_at",
   "metadata",
+  "store_id"
 ]
 
 export const defaultRelations = ["region", "profile", "requirements"]
+
 
 /**
  * @schema AdminShippingOptionsListRes

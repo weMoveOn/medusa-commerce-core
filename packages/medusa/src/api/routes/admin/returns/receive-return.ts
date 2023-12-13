@@ -87,9 +87,8 @@ import { defaultRelations } from "."
  */
 export default async (req, res) => {
   const { id } = req.params
-  const {store_id} = req.query
-
   const validated = await validator(AdminPostReturnsReturnReceiveReq, req.body)
+  const { store_id } = await validator(AdminReceiveReturnQuery, req.query)
 
   const returnService: ReturnService = req.scope.resolve("returnService")
   const orderService: OrderService = req.scope.resolve("orderService")
@@ -106,7 +105,7 @@ export default async (req, res) => {
 
     receivedReturn = await returnService
       .withTransaction(manager)
-      .receive(store_id,id, validated.items, refundAmount, true, {
+      .receive(store_id, id, validated.items, refundAmount, true, {
         locationId: validated.location_id,
       })
 
@@ -114,7 +113,7 @@ export default async (req, res) => {
       await orderService
         .withTransaction(manager)
         .registerReturnReceived(
-            store_id,
+          store_id,
           receivedReturn.order_id,
           receivedReturn,
           refundAmount
@@ -124,11 +123,11 @@ export default async (req, res) => {
     if (receivedReturn.swap_id) {
       await swapService
         .withTransaction(manager)
-        .registerReceived(receivedReturn.swap_id,store_id)
+        .registerReceived(receivedReturn.swap_id, store_id)
     }
   })
 
-  receivedReturn = await returnService.retrieve(id, {
+  receivedReturn = await returnService.retrieve(store_id, id, {
     relations: defaultRelations,
   })
 
@@ -141,6 +140,10 @@ class Item {
 
   @IsNumber()
   quantity: number
+}
+class AdminReceiveReturnQuery {
+  @IsString()
+  store_id: string
 }
 
 /**
