@@ -81,6 +81,7 @@ import { defaultStoreProductRemoteQueryObject } from "./index"
  */
 export default async (req, res) => {
   const { id } = req.params
+  // const { store_id } = req.query
 
   const validated = req.validatedQuery as StoreGetProductsProductParams
   const customer_id = req.user?.customer_id
@@ -110,7 +111,7 @@ export default async (req, res) => {
   let regionId = validated.region_id
   let currencyCode = validated.currency_code
   if (validated.cart_id) {
-    const cart = await cartService.retrieve(validated.cart_id, {
+    const cart = await cartService.retrieve(validated.cart_id, storeId,{
       select: ["id", "region_id"],
     })
     const region = await regionService.retrieve(storeId, cart.region_id, {

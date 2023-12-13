@@ -1,4 +1,4 @@
-import { IsEmail, IsEnum } from "class-validator"
+import { IsEmail, IsEnum, IsString } from "class-validator"
 
 import InviteService from "../../../../services/invite"
 import { UserRoles } from "../../../../models/user"
@@ -70,6 +70,7 @@ import { EntityManager } from "typeorm"
  */
 export default async (req, res) => {
   const validated = await validator(AdminPostInvitesReq, req.body)
+  const query = await validator(AdminPostInvitesQuery, req.query)
 
   const inviteService: InviteService = req.scope.resolve("inviteService")
 
@@ -77,7 +78,7 @@ export default async (req, res) => {
   await manager.transaction(async (transactionManager) => {
     return await inviteService
       .withTransaction(transactionManager)
-      .create(validated.user, validated.role)
+      .create(query.store_id, validated.user, validated.role)
   })
 
   res.sendStatus(200)
@@ -105,4 +106,8 @@ export class AdminPostInvitesReq {
 
   @IsEnum(UserRoles)
   role: UserRoles
+}
+export class AdminPostInvitesQuery {
+  @IsString()
+  store_id: string
 }

@@ -80,9 +80,9 @@ export default async (req, res) => {
   await manager.transaction(async (m) => {
     // If the quantity is 0 that is effectively deletion
     if (validated.quantity === 0) {
-      await cartService.withTransaction(m).removeLineItem(id, line_id)
+      await cartService.withTransaction(m).removeLineItem(store_id, id, line_id)
     } else {
-      const cart = await cartService.withTransaction(m).retrieve(id, {
+      const cart = await cartService.withTransaction(m).retrieve(id, store_id,{
         relations: ["items", "items.variant", "shipping_methods"],
       })
 
@@ -108,7 +108,7 @@ export default async (req, res) => {
     }
 
     // If the cart has payment sessions update these
-    const updated = await cartService.withTransaction(m).retrieve(id, {
+    const updated = await cartService.withTransaction(m).retrieve(id, store_id,{
       relations: ["payment_sessions"],
     })
 
@@ -117,7 +117,7 @@ export default async (req, res) => {
     }
   })
 
-  const data = await cartService.retrieveWithTotals(id, {
+  const data = await cartService.retrieveWithTotals(id, store_id,{
     select: defaultStoreCartFields,
     relations: defaultStoreCartRelations,
   })

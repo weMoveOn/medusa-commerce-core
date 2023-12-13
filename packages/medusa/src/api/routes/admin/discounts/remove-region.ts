@@ -2,7 +2,8 @@ import { defaultAdminDiscountsFields, defaultAdminDiscountsRelations } from "."
 
 import DiscountService from "../../../../services/discount"
 import { EntityManager } from "typeorm"
-
+import { validator } from "../../../../utils/validator"
+import { IsString } from "class-validator"
 /**
  * @oas [delete] /admin/discounts/{id}/regions/{region_id}
  * operationId: "DeleteDiscountsDiscountRegionsRegion"
@@ -58,19 +59,25 @@ import { EntityManager } from "typeorm"
  */
 export default async (req, res) => {
   const { discount_id, region_id } = req.params
-
+  const { store_id } = await validator(AdminRemoveRegionQuery, req.query)
   const discountService: DiscountService = req.scope.resolve("discountService")
   const manager: EntityManager = req.scope.resolve("manager")
   await manager.transaction(async (transactionManager) => {
     return await discountService
       .withTransaction(transactionManager)
-      .removeRegion(discount_id, region_id)
+      .removeRegion(store_id, discount_id, region_id)
   })
 
-  const discount = await discountService.retrieve(discount_id, {
+  const discount = await discountService.retrieve(store_id, discount_id, {
     select: defaultAdminDiscountsFields,
     relations: defaultAdminDiscountsRelations,
   })
 
   res.status(200).json({ discount })
+}
+
+
+export class AdminRemoveRegionQuery {
+  @IsString()
+  store_id: string
 }

@@ -82,7 +82,7 @@ export default async (req, res) => {
       validated.data
     )
 
-    const updated = await txCartService.retrieve(id, {
+    const updated = await txCartService.retrieve(id, store_id,{
       select: ["id"],
       relations: ["payment_sessions"],
     })
@@ -92,7 +92,7 @@ export default async (req, res) => {
     }
   })
 
-  const data = await cartService.retrieveWithTotals(id, {
+  const data = await cartService.retrieveWithTotals( store_id,id,{
     select: defaultStoreCartFields,
     relations: defaultStoreCartRelations,
   })

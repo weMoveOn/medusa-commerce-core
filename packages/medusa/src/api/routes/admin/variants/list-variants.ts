@@ -183,7 +183,7 @@ export default async (req, res) => {
   let regionId = req.validatedQuery.region_id
   let currencyCode = req.validatedQuery.currency_code
   if (req.validatedQuery.cart_id) {
-    const cart = await cartService.retrieve(req.validatedQuery.cart_id, {
+    const cart = await cartService.retrieve(req.validatedQuery.cart_id,store_id, {
       select: ["id", "region_id"],
     })
     const region = await regionService.retrieve(store_id, cart.region_id, {

@@ -23,6 +23,7 @@ import { ProductCategory } from "./product-category"
 import { Product } from "./product"
 import { Region } from "./region"
 import { User } from "./user"
+import {Cart} from "./cart";
 import { ProductCollection } from "./product-collection"
 import {Customer} from "./customer";
 import {CustomerGroup} from "./customer-group";
@@ -30,10 +31,16 @@ import {CustomerGroup} from "./customer-group";
 @Entity()
 export class Store extends BaseEntity {
   // new filed added start
+
   @OneToMany(() => Product, (product) => product.store, {
     cascade: true,
   })
   products: Product[]
+
+  @OneToMany(() => Cart, (cart) => cart.store,{
+    cascade: true,
+  })
+  carts: Cart[];
 
   @OneToMany(() => SalesChannel, (salesChannel) => salesChannel.store, {
     cascade: true,

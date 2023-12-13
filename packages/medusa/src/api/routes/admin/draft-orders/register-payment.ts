@@ -93,7 +93,7 @@ export default async (req, res) => {
 
     const draftOrder = await draftOrderServiceTx.retrieve(id)
 
-    const cart = await cartServiceTx.retrieveWithTotals(draftOrder.cart_id)
+    const cart = await cartServiceTx.retrieveWithTotals(store_id,draftOrder.cart_id)
 
     await paymentProviderService
       .withTransaction(manager)
@@ -101,7 +101,7 @@ export default async (req, res) => {
 
     await cartServiceTx.setPaymentSession(store_id,cart.id, "system")
 
-    await cartServiceTx.createTaxLines(cart.id)
+    await cartServiceTx.createTaxLines(cart.id,store_id)
 
     await cartServiceTx.authorizePayment(store_id,cart.id)
 

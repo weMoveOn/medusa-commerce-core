@@ -603,6 +603,7 @@ class OrderService extends TransactionBaseService {
   /**
    * Creates an order from a cart
    * @return resolves to the creation result.
+   * @param storeId
    * @param cartOrId
    */
   async createFromCart(
@@ -627,7 +628,7 @@ class OrderService extends TransactionBaseService {
       }
 
       const cart = isString(cartOrId)
-        ? await cartServiceTx.retrieveWithTotals(cartOrId, {
+        ? await cartServiceTx.retrieveWithTotals(cartOrId, storeId,{
             relations: ["region", "payment", "items"],
           })
         : cartOrId
@@ -874,6 +875,7 @@ class OrderService extends TransactionBaseService {
    * @return the resulting order following the update.
    */
   async createShipment(
+    storeId: string,
     orderId: string,
     fulfillmentId: string,
     trackingLinks?: TrackingLink[],
@@ -891,7 +893,7 @@ class OrderService extends TransactionBaseService {
       const order = await this.retrieve(orderId, { relations: ["items"] })
       const shipment = await this.fulfillmentService_
         .withTransaction(manager)
-        .retrieve(fulfillmentId)
+        .retrieve(storeId, fulfillmentId)
 
       if (order.status === "canceled") {
         throw new MedusaError(
@@ -914,7 +916,7 @@ class OrderService extends TransactionBaseService {
 
       const shipmentRes = await this.fulfillmentService_
         .withTransaction(manager)
-        .createShipment(fulfillmentId, trackingLinks, {
+        .createShipment(storeId, fulfillmentId, trackingLinks, {
           metadata,
           no_notification: evaluatedNoNotification,
         })
@@ -1398,6 +1400,7 @@ class OrderService extends TransactionBaseService {
    * @return result of the update operation.
    */
   async createFulfillment(
+    storeId: string,
     orderId: string,
     itemsToFulfill: FulFillmentItemType[],
     config: {
@@ -1454,6 +1457,7 @@ class OrderService extends TransactionBaseService {
       const fulfillments = await this.fulfillmentService_
         .withTransaction(manager)
         .createFulfillment(
+          storeId,
           order as unknown as CreateFulfillmentOrder,
           itemsToFulfill,
           {
@@ -1522,11 +1526,14 @@ class OrderService extends TransactionBaseService {
    * @param fulfillmentId - the ID of the fulfillment to cancel
    * @return updated order
    */
-  async cancelFulfillment(fulfillmentId: string): Promise<Order> {
+  async cancelFulfillment(
+    storeId: string,
+    fulfillmentId: string
+  ): Promise<Order> {
     return await this.atomicPhase_(async (manager) => {
       const canceled = await this.fulfillmentService_
         .withTransaction(manager)
-        .cancelFulfillment(fulfillmentId)
+        .cancelFulfillment(storeId, fulfillmentId)
 
       if (!canceled.order_id) {
         throw new MedusaError(

@@ -4,7 +4,8 @@ import DiscountConditionService from "../../../../services/discount-condition"
 import { DiscountService } from "../../../../services"
 import { EntityManager } from "typeorm"
 import { FindParams } from "../../../../types/common"
-
+import { IsString } from "class-validator"
+import { validator } from "../../../../utils/validator"
 /**
  * @oas [post] /admin/discounts/{discount_id}/conditions/{condition_id}
  * operationId: "PostDiscountsDiscountConditionsCondition"
@@ -80,7 +81,7 @@ import { FindParams } from "../../../../types/common"
 
 export default async (req: Request, res: Response) => {
   const { discount_id, condition_id } = req.params
-
+  const { store_id } = await validator(AdminUpdateCondition, req.query)
   const conditionService: DiscountConditionService = req.scope.resolve(
     "discountConditionService"
   )
@@ -89,7 +90,7 @@ export default async (req: Request, res: Response) => {
 
   const discountService: DiscountService = req.scope.resolve("discountService")
 
-  let discount = await discountService.retrieve(discount_id)
+  let discount = await discountService.retrieve(store_id, discount_id)
 
   const updateObj = {
     ...(req.validatedBody as AdminPostDiscountsDiscountConditionsCondition),
@@ -104,10 +105,17 @@ export default async (req: Request, res: Response) => {
       .upsertCondition(updateObj)
   })
 
-  discount = await discountService.retrieve(discount.id, req.retrieveConfig)
+  discount = await discountService.retrieve(store_id, discount.id, req.retrieveConfig)
 
   res.status(200).json({ discount })
 }
+
+
+export class AdminUpdateCondition {
+  @IsString()
+  store_id: string
+}
+
 
 /**
  * @schema AdminPostDiscountsDiscountConditionsCondition

@@ -102,7 +102,7 @@ export default async (req, res) => {
 
     const updated = await cartService
       .withTransaction(transactionManager)
-      .retrieve(id, {
+      .retrieve(id, store_id,{
         relations: ["payment_sessions", "shipping_methods"],
       })
 
@@ -113,7 +113,7 @@ export default async (req, res) => {
     }
   })
 
-  const data = await cartService.retrieveWithTotals(id, {
+  const data = await cartService.retrieveWithTotals(id, store_id,{
     select: defaultStoreCartFields,
     relations: defaultStoreCartRelations,
   })
@@ -256,6 +256,11 @@ class Discount {
  *       user_agent: "Chrome"
  */
 export class StorePostCartsCartReq {
+
+  @IsString()
+  @IsOptional()
+  store_id?: string
+
   @IsOptional()
   @IsString()
   region_id?: string

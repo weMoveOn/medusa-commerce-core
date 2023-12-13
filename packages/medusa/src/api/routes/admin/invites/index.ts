@@ -3,10 +3,11 @@ import { Invite } from "../../../../models/invite"
 import { DeleteResponse } from "../../../../types/common"
 import middlewares from "../../../middlewares"
 import "reflect-metadata"
+import { processIdentifierMiddleware } from "../../../middlewares/validators/identifier-existence"
 
 export const unauthenticatedInviteRoutes = (app) => {
   const route = Router()
-  app.use("/invites", route)
+  app.use("/invites", processIdentifierMiddleware, route)
 
   route.post("/accept", middlewares.wrap(require("./accept-invite").default))
 }

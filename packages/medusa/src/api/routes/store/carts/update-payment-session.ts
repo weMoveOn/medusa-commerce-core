@@ -86,7 +86,7 @@ export default async (req, res) => {
       .updatePaymentSession(store_id,id, validated.data)
   })
 
-  const data = await cartService.retrieveWithTotals(id, {
+  const data = await cartService.retrieveWithTotals(id, store_id,{
     select: defaultStoreCartFields,
     relations: defaultStoreCartRelations,
   })

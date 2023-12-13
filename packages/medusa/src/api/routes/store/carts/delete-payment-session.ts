@@ -67,7 +67,7 @@ export default async (req, res) => {
       .deletePaymentSession(store_id,id, provider_id)
   })
 
-  const data = await cartService.retrieveWithTotals(id, {
+  const data = await cartService.retrieveWithTotals( store_id,id,{
     select: defaultStoreCartFields,
     relations: defaultStoreCartRelations,
   })

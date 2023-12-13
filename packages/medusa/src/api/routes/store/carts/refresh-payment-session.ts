@@ -58,7 +58,7 @@ export default async (req, res) => {
       .withTransaction(transactionManager)
       .refreshPaymentSession(store_id,id, provider_id)
   })
-  const data = await cartService.retrieveWithTotals(id, {
+  const data = await cartService.retrieveWithTotals( store_id,id,{
     relations: [
       "region",
       "region.countries",

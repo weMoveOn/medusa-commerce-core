@@ -33,7 +33,7 @@ class CartSubscriber {
         const cartServiceTx =
           this.cartService_.withTransaction(transactionManager)
 
-        const cart = await cartServiceTx.retrieve(cartId, {
+        const cart = await cartServiceTx.retrieve(cartId, storeId,{
           relations: ["payment_sessions"],
         })
 

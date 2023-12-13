@@ -221,7 +221,7 @@ export default async (req, res) => {
 
                 const swap = await swapService
                   .withTransaction(transactionManager)
-                  .retrieve(swaps[0].id, {
+                  .retrieve(store_id,swaps[0].id, {
                     select: defaultStoreSwapFields,
                     relations: defaultStoreSwapRelations,
                   })

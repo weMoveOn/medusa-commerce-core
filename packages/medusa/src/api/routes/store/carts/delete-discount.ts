@@ -66,7 +66,7 @@ export default async (req, res) => {
     await cartService.withTransaction(m).removeDiscount(store_id,id, code)
 
     // If the cart has payment sessions update these
-    const updated = await cartService.withTransaction(m).retrieve(id, {
+    const updated = await cartService.withTransaction(m).retrieve(id, store_id,{
       relations: ["payment_sessions"],
     })
 
@@ -75,7 +75,7 @@ export default async (req, res) => {
     }
   })
 
-  const data = await cartService.retrieveWithTotals(id, {
+  const data = await cartService.retrieveWithTotals(id, store_id,{
     select: defaultStoreCartFields,
     relations: defaultStoreCartRelations,
   })

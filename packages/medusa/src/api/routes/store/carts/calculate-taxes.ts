@@ -44,6 +44,7 @@ import { cleanResponseData } from "../../../../utils/clean-response-data"
  */
 export default async (req, res) => {
   const { id } = req.params
+  const { store_id } = req.query
 
   const idempotencyKeyService: IdempotencyKeyService = req.scope.resolve(
     "idempotencyKeyService"
@@ -84,7 +85,7 @@ export default async (req, res) => {
               .workStage(idempotencyKey.idempotency_key, async (manager) => {
                 const cart = await cartService
                   .withTransaction(manager)
-                  .retrieveWithTotals(id, {}, { force_taxes: true })
+                  .retrieveWithTotals( store_id,id,{}, { force_taxes: true })
 
                 return {
                   response_code: 200,

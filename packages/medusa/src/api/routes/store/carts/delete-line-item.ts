@@ -65,10 +65,10 @@ export default async (req, res) => {
     const cartServiceTx = cartService.withTransaction(m)
 
     // Remove the line item
-    await cartServiceTx.removeLineItem(id, line_id)
+    await cartServiceTx.removeLineItem(store_id, id, line_id)
 
     // If the cart has payment sessions update these
-    const updated = await cartServiceTx.retrieve(id, {
+    const updated = await cartServiceTx.retrieve(id, store_id,{
       relations: ["payment_sessions"],
     })
 
@@ -77,7 +77,7 @@ export default async (req, res) => {
     }
   })
 
-  const data = await cartService.retrieveWithTotals(id, {
+  const data = await cartService.retrieveWithTotals(id, store_id,{
     select: defaultStoreCartFields,
     relations: defaultStoreCartRelations,
   })
