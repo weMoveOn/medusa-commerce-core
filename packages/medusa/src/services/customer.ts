@@ -550,14 +550,14 @@ class CustomerService extends TransactionBaseService {
           a.postal_code === address.postal_code &&
           a.province === address.province &&
           a.first_name === address.first_name &&
-          a.last_name === address.last_name
+          a.last_name === address.last_name &&
+          a.store_id === storeId
       )
 
       if (shouldAdd) {
         const created = addressRepository.create({
           ...address,
           customer_id: customerId,
-          store_id:storeId
         })
         const result = await addressRepository.save(created)
         return result

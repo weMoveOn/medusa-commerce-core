@@ -70,9 +70,9 @@ import { IsType } from "../../../../utils/validators/is-type"
 export default async (req, res) => {
   const { store_id } = req.query
   const id = req.user.customer_id
-
+  req.body.store_id = store_id
   const validated = await validator(StorePostCustomersCustomerReq, req.body)
-
+  console.log('validated',validated)
   const customerService: CustomerService = req.scope.resolve("customerService")
   const manager: EntityManager = req.scope.resolve("manager")
   await manager.transaction(async (transactionManager) => {

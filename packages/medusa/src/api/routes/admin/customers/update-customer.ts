@@ -83,7 +83,7 @@ import { validator } from "../../../../utils/validator"
 export default async (req, res) => {
   const { id } = req.params
   const { store_id } = req.query
-
+  req.body.store_id = store_id
   const validatedBody = await validator(AdminPostCustomersCustomerReq, req.body)
   const validatedQuery = await validator(UpdateAdminCustomerParams, req.query)
 
@@ -166,6 +166,9 @@ class Group {
  *       url: "https://docs.medusajs.com/development/entities/overview#metadata-attribute"
  */
 export class AdminPostCustomersCustomerReq {
+  @IsString()
+  store_id: string
+
   @IsEmail()
   @IsOptional()
   email?: string

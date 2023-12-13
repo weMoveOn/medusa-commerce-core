@@ -102,6 +102,7 @@ export default async (req, res) => {
     return await customerService
       .withTransaction(transactionManager)
       .update(store_id,customer.id, {
+        store_id,
         password: validated.password,
       })
   })
