@@ -54,7 +54,6 @@ import { cleanResponseData } from "../../../../utils/clean-response-data"
 export default async (req, res) => {
   const { store_id } = req.query
   const { id, line_id } = req.params
-  const { store_id } = req.query
 
   const manager: EntityManager = req.scope.resolve("manager")
   const cartService: CartService = req.scope.resolve("cartService")

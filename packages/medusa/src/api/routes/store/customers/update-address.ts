@@ -70,9 +70,8 @@ import { validator } from "../../../../utils/validator"
 export default async (req, res) => {
   const { store_id } = req.query
   const id = req.user.customer_id
-
   const { address_id } = req.params
-  const { store_id } = req.query
+
 
   const validated = await validator(
     StorePostCustomersCustomerAddressesAddressReq,

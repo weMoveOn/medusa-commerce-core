@@ -63,7 +63,6 @@ import { PaymentCollectionService } from "../../../../services"
  *     $ref: "#/components/responses/500_error"
  */
 export default async (req, res) => {
-  const { store_id } = req.query
   const data = req.validatedBody as StorePaymentCollectionSessionsReq
   const { id } = req.params
   const { store_id } = req.query

@@ -70,7 +70,6 @@ import { IsType } from "../../../../utils/validators/is-type"
 export default async (req, res) => {
   const { store_id } = req.query
   const id = req.user.customer_id
-  const { store_id } = req.query
 
   const validated = await validator(StorePostCustomersCustomerReq, req.body)
 

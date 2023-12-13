@@ -105,7 +105,6 @@ export default async (req, res) => {
   const { store_id } = req.query
   const data = req.validatedBody as StorePostPaymentCollectionsBatchSessionsReq
   const { id } = req.params
-  const { store_id } = req.query
 
   const customerId = req.user?.customer_id
 
