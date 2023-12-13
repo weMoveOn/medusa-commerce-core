@@ -95,7 +95,7 @@ export default async (req, res) => {
       .update(store_id, id, req.validatedBody)
   })
 
-  const order = await orderService.retrieveWithTotals(id, req.retrieveConfig, {
+  const order = await orderService.retrieveWithTotals(store_id,id, req.retrieveConfig, {
     includes: req.includes,
   })
 
@@ -275,4 +275,10 @@ class ShippingMethod {
 /**
  * Parameters used to configure the retrieved order.
  */
-export class AdminPostOrdersOrderParams extends FindParams {}
+export class AdminPostOrdersOrderParams extends FindParams {
+    /**
+     * The relations that should be expanded when retrieving the order.
+     */
+    @IsString()
+    store_id: string
+}

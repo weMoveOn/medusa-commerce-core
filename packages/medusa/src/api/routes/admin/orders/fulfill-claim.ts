@@ -96,7 +96,7 @@ export default async (req, res) => {
     const claimServiceTx = claimService.withTransaction(manager)
 
     const { fulfillments: existingFulfillments } =
-      await claimServiceTx.retrieve(claim_id, {
+      await claimServiceTx.retrieve(store_id,claim_id, {
         relations: [
           "fulfillments",
           "fulfillments.items",
@@ -115,7 +115,7 @@ export default async (req, res) => {
     })
 
     if (validated.location_id) {
-      const { fulfillments } = await claimServiceTx.retrieve(claim_id, {
+      const { fulfillments } = await claimServiceTx.retrieve(store_id,claim_id, {
         relations: [
           "fulfillments",
           "fulfillments.items",
@@ -135,7 +135,7 @@ export default async (req, res) => {
     }
   })
 
-  const order = await orderService.retrieveWithTotals(id, req.retrieveConfig, {
+  const order = await orderService.retrieveWithTotals(store_id,id, req.retrieveConfig, {
     includes: req.includes,
   })
 

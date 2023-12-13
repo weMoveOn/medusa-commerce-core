@@ -109,11 +109,11 @@ export default async (req, res) => {
 
     await draftOrderServiceTx.registerCartCompletion(draftOrder.id, order.id)
 
-    await orderServiceTx.capturePayment(order.id)
+    await orderServiceTx.capturePayment(store_id,order.id)
 
     order = await orderService
       .withTransaction(manager)
-      .retrieveWithTotals(order.id, {
+      .retrieveWithTotals(store_id,order.id, {
         relations: defaultOrderRelations,
         select: defaultOrderFields,
       })

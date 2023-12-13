@@ -198,11 +198,13 @@ import { cleanResponseData } from "../../../../utils/clean-response-data"
  *     $ref: "#/components/responses/500_error"
  */
 export default async (req, res) => {
+  const {store_id} = req.query
   const orderService: OrderService = req.scope.resolve("orderService")
 
   const { skip, take } = req.listConfig
 
   const [orders, count] = await orderService.listAndCount(
+      store_id,
     req.filterableFields,
     req.listConfig
   )
@@ -221,6 +223,11 @@ export default async (req, res) => {
  * Parameters used to filter and configure the pagination of the retrieved orders.
  */
 export class AdminGetOrdersParams extends AdminListOrdersSelector {
+    /**
+     *
+     */
+    @IsString()
+    store_id?: string
   /**
    * {@inheritDoc FindPaginationParams.offset}
    * @defaultValue 0

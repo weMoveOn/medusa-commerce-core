@@ -36,6 +36,7 @@ import { Return } from "./return"
 import { SalesChannel } from "./sales-channel"
 import { ShippingMethod } from "./shipping-method"
 import { Swap } from "./swap"
+import {Store} from "./store";
 
 /**
  * @enum
@@ -153,6 +154,14 @@ export class Order extends BaseEntity {
    * @apiIgnore
    */
   readonly object = "order"
+
+  // new filed added start
+  @Column()
+  store_id: string
+  @ManyToOne(() => Store, (store) => store.orders)
+  @JoinColumn({ name: "store_id", referencedColumnName: "id" })
+  store: Store
+  // new filed added end
 
   @DbAwareColumn({ type: "enum", enum: OrderStatus, default: "pending" })
   status: OrderStatus

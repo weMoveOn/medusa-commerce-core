@@ -76,7 +76,7 @@ export default async (req, res) => {
     await swapService.withTransaction(manager).processDifference(swap_id, store_id)
   })
 
-  const order = await orderService.retrieveWithTotals(id, req.retrieveConfig, {
+  const order = await orderService.retrieveWithTotals(store_id,id, req.retrieveConfig, {
     includes: req.includes,
   })
 

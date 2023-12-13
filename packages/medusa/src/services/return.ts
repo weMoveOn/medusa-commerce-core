@@ -366,7 +366,7 @@ class ReturnService extends TransactionBaseService {
    *    items or refund_amount
    * @return the created return
    */
-  async create(data: CreateReturnInput): Promise<Return | never> {
+  async create(storeId:string,data: CreateReturnInput): Promise<Return | never> {
     return await this.atomicPhase_(async (manager) => {
       const returnRepository = manager.withRepository(this.returnRepository_)
 
@@ -396,7 +396,7 @@ class ReturnService extends TransactionBaseService {
 
       const order = await this.orderService_
         .withTransaction(manager)
-        .retrieve(orderId, {
+        .retrieve(storeId,orderId, {
           select: ["refunded_total", "total", "refundable_amount"],
           relations: [
             "swaps",
@@ -606,6 +606,7 @@ class ReturnService extends TransactionBaseService {
    * @return the result of the update operation
    */
   async receive(
+      storeId: string,
     returnId: string,
     receivedItems: OrdersReturnItem[],
     refundAmount?: number,
@@ -634,7 +635,7 @@ class ReturnService extends TransactionBaseService {
 
       const order = await this.orderService_
         .withTransaction(manager)
-        .retrieve(orderId!, {
+        .retrieve(storeId,orderId!, {
           relations: [
             "items",
             "returns",
