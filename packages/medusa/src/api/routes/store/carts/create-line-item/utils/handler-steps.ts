@@ -65,7 +65,7 @@ export async function handleAddOrUpdateLineItem(
     relations?.some((rel) => rel.includes("variant")) &&
     featureFlagRouter.isFeatureEnabled(SalesChannelFeatureFlag.key)
 
-  cart = await txCartService.retrieveWithTotals(cart.id, storeId,{
+  cart = await txCartService.retrieveWithTotals( storeId,cart.id,{
     select: defaultStoreCartFields,
     relations,
   })

@@ -387,7 +387,7 @@ class DraftOrderService extends TransactionBaseService {
             .create(shippingMethodToCreate)
         }
 
-        createdCart = await cartServiceTx.retrieveWithTotals(createdCart.id, storeId,{
+        createdCart = await cartServiceTx.retrieveWithTotals( storeId,createdCart.id,{
           relations: [
             "shipping_methods",
             "shipping_methods.shipping_option",

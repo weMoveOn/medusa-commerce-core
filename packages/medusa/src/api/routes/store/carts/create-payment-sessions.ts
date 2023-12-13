@@ -102,7 +102,7 @@ export default async (req, res) => {
 
                   const cart = await cartService
                     .withTransaction(stageManager)
-                    .retrieveWithTotals(id, store_id,{
+                    .retrieveWithTotals( store_id,id,{
                       select: defaultStoreCartFields,
                       relations: defaultStoreCartRelations,
                     })

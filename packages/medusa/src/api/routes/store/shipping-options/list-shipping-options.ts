@@ -57,7 +57,7 @@ export default async (req, res) => {
     "shippingProfileService"
   )
 
-  const cart = await cartService.retrieveWithTotals(cart_id,store_id)
+  const cart = await cartService.retrieveWithTotals(store_id,cart_id)
   const options = await shippingProfileService.fetchCartOptions(cart)
   const data = await pricingService.setShippingOptionPrices(store_id, options, {
     cart_id,
