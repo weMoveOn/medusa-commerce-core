@@ -54,11 +54,12 @@ import { EntityManager } from "typeorm"
  */
 export default async (req, res) => {
   const { id } = req.params
+  const {store_id} = req.query
 
   const giftCardService = req.scope.resolve("giftCardService")
   const manager: EntityManager = req.scope.resolve("manager")
   await manager.transaction(async (transactionManager) => {
-    return await giftCardService.withTransaction(transactionManager).delete(id)
+    return await giftCardService.withTransaction(transactionManager).delete(store_id,id)
   })
 
   res.json({

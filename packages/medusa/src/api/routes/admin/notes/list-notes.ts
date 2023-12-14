@@ -61,6 +61,7 @@ import { validator } from "../../../../utils/validator"
  *     $ref: "#/components/responses/500_error"
  */
 export default async (req, res) => {
+  const { store_id } = req.query
   const validated = await validator(AdminGetNotesParams, req.query)
 
   const selector: selector = {}
@@ -70,7 +71,7 @@ export default async (req, res) => {
   }
 
   const noteService: NoteService = req.scope.resolve("noteService")
-  const [notes, count] = await noteService.listAndCount(selector, {
+  const [notes, count] = await noteService.listAndCount(store_id,selector, {
     take: validated.limit,
     skip: validated.offset,
     relations: ["author"],
@@ -88,6 +89,9 @@ export default async (req, res) => {
  * Parameters used to filter and configure the pagination of the retrieved notes.
  */
 export class AdminGetNotesParams {
+  @IsString()
+  store_id: string
+
   /**
    * Resource ID to filter notes by.
    */
