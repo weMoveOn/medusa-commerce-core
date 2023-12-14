@@ -84,7 +84,7 @@ export default async (req, res) => {
       .update(store_id, id, validated)
   })
 
-  const giftCard = await giftCardService.retrieve(id, {
+  const giftCard = await giftCardService.retrieve(store_id,id, {
     select: defaultAdminGiftCardFields,
     relations: defaultAdminGiftCardRelations,
   })

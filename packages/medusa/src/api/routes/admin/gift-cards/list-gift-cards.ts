@@ -62,11 +62,13 @@ import { isDefined } from "medusa-core-utils"
  *     $ref: "#/components/responses/500_error"
  */
 export default async (req, res) => {
-  const validated = await validator(AdminGetGiftCardsParams, req.query)
 
+  const validated = await validator(AdminGetGiftCardsParams, req.query)
+  const {store_id} = validated
   const giftCardService: GiftCardService = req.scope.resolve("giftCardService")
 
   const [giftCards, count] = await giftCardService.listAndCount(
+    store_id,
     pickBy(req.filterableFields, (val) => isDefined(val)),
     req.listConfig
   )
@@ -83,6 +85,9 @@ export default async (req, res) => {
  * Parameters used to filter and configure the pagination of the retrieved gift cards.
  */
 export class AdminGetGiftCardsParams {
+  @IsString()
+  store_id: string
+
   /**
    * {@inheritDoc FindPaginationParams.limit}
    * @defaultValue 50

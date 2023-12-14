@@ -68,9 +68,9 @@ import { EntityManager } from "typeorm"
  */
 export default async (req, res) => {
   const { store_id } = req.query
-  const validatedBody: AdminPostGiftCardsReq & { balance?: number } =
-    req.validatedBody
+  const validatedBody: AdminPostGiftCardsReq & { balance?: number } = req.validatedBody
   validatedBody.balance = validatedBody.value
+  validatedBody.store_id= store_id
 
   const giftCardService: GiftCardService = req.scope.resolve("giftCardService")
   const manager: EntityManager = req.scope.resolve("manager")
@@ -80,7 +80,7 @@ export default async (req, res) => {
       .create(store_id, validatedBody)
   })
 
-  const giftCard = await giftCardService.retrieve(newly.id, {
+  const giftCard = await giftCardService.retrieve(store_id,newly.id, {
     select: defaultAdminGiftCardFields,
     relations: defaultAdminGiftCardRelations,
   })
@@ -116,6 +116,11 @@ export default async (req, res) => {
  *       url: "https://docs.medusajs.com/development/entities/overview#metadata-attribute"
  */
 export class AdminPostGiftCardsReq {
+
+  @IsOptional()
+  @IsString()
+  store_id?: string
+
   @IsOptional()
   @IsInt()
   value?: number

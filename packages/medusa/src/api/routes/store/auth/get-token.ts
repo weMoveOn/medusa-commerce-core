@@ -64,7 +64,8 @@ import { StorePostAuthReq } from "./create-session"
  */
 export default async (req, res) => {
   const { store_id } = req.query
-
+  console.log(req.body,'req.body')
+  console.log(store_id,'store_id')
   const {
     projectConfig: { jwt_secret },
   } = req.scope.resolve("configModule")

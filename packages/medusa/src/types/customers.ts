@@ -44,6 +44,7 @@ export type CreateCustomerInput = {
 }
 
 export type UpdateCustomerInput = {
+  store_id: string
   password?: string
   metadata?: Record<string, unknown>
   billing_address?: AddressPayload | string

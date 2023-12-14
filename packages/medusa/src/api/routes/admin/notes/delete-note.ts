@@ -55,11 +55,13 @@ import NoteService from "../../../../services/note"
  */
 export default async (req, res) => {
   const { id } = req.params
+  const {store_id} = req.query
+
 
   const noteService: NoteService = req.scope.resolve("noteService")
   const manager: EntityManager = req.scope.resolve("manager")
   await manager.transaction(async (transactionManager) => {
-    return await noteService.withTransaction(transactionManager).delete(id)
+    return await noteService.withTransaction(transactionManager).delete(store_id,id)
   })
 
   res.status(200).json({ id, object: "note", deleted: true })

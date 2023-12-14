@@ -964,6 +964,7 @@ export default class PaymentProviderService extends TransactionBaseService {
       await this.customerService_
         .withTransaction(this.activeManager_)
         .update(storeId,data.customer.id, {
+          store_id: storeId,
           metadata: update_requests.customer_metadata,
         })
     }
