@@ -85,6 +85,7 @@ import { FindParams } from "../../../../types/common"
 
 export default async (req: Request, res: Response) => {
   const { id } = req.params
+  const store_id = req.query.store_id as string
   const validatedBody =
     req.validatedBody as AdminDeleteProductCategoriesCategoryProductsBatchReq
 
@@ -101,6 +102,7 @@ export default async (req: Request, res: Response) => {
   })
 
   const productCategory = await productCategoryService.retrieve(
+    store_id,
     id,
     req.retrieveConfig
   )

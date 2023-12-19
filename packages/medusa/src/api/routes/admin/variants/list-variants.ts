@@ -239,6 +239,9 @@ export default async (req, res) => {
  * Parameters used to filter and configure the pagination of the retrieved product variants.
  */
 export class AdminGetVariantsParams extends AdminPriceSelectionParams {
+  @IsString()
+  store_id: string
+
   /**
    * Search term to search product variants' IDs.
    */

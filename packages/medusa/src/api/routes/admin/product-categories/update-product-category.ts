@@ -82,6 +82,7 @@ import { FindParams } from "../../../../types/common"
  */
 export default async (req: Request, res: Response) => {
   const { id } = req.params
+  const store_id = req.query.store_id as string
   const { validatedBody } = req as {
     validatedBody: AdminPostProductCategoriesCategoryReq
   }
@@ -94,10 +95,11 @@ export default async (req: Request, res: Response) => {
   const updated = await manager.transaction(async (transactionManager) => {
     return await productCategoryService
       .withTransaction(transactionManager)
-      .update(id, validatedBody)
+      .update(store_id,id, validatedBody)
   })
 
   const productCategory = await productCategoryService.retrieve(
+    store_id,
     updated.id,
     req.retrieveConfig
   )
@@ -141,6 +143,10 @@ export default async (req: Request, res: Response) => {
 export class AdminPostProductCategoriesCategoryReq extends AdminProductCategoriesReqBase {
   @IsString()
   @IsOptional()
+  store_id?: string
+
+  @IsString()
+  @IsOptional()
   name?: string
 
   @IsOptional()
@@ -159,4 +165,7 @@ export class AdminPostProductCategoriesCategoryReq extends AdminProductCategorie
   metadata?: Record<string, unknown>
 }
 
-export class AdminPostProductCategoriesCategoryParams extends FindParams {}
+export class AdminPostProductCategoriesCategoryParams extends FindParams {
+  @IsString()
+  store_id?: string
+}

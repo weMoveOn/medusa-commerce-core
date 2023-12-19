@@ -214,6 +214,7 @@ class CustomerGroupService extends TransactionBaseService {
     selector: Selector<CustomerGroup> & {
       q?: string
       discount_condition_id?: string
+      store_id?: string
     } = {},
     config: FindConfig<CustomerGroup>
   ): Promise<CustomerGroup[]> {
@@ -232,6 +233,7 @@ class CustomerGroupService extends TransactionBaseService {
     selector: Selector<CustomerGroup> & {
       q?: string
       discount_condition_id?: string
+      store_id?: string
     } = {},
     config: FindConfig<CustomerGroup>
   ): Promise<[CustomerGroup[], number]> {

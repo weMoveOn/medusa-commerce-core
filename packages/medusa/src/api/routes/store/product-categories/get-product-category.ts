@@ -63,6 +63,7 @@ import { IsString } from "class-validator"
  */
 export default async (req: Request, res: Response) => {
   const { id } = req.params
+  const store_id = req.query.store_id as string
   const { retrieveConfig } = req
 
   const productCategoryService: ProductCategoryService = req.scope.resolve(
@@ -70,6 +71,7 @@ export default async (req: Request, res: Response) => {
   )
 
   const productCategory = await productCategoryService.retrieve(
+    store_id,
     id,
     retrieveConfig,
     defaultStoreCategoryScope

@@ -146,6 +146,7 @@ import { Type } from "class-transformer"
  *     $ref: "#/components/responses/500_error"
  */
 export default async (req: Request, res: Response) => {
+  const store_id = req.query.store_id as string
   const customerGroupService: CustomerGroupService = req.scope.resolve(
     "customerGroupService"
   )
@@ -168,6 +169,8 @@ export default async (req: Request, res: Response) => {
  * Parameters used to filter and configure the pagination of the retrieved customer groups.
  */
 export class AdminGetCustomerGroupsParams extends FilterableCustomerGroupProps {
+  @IsString()
+  store_id: string
   /**
    * The field to sort the data by. By default, the sort order is ascending. To change the order to descending, prefix the field name with `-`.
    */

@@ -83,7 +83,7 @@ export default async (req, res) => {
       req.retrieveConfig
     )
   } else {
-    rawProduct = await productService.retrieve(id, req.retrieveConfig)
+    rawProduct = await productService.retrieve(id,store_id, req.retrieveConfig)
   }
 
   // We only set prices if variants.prices are requested

@@ -5,11 +5,12 @@ import middlewares, { transformBody } from "../../../middlewares"
 import { isFeatureFlagEnabled } from "../../../middlewares/feature-flag-enabled"
 import { AdminPostAnalyticsConfigReq } from "./create-analytics-config"
 import { AdminPostAnalyticsConfigAnalyticsConfigReq } from "./update-analytics-config"
+import {processIdentifierMiddleware} from "../../../middlewares/validators/identifier-existence";
 
 const route = Router()
 
 export default (app: Router) => {
-  app.use("/analytics-configs", isFeatureFlagEnabled("analytics"), route)
+  app.use("/analytics-configs", isFeatureFlagEnabled("analytics"), processIdentifierMiddleware,route)
 
   route.get("/", middlewares.wrap(require("./get-analytics-config").default))
 
