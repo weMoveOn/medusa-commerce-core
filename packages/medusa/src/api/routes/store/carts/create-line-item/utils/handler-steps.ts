@@ -38,7 +38,7 @@ export async function handleAddOrUpdateLineItem(
 
   const txCartService = cartService.withTransaction(manager)
 
-  let cart = await txCartService.retrieve(cartId, storeId,{
+  let cart = await txCartService.retrieve(storeId,cartId, {
     select: ["id", "region_id", "customer_id"],
   })
 

@@ -76,13 +76,9 @@ export default async (req, res) => {
   await manager.transaction(async (m) => {
     const txCartService = cartService.withTransaction(m)
 
-    await txCartService.addShippingMethod(
-      id,
-      validated.option_id,
-      validated.data
-    )
+    await txCartService.addShippingMethod(id, validated.option_id, validated.data)
 
-    const updated = await txCartService.retrieve(id, store_id,{
+      const updated = await txCartService.retrieve(store_id,id,{
       select: ["id"],
       relations: ["payment_sessions"],
     })

@@ -113,12 +113,16 @@ import { FeatureFlagDecorators } from "../../../../utils/feature-flag-decorators
  */
 // store_id is required filed that extract from req.query
 export default async (req, res) => {
-  const storeId = req.query.store_id
+  const store_id = req.query.store_id as string
+  req.body.store_id = store_id
+  if(req.body?.variants) {
+    req.body.variants.forEach((variant) => {
+      variant.store_id = store_id
+    })
+  }
   const validated = await validator(AdminPostProductsReq, {
     ...req.body,
-    store_id: storeId,
   })
-
   const logger: Logger = req.scope.resolve("logger")
   const productService: ProductService = req.scope.resolve("productService")
   const pricingService: PricingService = req.scope.resolve("pricingService")
@@ -264,13 +268,13 @@ export default async (req, res) => {
   if (isMedusaV2Enabled) {
     rawProduct = await getProductWithIsolatedProductModule(req, product.id)
   } else {
-    rawProduct = await productService.retrieve(product.id, storeId, {
+    rawProduct = await productService.retrieve(product.id, store_id, {
       select: defaultAdminProductFields,
       relations: defaultAdminProductRelations,
     })
   }
 
-  const [pricedProduct] = await pricingService.setAdminProductPricing(storeId, [
+  const [pricedProduct] = await pricingService.setAdminProductPricing(store_id, [
     rawProduct,
   ])
 
@@ -308,6 +312,9 @@ class ProductOptionReq {
 }
 
 class ProductVariantReq {
+  @IsString()
+  store_id?: string
+
   @IsString()
   title: string
 

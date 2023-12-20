@@ -76,6 +76,7 @@ class InviteService extends TransactionBaseService {
 
   /**
    * Updates an account_user.
+   * @param store_id - the id of the store to update the user for
    * @param user - user emails
    * @param role - role to assign to the user
    * @param validDuration - role to assign to the user

@@ -229,7 +229,7 @@ class SwapService extends TransactionBaseService {
     if (cartRelations || cartSelects) {
       swap.cart = await this.cartService_
         .withTransaction(this.activeManager_)
-        .retrieve(swap.cart_id, storeId,{
+        .retrieve(storeId,swap.cart_id, {
           select: cartSelects,
           relations: cartRelations,
         })
@@ -671,7 +671,7 @@ class SwapService extends TransactionBaseService {
 
       cart = await this.cartService_
         .withTransaction(manager)
-        .retrieve(cart.id, storeId,{
+        .retrieve(storeId,cart.id,{
           relations: [
             "items",
             "items.variant",

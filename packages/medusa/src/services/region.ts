@@ -344,6 +344,7 @@ class RegionService extends TransactionBaseService {
   /**
    * Validates a currency code. Will throw if the currency code doesn't exist.
    *
+   * @param storeId - the id of the store to check against
    * @param currencyCode - an ISO currency code
    * @throws if the provided currency code is invalid
    * @return void
