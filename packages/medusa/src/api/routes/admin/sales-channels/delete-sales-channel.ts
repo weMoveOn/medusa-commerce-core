@@ -57,7 +57,7 @@ import { SalesChannelService } from "../../../../services/"
  */
 export default async (req: Request, res: Response): Promise<void> => {
   const { id } = req.params
-  const storeId = req.query.store_id as string
+  const store_id = req.query.store_id as string
 
   const salesChannelService: SalesChannelService = req.scope.resolve(
     "salesChannelService"
@@ -66,7 +66,7 @@ export default async (req: Request, res: Response): Promise<void> => {
   await manager.transaction(async (transactionManager) => {
     return await salesChannelService
       .withTransaction(transactionManager)
-      .delete(storeId, id)
+      .delete(store_id, id)
   })
 
   res.json({

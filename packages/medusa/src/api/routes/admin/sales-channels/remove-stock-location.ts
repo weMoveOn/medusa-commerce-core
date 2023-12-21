@@ -103,5 +103,8 @@ export default async (req: Request, res: Response) => {
  */
 export class AdminDeleteSalesChannelsChannelStockLocationsReq {
   @IsString()
+  store_id: string
+
+  @IsString()
   location_id: string
 }

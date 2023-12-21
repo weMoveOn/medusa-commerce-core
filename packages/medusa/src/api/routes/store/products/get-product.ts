@@ -85,7 +85,7 @@ export default async (req, res) => {
 
   const validated = req.validatedQuery as StoreGetProductsProductParams
   const customer_id = req.user?.customer_id
-  const storeId = req.filterableFields.store_id
+  const store_id = req.filterableFields.store_id
   const productVariantInventoryService: ProductVariantInventoryService =
     req.scope.resolve("productVariantInventoryService")
   const productService: ProductService = req.scope.resolve("productService")
@@ -98,7 +98,7 @@ export default async (req, res) => {
   if (featureFlagRouter.isFeatureEnabled(MedusaV2Flag.key)) {
     rawProduct = await getProductWithIsolatedProductModule(req, id)
   } else {
-    rawProduct = await productService.retrieve(id, storeId, {
+    rawProduct = await productService.retrieve(id, store_id, {
       ...req.retrieveConfig,
     })
   }
@@ -111,10 +111,10 @@ export default async (req, res) => {
   let regionId = validated.region_id
   let currencyCode = validated.currency_code
   if (validated.cart_id) {
-    const cart = await cartService.retrieve(storeId,validated.cart_id, {
+    const cart = await cartService.retrieve(store_id,validated.cart_id, {
       select: ["id", "region_id"],
     })
-    const region = await regionService.retrieve(storeId, cart.region_id, {
+    const region = await regionService.retrieve(store_id, cart.region_id, {
       select: ["id", "currency_code"],
     })
     regionId = region.id
@@ -136,7 +136,7 @@ export default async (req, res) => {
 
   if (shouldSetPricing) {
     decoratePromises.push(
-      pricingService.setProductPrices(storeId, [decoratedProduct], {
+      pricingService.setProductPrices(store_id, [decoratedProduct], {
         cart_id: validated.cart_id,
         customer_id: customer_id,
         region_id: regionId,

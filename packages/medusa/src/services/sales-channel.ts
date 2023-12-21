@@ -354,6 +354,7 @@ class SalesChannelService extends TransactionBaseService {
 
   /**
    * Add a batch of product to a sales channel
+   * @param storeId
    * @param salesChannelId - The id of the sales channel on which to add the products
    * @param productIds - The products ids to attach to the sales channel
    * @return the sales channel on which the products have been added

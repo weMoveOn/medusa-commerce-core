@@ -73,7 +73,7 @@ import { WorkflowTypes } from "@medusajs/types"
  */
 export default async (req: Request, res: Response) => {
   const { id } = req.params
-  const storeId = req.query.store_id as string
+  const store_id = req.query.store_id as string
 
   const validated = await validator(
     AdminDeletePriceListsPriceListProductsPricesBatchReq,
@@ -114,7 +114,7 @@ export default async (req: Request, res: Response) => {
       async (transactionManager) => {
         return await priceListService
           .withTransaction(transactionManager)
-          .deleteProductPrices(storeId, id, validated.product_ids)
+          .deleteProductPrices(store_id, id, validated.product_ids)
       }
     )
 

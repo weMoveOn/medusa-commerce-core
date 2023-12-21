@@ -1,4 +1,4 @@
-import { IsArray, ValidateNested } from "class-validator"
+import { IsArray, ValidateNested, IsString } from "class-validator"
 import { Request, Response } from "express"
 import { Type } from "class-transformer"
 import { EntityManager } from "typeorm"
@@ -82,7 +82,7 @@ export default async (req: Request, res: Response): Promise<void> => {
     req.validatedBody as AdminPostPublishableApiKeySalesChannelsBatchReq
 
   const { id } = req.params
-
+  const store_id = req.query.store_id as string
   const publishableApiKeyService: PublishableApiKeyService = req.scope.resolve(
     "publishableApiKeyService"
   )
@@ -97,7 +97,7 @@ export default async (req: Request, res: Response): Promise<void> => {
           validatedBody.sales_channel_ids.map((p) => p.id)
         )
 
-      return await publishableApiKeyService.retrieve(id)
+      return await publishableApiKeyService.retrieve(store_id,id)
     }
   )
 
@@ -123,6 +123,9 @@ export default async (req: Request, res: Response): Promise<void> => {
  *           description: The ID of the sales channel
  */
 export class AdminPostPublishableApiKeySalesChannelsBatchReq {
+  @IsString()
+  store_id: string
+
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => ProductBatchSalesChannel)

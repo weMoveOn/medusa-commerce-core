@@ -1,4 +1,4 @@
-import { IsArray, ValidateNested } from "class-validator"
+import { IsArray, ValidateNested,IsString } from "class-validator"
 import { Request, Response } from "express"
 
 import { EntityManager } from "typeorm"
@@ -121,6 +121,9 @@ export default async (req: Request, res: Response) => {
  *           type: string
  */
 export class AdminDeleteSalesChannelsChannelProductsBatchReq {
+  @IsString()
+  store_id: string
+
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => ProductBatchSalesChannel)
