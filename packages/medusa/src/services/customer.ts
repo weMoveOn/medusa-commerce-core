@@ -249,11 +249,11 @@ class CustomerService extends TransactionBaseService {
   }
 
   async listByEmail(
-    store_id: string,
+    storeId: string,
     email: string,
     config: FindConfig<Customer> = { relations: [], skip: 0, take: 2 }
   ): Promise<Customer[]> {
-    return await this.list({ store_id: store_id,email: email.toLowerCase() }, config)
+    return await this.list({ store_id: storeId,email: email.toLowerCase() }, config)
   }
   /**
    * Gets a customer by phone.

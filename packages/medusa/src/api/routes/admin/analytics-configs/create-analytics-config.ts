@@ -1,4 +1,4 @@
-import { IsBoolean } from "class-validator"
+import { IsBoolean,IsString } from "class-validator"
 import { Request, Response } from "express"
 import { EntityManager } from "typeorm"
 import { AnalyticsConfigService } from "../../../../services"
@@ -25,6 +25,9 @@ export default async (req: Request, res: Response) => {
 }
 
 export class AdminPostAnalyticsConfigReq {
+  @IsString()
+  store_id: string
+
   @IsBoolean()
   opt_out: boolean
 

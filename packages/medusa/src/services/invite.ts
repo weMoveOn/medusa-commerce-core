@@ -241,6 +241,7 @@ class InviteService extends TransactionBaseService {
       // use the email of the user who actually accepted the invite
       const user = await this.userService_.withTransaction(m).create(
         {
+          store_id: visitedStoreId,
           email: invite.user_email,
           role: invite.role,
           first_name: user_.first_name,

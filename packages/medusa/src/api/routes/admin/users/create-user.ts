@@ -70,6 +70,8 @@ import { EntityManager } from "typeorm"
  *     $ref: "#/components/responses/500_error"
  */
 export default async (req, res) => {
+  const {store_id} = req.query
+  req.body.store_id = store_id
   const validated = await validator(AdminCreateUserRequest, req.body)
 
   const userService: UserService = req.scope.resolve("userService")
@@ -112,6 +114,9 @@ export default async (req, res) => {
  *     format: password
  */
 export class AdminCreateUserRequest {
+  @IsString()
+  store_id: string
+
   @IsEmail()
   email: string
 

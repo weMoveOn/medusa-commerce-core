@@ -1949,7 +1949,7 @@ class CartService extends TransactionBaseService {
           typeof cartOrCartId === `string` ? cartOrCartId : cartOrCartId.id
 
         const cart = await this.retrieveWithTotals(
-          storeId,storeId,{
+          storeId,cartId,{
             relations: [
               "items.variant.product.profiles",
               "items.adjustments",
