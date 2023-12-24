@@ -66,6 +66,7 @@ import { EntityManager } from "typeorm"
  *     $ref: "#/components/responses/500_error"
  */
 export default async (req, res) => {
+  const { store_id } = req.query
   const validatedBody = await validator(AdminPostStoreReq, req.body)
 
   const storeService: StoreService = req.scope.resolve("storeService")
@@ -74,7 +75,7 @@ export default async (req, res) => {
   const store = await manager.transaction(async (transactionManager) => {
     return await storeService
       .withTransaction(transactionManager)
-      .update(validatedBody)
+      .update(store_id,validatedBody)
   })
 
   res.status(200).json({ store })

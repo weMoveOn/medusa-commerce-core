@@ -43,7 +43,7 @@ class StoreService extends TransactionBaseService {
    * Creates a store if it doesn't already exist.
    * @return The store.
    */
-  async create(): Promise<Store> {
+  async create(storeId?:string): Promise<Store> {
     return await this.atomicPhase_(
       async (transactionManager: EntityManager) => {
         const storeRepository = transactionManager.withRepository(
@@ -53,7 +53,7 @@ class StoreService extends TransactionBaseService {
           this.currencyRepository_
         )
 
-        let store = await this.retrieve().catch(() => void 0)
+        let store = await this.retrieve({store_id:storeId}).catch(() => void 0)
         if (store) {
           return store
         }
@@ -78,6 +78,7 @@ class StoreService extends TransactionBaseService {
 
   /**
    * Retrieve the store settings. There is always a maximum of one store.
+   * @param storeId The id of the store
    * @param config The config object from which the query will be built
    * @return the store
    */
@@ -111,10 +112,11 @@ class StoreService extends TransactionBaseService {
 
   /**
    * Updates a store
+   * @param storeId - The id of the store
    * @param data - an object with the update values.
    * @return resolves to the update result.
    */
-  async update(data: UpdateStoreInput): Promise<Store> {
+  async update(storeId:string,data: UpdateStoreInput): Promise<Store> {
     return await this.atomicPhase_(
       async (transactionManager: EntityManager) => {
         const storeRepository = transactionManager.withRepository(
@@ -131,7 +133,7 @@ class StoreService extends TransactionBaseService {
           ...rest
         } = data
 
-        const store = await this.retrieve({ relations: ["currencies"] })
+        const store = await this.retrieve({store_id:storeId, relations: ["currencies"] })
 
         if (metadata) {
           store.metadata = setMetadata(store, metadata)
@@ -203,10 +205,11 @@ class StoreService extends TransactionBaseService {
 
   /**
    * Add a currency to the store
+   * @param storeId - The id of the store
    * @param code - 3 character ISO currency code
    * @return result after update
    */
-  async addCurrency(code: string): Promise<Store | never> {
+  async addCurrency(storeId:string,code: string): Promise<Store | never> {
     return await this.atomicPhase_(
       async (transactionManager: EntityManager) => {
         const storeRepo = transactionManager.withRepository(
@@ -227,7 +230,7 @@ class StoreService extends TransactionBaseService {
           )
         }
 
-        const store = await this.retrieve({ relations: ["currencies"] })
+        const store = await this.retrieve({store_id:storeId, relations: ["currencies"] })
 
         const doesStoreInclCurrency = store.currencies
           .map((c) => c.code.toLowerCase())
@@ -247,16 +250,17 @@ class StoreService extends TransactionBaseService {
 
   /**
    * Removes a currency from the store
+   * @param storeId - The id of the store
    * @param code - 3 character ISO currency code
    * @return result after update
    */
-  async removeCurrency(code: string): Promise<any> {
+  async removeCurrency(storeId:string,code: string): Promise<any> {
     return await this.atomicPhase_(
       async (transactionManager: EntityManager) => {
         const storeRepo = transactionManager.withRepository(
           this.storeRepository_
         )
-        const store = await this.retrieve({ relations: ["currencies"] })
+        const store = await this.retrieve({store_id:storeId, relations: ["currencies"] })
         const doesCurrencyExists = store.currencies.some(
           (c) => c.code === code.toLowerCase()
         )

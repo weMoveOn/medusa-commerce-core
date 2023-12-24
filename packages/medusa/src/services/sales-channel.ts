@@ -221,6 +221,7 @@ class SalesChannelService extends TransactionBaseService {
    * Deletes a sales channel from
    * @experimental This feature is under development and may change in the future.
    * To use this feature please enable the corresponding feature flag in your medusa backend project.
+   * @param storeId - the id of the store to delete the sales channel from
    * @param salesChannelId - the id of the sales channel to delete
    */
   async delete(storeId: string, salesChannelId: string): Promise<void> {
@@ -285,7 +286,7 @@ class SalesChannelService extends TransactionBaseService {
         store_id: store.id,
       })
 
-      await this.storeService_.withTransaction(transactionManager).update({
+      await this.storeService_.withTransaction(transactionManager).update(store.id,{
         default_sales_channel_id: defaultSalesChannel.id,
       })
 

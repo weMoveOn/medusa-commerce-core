@@ -147,7 +147,7 @@ const seed = async function ({ directory, migrate, seedFile }: SeedOptions) {
     const defaultProfile = await shippingProfileService.retrieveDefault()
 
     if (seededStore) {
-      await storeService.withTransaction(tx).update(seededStore)
+      await storeService.withTransaction(tx).update(seededStore.id,seededStore)
     }
 
     const store = await storeService.retrieve()

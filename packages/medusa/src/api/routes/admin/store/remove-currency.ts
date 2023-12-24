@@ -63,13 +63,14 @@ import { EntityManager } from "typeorm"
  */
 export default async (req, res) => {
   const { currency_code } = req.params
+  const { store_id } = req.query
 
   const storeService: StoreService = req.scope.resolve("storeService")
   const manager: EntityManager = req.scope.resolve("manager")
   const data = await manager.transaction(async (transactionManager) => {
     return await storeService
       .withTransaction(transactionManager)
-      .removeCurrency(currency_code)
+      .removeCurrency(store_id,currency_code)
   })
 
   res.status(200).json({ store: data })
