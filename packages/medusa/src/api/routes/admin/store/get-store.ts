@@ -59,6 +59,7 @@ import { MedusaModule } from "@medusajs/modules-sdk"
  *     $ref: "#/components/responses/500_error"
  */
 export default async (req, res) => {
+  const store_id = req.query.store_id as string
   const storeService: StoreService = req.scope.resolve("storeService")
 
   const featureFlagRouter: FlagRouter = req.scope.resolve("featureFlagRouter")
@@ -75,6 +76,7 @@ export default async (req, res) => {
   }
 
   const data = (await storeService.retrieve({
+    store_id,
     relations,
   })) as ExtendedStoreDTO
 

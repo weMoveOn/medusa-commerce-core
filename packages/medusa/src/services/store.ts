@@ -78,7 +78,6 @@ class StoreService extends TransactionBaseService {
 
   /**
    * Retrieve the store settings. There is always a maximum of one store.
-   * @param storeId The id of the store
    * @param config The config object from which the query will be built
    * @return the store
    */
@@ -229,9 +228,7 @@ class StoreService extends TransactionBaseService {
             `Currency ${code} not found`
           )
         }
-
         const store = await this.retrieve({store_id:storeId, relations: ["currencies"] })
-
         const doesStoreInclCurrency = store.currencies
           .map((c) => c.code.toLowerCase())
           .includes(curr.code.toLowerCase())

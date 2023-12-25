@@ -65,6 +65,7 @@ import { EntityManager } from "typeorm"
 export default async (req, res) => {
   const { currency_code } = req.params
   const {store_id} = req.query
+  console.log("store_id from add-currency",store_id)
 
   const storeService: StoreService = req.scope.resolve("storeService")
   const manager: EntityManager = req.scope.resolve("manager")
