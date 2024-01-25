@@ -1,10 +1,16 @@
-import { BeforeInsert, Column, Entity } from "typeorm"
+import { BeforeInsert, Column, Entity,ManyToOne, JoinColumn } from "typeorm"
 
 import { BaseEntity } from "../interfaces"
 import { generateEntityId, resolveDbType } from "../utils"
+import {Store} from "./store";
 
 @Entity()
 export class PublishableApiKey extends BaseEntity {
+  @Column()
+  store_id: string
+  @ManyToOne(()=> Store)
+  @JoinColumn({name:"store_id", referencedColumnName:"id"})
+
   @Column({ type: "varchar", nullable: true })
   created_by: string | null
 

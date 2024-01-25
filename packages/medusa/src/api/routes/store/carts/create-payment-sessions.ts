@@ -55,15 +55,15 @@ import { cleanResponseData } from "../../../../utils/clean-response-data"
 export default async (req, res) => {
   const { store_id } = req.query
   const { id } = req.params
-
+  console.log("id1",id)
   const cartService: CartService = req.scope.resolve("cartService")
   const idempotencyKeyService: IdempotencyKeyService = req.scope.resolve(
     "idempotencyKeyService"
   )
-
+  console.log("id2",id)
   const productVariantInventoryService: ProductVariantInventoryService =
     req.scope.resolve("productVariantInventoryService")
-
+  console.log("id3",id)
   const manager: EntityManager = req.scope.resolve("manager")
 
   const headerKey = req.get("Idempotency-Key") || ""
@@ -75,10 +75,12 @@ export default async (req, res) => {
         .withTransaction(transactionManager)
         .initializeRequest(headerKey, req.method, req.params, req.path)
     })
+    console.log("idempotencyKey",idempotencyKey)
   } catch (error) {
     res.status(409).send("Failed to create idempotency key")
     return
   }
+  console.log("id4",id)
 
   res.setHeader("Access-Control-Expose-Headers", "Idempotency-Key")
   res.setHeader("Idempotency-Key", idempotencyKey.idempotency_key)
@@ -99,19 +101,19 @@ export default async (req, res) => {
                   await cartService
                     .withTransaction(stageManager)
                     .setPaymentSessions(store_id,id)
-
+                  console.log("id5",id)
                   const cart = await cartService
                     .withTransaction(stageManager)
                     .retrieveWithTotals( store_id,id,{
                       select: defaultStoreCartFields,
                       relations: defaultStoreCartRelations,
                     })
-
+                    console.log("id6",id)
                   await productVariantInventoryService.setVariantAvailability(
                     cart.items.map((i) => i.variant),
                     cart.sales_channel_id!
                   )
-
+                    console.log("id7",id)
                   return {
                     response_code: 200,
                     response_body: { cart },
@@ -133,6 +135,7 @@ export default async (req, res) => {
 
       default:
         await manager.transaction(async (transactionManager) => {
+          console.log("id8",id)
           idempotencyKey = await idempotencyKeyService
             .withTransaction(transactionManager)
             .update(idempotencyKey.idempotency_key, {
@@ -140,6 +143,7 @@ export default async (req, res) => {
               response_code: 500,
               response_body: { message: "Unknown recovery point" },
             })
+          console.log("id9",id)
         })
         break
     }

@@ -1,4 +1,4 @@
-import { IsArray, ValidateNested } from "class-validator"
+import { IsArray, ValidateNested, IsString } from "class-validator"
 import { Request, Response } from "express"
 
 import { EntityManager } from "typeorm"
@@ -82,7 +82,7 @@ export default async (req: Request, res: Response): Promise<void> => {
     req.validatedBody as AdminPostSalesChannelsChannelProductsBatchReq
 
   const { id } = req.params
-  const storeId = req.query.store_id as string
+  const store_id = req.query.store_id as string
 
   const salesChannelService: SalesChannelService = req.scope.resolve(
     "salesChannelService"
@@ -93,7 +93,7 @@ export default async (req: Request, res: Response): Promise<void> => {
     return await salesChannelService
       .withTransaction(transactionManager)
       .addProducts(
-        storeId,
+        store_id,
         id,
         validatedBody.product_ids.map((p) => p.id)
       )
@@ -121,6 +121,9 @@ export default async (req: Request, res: Response): Promise<void> => {
  *           description: The ID of the product
  */
 export class AdminPostSalesChannelsChannelProductsBatchReq {
+  @IsString()
+  store_id?: string
+
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => ProductBatchSalesChannel)

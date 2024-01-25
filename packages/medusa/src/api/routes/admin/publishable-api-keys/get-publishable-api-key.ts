@@ -56,12 +56,12 @@ import PublishableApiKeyService from "../../../../services/publishable-api-key"
  */
 export default async (req: Request, res: Response) => {
   const { id } = req.params
-
+  const store_id = req.query.store_id as string
   const publishableApiKeyService = req.scope.resolve(
     "publishableApiKeyService"
   ) as PublishableApiKeyService
 
-  const pubKey = await publishableApiKeyService.retrieve(id)
+  const pubKey = await publishableApiKeyService.retrieve(store_id,id)
 
   return res.json({ publishable_api_key: pubKey })
 }

@@ -222,6 +222,10 @@ export class AdminUpdateDiscountQuery {
  */
 export class AdminPostDiscountsDiscountReq {
   @IsString()
+  @IsNotEmpty()
+  store_id: string
+
+  @IsString()
   @IsOptional()
   code?: string
 
@@ -327,4 +331,8 @@ export class AdminUpsertCondition extends AdminUpsertConditionsReq {
   operator: DiscountConditionOperator
 }
 
-export class AdminPostDiscountsDiscountParams extends FindParams {}
+export class AdminPostDiscountsDiscountParams extends FindParams {
+    @IsString()
+    @IsNotEmpty()
+    store_id: string
+}

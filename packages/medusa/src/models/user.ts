@@ -35,7 +35,7 @@ export enum UserRoles {
 @Entity()
 export class User extends SoftDeletableEntity {
   // new filed added start
-  @Column({ nullable: true })
+  @Column()
   store_id?: string
   @ManyToOne(() => Store, (store) => store.members)
   @JoinColumn({ name: "store_id", referencedColumnName: "id" })

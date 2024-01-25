@@ -102,7 +102,7 @@ export default async (req, res) => {
 
     const updated = await cartService
       .withTransaction(transactionManager)
-      .retrieve(id, store_id,{
+      .retrieve(store_id,id, {
         relations: ["payment_sessions", "shipping_methods"],
       })
 

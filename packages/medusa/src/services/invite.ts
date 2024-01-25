@@ -76,6 +76,7 @@ class InviteService extends TransactionBaseService {
 
   /**
    * Updates an account_user.
+   * @param store_id - the id of the store to update the user for
    * @param user - user emails
    * @param role - role to assign to the user
    * @param validDuration - role to assign to the user
@@ -240,6 +241,7 @@ class InviteService extends TransactionBaseService {
       // use the email of the user who actually accepted the invite
       const user = await this.userService_.withTransaction(m).create(
         {
+          store_id: visitedStoreId,
           email: invite.user_email,
           role: invite.role,
           first_name: user_.first_name,

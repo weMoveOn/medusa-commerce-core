@@ -2,11 +2,12 @@ import { Router } from "express"
 import { Cart, DraftOrder, Order } from "../../../.."
 import { DeleteResponse, PaginatedResponse } from "../../../../types/common"
 import middlewares from "../../../middlewares"
+import {processIdentifierMiddleware} from "../../../middlewares/validators/identifier-existence";
 
 const route = Router()
 
 export default (app) => {
-  app.use("/draft-orders", route)
+  app.use("/draft-orders", processIdentifierMiddleware, route)
 
   route.get("/", middlewares.wrap(require("./list-draft-orders").default))
 

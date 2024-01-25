@@ -82,7 +82,7 @@ export default async (req, res) => {
     if (validated.quantity === 0) {
       await cartService.withTransaction(m).removeLineItem(store_id, id, line_id)
     } else {
-      const cart = await cartService.withTransaction(m).retrieve(id, store_id,{
+      const cart = await cartService.withTransaction(m).retrieve(store_id,id, {
         relations: ["items", "items.variant", "shipping_methods"],
       })
 
@@ -108,7 +108,7 @@ export default async (req, res) => {
     }
 
     // If the cart has payment sessions update these
-    const updated = await cartService.withTransaction(m).retrieve(id, store_id,{
+    const updated = await cartService.withTransaction(m).retrieve( store_id,id,{
       relations: ["payment_sessions"],
     })
 

@@ -121,6 +121,7 @@ export default async (req, res) => {
 }
 
 export type payload = {
+  store_id: string
   email: string
   user_id: string
   password: string

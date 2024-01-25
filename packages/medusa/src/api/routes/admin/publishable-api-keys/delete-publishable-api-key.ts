@@ -47,6 +47,7 @@ import PublishableApiKeyService from "../../../../services/publishable-api-key"
 
 export default async (req, res) => {
   const { id } = req.params
+  const store_id = req.query.store_id as string
 
   const publishableApiKeyService: PublishableApiKeyService = req.scope.resolve(
     "publishableApiKeyService"
@@ -57,7 +58,7 @@ export default async (req, res) => {
   await manager.transaction(async (transactionManager) => {
     await publishableApiKeyService
       .withTransaction(transactionManager)
-      .delete(id)
+      .delete(store_id,id)
   })
 
   res.status(200).send({

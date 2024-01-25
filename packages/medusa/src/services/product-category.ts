@@ -130,6 +130,7 @@ class ProductCategoryService extends TransactionBaseService {
 
   /**
    * Retrieves a product category by id.
+   * @param storeId - the id of the store to retrieve.
    * @param productCategoryId - the id of the product category to retrieve.
    * @param config - the config of the product category to retrieve.
    * @param selector
@@ -137,6 +138,7 @@ class ProductCategoryService extends TransactionBaseService {
    * @return the product category.
    */
   async retrieve(
+    storeId: string,
     productCategoryId: string,
     config: FindConfig<ProductCategory> = {},
     selector: Selector<ProductCategory> = {},
@@ -149,7 +151,7 @@ class ProductCategoryService extends TransactionBaseService {
       )
     }
 
-    const selectors = Object.assign({ id: productCategoryId }, selector)
+    const selectors = Object.assign({ id: productCategoryId, store_id:storeId }, selector)
     return this.retrieve_(config, selectors, treeSelector)
   }
 
@@ -195,7 +197,7 @@ class ProductCategoryService extends TransactionBaseService {
         ),
       })
       productCategoryInput.rank = siblingCount
-      await this.transformParentIdToEntity(productCategoryInput)
+      await this.transformParentIdToEntity(productCategoryInput.store_id,productCategoryInput)
       let productCategory = pcRepo.create(productCategoryInput)
       productCategory = await pcRepo.save(productCategory)
       await this.eventBusService_
@@ -209,16 +211,18 @@ class ProductCategoryService extends TransactionBaseService {
 
   /**
    * Updates a product category
+   * @param storeId - id of store to update product category in
    * @param productCategoryId - id of product category to update
    * @param productCategoryInput - parameters to update in product category
    * @return updated product category
    */
   async update(
+    storeId: string,
     productCategoryId: string,
     productCategoryInput: UpdateProductCategoryInput
   ): Promise<ProductCategory> {
     return await this.atomicPhase_(async (manager) => {
-      let productCategory = await this.retrieve(productCategoryId)
+      let productCategory = await this.retrieve(storeId,productCategoryId)
 
       const productCategoryRepo = manager.withRepository(
         this.productCategoryRepo_
@@ -239,7 +243,7 @@ class ProductCategoryService extends TransactionBaseService {
         productCategoryInput.rank = tempReorderRank
       }
 
-      await this.transformParentIdToEntity(productCategoryInput)
+      await this.transformParentIdToEntity(storeId,productCategoryInput)
 
       for (const key in productCategoryInput) {
         if (isDefined(productCategoryInput[key])) {
@@ -263,15 +267,16 @@ class ProductCategoryService extends TransactionBaseService {
   /**
    * Deletes a product category
    *
+   * @param storeId - id of store to delete product category in
    * @param productCategoryId is the id of the product category to delete
    * @return a promise
    */
-  async delete(productCategoryId: string): Promise<void> {
+  async delete(storeId:string,productCategoryId: string): Promise<void> {
     return await this.atomicPhase_(async (manager) => {
       const productCategoryRepository: typeof ProductCategoryRepository =
         manager.withRepository(this.productCategoryRepo_)
 
-      const productCategory = await this.retrieve(productCategoryId, {
+      const productCategory = await this.retrieve(storeId,productCategoryId, {
         relations: ["category_children"],
       }).catch((err) => void 0)
 
@@ -508,10 +513,12 @@ class ProductCategoryService extends TransactionBaseService {
   /**
    * Accepts an input object and transforms product_category_id
    * into product_category entity.
+   * @param storeId - id of store to transform product category in
    * @param productCategoryInput - params used to create/update
    * @return transformed productCategoryInput
    */
   protected async transformParentIdToEntity(
+     storeId:string,
     productCategoryInput:
       | CreateProductCategoryInput
       | UpdateProductCategoryInput
@@ -529,7 +536,7 @@ class ProductCategoryService extends TransactionBaseService {
     // If the null is not explicitly passed to make it a root element, the mpath gets
     // incorrectly set
     const parentCategory = parentCategoryId
-      ? await this.retrieve(parentCategoryId)
+      ? await this.retrieve(storeId,parentCategoryId)
       : null
 
     productCategoryInput.parent_category = parentCategory

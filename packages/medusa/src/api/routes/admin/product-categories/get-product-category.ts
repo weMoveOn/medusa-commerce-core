@@ -3,6 +3,7 @@ import { Request, Response } from "express"
 import ProductCategoryService from "../../../../services/product-category"
 import { FindParams } from "../../../../types/common"
 import { defaultAdminProductCategoryRelations } from "."
+import { IsString } from "class-validator"
 
 /**
  * @oas [get] /admin/product-categories/{id}
@@ -62,16 +63,20 @@ import { defaultAdminProductCategoryRelations } from "."
  */
 export default async (req: Request, res: Response) => {
   const { id } = req.params
+  const store_id = req.query.store_id as string
 
   const productCategoryService: ProductCategoryService = req.scope.resolve(
     "productCategoryService"
   )
 
-  const productCategory = await productCategoryService.retrieve(id, {
+  const productCategory = await productCategoryService.retrieve(store_id,id, {
     relations: defaultAdminProductCategoryRelations,
   })
 
   res.status(200).json({ product_category: productCategory })
 }
 
-export class AdminGetProductCategoryParams extends FindParams {}
+export class AdminGetProductCategoryParams extends FindParams {
+  @IsString()
+  store_id: string
+}

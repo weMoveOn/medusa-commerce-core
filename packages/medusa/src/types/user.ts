@@ -4,6 +4,7 @@ import { PartialPick } from "./common"
 export interface CreateUserInput {
   id?: string
   email: string
+  store_id: string
   first_name?: string
   last_name?: string
   api_token?: string
@@ -13,6 +14,7 @@ export interface CreateUserInput {
 
 export interface UpdateUserInput {
   readonly email?: string
+  readonly store_id?: string
   first_name?: string
   last_name?: string
   readonly password_hash?: string
@@ -30,6 +32,7 @@ export enum UserRole {
 export type FilterableUserProps = PartialPick<
   User,
   | "email"
+  | "store_id"
   | "first_name"
   | "last_name"
   | "created_at"

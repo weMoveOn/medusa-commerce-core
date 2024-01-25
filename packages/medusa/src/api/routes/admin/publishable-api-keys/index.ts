@@ -12,11 +12,12 @@ import { AdminPostPublishableApiKeysPublishableApiKeyReq } from "./update-publis
 import { AdminDeletePublishableApiKeySalesChannelsBatchReq } from "./delete-channels-batch"
 import { AdminPostPublishableApiKeySalesChannelsBatchReq } from "./add-channels-batch"
 import { GetPublishableApiKeySalesChannelsParams } from "./list-publishable-api-key-sales-channels"
+import {processIdentifierMiddleware} from "../../../middlewares/validators/identifier-existence";
 
 const route = Router()
 
 export default (app) => {
-  app.use("/publishable-api-keys", route)
+  app.use("/publishable-api-keys", processIdentifierMiddleware, route)
 
   route.post(
     "/",

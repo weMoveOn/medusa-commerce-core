@@ -69,7 +69,7 @@ import SalesChannelService from "../../../../services/sales-channel"
  */
 
 export default async (req: Request, res: Response) => {
-  const storeId = req.query.store_id as string
+  const store_id = req.query.store_id as string
   const validatedBody = req.validatedBody as CreateSalesChannelInput
   const salesChannelService: SalesChannelService = req.scope.resolve(
     "salesChannelService"
@@ -79,7 +79,7 @@ export default async (req: Request, res: Response) => {
   const salesChannel = await manager.transaction(async (transactionManager) => {
     return await salesChannelService
       .withTransaction(transactionManager)
-      .create({ ...validatedBody, store_id: storeId })
+      .create({ ...validatedBody, store_id })
   })
 
   res.status(200).json({ sales_channel: salesChannel })
@@ -102,6 +102,9 @@ export default async (req: Request, res: Response) => {
  *     type: boolean
  */
 export class AdminPostSalesChannelsReq {
+  @IsString()
+  store_id: string
+
   @IsString()
   name: string
 

@@ -61,7 +61,7 @@ export default async (req, res) => {
   const productVariantInventoryService: ProductVariantInventoryService =
     req.scope.resolve("productVariantInventoryService")
 
-  const cart = await cartService.retrieve(id, store_id,{
+  const cart = await cartService.retrieve(store_id,id, {
     select: ["id" ,"customer_id"],
   })
 

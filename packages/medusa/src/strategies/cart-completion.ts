@@ -189,7 +189,7 @@ class CartCompletionStrategy extends AbstractCartCompletionStrategy {
     storeId: string,
     { manager }: { manager: EntityManager }
   ) {
-    const cart = await this.cartService_.withTransaction(manager).retrieve(id, storeId,{
+    const cart = await this.cartService_.withTransaction(manager).retrieve(storeId,id, {
       relations: [
         "customer",
         "discounts",

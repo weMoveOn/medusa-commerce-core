@@ -55,11 +55,12 @@ import UserService from "../../../../services/user"
  */
 export default async (req, res) => {
   const { user_id } = req.params
+  const {store_id} = req.query
 
   const userService: UserService = req.scope.resolve("userService")
   const manager: EntityManager = req.scope.resolve("manager")
   await manager.transaction(async (transactionManager) => {
-    return await userService.withTransaction(transactionManager).delete(user_id)
+    return await userService.withTransaction(transactionManager).delete(store_id,user_id)
   })
 
   res.status(200).send({

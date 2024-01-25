@@ -108,7 +108,8 @@ import { validator } from "../../../../utils/validator"
 export default async (req, res) => {
   const { id, variant_id } = req.params
   const { store_id } = req.query
-
+  console.log("store_id", store_id)
+  req.body.store_id = store_id
   const manager: EntityManager = req.scope.resolve("manager")
   const productService: ProductService = req.scope.resolve("productService")
   const pricingService: PricingService = req.scope.resolve("pricingService")
@@ -282,6 +283,10 @@ class ProductVariantOptionReq {
  *           type: string
  */
 export class AdminPostProductsProductVariantsVariantReq {
+  @IsString()
+  @IsOptional()
+  store_id?: string
+
   @IsString()
   @IsOptional()
   title?: string

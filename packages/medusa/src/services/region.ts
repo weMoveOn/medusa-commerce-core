@@ -123,7 +123,8 @@ class RegionService extends TransactionBaseService {
           regionObject.includes_tax = includes_tax
         }
       }
-
+      console.log("validated",validated)
+      console.log("data",data)
       if (currency_code) {
         // will throw if currency is not added to store currencies
         await this.validateCurrency(data.store_id, currency_code)
@@ -344,6 +345,7 @@ class RegionService extends TransactionBaseService {
   /**
    * Validates a currency code. Will throw if the currency code doesn't exist.
    *
+   * @param storeId - the id of the store to check against
    * @param currencyCode - an ISO currency code
    * @throws if the provided currency code is invalid
    * @return void
@@ -355,8 +357,6 @@ class RegionService extends TransactionBaseService {
     const store = await this.storeService_
       .withTransaction(this.transactionManager_)
       .retrieve({ store_id: storeId, relations: ["currencies"] })
-
-    console.log(store, "store")
 
     const storeCurrencies = store.currencies.map((curr) => curr.code)
 
@@ -373,7 +373,6 @@ class RegionService extends TransactionBaseService {
    * existence.
    *
    * @param code - a 2 digit alphanumeric ISO country code
-   * @param regionId - the id of the current region to check against
    * @return the validated Country
    */
   protected async validateCountry(
@@ -589,6 +588,7 @@ class RegionService extends TransactionBaseService {
   /**
    * Adds a country to the region.
    *
+   * @param storeId
    * @param regionId - the region to add a country to
    * @param code - a 2 digit alphanumeric ISO country code.
    * @return the updated Region

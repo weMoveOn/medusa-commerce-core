@@ -66,12 +66,14 @@ import PublishableApiKeyService from "../../../../services/publishable-api-key"
  *     $ref: "#/components/responses/500_error"
  */
 export default async (req: Request, res: Response) => {
+  const { store_id } = req.query
   const publishableApiKeyService = req.scope.resolve(
     "publishableApiKeyService"
   ) as PublishableApiKeyService
 
   const manager = req.scope.resolve("manager") as EntityManager
   const data = req.validatedBody as AdminPostPublishableApiKeysReq
+  data.store_id = store_id as string
 
   const loggedInUserId = (req.user?.id ?? req.user?.userId) as string
 
@@ -95,6 +97,9 @@ export default async (req: Request, res: Response) => {
  *     type: string
  */
 export class AdminPostPublishableApiKeysReq {
+  @IsString()
+  store_id: string
+
   @IsString()
   title: string
 }

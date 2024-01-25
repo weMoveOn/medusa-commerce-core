@@ -110,10 +110,10 @@ class PriceListImportStrategy extends AbstractBatchJobStrategy {
 
     // Validate that PriceList exists
     const priceListId = batchJob.context.price_list_id as string
-    const storeId = batchJob.context.store_id as string
+    const store_id = batchJob.context.store_id as string
     await this.priceListService_
       .withTransaction(manager)
-      .retrieve(storeId, priceListId)
+      .retrieve(store_id, priceListId)
 
     return batchJob
   }
@@ -121,6 +121,7 @@ class PriceListImportStrategy extends AbstractBatchJobStrategy {
   /**
    * Generate instructions for creation of prices from parsed CSV rows.
    *
+   * @param storeId -
    * @param priceListId - the ID of the price list where the prices will be created
    * @param csvData - An array of parsed CSV rows.
    */

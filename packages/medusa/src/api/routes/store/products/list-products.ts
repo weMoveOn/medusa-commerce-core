@@ -268,7 +268,7 @@ export default async (req, res) => {
 
   if (validated.cart_id) {
     promises.push(
-      cartService.retrieve(validated.cart_id,store_id ,{
+      cartService.retrieve(store_id ,validated.cart_id,{
         select: ["id", "region_id"] as any,
         relations: ["region"],
       })

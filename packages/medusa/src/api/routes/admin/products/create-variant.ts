@@ -119,7 +119,7 @@ import { createVariantsTransaction } from "./transaction/create-product-variant"
 export default async (req, res) => {
   const { id } = req.params
   const { store_id } = req.query
-
+  req.body.store_id = store_id
   const validated = await validator(
     AdminPostProductsProductVariantsReq,
     req.body
@@ -310,6 +310,9 @@ class ProductVariantOptionReq {
  *           type: string
  */
 export class AdminPostProductsProductVariantsReq {
+  @IsString()
+  store_id: string
+
   @IsString()
   title: string
 

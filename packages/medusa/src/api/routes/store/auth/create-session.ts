@@ -112,4 +112,7 @@ export class StorePostAuthReq {
   @IsNotEmpty()
   password: string
 
+  @IsString()
+  store_id: string
+
 }

@@ -104,6 +104,9 @@ export default async (req: Request, res: Response) => {
  *     description: Whether the Sales Channel is disabled.
  */
 export class AdminPostSalesChannelsSalesChannelReq {
+  @IsString()
+  store_id: string
+
   @IsOptional()
   @IsString()
   name?: string

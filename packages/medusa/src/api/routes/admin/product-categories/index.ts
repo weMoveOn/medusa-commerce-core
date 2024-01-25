@@ -59,12 +59,12 @@ export default (app) => {
   app.use(
     "/product-categories",
     isFeatureFlagEnabled("product_categories"),
+    processIdentifierMiddleware,
     route
   )
 
   route.post(
     "/",
-    processIdentifierMiddleware,
     transformQuery(
       AdminPostProductCategoriesParams,
       retrieveTransformQueryConfig
@@ -75,7 +75,6 @@ export default (app) => {
 
   route.get(
     "/",
-      processIdentifierMiddleware,
     transformQuery(AdminGetProductCategoriesParams, listTransformQueryConfig),
     middlewares.wrap(listProductCategories)
   )

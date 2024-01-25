@@ -183,7 +183,7 @@ export default async (req, res) => {
   let regionId = req.validatedQuery.region_id
   let currencyCode = req.validatedQuery.currency_code
   if (req.validatedQuery.cart_id) {
-    const cart = await cartService.retrieve(req.validatedQuery.cart_id,store_id, {
+    const cart = await cartService.retrieve(store_id,req.validatedQuery.cart_id, {
       select: ["id", "region_id"],
     })
     const region = await regionService.retrieve(store_id, cart.region_id, {
@@ -239,6 +239,9 @@ export default async (req, res) => {
  * Parameters used to filter and configure the pagination of the retrieved product variants.
  */
 export class AdminGetVariantsParams extends AdminPriceSelectionParams {
+  @IsString()
+  store_id: string
+
   /**
    * Search term to search product variants' IDs.
    */

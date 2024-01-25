@@ -57,6 +57,7 @@ import PublishableApiKeyService from "../../../../services/publishable-api-key"
  */
 export default async (req: Request, res: Response) => {
   const { id } = req.params
+  const store_id = req.query.store_id as string
 
   const publishableApiKeyService = req.scope.resolve(
     "publishableApiKeyService"
@@ -70,8 +71,8 @@ export default async (req: Request, res: Response) => {
     const publishableApiKeyServiceTx =
       publishableApiKeyService.withTransaction(transactionManager)
 
-    await publishableApiKeyServiceTx.revoke(id, { loggedInUserId })
-    return await publishableApiKeyServiceTx.retrieve(id)
+    await publishableApiKeyServiceTx.revoke(store_id,id, { loggedInUserId })
+    return await publishableApiKeyServiceTx.retrieve(store_id,id)
   })
 
   return res.json({ publishable_api_key: pubKey })

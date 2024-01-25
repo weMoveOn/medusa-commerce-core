@@ -260,18 +260,19 @@ class UserService extends TransactionBaseService {
 
   /**
    * Deletes a user from a given user id.
+   * @param storeId - the id of the store to delete the user from
    * @param {string} userId - the id of the user to delete. Must be
    *   castable as an ObjectId
    * @return {Promise} the result of the delete operation.
    */
-  async delete(userId: string): Promise<void> {
+  async delete(storeId:string,userId: string): Promise<void> {
     return await this.atomicPhase_(async (manager: EntityManager) => {
       const userRepo = manager.withRepository(this.userRepository_)
       const analyticsServiceTx =
         this.analyticsConfigService_.withTransaction(manager)
 
       // Should not fail, if user does not exist, since delete is idempotent
-      const user = await userRepo.findOne({ where: { id: userId } })
+      const user = await userRepo.findOne({ where: { id: userId, store_id:storeId } })
 
       if (!user) {
         return Promise.resolve()

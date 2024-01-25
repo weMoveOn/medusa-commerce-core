@@ -257,8 +257,8 @@ class ShippingOptionService extends TransactionBaseService {
    * @return {ShippingMethod} the resulting shipping method.
    */
   async createShippingMethod(
-    optionId: string,
-    data: Record<string, unknown>,
+    optionId: string | undefined | unknown,
+    data: Record<string, unknown> ,
     config: CreateShippingMethodDto
   ): Promise<ShippingMethod> {
     return await this.atomicPhase_(async (manager) => {
