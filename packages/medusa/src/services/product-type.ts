@@ -82,12 +82,12 @@ class ProductTypeService extends TransactionBaseService {
       delete selector.q
     }
 
-    if (!selector.store_id) {
-      throw new MedusaError(
-        MedusaError.Types.INVALID_DATA,
-        `Store id must be provided`
-      )
-    }
+    // if (!selector.store_id) {
+    //   throw new MedusaError(
+    //     MedusaError.Types.INVALID_DATA,
+    //     `Store id must be provided`
+    //   )
+    // }
 
     const query = buildQuery(
       selector,

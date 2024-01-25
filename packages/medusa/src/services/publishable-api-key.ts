@@ -12,7 +12,7 @@ import {
 } from "../types/publishable-api-key"
 import { buildQuery, isString } from "../utils"
 import EventBusService from "./event-bus"
-// import {selectorConstraintsToString} from "@medusajs/utils";
+import { selectorConstraintsToString } from "@medusajs/utils";
 
 type InjectedDependencies = {
   manager: EntityManager
@@ -104,7 +104,7 @@ class PublishableApiKeyService extends TransactionBaseService {
       )
     }
 
-    return await this.retrieve_({ id: publishableApiKeyId, store_id:storeId }, config)
+    return await this.retrieve_({ id: publishableApiKeyId, store_id: storeId }, config)
   }
 
   /**
@@ -181,7 +181,7 @@ class PublishableApiKeyService extends TransactionBaseService {
           this.publishableApiKeyRepository_
         )
 
-        const pubKey = await this.retrieve(storeId,publishableApiKeyId)
+        const pubKey = await this.retrieve(storeId, publishableApiKeyId)
 
         for (const key of Object.keys(data)) {
           if (isDefined(data[key])) {
@@ -200,11 +200,11 @@ class PublishableApiKeyService extends TransactionBaseService {
    * @param storeId - id of the store the key belongs to
    * @param publishableApiKeyId - id of the key being deleted
    */
-  async delete(storeId:string,publishableApiKeyId: string): Promise<void> {
+  async delete(storeId: string, publishableApiKeyId: string): Promise<void> {
     return await this.atomicPhase_(async (manager) => {
       const repo = manager.withRepository(this.publishableApiKeyRepository_)
 
-      const publishableApiKey = await this.retrieve(storeId,publishableApiKeyId).catch()
+      const publishableApiKey = await this.retrieve(storeId, publishableApiKeyId).catch()
 
       if (publishableApiKey) {
         await repo.remove(publishableApiKey)
@@ -220,7 +220,7 @@ class PublishableApiKeyService extends TransactionBaseService {
    * @param storeId - id of the store the key belongs to
    */
   async revoke(
-    storeId:string,
+    storeId: string,
     publishableApiKeyId: string,
     context: {
       loggedInUserId: string
@@ -229,7 +229,7 @@ class PublishableApiKeyService extends TransactionBaseService {
     return await this.atomicPhase_(async (manager) => {
       const repo = manager.withRepository(this.publishableApiKeyRepository_)
 
-      const pubKey = await this.retrieve(storeId,publishableApiKeyId)
+      const pubKey = await this.retrieve(storeId, publishableApiKeyId)
 
       if (pubKey.revoked_at) {
         throw new MedusaError(
@@ -257,8 +257,8 @@ class PublishableApiKeyService extends TransactionBaseService {
    * @param storeId - id of the store the key belongs to
    * @param publishableApiKeyId - id of the key
    */
-  async isValid(storeId:string,publishableApiKeyId: string): Promise<boolean> {
-    const pubKey = await this.retrieve(storeId,publishableApiKeyId)
+  async isValid(storeId: string, publishableApiKeyId: string): Promise<boolean> {
+    const pubKey = await this.retrieve(storeId, publishableApiKeyId)
     return pubKey.revoked_by === null
   }
 

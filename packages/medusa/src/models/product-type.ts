@@ -8,7 +8,6 @@ import { Store } from "./store"
 @Entity()
 export class ProductType extends SoftDeletableEntity {
   // new added filed
-
   @Column({ type: "text", nullable: true })
   store_id: string | null
 

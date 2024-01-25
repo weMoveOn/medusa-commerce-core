@@ -104,13 +104,12 @@ class ProductTagService extends TransactionBaseService {
       delete selector.discount_condition_id
     }
 
-    if (!selector.store_id) {
-      throw new MedusaError(
-        MedusaError.Types.INVALID_DATA,
-        `Store id must be provided`
-      )
-    }
-
+    // if (!selector.store_id) {
+    //   throw new MedusaError(
+    //     MedusaError.Types.INVALID_DATA,
+    //     `Store id must be provided`
+    //   )
+    // }
     const query = buildQuery(selector, config)
     query.where = query.where as FindOptionsWhere<ProductTag>
 
