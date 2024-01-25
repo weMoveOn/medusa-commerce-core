@@ -195,6 +195,7 @@ class ProductService extends TransactionBaseService {
    * Gets a product by id.
    * Throws in case of DB Error and if product was not found.
    * @param productId - id of the product to get.
+   * @param storeId - id of the store to get the product from
    * @param config - object that defines what should be included in the
    *   query response
    * @return the result of the find one operation.
@@ -226,6 +227,7 @@ class ProductService extends TransactionBaseService {
    * Gets a product by handle.
    * Throws in case of DB Error and if product was not found.
    * @param productHandle - handle of the product to get.
+   * @param storeId
    * @param config - details about what to get from the product
    * @return the result of the find one operation.
    */

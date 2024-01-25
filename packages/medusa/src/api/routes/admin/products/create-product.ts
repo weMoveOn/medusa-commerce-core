@@ -156,6 +156,7 @@ export default async (req, res) => {
   let product
 
   if (isMedusaV2Enabled && !!productModuleService) {
+    console.log("from blog 1")
     const createProductWorkflow = createProducts(req.scope)
 
     const input = {
@@ -172,6 +173,7 @@ export default async (req, res) => {
     })
     product = result[0]
   } else {
+    console.log("from blog 2")
     product = await entityManager.transaction(async (manager) => {
       const { variants } = validated
       delete validated.variants
