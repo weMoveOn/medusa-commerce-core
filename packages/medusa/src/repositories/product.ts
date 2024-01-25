@@ -75,7 +75,7 @@ export const ProductRepository = dataSource.getRepository(Product).extend({
       optionsWithoutRelations?.where?.discount_condition_id
     delete optionsWithoutRelations?.where?.discount_condition_id
 
-    return queryEntityWithoutRelations<Product>({
+    return await queryEntityWithoutRelations<Product>({
       repository: this,
       optionsWithoutRelations,
       shouldCount,

@@ -72,17 +72,23 @@ class NoteService extends TransactionBaseService {
    * @param storeId - the id of the store to retrieve the notes from.
    * @param selector - the query object for find
    * @param config - the configuration used to find the objects. contains relations, skip, and take.
-   * @param config.relations - Which relations to include in the resulting list of Notes.
-   * @param config.take - How many Notes to take in the resulting list of Notes.
-   * @param config.skip - How many Notes to skip in the resulting list of Notes.
    * @return notes related to the given search.
    */
   async list(
     storeId:string,
     selector: Selector<Note>,
     config: FindConfig<Note> = {
+      /**
+       * How many Notes to skip in the resulting list of Notes.
+       */
       skip: 0,
+      /**
+       * How many Notes to take in the resulting list of Notes.
+       */
       take: 50,
+      /**
+       * Which relations to include in the resulting list of Notes.
+       */
       relations: [],
     }
   ): Promise<Note[]> {
@@ -95,17 +101,23 @@ class NoteService extends TransactionBaseService {
    * @param storeId - the id of the store to retrieve the notes from.
    * @param selector - the query object for find
    * @param config - the configuration used to find the objects. contains relations, skip, and take.
-   * @param config.relations - Which relations to include in the resulting list of Notes.
-   * @param config.take - How many Notes to take in the resulting list of Notes.
-   * @param config.skip - How many Notes to skip in the resulting list of Notes.
    * @return notes related to the given search.
    */
   async listAndCount(
     storeId:string,
     selector: Selector<Note>,
     config: FindConfig<Note> = {
+      /**
+       * How many Notes to skip in the resulting list of Notes.
+       */
       skip: 0,
+      /**
+       * How many Notes to take in the resulting list of Notes.
+       */
       take: 50,
+      /**
+       * Which relations to include in the resulting list of Notes.
+       */
       relations: [],
     }
   ): Promise<[Note[], number]> {

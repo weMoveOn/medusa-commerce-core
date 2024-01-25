@@ -53,6 +53,30 @@ import { validator } from "../../../../utils/validator"
  *       .then(({ discount }) => {
  *         console.log(discount.id);
  *       })
+ *   - lang: tsx
+ *     label: Medusa React
+ *     source: |
+ *       import React from "react"
+ *       import { useAdminUpdateDiscount } from "medusa-react"
+ *
+ *       type Props = {
+ *         discountId: string
+ *       }
+ *
+ *       const Discount = ({ discountId }: Props) => {
+ *         const updateDiscount = useAdminUpdateDiscount(discountId)
+ *         // ...
+ *
+ *         const handleUpdate = (isDisabled: boolean) => {
+ *           updateDiscount.mutate({
+ *             is_disabled: isDisabled,
+ *           })
+ *         }
+ *
+ *         // ...
+ *       }
+ *
+ *       export default Discount
  *   - lang: Shell
  *     label: cURL
  *     source: |
@@ -123,6 +147,7 @@ export class AdminUpdateDiscountQuery {
 /**
  * @schema AdminPostDiscountsDiscountReq
  * type: object
+ * description: "The details of the discount to update."
  * properties:
  *   code:
  *     type: string

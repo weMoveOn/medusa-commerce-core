@@ -29,7 +29,7 @@ The [Local Event Bus module](../../../development/events/modules/local.md) works
 
 As mentioned in the overview, this guide illustrates how to send the email using SendGrid. If you intend to follow along, you must have the [SendGrid plugin](../../../plugins/notifications/sendgrid.mdx) installed and configured.
 
-You can also find other available Notification provider plugins in the [Plugins directory](https://medusajs.com/plugins/), or [create your own](../../../development/notification/create-notification-provider.md).
+You can also find other available Notification provider plugins in the [Plugins directory](https://medusajs.com/plugins/), or [create your own](../../../references/notification/classes/notification.AbstractNotificationService.mdx).
 
 ---
 
@@ -39,7 +39,7 @@ To subscribe to an event, you must create a [subscriber](../../../development/ev
 
 Create the file `src/subscribers/customer-confirmation.ts` with the following content:
 
-```ts title=src/subscribers/customer-confirmation.ts
+```ts title="src/subscribers/customer-confirmation.ts"
 import { 
   type SubscriberConfig, 
   type SubscriberArgs,
@@ -70,7 +70,7 @@ In this method, you should typically send an email to the customer. You can plac
 
 For example, you can implement this subscriber to send emails using [SendGrid](../../../plugins/notifications/sendgrid.mdx):
 
-```ts title=src/subscribers/customer-confirmation.ts
+```ts title="src/subscribers/customer-confirmation.ts"
 import { 
   type SubscriberConfig, 
   type SubscriberArgs,
@@ -117,7 +117,7 @@ If the notification provider you’re using already implements the logic to hand
 
 For example:
 
-```ts title=src/loaders/customer-confirmation.ts
+```ts title="src/loaders/customer-confirmation.ts"
 import { 
   MedusaContainer, 
   NotificationService,
@@ -141,6 +141,6 @@ Where `<NOTIFICATION_PROVIDER_IDENTIFIER>` is the identifier for your notifica
 
 :::note
 
-You can learn more about handling events with the Notification Service using [this documentation](../../../development/notification/create-notification-provider.md).
+You can learn more about handling events with the Notification Service using [this documentation](../../../references/notification/classes/notification.AbstractNotificationService.mdx).
 
 :::

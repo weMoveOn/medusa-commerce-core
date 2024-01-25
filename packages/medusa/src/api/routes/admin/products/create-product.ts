@@ -1,5 +1,5 @@
+import { Workflows, createProducts } from "@medusajs/core-flows"
 import { IInventoryService, WorkflowTypes } from "@medusajs/types"
-import { createProducts, Workflows } from "@medusajs/core-flows"
 import {
   IsArray,
   IsBoolean,
@@ -45,7 +45,7 @@ import { EntityManager } from "typeorm"
 import SalesChannelFeatureFlag from "../../../../loaders/feature-flags/sales-channels"
 import { ProductStatus } from "../../../../models"
 import { Logger } from "../../../../types/global"
-import { validator } from "../../../../utils"
+import { retrieveProduct, validator } from "../../../../utils"
 import { FeatureFlagDecorators } from "../../../../utils/feature-flag-decorators"
 
 /**
@@ -76,6 +76,57 @@ import { FeatureFlagDecorators } from "../../../../utils/feature-flag-decorators
  *       .then(({ product }) => {
  *         console.log(product.id);
  *       })
+ *   - lang: tsx
+ *     label: Medusa React
+ *     source: |
+ *       import React from "react"
+ *       import { useAdminCreateProduct } from "medusa-react"
+ *
+ *       type CreateProductData = {
+ *         title: string
+ *         is_giftcard: boolean
+ *         discountable: boolean
+ *         options: {
+ *           title: string
+ *         }[]
+ *         variants: {
+ *           title: string
+ *           prices: {
+ *             amount: number
+ *             currency_code :string
+ *           }[]
+ *           options: {
+ *             value: string
+ *           }[]
+ *         }[],
+ *         collection_id: string
+ *         categories: {
+ *           id: string
+ *         }[]
+ *         type: {
+ *           value: string
+ *         }
+ *         tags: {
+ *           value: string
+ *         }[]
+ *       }
+ *
+ *       const CreateProduct = () => {
+ *         const createProduct = useAdminCreateProduct()
+ *         // ...
+ *
+ *         const handleCreate = (productData: CreateProductData) => {
+ *           createProduct.mutate(productData, {
+ *             onSuccess: ({ product }) => {
+ *               console.log(product.id)
+ *             }
+ *           })
+ *         }
+ *
+ *         // ...
+ *       }
+ *
+ *       export default CreateProduct
  *   - lang: Shell
  *     label: cURL
  *     source: |
@@ -156,6 +207,7 @@ export default async (req, res) => {
   let product
 
   if (isMedusaV2Enabled && !!productModuleService) {
+    console.log("from blog 1")
     const createProductWorkflow = createProducts(req.scope)
 
     const input = {
@@ -172,6 +224,7 @@ export default async (req, res) => {
     })
     product = result[0]
   } else {
+    console.log("from blog 2")
     product = await entityManager.transaction(async (manager) => {
       const { variants } = validated
       delete validated.variants
@@ -266,7 +319,11 @@ export default async (req, res) => {
 
   let rawProduct
   if (isMedusaV2Enabled) {
-    rawProduct = await getProductWithIsolatedProductModule(req, product.id)
+    rawProduct = await retrieveProduct(
+      req.scope,
+      product.id,
+      defaultAdminProductRemoteQueryObject
+    )
   } else {
     rawProduct = await productService.retrieve(product.id, store_id, {
       select: defaultAdminProductFields,
@@ -279,26 +336,6 @@ export default async (req, res) => {
   ])
 
   res.json({ product: pricedProduct })
-}
-
-async function getProductWithIsolatedProductModule(req, id) {
-  // TODO: Add support for fields/expands
-  const remoteQuery = req.scope.resolve("remoteQuery")
-
-  const variables = { id }
-
-  const query = {
-    product: {
-      __args: variables,
-      ...defaultAdminProductRemoteQueryObject,
-    },
-  }
-
-  const [product] = await remoteQuery(query)
-
-  product.profile_id = product.profile?.id
-
-  return product
 }
 
 class ProductVariantOptionReq {
@@ -397,6 +434,7 @@ class ProductVariantReq {
 /**
  * @schema AdminPostProductsReq
  * type: object
+ * description: "The details of the product to create."
  * required:
  *   - title
  * properties:

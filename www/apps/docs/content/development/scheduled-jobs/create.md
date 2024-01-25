@@ -23,19 +23,19 @@ This guide explains how to create a scheduled job on your Medusa backend. The sc
 
 ## Prerequisites
 
-To use scheduled jobs, you must configure Redis in your Medusa backend. Learn more in the [Configurations documentation](../backend/configurations.md#redis_url).
+To use scheduled jobs, you must configure Redis in your Medusa backend. Learn more in the [Configurations documentation](../../references/medusa_config/interfaces/medusa_config.ConfigModule.mdx#redis_url).
 
 ---
 
 ## Create Scheduled Job
 
-Scheduled jobs are TypeScript or JavaScript guides placed under the `src/jobs` directory. It can be created under subdirectories of `src/job` as well.
+Scheduled jobs are TypeScript or JavaScript guides placed under the `src/jobs` directory. It can be created under subdirectories of `src/jobs` as well.
 
 The scheduled job file exports a default handler function, and the scheduled job's configurations.
 
 For example:
 
-```ts title=src/loaders/publish.ts
+```ts title="src/jobs/publish.ts"
 import { 
   type ProductService, 
   type ScheduledJobConfig, 
@@ -85,13 +85,13 @@ You can see examples of scheduled job expression patterns on [crontab guru](http
 
 ### Scheduled Job Handler Function
 
-The default-export of the scheduled job file is a handler function that is executed when the events specified in the exported configuration is triggerd.
+The default-export of the scheduled job file is a handler function that is executed when the events specified in the exported configuration is triggered.
 
 The function accepts a parameter of type `ScheduledJobArgs`, which has the following properties:
 
 - `container`: The [dependency container](../fundamentals/dependency-injection.md) that allows you to resolve Medusa resources, such as services.
 - `data`: The data passed in the [configuration object](#scheduled-job-configuration).
-- `pluginOptions`: When the scheduled job is created within a plugin, this object holds the plugin's options defined in the [Medusa configurations](../backend/configurations.md).
+- `pluginOptions`: When the scheduled job is created within a plugin, this object holds the plugin's options defined in the [Medusa configurations](../../references/medusa_config/interfaces/medusa_config.ConfigModule.mdx).
 
 ---
 

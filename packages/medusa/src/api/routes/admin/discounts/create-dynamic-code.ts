@@ -41,6 +41,38 @@ import { validator } from "../../../../utils/validator"
  *       .then(({ discount }) => {
  *         console.log(discount.id);
  *       })
+ *   - lang: tsx
+ *     label: Medusa React
+ *     source: |
+ *       import React from "react"
+ *       import { useAdminCreateDynamicDiscountCode } from "medusa-react"
+ *
+ *       type Props = {
+ *         discountId: string
+ *       }
+ *
+ *       const Discount = ({ discountId }: Props) => {
+ *         const createDynamicDiscount = useAdminCreateDynamicDiscountCode(discountId)
+ *         // ...
+ *
+ *         const handleCreate = (
+ *           code: string,
+ *           usageLimit: number
+ *         ) => {
+ *           createDynamicDiscount.mutate({
+ *             code,
+ *             usage_limit: usageLimit
+ *           }, {
+ *             onSuccess: ({ discount }) => {
+ *               console.log(discount.is_dynamic)
+ *             }
+ *           })
+ *         }
+ *
+ *         // ...
+ *       }
+ *
+ *       export default Discount
  *   - lang: Shell
  *     label: cURL
  *     source: |
@@ -110,6 +142,7 @@ export class AdminCreateDynamicCodeQuery {
 /**
  * @schema AdminPostDiscountsDiscountDynamicCodesReq
  * type: object
+ * description: "The details of the dynamic discount to create."
  * required:
  *   - code
  * properties:

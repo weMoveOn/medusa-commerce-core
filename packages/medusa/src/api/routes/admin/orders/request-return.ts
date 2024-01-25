@@ -18,6 +18,7 @@ import {
 import { FindParams } from "../../../../types/common"
 import { OrdersReturnItem } from "../../../../types/orders"
 import { cleanResponseData } from "../../../../utils/clean-response-data"
+import { Logger } from "@medusajs/types"
 
 /**
  * @oas [post] /admin/orders/{id}/return
@@ -58,6 +59,44 @@ import { cleanResponseData } from "../../../../utils/clean-response-data"
  *       .then(({ order }) => {
  *         console.log(order.id);
  *       })
+ *   - lang: tsx
+ *     label: Medusa React
+ *     source: |
+ *       import React from "react"
+ *       import { useAdminRequestReturn } from "medusa-react"
+ *
+ *       type Props = {
+ *         orderId: string
+ *       }
+ *
+ *       const Order = ({ orderId }: Props) => {
+ *         const requestReturn = useAdminRequestReturn(
+ *           orderId
+ *         )
+ *         // ...
+ *
+ *         const handleRequestingReturn = (
+ *           itemId: string,
+ *           quantity: number
+ *         ) => {
+ *           requestReturn.mutate({
+ *             items: [
+ *               {
+ *                 item_id: itemId,
+ *                 quantity
+ *               }
+ *             ]
+ *           }, {
+ *             onSuccess: ({ order }) => {
+ *               console.log(order.returns)
+ *             }
+ *           })
+ *         }
+ *
+ *         // ...
+ *       }
+ *
+ *       export default Order
  *   - lang: Shell
  *     label: cURL
  *     source: |
@@ -106,6 +145,7 @@ export default async (req, res) => {
 
   const idempotencyKeyService = req.scope.resolve("idempotencyKeyService")
   const manager: EntityManager = req.scope.resolve("manager")
+  const logger: Logger = req.scope.resolve("logger")
 
   const headerKey = req.get("Idempotency-Key") || ""
 
@@ -290,7 +330,7 @@ export default async (req, res) => {
 
     res.status(idempotencyKey.response_code).json(idempotencyKey.response_body)
   } catch (err) {
-    console.log(err)
+    logger.log(err)
     throw err
   }
 }
@@ -308,6 +348,7 @@ type ReturnObj = {
 /**
  * @schema AdminPostOrdersOrderReturnsReq
  * type: object
+ * description: "The details of the requested return."
  * required:
  *   - items
  * properties:
