@@ -30,6 +30,38 @@ import { validator } from "../../../../utils/validator"
  *       .then(({ id, object, deleted }) => {
  *         console.log(id);
  *       })
+ *   - lang: tsx
+ *     label: Medusa React
+ *     source: |
+ *       import React from "react"
+ *       import {
+ *         useAdminDiscountRemoveCondition
+ *       } from "medusa-react"
+ *
+ *       type Props = {
+ *         discountId: string
+ *       }
+ *
+ *       const Discount = ({ discountId }: Props) => {
+ *         const deleteCondition = useAdminDiscountRemoveCondition(
+ *           discountId
+ *         )
+ *         // ...
+ *
+ *         const handleDelete = (
+ *           conditionId: string
+ *         ) => {
+ *           deleteCondition.mutate(conditionId, {
+ *             onSuccess: ({ id, object, deleted }) => {
+ *               console.log(deleted)
+ *             }
+ *           })
+ *         }
+ *
+ *         // ...
+ *       }
+ *
+ *       export default Discount
  *   - lang: Shell
  *     label: cURL
  *     source: |

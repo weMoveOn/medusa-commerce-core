@@ -30,6 +30,36 @@ import { IsString } from "class-validator"
  *       .then(({ product_category }) => {
  *         console.log(product_category.id);
  *       })
+ *   - lang: tsx
+ *     label: Medusa React
+ *     source: |
+ *       import React from "react"
+ *       import { useAdminProductCategory } from "medusa-react"
+ *
+ *       type Props = {
+ *         productCategoryId: string
+ *       }
+ *
+ *       const Category = ({
+ *         productCategoryId
+ *       }: Props) => {
+ *         const {
+ *           product_category,
+ *           isLoading,
+ *         } = useAdminProductCategory(productCategoryId)
+ *
+ *         return (
+ *           <div>
+ *             {isLoading && <span>Loading...</span>}
+ *             {product_category && (
+ *               <span>{product_category.name}</span>
+ *             )}
+ *
+ *           </div>
+ *         )
+ *       }
+ *
+ *       export default Category
  *   - lang: Shell
  *     label: cURL
  *     source: |

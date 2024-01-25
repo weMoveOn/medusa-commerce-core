@@ -1,8 +1,5 @@
 import { FlagRouter, promiseAll } from "@medusajs/utils"
-import { isDefined, MedusaError } from "medusa-core-utils"
-import { EntityManager } from "typeorm"
-import { TransactionBaseService } from "../interfaces"
-import TaxInclusivePricingFeatureFlag from "../loaders/feature-flags/tax-inclusive-pricing"
+import { MedusaError, isDefined } from "medusa-core-utils"
 import {
   Cart,
   Order,
@@ -11,9 +8,6 @@ import {
   ShippingOptionPriceType,
   ShippingOptionRequirement,
 } from "../models"
-import { ShippingMethodRepository } from "../repositories/shipping-method"
-import { ShippingOptionRepository } from "../repositories/shipping-option"
-import { ShippingOptionRequirementRepository } from "../repositories/shipping-option-requirement"
 import { FindConfig, Selector } from "../types/common"
 import {
   CreateShippingMethodDto,
@@ -21,8 +15,16 @@ import {
   ShippingMethodUpdate,
   UpdateShippingOptionInput,
   ValidatePriceTypeAndAmountInput,
+  ValidateRequirementTypeInput,
 } from "../types/shipping-options"
 import { buildQuery, isString, setMetadata } from "../utils"
+
+import { EntityManager, FindOptionsWhere, ILike } from "typeorm"
+import { TransactionBaseService } from "../interfaces"
+import TaxInclusivePricingFeatureFlag from "../loaders/feature-flags/tax-inclusive-pricing"
+import { ShippingMethodRepository } from "../repositories/shipping-method"
+import { ShippingOptionRepository } from "../repositories/shipping-option"
+import { ShippingOptionRequirementRepository } from "../repositories/shipping-option-requirement"
 import FulfillmentProviderService from "./fulfillment-provider"
 import RegionService from "./region"
 
@@ -75,7 +77,7 @@ class ShippingOptionService extends TransactionBaseService {
    * @return {ShippingOptionRequirement} a validated shipping requirement
    */
   async validateRequirement_(
-    requirement: ShippingOptionRequirement,
+    requirement: ValidateRequirementTypeInput,
     optionId: string | undefined = undefined
   ): Promise<ShippingOptionRequirement> {
     return await this.atomicPhase_(async (manager) => {
@@ -143,12 +145,31 @@ class ShippingOptionService extends TransactionBaseService {
    * @return {Promise} the result of the find operation
    */
   async list(
-    selector: Selector<ShippingOption>,
+    selector: Selector<ShippingOption> & { q?: string } = {},
     config: FindConfig<ShippingOption> = { skip: 0, take: 50 }
   ): Promise<ShippingOption[]> {
     const optRepo = this.activeManager_.withRepository(this.optionRepository_)
 
+    let q: string | undefined
+    if (selector.q) {
+      q = selector.q
+      delete selector.q
+    }
+
     const query = buildQuery(selector, config)
+
+    if (q) {
+      const where = query.where as FindOptionsWhere<ShippingOption>
+      delete where.name
+
+      query.where = [
+        {
+          ...where,
+          name: ILike(`%${q}%`),
+        },
+      ]
+    }
+
     return optRepo.find(query)
   }
 
@@ -158,12 +179,31 @@ class ShippingOptionService extends TransactionBaseService {
    * @return the result of the find operation
    */
   async listAndCount(
-    selector: Selector<ShippingOption>,
+    selector: Selector<ShippingOption> & { q?: string } = {},
     config: FindConfig<ShippingOption> = { skip: 0, take: 50 }
   ): Promise<[ShippingOption[], number]> {
     const optRepo = this.activeManager_.withRepository(this.optionRepository_)
 
+    let q: string | undefined
+    if (selector.q) {
+      q = selector.q
+      delete selector.q
+    }
+
     const query = buildQuery(selector, config)
+
+    if (q) {
+      const where = query.where as FindOptionsWhere<ShippingOption>
+      delete where.name
+
+      query.where = [
+        {
+          ...where,
+          name: ILike(`%${q}%`),
+        },
+      ]
+    }
+
     return await optRepo.findAndCount(query)
   }
 

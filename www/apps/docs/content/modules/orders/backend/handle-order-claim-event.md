@@ -27,7 +27,7 @@ It's assumed that you already have a Medusa backend installed and set up. If not
 
 ### Notification Provider
 
-To send an email or another type of notification method, you must have a notification provider installed or configured. You can either install an existing plugin or [create your own](../../../development/notification/create-notification-provider.md).
+To send an email or another type of notification method, you must have a notification provider installed or configured. You can either install an existing plugin or [create your own](../../../references/notification/classes/notification.AbstractNotificationService.mdx).
 
 This document has an example using the [SendGrid](../../../plugins/notifications/sendgrid.mdx) plugin.
 
@@ -45,7 +45,7 @@ You can learn more about subscribers in the [Subscribers documentation](../../
 
 Create the file `src/subscribers/order-claim.ts` with the following content:
 
-```ts title=src/subscribers/order-claim.ts
+```ts title="src/subscribers/order-claim.ts"
 import { 
   type SubscriberConfig, 
   type SubscriberArgs,
@@ -88,7 +88,7 @@ In this method, you should typically send an email to the customer. You can plac
 
 For example, you can implement this subscriber to send emails using SendGrid:
 
-```ts title=src/subscribers/order-claim.ts
+```ts title="src/subscribers/order-claim.ts"
 import { 
   type SubscriberConfig, 
   type SubscriberArgs,
@@ -129,7 +129,7 @@ If the notification provider you’re using already implements the logic to hand
 
 For example:
 
-```ts title=src/loaders/order-claim.ts
+```ts title="src/loaders/order-claim.ts"
 import { 
   MedusaContainer, 
   NotificationService,
@@ -153,7 +153,7 @@ Where `<NOTIFICATION_PROVIDER_IDENTIFIER>` is the identifier for your notifica
 
 :::note
 
-You can learn more about handling events with the Notification Service using [this documentation](../../../development/notification/create-notification-provider.md).
+You can learn more about handling events with the Notification Service using [this documentation](../../../references/notification/classes/notification.AbstractNotificationService.mdx).
 
 :::
 

@@ -24,6 +24,32 @@ import { IsString } from "class-validator"
  *       .then(({ id, object, deleted }) => {
  *         console.log(id);
  *       })
+ *   - lang: tsx
+ *     label: Medusa React
+ *     source: |
+ *       import React from "react"
+ *       import { useAdminDeleteInvite } from "medusa-react"
+ *
+ *       type Props = {
+ *         inviteId: string
+ *       }
+ *
+ *       const DeleteInvite = ({ inviteId }: Props) => {
+ *         const deleteInvite = useAdminDeleteInvite(inviteId)
+ *         // ...
+ *
+ *         const handleDelete = () => {
+ *           deleteInvite.mutate(void 0, {
+ *             onSuccess: ({ id, object, deleted }) => {
+ *               console.log(id)
+ *             }
+ *           })
+ *         }
+ *
+ *         // ...
+ *       }
+ *
+ *       export default Invite
  *   - lang: Shell
  *     label: cURL
  *     source: |

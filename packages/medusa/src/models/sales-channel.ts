@@ -1,17 +1,17 @@
+import { BeforeInsert, Column, Index, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany } from "typeorm"
 import {
-  BeforeInsert,
-  Column,
-  Index,
-  JoinColumn,
-  ManyToOne,
-  OneToMany,
-} from "typeorm"
-
-import { FeatureFlagEntity } from "../utils/feature-flag-decorators"
+  FeatureFlagDecorators,
+  FeatureFlagEntity,
+} from "../utils/feature-flag-decorators"
+import { MedusaV2Flag } from "@medusajs/utils"
 import { SoftDeletableEntity } from "../interfaces"
 import { DbAwareColumn, generateEntityId } from "../utils"
 import { SalesChannelLocation } from "./sales-channel-location"
 import { Store } from "./store"
+import { Product } from "./product"
+import { Cart } from "./cart"
+import { Order } from "./order"
+import { PublishableApiKey } from "./publishable-api-key"
 
 @FeatureFlagEntity("sales_channels")
 export class SalesChannel extends SoftDeletableEntity {
@@ -35,6 +35,68 @@ export class SalesChannel extends SoftDeletableEntity {
 
   @DbAwareColumn({ type: "jsonb", nullable: true })
   metadata: Record<string, unknown> | null
+
+  @ManyToMany(() => Product)
+  @JoinTable({
+    name: "product_sales_channel",
+    inverseJoinColumn: {
+      name: "product_id",
+      referencedColumnName: "id",
+    },
+    joinColumn: {
+      name: "sales_channel_id",
+      referencedColumnName: "id",
+    },
+  })
+  products: Product[]
+
+  @FeatureFlagDecorators(MedusaV2Flag.key, [
+    ManyToMany(() => Cart),
+    JoinTable({
+      name: "cart_sales_channel",
+      joinColumn: {
+        name: "sales_channel_id",
+        referencedColumnName: "id",
+      },
+      inverseJoinColumn: {
+        name: "cart_id",
+        referencedColumnName: "id",
+      },
+    }),
+  ])
+  carts: Cart[]
+
+  @FeatureFlagDecorators(MedusaV2Flag.key,
+    [
+      ManyToMany(() => Order),
+      JoinTable({
+        name: "order_sales_channel",
+        joinColumn: {
+          name: "sales_channel_id",
+          referencedColumnName: "id",
+        },
+        inverseJoinColumn: {
+          name: "order_id",
+          referencedColumnName: "id",
+        },
+      }),
+    ]
+  )
+  orders: Order[]
+
+  @ManyToMany(() => PublishableApiKey)
+  @JoinTable({
+    name: "publishable_api_key_sales_channel",
+    inverseJoinColumn: {
+      name: "publishable_key_id",
+      referencedColumnName: "id",
+    },
+    joinColumn: {
+      name: "sales_channel_id",
+      referencedColumnName: "id",
+    },
+  })
+  publishableKeys: PublishableApiKey[]
 
   @OneToMany(
     () => SalesChannelLocation,
@@ -112,4 +174,27 @@ export class SalesChannel extends SoftDeletableEntity {
  *    externalDocs:
  *      description: "Learn about the metadata attribute, and how to delete and update it."
  *      url: "https://docs.medusajs.com/development/entities/overview#metadata-attribute"
+ *  carts:
+ *    description: The associated carts.
+ *    type: array
+ *    nullable: true
+ *    x-expandable: "carts"
+ *    x-featureFlag: "medusa_v2"
+ *    items:
+ *      $ref: "#/components/schemas/Cart"
+ *  orders:
+ *    description: The associated orders.
+ *    type: array
+ *    nullable: true
+ *    x-expandable: "orders"
+ *    x-featureFlag: "medusa_v2"
+ *    items:
+ *      $ref: "#/components/schemas/Order"
+ *  publishableKeys:
+ *    description: The associated publishable API keys.
+ *    type: array
+ *    nullable: true
+ *    x-expandable: "publishableKeys"
+ *    items:
+ *      $ref: "#/components/schemas/PublishableApiKey"
  */

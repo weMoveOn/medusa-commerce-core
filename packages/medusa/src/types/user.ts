@@ -35,6 +35,7 @@ export type FilterableUserProps = PartialPick<
   | "store_id"
   | "first_name"
   | "last_name"
+  | "role"
   | "created_at"
   | "updated_at"
   | "deleted_at"

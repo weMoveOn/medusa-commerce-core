@@ -260,6 +260,7 @@ module.exports = {
         fade: "linear-gradient(to top, rgba(255, 255, 255, 1), rgba(255, 255, 255, 0))",
         "fade-dark":
           "linear-gradient(to top, rgba(27, 27, 31, 1), rgba(27, 27, 31, 0))",
+        diagrams: "url('/img/diagrams-bg.png')",
       }),
       screens: {
         xs: "576px",
@@ -576,6 +577,17 @@ module.exports = {
             transform: "scale(1)",
           },
         },
+        flash: {
+          "0%": {
+            backgroundColor: "transparent",
+          },
+          "50%": {
+            backgroundColor: "var(--animation-color)",
+          },
+          "100%": {
+            backgroundColor: "transparent",
+          },
+        },
       }),
       animation: {
         fadeIn: "fadeIn 500ms",
@@ -594,6 +606,7 @@ module.exports = {
         pulsingDots: "pulsingDots 1s alternate infinite",
         minimize: "minimize 500ms",
         maximize: "maximize 500ms",
+        flash: "flash 1500ms 1",
       },
     },
     fontFamily: {
@@ -706,6 +719,9 @@ module.exports = {
           },
           ".flip-y": {
             transform: "rotateY(180deg)",
+          },
+          ".animate-bg-surface": {
+            "--animation-color": "var(--docs-bg-subtle-pressed)",
           },
         })
         addComponents({

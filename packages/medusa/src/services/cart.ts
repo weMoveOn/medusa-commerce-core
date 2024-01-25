@@ -68,6 +68,8 @@ import { PaymentSessionRepository } from "../repositories/payment-session"
 import { ShippingMethodRepository } from "../repositories/shipping-method"
 import { PaymentSessionInput } from "../types/payment"
 import { validateEmail } from "../utils/is-email"
+import { RemoteQueryFunction } from "@medusajs/types"
+import { RemoteLink } from "@medusajs/modules-sdk"
 
 type InjectedDependencies = {
   manager: EntityManager
@@ -98,6 +100,8 @@ type InjectedDependencies = {
   priceSelectionStrategy: IPriceSelectionStrategy
   productVariantInventoryService: ProductVariantInventoryService
   pricingService: PricingService
+  remoteQuery: RemoteQueryFunction
+  remoteLink: RemoteLink
 }
 
 type TotalsConfig = {
@@ -139,6 +143,8 @@ class CartService extends TransactionBaseService {
   protected readonly priceSelectionStrategy_: IPriceSelectionStrategy
   protected readonly lineItemAdjustmentService_: LineItemAdjustmentService
   protected readonly featureFlagRouter_: FlagRouter
+  protected remoteQuery_: RemoteQueryFunction
+  protected remoteLink_: RemoteLink
   // eslint-disable-next-line max-len
   protected readonly productVariantInventoryService_: ProductVariantInventoryService
   protected readonly pricingService_: PricingService
@@ -169,6 +175,8 @@ class CartService extends TransactionBaseService {
     salesChannelService,
     featureFlagRouter,
     storeService,
+    remoteQuery,
+    remoteLink,
     productVariantInventoryService,
     pricingService,
   }: InjectedDependencies) {
@@ -202,6 +210,8 @@ class CartService extends TransactionBaseService {
     this.storeService_ = storeService
     this.productVariantInventoryService_ = productVariantInventoryService
     this.pricingService_ = pricingService
+    this.remoteQuery_ = remoteQuery
+    this.remoteLink_ = remoteLink
   }
 
   /**
@@ -216,6 +226,7 @@ class CartService extends TransactionBaseService {
     const cartRepo = this.activeManager_.withRepository(this.cartRepository_)
 
     const query = buildQuery(selector, config)
+
     return await cartRepo.find(query)
   }
 
@@ -240,11 +251,11 @@ class CartService extends TransactionBaseService {
       )
     }
 
-    if(!isDefined(storeId)) {
-        throw new MedusaError(
-            MedusaError.Types.NOT_FOUND,
-            `"storeId" must be defined`
-        )
+    if (!isDefined(storeId)) {
+      throw new MedusaError(
+        MedusaError.Types.NOT_FOUND,
+        `"storeId" must be defined`
+      )
     }
 
     if (this.featureFlagRouter_.isFeatureEnabled(MedusaV2Flag.key)) {
@@ -266,7 +277,7 @@ class CartService extends TransactionBaseService {
 
     const cartRepo = this.activeManager_.withRepository(this.cartRepository_)
 
-    const query = buildQuery({ id: cartId, store_id:storeId  }, options)
+    const query = buildQuery({ id: cartId, store_id: storeId }, options)
     if ((options.select || []).length === 0) {
       query.select = undefined
     }
@@ -341,7 +352,7 @@ class CartService extends TransactionBaseService {
       opt.relations = [...new Set(opt.relations)]
     }
 
-    const cart = await this.retrieve(storeId,cartId,opt)
+    const cart = await this.retrieve(storeId, cartId, opt)
 
     return await this.decorateTotals(cart, totalsConfig)
   }
@@ -366,7 +377,10 @@ class CartService extends TransactionBaseService {
         rawCart.store_id = data.store_id
 
         if (
-          this.featureFlagRouter_.isFeatureEnabled(SalesChannelFeatureFlag.key)
+          this.featureFlagRouter_.isFeatureEnabled(
+            SalesChannelFeatureFlag.key
+          ) &&
+          !this.featureFlagRouter_.isFeatureEnabled(MedusaV2Flag.key)
         ) {
           rawCart.sales_channel_id = (
             await this.getValidatedSalesChannel(
@@ -376,11 +390,14 @@ class CartService extends TransactionBaseService {
           ).id
         }
 
-        if (data.customer_id) {
-          const customer = await this.customerService_
-            .withTransaction(transactionManager)
-            .retrieve(data.store_id,data.customer_id)
-            .catch(() => undefined)
+        if (data.customer_id || data.customer) {
+          const customer = (data.customer ??
+            (data.customer_id &&
+              (await this.customerService_
+                .withTransaction(transactionManager)
+                .retrieve(data.store_id, data.customer_id)
+                .catch(() => undefined)))) as Customer
+
           rawCart.customer = customer
           rawCart.customer_id = customer?.id
           rawCart.email = customer?.email
@@ -485,6 +502,29 @@ class CartService extends TransactionBaseService {
 
         const createdCart = cartRepo.create(rawCart)
         const cart = await cartRepo.save(createdCart)
+
+        if (
+          // this.featureFlagRouter_.isFeatureEnabled([
+          //   SalesChannelFeatureFlag.key,
+          //   MedusaV2Flag.key
+          // ])
+          this.featureFlagRouter_.isFeatureEnabled( MedusaV2Flag.key)
+         
+        ) {
+          const salesChannel = await this.getValidatedSalesChannel(
+            data.sales_channel_id as string
+          )
+
+          await this.remoteLink_.create({
+            cartService: {
+              cart_id: cart.id,
+            },
+            salesChannelService: {
+              sales_channel_id: salesChannel.id,
+            },
+          })
+        }
+
         await this.eventBus_
           .withTransaction(transactionManager)
           .emit(CartService.Events.CREATED, {
@@ -501,9 +541,20 @@ class CartService extends TransactionBaseService {
   ): Promise<SalesChannel | never> {
     let salesChannel: SalesChannel
     if (isDefined(salesChannelId)) {
-      salesChannel = await this.salesChannelService_
-        .withTransaction(this.activeManager_)
-        .retrieve(storeId, salesChannelId)
+      if (this.featureFlagRouter_.isFeatureEnabled(MedusaV2Flag.key)) {
+        const query = {
+          sales_channel: {
+            __args: {
+              id: salesChannelId,
+            },
+          },
+        }
+          ;[salesChannel] = await this.remoteQuery_(query)
+      } else {
+        salesChannel = await this.salesChannelService_
+          .withTransaction(this.activeManager_)
+          .retrieve(storeId, salesChannelId)
+      }
     } else {
       salesChannel = (
         await this.storeService_.withTransaction(this.activeManager_).retrieve({
@@ -525,24 +576,30 @@ class CartService extends TransactionBaseService {
   /**
    * Removes a line item from the cart.
    * @param cartId - the id of the cart that we will remove from
-   * @param storeId
-   * @param lineItemId - the line item to remove.
+   * @param lineItemId - the line item(s) to remove.
    * @return the result of the update operation
    */
-  async removeLineItem(storeId: string, cartId: string, lineItemId: string): Promise<Cart> {
+  async removeLineItem(
+    storeId: string,
+    cartId: string,
+    lineItemId: string | string[]
+  ): Promise<void> {
     return await this.atomicPhase_(
       async (transactionManager: EntityManager) => {
-        const cart = await this.retrieve( storeId,cartId,{
-          relations: [
-            "items.variant.product.profiles",
-            "payment_sessions",
-            "shipping_methods",
-          ],
+        const cart = await this.retrieve(storeId,cartId, {
+          relations: ["items.variant.product.profiles", "shipping_methods"],
         })
 
-        const lineItem = cart.items.find((item) => item.id === lineItemId)
-        if (!lineItem) {
-          return cart
+        const lineItemIdsToRemove = new Set(
+          Array.isArray(lineItemId) ? lineItemId : [lineItemId]
+        )
+
+        const lineItems = cart.items.filter((item) =>
+          lineItemIdsToRemove.has(item.id)
+        )
+
+        if (!lineItems.length) {
+          return
         }
 
         if (cart.shipping_methods?.length) {
@@ -565,18 +622,17 @@ class CartService extends TransactionBaseService {
 
         await this.lineItemService_
           .withTransaction(transactionManager)
-          .delete(lineItem.id)
+          .delete([...lineItemIdsToRemove])
 
-        const result = await this.retrieve(storeId, cartId,{
+        const result = await this.retrieve(storeId,cartId, {
           relations: [
             "items.variant.product.profiles",
-            "discounts",
             "discounts.rule",
             "region",
           ],
         })
 
-        await this.refreshAdjustments_(storeId, result)
+        await this.refreshAdjustments_(storeId,result)
 
         // Notify subscribers
         await this.eventBus_
@@ -584,18 +640,17 @@ class CartService extends TransactionBaseService {
           .emit(CartService.Events.UPDATED, {
             id: cart.id,
           })
-
-        return this.retrieve(storeId,cartId)
       }
     )
   }
+
 
   /**
    * Checks if a given line item has a shipping method that can fulfill it.
    * Returns true if all products in the cart can be fulfilled with the current
    * shipping methods.
    * @param shippingMethods - the set of shipping methods to check from
-   * @param lineItem - the line item
+   * @param lineItemShippingProfiledId - the line item
    * @return boolean representing whether shipping method is validated
    */
   protected validateLineItemShipping_(
@@ -669,16 +724,21 @@ class CartService extends TransactionBaseService {
     lineItem: LineItem,
     config = { validateSalesChannels: true }
   ): Promise<void> {
-    const select: (keyof Cart)[] = ["id"]
+    const fields: (keyof Cart)[] = ["id"]
+    const relations: (keyof Cart)[] = ["shipping_methods"]
 
     if (this.featureFlagRouter_.isFeatureEnabled("sales_channels")) {
-      select.push("sales_channel_id")
+      if (this.featureFlagRouter_.isFeatureEnabled(MedusaV2Flag.key)) {
+        relations.push("sales_channels")
+      } else {
+        fields.push("sales_channel_id")
+      }
     }
 
     return await this.atomicPhase_(
       async (transactionManager: EntityManager) => {
-        let cart = await this.retrieve(storeId,cartId, {
-          select,
+        let cart = await this.retrieve(storeId, cartId, {
+          select: fields,
           relations: ["shipping_methods"],
         })
 
@@ -777,7 +837,7 @@ class CartService extends TransactionBaseService {
             .deleteShippingMethods(cart.shipping_methods)
         }
 
-        cart = await this.retrieve(storeId,cart.id, {
+        cart = await this.retrieve(storeId, cart.id, {
           relations: [
             "items.variant.product.profiles",
             "discounts",
@@ -814,16 +874,21 @@ class CartService extends TransactionBaseService {
   ): Promise<void> {
     const items: LineItem[] = Array.isArray(lineItems) ? lineItems : [lineItems]
 
-    const select: (keyof Cart)[] = ["id", "customer_id", "region_id"]
+    const fields: (keyof Cart)[] = ["id", "customer_id", "region_id"]
+    const relations: (keyof Cart)[] = ["shipping_methods"]
 
     if (this.featureFlagRouter_.isFeatureEnabled("sales_channels")) {
-      select.push("sales_channel_id")
+      if (this.featureFlagRouter_.isFeatureEnabled(MedusaV2Flag.key)) {
+        relations.push("sales_channels")
+      } else {
+        fields.push("sales_channel_id")
+      }
     }
 
     return await this.atomicPhase_(
       async (transactionManager: EntityManager) => {
-        let cart = await this.retrieve(storeId,cartId,{
-          select,
+        let cart = await this.retrieve(storeId, cartId, {
+          select:fields ,
           relations: ["shipping_methods"],
         })
 
@@ -991,7 +1056,7 @@ class CartService extends TransactionBaseService {
             .deleteShippingMethods(cart.shipping_methods)
         }
 
-        cart = await this.retrieve(storeId,cart.id, {
+        cart = await this.retrieve(storeId, cart.id, {
           relations: [
             "items.variant.product.profiles",
             "discounts",
@@ -1014,7 +1079,7 @@ class CartService extends TransactionBaseService {
    * @param cartId - the id of the cart to update
    * @param storeId
    * @param lineItemId - the id of the line item to update.
-   * @param update
+   * @param update - the line item to update. Must include an id field.
    * @return the result of the update operation
    */
   async updateLineItem(
@@ -1033,7 +1098,7 @@ class CartService extends TransactionBaseService {
           select.push("sales_channel_id")
         }
 
-        const cart = await this.retrieve(storeId,cartId,{
+        const cart = await this.retrieve(storeId, cartId, {
           select: select,
           relations: ["shipping_methods"],
         })
@@ -1101,7 +1166,7 @@ class CartService extends TransactionBaseService {
           .withTransaction(transactionManager)
           .update(lineItemId, lineItemUpdate)
 
-        const updatedCart = await this.retrieve(storeId,cartId,{
+        const updatedCart = await this.retrieve(storeId, cartId, {
           relations: [
             "items.variant.product.profiles",
             "discounts",
@@ -1197,13 +1262,13 @@ class CartService extends TransactionBaseService {
 
         const cart = !isString(cartOrId)
           ? cartOrId
-          : await this.retrieve(storeId,cartOrId,{
-              relations,
-            })
+          : await this.retrieve(storeId, cartOrId, {
+            relations,
+          })
 
         const originalCartCustomer = { ...(cart.customer ?? {}) }
         if (data.customer_id) {
-          await this.updateCustomerId_(storeId,cart, data.customer_id)
+          await this.updateCustomerId_(storeId, cart, data.customer_id)
         } else if (isDefined(data.email)) {
           const customer = await this.createOrFetchGuestCustomerFromEmail_(
             storeId,
@@ -1257,6 +1322,39 @@ class CartService extends TransactionBaseService {
         ) {
           await this.onSalesChannelChange(storeId, cart, data.sales_channel_id)
           cart.sales_channel_id = data.sales_channel_id
+          const salesChannel = await this.getValidatedSalesChannel(
+            data.sales_channel_id
+          )
+
+          await this.onSalesChannelChange(storeId, cart, data.sales_channel_id)
+
+          /**
+           * TODO: remove this once update cart workflow is build
+           * since this will be handled in a handler by the workflow
+           */
+          if (this.featureFlagRouter_.isFeatureEnabled(MedusaV2Flag.key)) {
+            if (cart.sales_channel_id) {
+              await this.remoteLink_.dismiss({
+                cartService: {
+                  cart_id: cart.id,
+                },
+                salesChannelService: {
+                  sales_channel_id: cart.sales_channel_id,
+                },
+              })
+            }
+
+            await this.remoteLink_.create({
+              cartService: {
+                cart_id: cart.id,
+              },
+              salesChannelService: {
+                sales_channel_id: salesChannel.id,
+              },
+            })
+          } else {
+            cart.sales_channel_id = salesChannel.id
+          }
         }
 
         if (isDefined(data.discounts) && data.discounts.length) {
@@ -1264,7 +1362,7 @@ class CartService extends TransactionBaseService {
           cart.discounts.length = 0
 
           await this.applyDiscounts(
-              storeId,
+            storeId,
             cart,
             data.discounts.map((d) => d.code)
           )
@@ -1372,14 +1470,13 @@ class CartService extends TransactionBaseService {
       return !productIdsToKeep.has(item.variant.product_id)
     })
 
-    if (itemsToRemove.length) {
-      const results = await promiseAll(
-        itemsToRemove.map(async (item) => {
-          return this.removeLineItem(storeId, cart.id, item.id)
-        })
-      )
-      cart.items = results.pop()?.items ?? []
+    if (!itemsToRemove.length) {
+      return
     }
+
+    const itemIdsToRemove = new Set(itemsToRemove.map((item) => item.id))
+    await this.removeLineItem(storeId, cart.id, [...itemIdsToRemove])
+    cart.items = cart.items.filter((item) => !itemIdsToRemove.has(item.id))
   }
 
   /**
@@ -1388,13 +1485,13 @@ class CartService extends TransactionBaseService {
    * @param storeId - the id of the store that the cart belongs to
    */
   protected async updateCustomerId_(
-      storeId: string,
+    storeId: string,
     cart: Cart,
     customerId: string
   ): Promise<void> {
     const customer = await this.customerService_
       .withTransaction(this.activeManager_)
-      .retrieve(storeId,customerId)
+      .retrieve(storeId, customerId)
 
     cart.customer = customer
     cart.customer_id = customer.id
@@ -1421,7 +1518,7 @@ class CartService extends TransactionBaseService {
       .catch(() => undefined)
     if (!customer) {
       //#TODO: should_refactor
-      customer = await customerServiceTx.create(storeId,{ email: validatedEmail,store_id:storeId })
+      customer = await customerServiceTx.create(storeId, { email: validatedEmail, store_id: storeId })
     }
 
     return customer
@@ -1557,8 +1654,8 @@ class CartService extends TransactionBaseService {
    * @param cart - the cart to update
    * @param discountCode - the discount code
    */
-  async applyDiscount(storeId:string,cart: Cart, discountCode: string): Promise<void> {
-    return await this.applyDiscounts(storeId,cart, [discountCode])
+  async applyDiscount(storeId: string, cart: Cart, discountCode: string): Promise<void> {
+    return await this.applyDiscounts(storeId, cart, [discountCode])
   }
 
   /**
@@ -1570,7 +1667,7 @@ class CartService extends TransactionBaseService {
    * @param cart - the cart to update
    * @param discountCodes - the discount code(s) to apply
    */
-  async applyDiscounts(storeId:string,cart: Cart, discountCodes: string[]): Promise<void> {
+  async applyDiscounts(storeId: string, cart: Cart, discountCodes: string[]): Promise<void> {
     return await this.atomicPhase_(
       async (transactionManager: EntityManager) => {
         const discounts = await this.discountService_
@@ -1581,7 +1678,7 @@ class CartService extends TransactionBaseService {
 
         await this.discountService_
           .withTransaction(transactionManager)
-          .validateDiscountForCartOrThrow(storeId,cart, discounts)
+          .validateDiscountForCartOrThrow(storeId, cart, discounts)
 
         const rules: Map<string, DiscountRule> = new Map()
         const discountsMap = new Map(
@@ -1650,10 +1747,10 @@ class CartService extends TransactionBaseService {
    * @param discountCode - the discount code to remove
    * @return the resulting cart
    */
-  async removeDiscount(storeId:string,cartId: string, discountCode: string): Promise<Cart> {
+  async removeDiscount(storeId: string, cartId: string, discountCode: string): Promise<Cart> {
     return await this.atomicPhase_(
       async (transactionManager: EntityManager) => {
-        const cart = await this.retrieve( storeId,cartId,{
+        const cart = await this.retrieve(storeId, cartId, {
           relations: [
             "items.variant.product.profiles",
             "region",
@@ -1683,7 +1780,7 @@ class CartService extends TransactionBaseService {
         await this.refreshAdjustments_(storeId, updatedCart)
 
         if (cart.payment_sessions?.length) {
-          await this.setPaymentSessions(storeId,cartId)
+          await this.setPaymentSessions(storeId, cartId)
         }
 
         await this.eventBus_
@@ -1701,23 +1798,23 @@ class CartService extends TransactionBaseService {
    * @param storeId
    */
   async updatePaymentSession(
-      storeId:string,
+    storeId: string,
     cartId: string,
     update: Record<string, unknown>
   ): Promise<Cart> {
     return await this.atomicPhase_(
       async (transactionManager: EntityManager) => {
-        const cart = await this.retrieve(storeId,cartId,{
+        const cart = await this.retrieve(storeId, cartId, {
           relations: ["payment_sessions"],
         })
 
         if (cart.payment_session) {
           await this.paymentProviderService_
             .withTransaction(transactionManager)
-            .updateSessionData(storeId,cart.payment_session, update)
+            .updateSessionData(storeId, cart.payment_session, update)
         }
 
-        const updatedCart = await this.retrieve(storeId,cart.id)
+        const updatedCart = await this.retrieve(storeId, cart.id)
 
         await this.eventBus_
           .withTransaction(transactionManager)
@@ -1741,21 +1838,26 @@ class CartService extends TransactionBaseService {
    * @return the resulting cart
    */
   async authorizePayment(
-      storeId:string,
-    cartId: string,
-    context: Record<string, unknown> & {
-      cart_id: string
-    } = { cart_id: "" }
+    storeId:string,
+    cartOrId: string | WithRequiredProperty<Cart, "total">,
+    context: Record<string, unknown> = { cart_id: "" }
   ): Promise<Cart> {
+    context = {
+      ...context,
+      cart_id: isString(cartOrId) ? cartOrId : cartOrId.id,
+    }
+
     return await this.atomicPhase_(
       async (transactionManager: EntityManager) => {
         const cartRepository = transactionManager.withRepository(
           this.cartRepository_
         )
 
-        const cart = await this.retrieveWithTotals(cartId, storeId,{
-          relations: ["payment_sessions", "items.variant.product.profiles"],
-        })
+        const cart = !isString(cartOrId)
+          ? cartOrId
+          : await this.retrieveWithTotals(storeId,cartOrId, {
+              relations: ["payment_sessions", "items.variant.product.profiles"],
+            })
 
         // If cart total is 0, we don't perform anything payment related
         if (cart.total! <= 0) {
@@ -1781,9 +1883,9 @@ class CartService extends TransactionBaseService {
 
         const session = (await this.paymentProviderService_
           .withTransaction(transactionManager)
-          .authorizePayment(storeId,cart.payment_session, context)) as PaymentSession
+          .authorizePayment(storeId, cart.payment_session, context)) as PaymentSession
 
-        const freshCart = (await this.retrieve(storeId,cart.id, {
+        const freshCart = (await this.retrieve(storeId, cart.id, {
           relations: ["payment_sessions"],
         })) as Cart & { payment_session: PaymentSession }
 
@@ -1817,14 +1919,14 @@ class CartService extends TransactionBaseService {
    * @param storeId
    * @param providerId - the id of the provider to be set to the cart
    */
-  async setPaymentSession(storeId:string,cartId: string, providerId: string): Promise<void> {
+  async setPaymentSession(storeId: string, cartId: string, providerId: string): Promise<void> {
     return await this.atomicPhase_(
       async (transactionManager: EntityManager) => {
         const psRepo = transactionManager.withRepository(
           this.paymentSessionRepository_
         )
 
-        const cart = await this.retrieveWithTotals(cartId, storeId,{
+        const cart = await this.retrieveWithTotals(cartId, storeId, {
           relations: [
             "items.variant.product.profiles",
             "customer",
@@ -1860,7 +1962,7 @@ class CartService extends TransactionBaseService {
           if (currentlySelectedSession.is_initiated) {
             await this.paymentProviderService_
               .withTransaction(transactionManager)
-              .deleteSession(storeId,currentlySelectedSession)
+              .deleteSession(storeId, currentlySelectedSession)
 
             currentlySelectedSession = psRepo.create(currentlySelectedSession)
           }
@@ -1903,12 +2005,12 @@ class CartService extends TransactionBaseService {
           // update the session remotely
           await this.paymentProviderService_
             .withTransaction(transactionManager)
-            .updateSession(storeId,paymentSession, sessionInput)
+            .updateSession(storeId, paymentSession, sessionInput)
         } else {
           // Create the session remotely
           paymentSession = await this.paymentProviderService_
             .withTransaction(transactionManager)
-            .createSession(storeId,sessionInput)
+            .createSession(storeId, sessionInput)
         }
 
         await psRepo.update(paymentSession.id, {
@@ -1919,8 +2021,7 @@ class CartService extends TransactionBaseService {
         await this.eventBus_
           .withTransaction(transactionManager)
           .emit(CartService.Events.UPDATED, { id: cartId })
-      },
-      "SERIALIZABLE"
+      }
     )
   }
 
@@ -1935,7 +2036,10 @@ class CartService extends TransactionBaseService {
    * @param storeId
    * @return the result of the update operation.
    */
-  async setPaymentSessions(storeId:string,cartOrCartId: Cart | string): Promise<void> {
+  async setPaymentSessions(
+    storeId: string,
+    cartOrCartId: WithRequiredProperty<Cart, "total"> | string
+  ): Promise<void> {
     return await this.atomicPhase_(
       async (transactionManager: EntityManager) => {
         const psRepo = transactionManager.withRepository(
@@ -1945,37 +2049,38 @@ class CartService extends TransactionBaseService {
         const paymentProviderServiceTx =
           this.paymentProviderService_.withTransaction(transactionManager)
 
-        const cartId =
-          typeof cartOrCartId === `string` ? cartOrCartId : cartOrCartId.id
-
-        const cart = await this.retrieveWithTotals(
-          storeId,cartId,{
-            relations: [
-              "items.variant.product.profiles",
-              "items.adjustments",
-              "discounts",
-              "discounts.rule",
-              "gift_cards",
-              "shipping_methods",
-              "shipping_methods.shipping_option",
-              "billing_address",
-              "shipping_address",
-              "region",
-              "region.tax_rates",
-              "region.payment_providers",
-              "payment_sessions",
-              "customer",
-            ],
-          },
-          { force_taxes: true }
-        )
+        const cart = !isString(cartOrCartId)
+          ? cartOrCartId
+          : await this.retrieveWithTotals(
+              storeId,
+              cartOrCartId,
+              {
+                relations: [
+                  "items.variant.product.profiles",
+                  "items.adjustments",
+                  "discounts",
+                  "discounts.rule",
+                  "gift_cards",
+                  "shipping_methods",
+                  "shipping_methods.shipping_option",
+                  "billing_address",
+                  "shipping_address",
+                  "region",
+                  "region.tax_rates",
+                  "region.payment_providers",
+                  "payment_sessions",
+                  "customer",
+                ],
+              },
+              { force_taxes: true }
+            )
 
         const { total, region } = cart
 
         // Helpers that either delete a session locally or remotely. Will be used in multiple places below.
         const deleteSessionAppropriately = async (session) => {
           if (session.is_initiated) {
-            return paymentProviderServiceTx.deleteSession(storeId,session)
+            return paymentProviderServiceTx.deleteSession(storeId, session)
           }
 
           return psRepo.remove(session)
@@ -2002,7 +2107,7 @@ class CartService extends TransactionBaseService {
           currency_code: cart.region.currency_code,
         }
         const partialPaymentSessionData = {
-          cart_id: cartId,
+          cart_id: cart.id,
           data: {},
           status: PaymentSessionStatus.PENDING,
           amount: total,
@@ -2039,7 +2144,7 @@ class CartService extends TransactionBaseService {
               }
 
               return paymentProviderServiceTx.updateSession(
-                  storeId,
+                storeId,
                 session,
                 paymentSessionInput
               )
@@ -2050,7 +2155,7 @@ class CartService extends TransactionBaseService {
             // At this stage the session is not selected. Delete it remotely if there is some
             // external provider data and create the session locally only. Otherwise, update the existing local session.
             if (session.is_initiated) {
-              await paymentProviderServiceTx.deleteSession(storeId,session)
+              await paymentProviderServiceTx.deleteSession(storeId, session)
               updatedSession = psRepo.create({
                 ...partialPaymentSessionData,
                 is_initiated: false,
@@ -2081,7 +2186,7 @@ class CartService extends TransactionBaseService {
 
           const paymentSession = await this.paymentProviderService_
             .withTransaction(transactionManager)
-            .createSession(storeId,paymentSessionInput)
+            .createSession(storeId, paymentSessionInput)
 
           await psRepo.update(paymentSession.id, {
             is_selected: true,
@@ -2116,13 +2221,13 @@ class CartService extends TransactionBaseService {
    * @return the resulting cart.
    */
   async deletePaymentSession(
-      storeId: string,
+    storeId: string,
     cartId: string,
     providerId: string
   ): Promise<void> {
     return await this.atomicPhase_(
       async (transactionManager: EntityManager) => {
-        const cart = await this.retrieve(storeId, cartId,{
+        const cart = await this.retrieve(storeId, cartId, {
           relations: ["payment_sessions"],
         })
 
@@ -2145,7 +2250,7 @@ class CartService extends TransactionBaseService {
             if (paymentSession.is_selected || paymentSession.is_initiated) {
               await this.paymentProviderService_
                 .withTransaction(transactionManager)
-                .deleteSession(storeId,paymentSession)
+                .deleteSession(storeId, paymentSession)
             } else {
               await psRepo.delete({ id: paymentSession.id })
             }
@@ -2168,13 +2273,13 @@ class CartService extends TransactionBaseService {
    * @param storeId - the id of the store that the cart belongs to
    */
   async refreshPaymentSession(
-      storeId: string,
+    storeId: string,
     cartId: string,
     providerId: string
   ): Promise<void> {
     return await this.atomicPhase_(
       async (transactionManager: EntityManager) => {
-        const cart = await this.retrieveWithTotals( storeId,cartId,{
+        const cart = await this.retrieveWithTotals(storeId, cartId, {
           relations: ["payment_sessions"],
         })
 
@@ -2187,7 +2292,7 @@ class CartService extends TransactionBaseService {
             if (paymentSession.is_selected) {
               await this.paymentProviderService_
                 .withTransaction(transactionManager)
-                .refreshSession(storeId,paymentSession, {
+                .refreshSession(storeId, paymentSession, {
                   cart: cart as Cart,
                   customer: cart.customer,
                   amount: cart.total,
@@ -2225,23 +2330,23 @@ class CartService extends TransactionBaseService {
    * @return the result of the update operation
    */
   async addShippingMethod(
-      storeId: string,
-      cartOrId: string | Cart,
-      optionId: string|undefined|unknown,
-      data: Record<string, unknown> = {}
+    storeId: string,
+    cartOrId: string | Cart,
+    optionId: string | undefined | unknown,
+    data: Record<string, unknown> = {}
   ): Promise<Cart> {
     return await this.atomicPhase_(
       async (transactionManager: EntityManager) => {
         const cart = !isString(cartOrId)
           ? cartOrId
-          : await this.retrieveWithTotals( storeId,cartOrId,{
-              relations: [
-                "shipping_methods",
-                "shipping_methods.shipping_option",
-                "items.variant.product.profiles",
-                "payment_sessions",
-              ],
-            })
+          : await this.retrieveWithTotals(storeId, cartOrId, {
+            relations: [
+              "shipping_methods",
+              "shipping_methods.shipping_option",
+              "items.variant.product.profiles",
+              "payment_sessions",
+            ],
+          })
 
         const cartCustomShippingOptions =
           await this.customShippingOptionService_
@@ -2292,15 +2397,15 @@ class CartService extends TransactionBaseService {
           const lineItemServiceTx =
             this.lineItemService_.withTransaction(transactionManager)
 
-          let productShippinProfileMap = new Map<string, string>()
+          let productShippingProfileMap = new Map<string, string>()
 
           if (this.featureFlagRouter_.isFeatureEnabled(MedusaV2Flag.key)) {
-            productShippinProfileMap =
+            productShippingProfileMap =
               await this.shippingProfileService_.getMapProfileIdsByProductIds(
                 cart.items.map((item) => item.variant.product_id)
               )
           } else {
-            productShippinProfileMap = new Map<string, string>(
+            productShippingProfileMap = new Map<string, string>(
               cart.items.map((item) => [
                 item.variant?.product?.id,
                 item.variant?.product?.profile_id,
@@ -2313,14 +2418,14 @@ class CartService extends TransactionBaseService {
               return lineItemServiceTx.update(item.id, {
                 has_shipping: this.validateLineItemShipping_(
                   methods,
-                  productShippinProfileMap.get(item.variant?.product_id)!
+                  productShippingProfileMap.get(item.variant?.product_id)!
                 ),
               })
             })
           )
         }
 
-        const updatedCart = await this.retrieve(storeId,cart.id, {
+        const updatedCart = await this.retrieve(storeId, cart.id, {
           relations: [
             "discounts",
             "discounts.rule",
@@ -2594,10 +2699,10 @@ class CartService extends TransactionBaseService {
    * @param storeId
    * @return the deleted cart or undefined if the cart was not found.
    */
-  async delete(cartId: string, storeId:string): Promise<Cart> {
+  async delete(cartId: string, storeId: string): Promise<Cart> {
     return await this.atomicPhase_(
       async (transactionManager: EntityManager) => {
-        const cart = await this.retrieve(storeId, cartId,{
+        const cart = await this.retrieve(storeId, cartId, {
           relations: [
             "items.variant.product.profiles",
             "discounts",
@@ -2675,26 +2780,26 @@ class CartService extends TransactionBaseService {
     )
   }
 
-  async createTaxLines(cartOrId: string | Cart, storeId:string): Promise<void> {
+  async createTaxLines(cartOrId: string | Cart, storeId: string): Promise<void> {
     return await this.atomicPhase_(
       async (transactionManager: EntityManager) => {
         const cart = isCart(cartOrId)
           ? cartOrId
-          : await this.retrieve(storeId,cartOrId, {
-              relations: [
-                "customer",
-                "discounts",
-                "discounts.rule",
-                "gift_cards",
-                "items.variant.product.profiles",
-                "items.adjustments",
-                "region",
-                "region.tax_rates",
-                "shipping_address",
-                "shipping_methods",
-                "shipping_methods.shipping_option",
-              ],
-            })
+          : await this.retrieve(storeId, cartOrId, {
+            relations: [
+              "customer",
+              "discounts",
+              "discounts.rule",
+              "gift_cards",
+              "items.variant.product.profiles",
+              "items.adjustments",
+              "region",
+              "region.tax_rates",
+              "shipping_address",
+              "shipping_methods",
+              "shipping_methods.shipping_option",
+            ],
+          })
 
         const calculationContext = await this.totalsService_
           .withTransaction(transactionManager)
@@ -2707,10 +2812,10 @@ class CartService extends TransactionBaseService {
     )
   }
 
-  async deleteTaxLines(id: string,storeId:string): Promise<void> {
+  async deleteTaxLines(id: string, storeId: string): Promise<void> {
     return await this.atomicPhase_(
       async (transactionManager: EntityManager) => {
-        const cart = await this.retrieve(storeId,id,{
+        const cart = await this.retrieve(storeId, id, {
           relations: [
             "items",
             "items.tax_lines",

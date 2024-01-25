@@ -39,6 +39,36 @@ import { validator } from "../../../../utils/validator"
  *       .then(({ order }) => {
  *         console.log(order.id);
  *       })
+ *   - lang: tsx
+ *     label: Medusa React
+ *     source: |
+ *       import React from "react"
+ *       import { useAdminCancelFulfillment } from "medusa-react"
+ *
+ *       type Props = {
+ *         orderId: string
+ *       }
+ *
+ *       const Order = ({ orderId }: Props) => {
+ *         const cancelFulfillment = useAdminCancelFulfillment(
+ *           orderId
+ *         )
+ *         // ...
+ *
+ *         const handleCancel = (
+ *           fulfillmentId: string
+ *         ) => {
+ *           cancelFulfillment.mutate(fulfillmentId, {
+ *             onSuccess: ({ order }) => {
+ *               console.log(order.fulfillments)
+ *             }
+ *           })
+ *         }
+ *
+ *         // ...
+ *       }
+ *
+ *       export default Order
  *   - lang: Shell
  *     label: cURL
  *     source: |

@@ -21,6 +21,7 @@ import {
 } from "../types/common"
 import { CreateCustomerInput, UpdateCustomerInput } from "../types/customers"
 import { buildQuery, setMetadata } from "../utils"
+import { selectorConstraintsToString } from "@medusajs/utils"
 
 type InjectedDependencies = {
   manager: EntityManager
@@ -195,9 +196,8 @@ class CustomerService extends TransactionBaseService {
     const customer = await customerRepo.findOne(query)
 
     if (!customer) {
-      const selectorConstraints = Object.entries(selector)
-        .map((key, value) => `${key}: ${value}`)
-        .join(", ")
+      const selectorConstraints = selectorConstraintsToString(selector)
+
       throw new MedusaError(
         MedusaError.Types.NOT_FOUND,
         `Customer with ${selectorConstraints} was not found`
@@ -425,7 +425,6 @@ class CustomerService extends TransactionBaseService {
    * Updates the customers' billing address.
    * @param {Customer} customer - the Customer to update
    * @param {Object|string} addressOrId - the value to set the billing address to
-   * @param {Object} addrRepo - address repository
    * @return {Promise} the result of the update operation
    */
   async updateBillingAddress_(

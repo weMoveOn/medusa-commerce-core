@@ -21,6 +21,7 @@ import { FeatureFlagDecorators } from "../../../../utils/feature-flag-decorators
  *       type: boolean
  *       x-featureFlag: "tax_inclusive_pricing"
  *   - (query) order {string} A field to sort order the retrieved currencies by.
+ *   - (query) q {string} Term used to search currencies' name and code.
  *   - (query) offset=0 {number} The number of currencies to skip when retrieving the currencies.
  *   - (query) limit=20 {number} The number of currencies to return.
  * x-codegen:
@@ -37,6 +38,33 @@ import { FeatureFlagDecorators } from "../../../../utils/feature-flag-decorators
  *       .then(({ currencies, count, offset, limit }) => {
  *         console.log(currencies.length);
  *       })
+ *   - lang: tsx
+ *     label: Medusa React
+ *     source: |
+ *       import React from "react"
+ *       import { useAdminCurrencies } from "medusa-react"
+ *
+ *       const Currencies = () => {
+ *         const { currencies, isLoading } = useAdminCurrencies()
+ *
+ *         return (
+ *           <div>
+ *             {isLoading && <span>Loading...</span>}
+ *             {currencies && !currencies.length && (
+ *               <span>No Currencies</span>
+ *             )}
+ *             {currencies && currencies.length > 0 && (
+ *               <ul>
+ *                 {currencies.map((currency) => (
+ *                   <li key={currency.code}>{currency.name}</li>
+ *                 ))}
+ *               </ul>
+ *             )}
+ *           </div>
+ *         )
+ *       }
+ *
+ *       export default Currencies
  *   - lang: Shell
  *     label: cURL
  *     source: |
@@ -100,6 +128,13 @@ export class AdminGetCurrenciesParams extends FindPaginationParams {
   @IsString()
   @IsOptional()
   code?: string
+
+  /**
+   * Search parameter for currencies.
+   */
+  @IsString()
+  @IsOptional()
+  q?: string
 
   /**
    * Filter currencies by whether they include tax.

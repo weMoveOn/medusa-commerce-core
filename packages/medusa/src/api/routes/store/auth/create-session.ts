@@ -1,10 +1,10 @@
-import { IsEmail, IsNotEmpty,IsString } from "class-validator"
 import jwt from "jsonwebtoken"
+import { IsEmail, IsNotEmpty,IsString } from "class-validator"
 import { EntityManager } from "typeorm"
+import { defaultRelations } from "."
 import AuthService from "../../../../services/auth"
 import CustomerService from "../../../../services/customer"
 import { validator } from "../../../../utils/validator"
-import { defaultRelations } from "."
 
 /**
  * @oas [post] /store/auth

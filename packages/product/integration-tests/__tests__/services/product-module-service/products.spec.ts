@@ -1,5 +1,9 @@
-import { MedusaModule } from "@medusajs/modules-sdk"
-import { IProductModuleService, ProductTypes } from "@medusajs/types"
+import { MedusaModule, Modules } from "@medusajs/modules-sdk"
+import {
+  IProductModuleService,
+  ProductTypes,
+  UpdateProductDTO,
+} from "@medusajs/types"
 import { kebabCase } from "@medusajs/utils"
 import {
   Product,
@@ -14,7 +18,8 @@ import { EventBusService } from "../../../__fixtures__/event-bus"
 import { createCollections, createTypes } from "../../../__fixtures__/product"
 import { createProductCategories } from "../../../__fixtures__/product-category"
 import { buildProductAndRelationsData } from "../../../__fixtures__/product/data/create-product"
-import { DB_URL, TestDatabase } from "../../../utils"
+import { DB_URL, getInitModuleConfig, TestDatabase } from "../../../utils"
+import { initModules } from "medusa-test-utils"
 
 const beforeEach_ = async () => {
   await TestDatabase.setupDatabase()
@@ -53,7 +58,6 @@ describe("ProductModuleService products", function () {
     let productTypeOne: ProductType
     let productTypeTwo: ProductType
     let images = ["image-1"]
-    let eventBus
 
     const productCategoriesData = [
       {
@@ -83,6 +87,24 @@ describe("ProductModuleService products", function () {
         value: "tag 1",
       },
     ]
+
+    let shutdownFunc: () => Promise<void>
+
+    beforeAll(async () => {
+      MedusaModule.clearInstances()
+
+      const initModulesConfig = getInitModuleConfig()
+
+      const { medusaApp, shutdown } = await initModules(initModulesConfig)
+
+      module = medusaApp.modules[Modules.PRODUCT]
+
+      shutdownFunc = shutdown
+    })
+
+    afterAll(async () => {
+      await shutdownFunc()
+    })
 
     beforeEach(async () => {
       const testManager = await beforeEach_()
@@ -145,21 +167,6 @@ describe("ProductModuleService products", function () {
       })
 
       await testManager.persistAndFlush([productOne, productTwo])
-
-      MedusaModule.clearInstances()
-
-      eventBus = new EventBusService()
-      module = await initialize(
-        {
-          database: {
-            clientUrl: DB_URL,
-            schema: process.env.MEDUSA_PRODUCT_DB_SCHEMA,
-          },
-        },
-        {
-          eventBusModuleService: eventBus,
-        }
-      )
     })
 
     afterEach(afterEach_)
@@ -172,16 +179,30 @@ describe("ProductModuleService products", function () {
 
       const variantTitle = data.variants[0].title
 
-      const updateData = {
-        ...data,
-        id: productOne.id,
-        title: "updated title",
-      }
+      const productBefore = (await module.retrieve(productOne.id, {
+        relations: [
+          "images",
+          "variants",
+          "options",
+          "options.values",
+          "variants.options",
+          "tags",
+          "type",
+        ],
+      })) as unknown as UpdateProductDTO
 
-      const updatedProducts = await module.update([updateData])
+      productBefore.title = "updated title"
+      productBefore.variants = [...productBefore.variants!, ...data.variants]
+      productBefore.type = { value: "new-type" }
+      productBefore.options = data.options
+      productBefore.images = data.images
+      productBefore.thumbnail = data.thumbnail
+      productBefore.tags = data.tags
+
+      const updatedProducts = await module.update([productBefore])
       expect(updatedProducts).toHaveLength(1)
 
-      const product = await module.retrieve(updateData.id, {
+      const product = await module.retrieve(productBefore.id, {
         relations: [
           "images",
           "variants",
@@ -195,7 +216,7 @@ describe("ProductModuleService products", function () {
 
       const createdVariant = product.variants.find(
         (v) => v.title === variantTitle
-      )
+      )!
 
       expect(product.images).toHaveLength(1)
       expect(createdVariant?.options).toHaveLength(1)
@@ -206,12 +227,12 @@ describe("ProductModuleService products", function () {
         expect.objectContaining({
           id: expect.any(String),
           title: "updated title",
-          description: updateData.description,
-          subtitle: updateData.subtitle,
-          is_giftcard: updateData.is_giftcard,
-          discountable: updateData.discountable,
+          description: productBefore.description,
+          subtitle: productBefore.subtitle,
+          is_giftcard: productBefore.is_giftcard,
+          discountable: productBefore.discountable,
           thumbnail: images[0],
-          status: updateData.status,
+          status: productBefore.status,
           images: expect.arrayContaining([
             expect.objectContaining({
               id: expect.any(String),
@@ -221,11 +242,11 @@ describe("ProductModuleService products", function () {
           options: expect.arrayContaining([
             expect.objectContaining({
               id: expect.any(String),
-              title: updateData.options[0].title,
+              title: productBefore.options?.[0].title,
               values: expect.arrayContaining([
                 expect.objectContaining({
                   id: expect.any(String),
-                  value: updateData.variants[0].options?.[0].value,
+                  value: createdVariant.options?.[0].value,
                 }),
               ]),
             }),
@@ -233,26 +254,26 @@ describe("ProductModuleService products", function () {
           tags: expect.arrayContaining([
             expect.objectContaining({
               id: expect.any(String),
-              value: updateData.tags[0].value,
+              value: productBefore.tags?.[0].value,
             }),
           ]),
           type: expect.objectContaining({
             id: expect.any(String),
-            value: updateData.type.value,
+            value: productBefore.type!.value,
           }),
           variants: expect.arrayContaining([
             expect.objectContaining({
               id: expect.any(String),
-              title: updateData.variants[0].title,
-              sku: updateData.variants[0].sku,
+              title: createdVariant.title,
+              sku: createdVariant.sku,
               allow_backorder: false,
               manage_inventory: true,
-              inventory_quantity: "100",
-              variant_rank: "0",
+              inventory_quantity: 100,
+              variant_rank: 0,
               options: expect.arrayContaining([
                 expect.objectContaining({
                   id: expect.any(String),
-                  value: updateData.variants[0].options?.[0].value,
+                  value: createdVariant.options?.[0].value,
                 }),
               ]),
             }),

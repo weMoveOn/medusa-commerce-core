@@ -1,5 +1,7 @@
 import {
+  AfterLoad,
   BeforeInsert,
+  BeforeUpdate,
   Column,
   Entity,
   Generated,
@@ -12,7 +14,10 @@ import {
   OneToOne,
 } from "typeorm"
 import { DbAwareColumn, resolveDbType } from "../utils/db-aware-column"
-import { FeatureFlagColumn, FeatureFlagDecorators, } from "../utils/feature-flag-decorators"
+import {
+  FeatureFlagColumn,
+  FeatureFlagDecorators,
+} from "../utils/feature-flag-decorators"
 
 import { BaseEntity } from "../interfaces/models/base-entity"
 import { generateEntityId } from "../utils/generate-entity-id"
@@ -37,10 +42,11 @@ import { SalesChannel } from "./sales-channel"
 import { ShippingMethod } from "./shipping-method"
 import { Swap } from "./swap"
 import {Store} from "./store";
+import { MedusaV2Flag } from "@medusajs/utils"
 
 /**
  * @enum
- * 
+ *
  * The order's status.
  */
 export enum OrderStatus {
@@ -49,7 +55,7 @@ export enum OrderStatus {
    */
   PENDING = "pending",
   /**
-   * The order is completed, meaning that 
+   * The order is completed, meaning that
    * the items have been fulfilled and the payment
    * has been captured.
    */
@@ -70,7 +76,7 @@ export enum OrderStatus {
 
 /**
  * @enum
- * 
+ *
  * The order's fulfillment status.
  */
 export enum FulfillmentStatus {
@@ -79,7 +85,7 @@ export enum FulfillmentStatus {
    */
   NOT_FULFILLED = "not_fulfilled",
   /**
-   * Some of the order's items, but not all, are fulfilled. 
+   * Some of the order's items, but not all, are fulfilled.
    */
   PARTIALLY_FULFILLED = "partially_fulfilled",
   /**
@@ -114,7 +120,7 @@ export enum FulfillmentStatus {
 
 /**
  * @enum
- * 
+ *
  * The order's payment status.
  */
 export enum PaymentStatus {
@@ -330,6 +336,25 @@ export class Order extends BaseEntity {
   ])
   sales_channel: SalesChannel
 
+  @FeatureFlagDecorators(
+    [MedusaV2Flag.key, "sales_channels"],
+    [
+      ManyToMany(() => SalesChannel, { cascade: ["remove", "soft-remove"] }),
+      JoinTable({
+        name: "order_sales_channel",
+        joinColumn: {
+          name: "cart_id",
+          referencedColumnName: "id",
+        },
+        inverseJoinColumn: {
+          name: "sales_channel_id",
+          referencedColumnName: "id",
+        },
+      }),
+    ]
+  )
+  sales_channels?: SalesChannel[]
+
   // Total fields
   shipping_total: number
   shipping_tax_total: number | null
@@ -354,12 +379,42 @@ export class Order extends BaseEntity {
   private async beforeInsert(): Promise<void> {
     this.id = generateEntityId(this.id, "order")
 
+    if (this.sales_channel_id || this.sales_channel) {
+      this.sales_channels = [
+        { id: this.sales_channel_id || this.sales_channel?.id },
+      ] as SalesChannel[]
+    }
+
     if (process.env.NODE_ENV === "development" && !this.display_id) {
       const disId = await manualAutoIncrement("order")
 
       if (disId) {
         this.display_id = disId
       }
+    }
+  }
+
+  /**
+   * @apiIgnore
+   */
+  @BeforeUpdate()
+  private beforeUpdate(): void {
+    if (this.sales_channel_id || this.sales_channel) {
+      this.sales_channels = [
+        { id: this.sales_channel_id || this.sales_channel?.id },
+      ] as SalesChannel[]
+    }
+  }
+
+  /**
+   * @apiIgnore
+   */
+  @AfterLoad()
+  private afterLoad(): void {
+    if (this.sales_channels) {
+      this.sales_channel = this.sales_channels?.[0]
+      this.sales_channel_id = this.sales_channel?.id
+      delete this.sales_channels
     }
   }
 }
@@ -696,4 +751,12 @@ export class Order extends BaseEntity {
  *     externalDocs:
  *       description: "Learn about the metadata attribute, and how to delete and update it."
  *       url: "https://docs.medusajs.com/development/entities/overview#metadata-attribute"
+ *   sales_channels:
+ *     description: The associated sales channels.
+ *     type: array
+ *     nullable: true
+ *     x-expandable: "sales_channels"
+ *     x-featureFlag: "medusa_v2"
+ *     items:
+ *       $ref: "#/components/schemas/SalesChannel"
  */

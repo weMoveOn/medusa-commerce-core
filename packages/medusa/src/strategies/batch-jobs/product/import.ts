@@ -1,8 +1,14 @@
 /* eslint-disable valid-jsdoc */
-import { computerizeAmount, MedusaError } from "medusa-core-utils"
+import {
+  CreateProductVariants,
+  UpdateProductVariants,
+  createProducts,
+  updateProducts,
+} from "@medusajs/core-flows"
+import { ProductWorkflow } from "@medusajs/types"
+import { FlagRouter, MedusaV2Flag, promiseAll } from "@medusajs/utils"
+import { MedusaError, computerizeAmount } from "medusa-core-utils"
 import { EntityManager } from "typeorm"
-
-import { FlagRouter, promiseAll } from "@medusajs/utils"
 import { AbstractBatchJobStrategy, IFileService } from "../../../interfaces"
 import ProductCategoryFeatureFlag from "../../../loaders/feature-flags/product-categories"
 import SalesChannelFeatureFlag from "../../../loaders/feature-flags/sales-channels"
@@ -109,7 +115,6 @@ class ProductImportStrategy extends AbstractBatchJobStrategy {
     })
 
     this.featureFlagRouter_ = featureFlagRouter
-
     this.manager_ = manager
     this.fileService_ = fileService
     this.batchJobService_ = batchJobService
@@ -168,7 +173,7 @@ class ProductImportStrategy extends AbstractBatchJobStrategy {
     const variantsUpdate: TParsedProductImportRowData[] = []
 
     for (const row of csvData) {
-      if ((row["variant.prices"] as Record<string, any>[]).length) {
+      if ((row["variant.prices"] as Record<string, any>[])?.length) {
         await this.prepareVariantPrices(row)
       }
 
@@ -278,6 +283,7 @@ class ProductImportStrategy extends AbstractBatchJobStrategy {
 
     let totalOperationCount = 0
     const operationsCounts = {}
+
     Object.keys(ops).forEach((key) => {
       operationsCounts[key] = ops[key].length
       totalOperationCount += ops[key].length
@@ -425,6 +431,10 @@ class ProductImportStrategy extends AbstractBatchJobStrategy {
       return
     }
 
+    const isMedusaV2Enabled = this.featureFlagRouter_.isFeatureEnabled(
+      MedusaV2Flag.key
+    )
+
     const transactionManager = this.transactionManager_ ?? this.manager_
 
     const productOps = await this.downloadImportOpsFile(
@@ -477,10 +487,27 @@ class ProductImportStrategy extends AbstractBatchJobStrategy {
           )
         }
 
-        // TODO: we should only pass the expected data and should not have to cast the entire object. Here we are passing everything contained in productData
-        await productServiceTx.create(
-          productData as unknown as CreateProductInput
-        )
+        if (isMedusaV2Enabled) {
+          const createProductWorkflow = createProducts(this.__container__)
+
+          const input = {
+            products: [
+              productData,
+            ] as unknown as ProductWorkflow.CreateProductInputDTO[],
+          }
+
+          await createProductWorkflow.run({
+            input,
+            context: {
+              manager: transactionManager,
+            },
+          })
+        } else {
+          // TODO: we should only pass the expected data and should not have to cast the entire object. Here we are passing everything contained in productData
+          await productServiceTx.create(
+            productData as unknown as CreateProductInput
+          )
+        }
       } catch (e) {
         ProductImportStrategy.throwDescriptiveError(productOp, e.message)
       }
@@ -501,6 +528,10 @@ class ProductImportStrategy extends AbstractBatchJobStrategy {
     if (!batchJob.result.operations[OperationType.ProductUpdate]) {
       return
     }
+
+    const isMedusaV2Enabled = this.featureFlagRouter_.isFeatureEnabled(
+      MedusaV2Flag.key
+    )
 
     const transactionManager = this.transactionManager_ ?? this.manager_
     const productOps = await this.downloadImportOpsFile(
@@ -554,12 +585,32 @@ class ProductImportStrategy extends AbstractBatchJobStrategy {
           )
         }
 
-        // TODO: we should only pass the expected data. Here we are passing everything contained in productData
-        await productServiceTx.update(
-          productOp["product.id"] as string,
-          storeId,
-          productData
-        )
+        if (isMedusaV2Enabled) {
+          const updateProductWorkflow = updateProducts(this.__container__)
+
+          const input = {
+            products: [
+              {
+                id: productOp["product.id"] as string,
+                ...productData,
+              },
+            ],
+          }
+
+          await updateProductWorkflow.run({
+            input,
+            context: {
+              manager: transactionManager,
+            },
+          })
+        } else {
+          // TODO: we should only pass the expected data. Here we are passing everything contained in productData
+          await productServiceTx.update(
+            productOp["product.id"] as string,
+            storeId,
+            productData
+          )
+        }
       } catch (e) {
         ProductImportStrategy.throwDescriptiveError(productOp, e.message)
       }
@@ -581,6 +632,10 @@ class ProductImportStrategy extends AbstractBatchJobStrategy {
     if (!batchJob.result.operations[OperationType.VariantCreate]) {
       return
     }
+
+    const isMedusaV2Enabled = this.featureFlagRouter_.isFeatureEnabled(
+      MedusaV2Flag.key
+    )
 
     const transactionManager = this.transactionManager_ ?? this.manager_
 
@@ -617,9 +672,30 @@ class ProductImportStrategy extends AbstractBatchJobStrategy {
         delete variant.id
         delete variant.product
 
-        await this.productVariantService_
-          .withTransaction(transactionManager)
-          .create(product!, variant as unknown as CreateProductVariantInput)
+        if (isMedusaV2Enabled) {
+          const createProductVariantsWorkflow =
+            CreateProductVariants.createProductVariants(this.__container__)
+
+          const input: ProductWorkflow.CreateProductVariantsWorkflowInputDTO = {
+            productVariants: [
+              {
+                ...variant,
+                product_id: product.id,
+              },
+            ],
+          }
+
+          await createProductVariantsWorkflow.run({
+            input,
+            context: {
+              manager: transactionManager,
+            },
+          })
+        } else {
+          await this.productVariantService_
+            .withTransaction(transactionManager)
+            .create(product!, variant as unknown as CreateProductVariantInput)
+        }
 
         await this.updateProgress(batchJob.id)
       } catch (e) {
@@ -641,6 +717,10 @@ class ProductImportStrategy extends AbstractBatchJobStrategy {
       return
     }
 
+    const isMedusaV2Enabled = this.featureFlagRouter_.isFeatureEnabled(
+      MedusaV2Flag.key
+    )
+
     const transactionManager = this.transactionManager_ ?? this.manager_
 
     const variantOps = await this.downloadImportOpsFile(
@@ -658,15 +738,36 @@ class ProductImportStrategy extends AbstractBatchJobStrategy {
           storeId
         )
 
-        await this.prepareVariantOptions(variantOp, product.id)
+        await this.prepareVariantOptions(variantOp, product.id!)
 
         const updateData = transformVariantData(variantOp)
         delete updateData.product
         delete updateData["product.handle"]
 
-        await this.productVariantService_
-          .withTransaction(transactionManager)
-          .update(variantOp["variant.id"] as string, updateData)
+        if (isMedusaV2Enabled) {
+          const updateProductVariantsWorkflow =
+            UpdateProductVariants.updateProductVariants(this.__container__)
+
+          const input: ProductWorkflow.UpdateProductVariantsWorkflowInputDTO = {
+            productVariants: [
+              {
+                id: variantOp["variant.id"] as string,
+                ...updateData,
+              },
+            ],
+          }
+
+          await updateProductVariantsWorkflow.run({
+            input,
+            context: {
+              manager: transactionManager,
+            },
+          })
+        } else {
+          await this.productVariantService_
+            .withTransaction(transactionManager)
+            .update(variantOp["variant.id"] as string, updateData)
+        }
       } catch (e) {
         ProductImportStrategy.throwDescriptiveError(variantOp, e.message)
       }

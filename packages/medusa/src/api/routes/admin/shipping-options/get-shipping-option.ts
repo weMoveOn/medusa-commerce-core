@@ -1,6 +1,6 @@
 import { IsNotEmpty, IsString } from "class-validator"
-import { defaultFields, defaultRelations } from "."
 import { validator } from "../../../../utils/validator"
+import { shippingOptionsDefaultFields, shippingOptionsDefaultRelations } from "."
 
 
 /**
@@ -24,6 +24,33 @@ import { validator } from "../../../../utils/validator"
  *       .then(({ shipping_option }) => {
  *         console.log(shipping_option.id);
  *       })
+ *   - lang: tsx
+ *     label: Medusa React
+ *     source: |
+ *       import React from "react"
+ *       import { useAdminShippingOption } from "medusa-react"
+ *
+ *       type Props = {
+ *         shippingOptionId: string
+ *       }
+ *
+ *       const ShippingOption = ({ shippingOptionId }: Props) => {
+ *         const {
+ *           shipping_option,
+ *           isLoading
+ *         } = useAdminShippingOption(
+ *           shippingOptionId
+ *         )
+ *
+ *         return (
+ *           <div>
+ *             {isLoading && <span>Loading...</span>}
+ *             {shipping_option && <span>{shipping_option.name}</span>}
+ *           </div>
+ *         )
+ *       }
+ *
+ *       export default ShippingOption
  *   - lang: Shell
  *     label: cURL
  *     source: |
@@ -61,8 +88,8 @@ export default async (req, res) => {
   const { store_id } = await validator(AdminGetShippingOptionParams, req.query)
 
   const data = await optionService.retrieve(store_id, option_id, {
-    select: defaultFields,
-    relations: defaultRelations,
+    select: shippingOptionsDefaultFields,
+    relations: shippingOptionsDefaultRelations,
   })
 
   res.status(200).json({ shipping_option: data })

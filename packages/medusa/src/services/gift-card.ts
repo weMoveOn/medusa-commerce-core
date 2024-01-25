@@ -14,6 +14,7 @@ import {
 import { buildQuery, setMetadata } from "../utils"
 import EventBusService from "./event-bus"
 import RegionService from "./region"
+import {selectorConstraintsToString} from "@medusajs/utils";
 
 type InjectedDependencies = {
   manager: EntityManager
@@ -202,9 +203,7 @@ class GiftCardService extends TransactionBaseService {
     const giftCard = await giftCardRepo.findOne(query)
 
     if (!giftCard) {
-      const selectorConstraints = Object.entries(selector)
-        .map(([key, value]) => `${key}: ${value}`)
-        .join(", ")
+      const selectorConstraints = selectorConstraintsToString(selector)
 
       throw new MedusaError(
         MedusaError.Types.NOT_FOUND,
