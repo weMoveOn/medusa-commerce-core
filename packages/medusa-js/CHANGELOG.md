@@ -1,5 +1,15 @@
 # Change Log
 
+## 6.1.6
+
+### Patch Changes
+
+- [#6155](https://github.com/medusajs/medusa/pull/6155) [`db4da560`](https://github.com/medusajs/medusa/commit/db4da56023c1c0563a545bffb2bec9cf0e1c4c4a) Thanks [@lukebui](https://github.com/lukebui)! - fix(@medusajs/medusa-js): correct invite resend path
+
+- [#6190](https://github.com/medusajs/medusa/pull/6190) [`d68089b2`](https://github.com/medusajs/medusa/commit/d68089b2aa2fb4ab52640424ed1a378cd649364f) Thanks [@kasperkristensen](https://github.com/kasperkristensen)! - fix(medusa): Implements `listAndCount` method for UserService, and updates list endpoint to accept the expected params.
+  fix(medusa-js): Update `admin.users.list` to accept query params.
+  fix(medusa-react): Update `useAdminUsers` hook to accept query params.
+
 ## 6.1.5
 
 ### Patch Changes

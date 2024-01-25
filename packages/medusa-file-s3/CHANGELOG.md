@@ -1,5 +1,16 @@
 # Change Log
 
+## 1.4.1
+
+### Patch Changes
+
+- [#6100](https://github.com/medusajs/medusa/pull/6100) [`4792c552`](https://github.com/medusajs/medusa/commit/4792c552269c147d3c07da49a175e9038f9260a8) Thanks [@shahednasser](https://github.com/shahednasser)! - chore(@medusajs/medusa): add missing constructor to some services
+  fix(@medusajs/file-local): Fix argument passed to the constructor
+  fix(medusa-file-minio): Fix argument passed to the constructor
+  fix(medusa-file-s3): Fix argument passed to the constructor
+- Updated dependencies []:
+  - medusa-test-utils@1.1.42
+
 ## 1.4.0
 
 ### Minor Changes
