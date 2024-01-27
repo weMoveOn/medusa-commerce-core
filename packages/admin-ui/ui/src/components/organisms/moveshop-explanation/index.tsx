@@ -96,19 +96,19 @@ const Join = () => {
       <SuggestedCard />
       <SuggestedCard />
       <SuggestedCard />
+      <div className="mb-32"></div>
     </div>
   )
 }
 
 const SidebarMoveShopExplanation: React.FC = () => {
   return (
-    <div className="h-full overflow-y-auto  ">
+    <div className="h-full overflow-y-auto hidden medium:block ">
       <div className="min-w-sidebar bg-gray-0 border-grey-20  pr-xlarge pl-base   mt-5 h-screen max-w-[400px]">
         <Video />
         <Suggested />
         <FAQ />
         <Join />
-        <div className="h-20"></div>
       </div>
     </div>
   )

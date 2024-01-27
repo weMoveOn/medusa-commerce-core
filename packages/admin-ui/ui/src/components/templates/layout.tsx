@@ -19,7 +19,7 @@ const Layout: React.FC<React.PropsWithChildren> = ({ children }) => {
           }}
         />
 
-        {/* <Sidebar /> */}
+         <Sidebar />
         <div className="flex flex-1 flex-col">
           {/* <Topbar /> */}
           <div className="large:px-xlarge py-xlarge bg-grey-5 min-h-content overflow-y-auto">
@@ -28,7 +28,7 @@ const Layout: React.FC<React.PropsWithChildren> = ({ children }) => {
             </main>
           </div>
         </div>
-        {/* <SidebarMoveShopExplanation /> */}
+         <SidebarMoveShopExplanation />
       </div>
     </>
   )

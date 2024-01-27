@@ -30,7 +30,7 @@ const VIEWS = ["orders", "drafts"]
 
 const Prepare = () => {
   return (
-    <>
+    <div className={'mt-small'}>
       <div>
         <h1 className="medium:text-2xl text-xl font-bold">
           Prepare your sail to sell
@@ -42,8 +42,8 @@ const Prepare = () => {
       </div>
 
       <div className="p-small mt-6  rounded-xl bg-[#F2F2F2]">
-        <div className="medium:items-center flex flex-col items-start justify-between gap-4">
-          <div className="medium:items-center flex flex-col  items-start gap-3">
+        <div className="medium:items-center medium:flex-row flex flex-col items-start justify-between gap-4">
+          <div className="medium:items-center medium:flex-row flex flex-col  items-start gap-3">
             <IconCircle />
             <div>
               <p className=" text-xl font-medium">
@@ -74,27 +74,28 @@ const Prepare = () => {
           <p className="text-xl font-medium">Raptor Shopping</p>
           <p>
             Write a description, add photos, and set pricing for the products
-            you plan to sell. 
+            you plan to sell.
           </p>
-          <div className=" flex  ">
-            <InputField
+          <div className=" flex mt-3 ">
+            <input
+              name={'search'}
               type="search"
               placeholder="raptorshopping.moveshop.store"
-              className="medium:w-1/3 "
+              className="medium:w-1/3 w-full rounded-xl  p-3"
             />
 
             <Button
               key="search"
               variant="secondary"
               size="small"
-              className="-ml-28 bg-[#D1D1D1] py-1 text-sm"
+              className="-ml-28 bg-[#D1D1D1] my-2 text-sm"
             >
               Share Shop
             </Button>
           </div>
         </div>
       </div>
-    </>
+    </div>
   )
 }
 
@@ -111,14 +112,14 @@ const ProgressCard = ({ label }: any) => {
   )
 }
 
-const BarCard = () => {
+const BarCard = ({ label }: any) => {
   return (
     <>
       <div className={" rounded-lg bg-[#E7E7E7] p-4 "}>
         <div className="  flex items-center justify-between border-b-2 border-b-white pb-4">
           <div className="flex items-center justify-center gap-3">
             <IconCircle />
-            <p className="text-2xl font-bold">Add your first product</p>
+            <p className="medium:text-2xl text-base font-bold">{label}</p>
           </div>
 
           <div className="flex gap-5">
@@ -127,7 +128,7 @@ const BarCard = () => {
           </div>
         </div>
 
-        <div className={"flex items-center justify-between gap-3"}>
+        <div className={"flex flex-col medium:flex-row items-center justify-between gap-3"}>
           <div>
             <h2 className="mt-3">
               Choose where you ship and how much you charge so your customers{" "}
@@ -151,7 +152,7 @@ const BarCard = () => {
               <p>Mark as completed</p>
             </div>
           </div>
-          <div>
+          <div className={"hidden medium:block"}>
             <IconSquare className={"h-32 w-32"} />
           </div>
         </div>
@@ -162,9 +163,9 @@ const BarCard = () => {
 
 const MoveOnGlobalCard = () => {
   return (
-    <div className="m-5 flex items-center justify-between rounded-lg bg-white p-5">
+    <div className=" hidden  m-5 medium:flex items-center justify-between rounded-lg bg-white p-5">
       <div>
-        <h2 className="mb-3 text-2xl font-bold">MoveOn Global</h2>
+        <h2 className="mb-3 medium:text-2xl text-xl font-bold">MoveOn Global</h2>
         <p>
           Write a description, add photos, and set pricing for the products you
           plan to sell.
@@ -180,7 +181,7 @@ const MoveOnGlobalCard = () => {
 
 const MoveOnGlobalCardSmall = () => {
   return (
-    <div className="m-5  rounded-lg bg-white p-5">
+    <div className="rounded-lg bg-white p-small ">
       <div className="h-[100px] w-[200px] rounded-xl  bg-black"></div>
       <div className="mt-3">
         <h2 className="mb-3 text-2xl font-bold">MoveOn Global</h2>
@@ -189,19 +190,39 @@ const MoveOnGlobalCardSmall = () => {
           plan to sell.
         </p>
       </div>
+      <Button size="small" variant="secondary" className="mt-3">
+        Explore now
+      </Button>
     </div>
   )
 }
 const MoveOnGlobal = () => {
   return (
-    <div className="rounded-3xl bg-[#E7E7E7] p-7">
-      <MoveOnGlobalCard />
-      <div className="flex items-center justify-between gap-3">
-        <MoveOnGlobalCardSmall />
-        <MoveOnGlobalCardSmall />
-        <MoveOnGlobalCardSmall />
+    <>
+
+      <div className="mt-12 mb-7">
+        <div className="grid grid-cols-3 items-center justify-center gap-5">
+          <div className="h-1 w-full bg-black"></div>
+          <div className="flex items-center justify-center gap-3">
+            <IconSquare className="h-7 w-7" />
+            <div className="medium:text-2xl text-xl font-bold">Introducing MoveOn</div>
+          </div>
+          <div className="h-1  bg-black"></div>
+        </div>
       </div>
-    </div>
+      <div className="rounded-3xl bg-[#E7E7E7] p-small">
+        <MoveOnGlobalCard />
+        <div className={"small:block medium:hidden"}>
+          <MoveOnGlobalCardSmall />
+
+        </div>
+        <div className="flex flex-col medium:flex-row items-center justify-between gap-3 mt-3">
+          <MoveOnGlobalCardSmall />
+          <MoveOnGlobalCardSmall />
+          <MoveOnGlobalCardSmall />
+        </div>
+      </div>
+    </>
   )
 }
 
@@ -216,13 +237,9 @@ const Setup = () => {
         </p>
       </div>
       <hr />
-      <div className="mt-5  ">
-        {/* <ProgressCard label={"Add Product"} />
-        <ProgressCard label={"Shipping"} />
-        <ProgressCard label={"Payments"} />
-        <ProgressCard label={"Online Store"} />
-        <ProgressCard label={"Launch"} /> */}
+      <div className="mt-5 hidden medium:block">
 
+        <h1>stepper here</h1>
         <Stepper activeStep={2}>
           <Step label="Children Step 1" />
           <Step label="Children Step 2" />
@@ -233,23 +250,14 @@ const Setup = () => {
       </div>
 
       <div className="mt-9 flex flex-col gap-7">
-        <BarCard />
-        <BarCard />
-        <BarCard />
-        <BarCard />
-        <BarCard />
+        <BarCard label={"Add your first product"} />
+        <BarCard label={"Setup your shipping plan"} />
+        <BarCard label={"Enable Payments"} />
+        <BarCard label={"Create your business store"} />
+        <BarCard label={"Launch your business"} />
       </div>
 
-      <div className="mt-12">
-        <div className="grid grid-cols-3 items-center justify-center gap-5">
-          <div className="h-1 w-full bg-black"></div>
-          <div className="flex items-center justify-center gap-3">
-            <IconSquare className="h-7 w-7" />
-            <div className="text-2xl font-bold">Introducing MoveOn</div>
-          </div>
-          <div className="h-1 w-full bg-black"></div>
-        </div>
-      </div>
+
     </div>
   )
 }
@@ -304,9 +312,9 @@ const HomeIndex = () => {
           t("orders-success", "Success"),
           t(
             "orders-successfully-initiated-export",
-            "Successfully initiated export"
+            "Successfully initiated export",
           ),
-          "success"
+          "success",
         )
       },
       onError: (err) => {
@@ -333,10 +341,10 @@ const HomeIndex = () => {
         <div className="flex w-full grow flex-col">
           <BodyCard>
             <Prepare />
-            {/* <Setup />
+            <Setup />
             <div className="mb-32 mt-12">
               <MoveOnGlobal />
-            </div> */}
+            </div>
           </BodyCard>
         </div>
         {getWidgets("order.list.after").map((w, i) => {
