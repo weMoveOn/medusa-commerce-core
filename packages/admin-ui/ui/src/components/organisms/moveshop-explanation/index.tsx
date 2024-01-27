@@ -1,6 +1,5 @@
 import React from "react"
-
-import { Icon } from "../../../domain/home"
+import IconCircle from "../../fundamentals/icon-circle"
 
 const ICON_SIZE = 20
 
@@ -16,7 +15,7 @@ const SuggestedCard = () => {
   return (
     <div className="mt-5 flex items-center justify-between gap-5">
       <div>
-        <Icon size={10} />
+        <IconCircle />
       </div>
 
       <div>
@@ -24,7 +23,7 @@ const SuggestedCard = () => {
         <p>Here’s a guide to get started. As your business grows.</p>
         <div className="flex items-center gap-2  underline">
           <p>View Theme Store</p>
-          <Icon size={6} />
+          <IconCircle />
         </div>
       </div>
     </div>
@@ -49,7 +48,7 @@ const FaqCard = () => {
     <div className=" mt-7 border-t-2">
       <div className=" mb-5 flex items-center justify-between gap-2  underline">
         <p>Is it free?</p>
-        <Icon size={6} />
+        <IconCircle />
       </div>
     </div>
   )
@@ -67,7 +66,7 @@ const FAQ = () => {
         <div className="flex items-center justify-between gap-3">
           <h1 className="text-lg font-bold">View Theme Store</h1>
 
-          <Icon size={6} />
+          <IconCircle />
         </div>
         <p>Questions & answers that might help you with MoveShop</p>
       </div>

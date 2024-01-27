@@ -54,7 +54,7 @@ const SidebarMenuItem: React.FC<SidebarMenuItemProps> & {
     >
       {subItems?.length > 0 &&
         subItems.map(({ pageLink, text }) => (
-          <SubItem pageLink={pageLink} text={text} />
+          <SubItem key={text} pageLink={pageLink} text={text} />
         ))}
     </Collapsible>
   )

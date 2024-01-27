@@ -15,7 +15,6 @@ import SwatchIcon from "../../fundamentals/icons/swatch-icon"
 import TagIcon from "../../fundamentals/icons/tag-icon"
 import UsersIcon from "../../fundamentals/icons/users-icon"
 import SidebarMenuItem from "../../molecules/sidebar-menu-item"
-import UserMenu from "../../molecules/user-menu"
 
 const ICON_SIZE = 20
 
@@ -46,19 +45,19 @@ const Sidebar: React.FC = () => {
   return (
     <div className="min-w-sidebar max-w-sidebar bg-gray-0 border-grey-20 py-base px-base h-screen overflow-y-auto border-r">
       <div className="h-full">
-        <div className="flex justify-between px-2">
+        {/* <div className="flex justify-between px-2">
           <div className="rounded-circle flex h-8 w-8 items-center justify-center border border-solid border-gray-300">
             <UserMenu />
           </div>
-        </div>
-        <div className="my-base flex flex-col px-2">
+        </div> */}
+        {/* <div className="my-base flex flex-col px-2">
           <span className="text-grey-50 text-small font-medium">
             {t("sidebar-store", "Store")}
           </span>
           <span className="text-grey-90 text-medium font-medium">
             {store?.name}
           </span>
-        </div>
+        </div> */}
         <div className="py-3.5">
           <SidebarMenuItem
             pageLink={"/a/home"}

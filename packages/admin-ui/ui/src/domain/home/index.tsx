@@ -19,19 +19,14 @@ import { useWidgets } from "../../providers/widget-provider"
 import { getErrorMessage } from "../../utils/error-messages"
 import Details from "./details"
 import { transformFiltersAsExportContext } from "./utils"
-import { CircleFilledSolid } from "@medusajs/icons"
 import CircleQuarterSolid from "../../components/fundamentals/icons/circle-quarter-solid"
 import BackButton from "../../components/atoms/back-button"
+import IconCircle from "../../components/fundamentals/icon-circle"
+import IconSquare from "../../components/fundamentals/icon-square"
 
 const VIEWS = ["orders", "drafts"]
 // eslint-disable-next-line no-undef
-export const Icon = ({ size = 12 }): JSX.Element => {
-  return (
-    <div
-      className={`h-${size} w-${size} rounded-full border bg-black p-3 text-white`}
-    ></div>
-  )
-}
+
 const Prepare = () => {
   return (
     <>
@@ -44,43 +39,55 @@ const Prepare = () => {
           </p>
         </div>
 
-        <div className="mt-5 bg-[#F2F2F2] px-12 py-8">
+        <div className="mt-6 rounded-xl bg-[#F2F2F2] p-7">
           <div className="flex items-center justify-between">
-            <div className="flex items-center justify-center gap-2">
-              {/* <img src="" alt="" /> */}
-              <CircleFilledSolid />
+            <div className="flex items-center gap-3">
+              <IconCircle />
               <div>
-                <p className="text-lg">Set up your MoveShop Account</p>
+                <p className=" text-xl font-medium">
+                  Set up your MoveShop Account
+                </p>
                 <p>1/5 steps completed</p>
               </div>
             </div>
 
             <div className=" flex flex-col">
               <div className="flex flex-col space-y-2">
-                <input
-                  className="rounded border p-3"
-                  type="file"
-                  name="file"
-                  id=""
-                />
+                <label htmlFor="file">
+                  <input
+                    className="hidden rounded border p-3"
+                    type="file"
+                    name="file"
+                    id="file"
+                  />
+                  <span className="rounded-lg border bg-white p-3 text-base">
+                    Updated Profile
+                  </span>
+                </label>
               </div>
             </div>
           </div>
 
-          <div>
-            <div className="flex flex-col">
-              <div className="flex flex-col space-y-2">
-                <label htmlFor="search" className="text-lg font-bold">
-                  Raptor Shopping
-                </label>
-                <input
-                  className="w-1/2 rounded border p-3"
-                  type="search"
-                  name="search"
-                  id="search"
-                  placeholder="raptorshopping.moveshop.store"
-                />
-              </div>
+          <div className="mt-7 flex flex-col">
+            <label htmlFor="search" className="text-lg font-bold">
+              Raptor Shopping
+            </label>
+            <div className="mt-3 flex ">
+              <input
+                className="w-1/2 rounded-xl  p-3"
+                type="search"
+                name="search"
+                id="search"
+                placeholder="raptorshopping.moveshop.store"
+              />
+              <Button
+                key="search"
+                variant="secondary"
+                size="small"
+                className="my-2 -ml-28 bg-[#D1D1D1] text-sm"
+              >
+                Share Shop
+              </Button>
             </div>
           </div>
         </div>
@@ -109,14 +116,14 @@ const BarCard = () => {
       <div className="">
         <div className="flex items-center justify-center gap-3">
           <p>
-            <Icon />
+            <IconCircle />
           </p>
           <p className="text-2xl font-bold">Add your first product</p>
         </div>
       </div>
       <div className="flex gap-3 border border-b-0  border-l-2 border-r-0 border-t-0 border-black ">
         <div className="ml-5">
-          <Icon />
+          <IconCircle />
         </div>
       </div>
     </div>
@@ -168,7 +175,7 @@ const MoveOnGlobal = () => {
 
 const Setup = () => {
   return (
-    <div className="mb-20">
+    <div className="mb-9">
       <div className="mb-3 mt-5">
         <h1 className="text-2xl">Setup with your store</h1>
         <p>
@@ -197,7 +204,7 @@ const Setup = () => {
         <div className="mt-12 grid grid-cols-3 items-center justify-center gap-5">
           <div className="h-1 w-full bg-black"></div>
           <div className="flex items-center justify-center gap-3">
-            <Icon />
+            <IconCircle />
             <div className="text-2xl font-bold">Introducing MoveOn</div>
           </div>
           <div className="h-1 w-full bg-black"></div>
