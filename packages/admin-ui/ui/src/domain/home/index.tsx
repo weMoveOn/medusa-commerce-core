@@ -168,7 +168,9 @@ const MoveOnGlobalCard = () => {
           Write a description, add photos, and set pricing for the products you
           plan to sell.
         </p>
-        <BackButton className="mt-3 border" label="Explore now"></BackButton>
+        <Button size="small" variant="secondary" className="mt-3">
+          Explore now
+        </Button>
       </div>
       <div className="h-[200px] w-[400px] rounded-xl  bg-black"></div>
     </div>

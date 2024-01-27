@@ -3,12 +3,13 @@ import { Toaster } from "react-hot-toast"
 import Sidebar from "../organisms/sidebar"
 import SidebarMoveShopExplanation from "../organisms/moveshop-explanation"
 import Navbar from "../organisms/navbar"
+import Topbar from "../organisms/topbar"
 
 const Layout: React.FC<React.PropsWithChildren> = ({ children }) => {
   return (
     <>
       <Navbar />
-      <div className="inter-base-regular text-grey-90 flex h-screen w-full ">
+      {/* <div className="inter-base-regular text-grey-90 flex h-screen w-full ">
         <Toaster
           containerStyle={{
             top: 74,
@@ -19,7 +20,7 @@ const Layout: React.FC<React.PropsWithChildren> = ({ children }) => {
         />
         <Sidebar />
         <div className="flex flex-1 flex-col">
-          {/* <Topbar /> */}
+          <Topbar />
           <div className="large:px-xlarge py-xlarge bg-grey-5 min-h-content overflow-y-auto">
             <main className="xsmall:mx-base small:mx-xlarge medium:mx-4xlarge large:mx-auto large:max-w-7xl large:w-full h-full">
               {children}
@@ -27,7 +28,7 @@ const Layout: React.FC<React.PropsWithChildren> = ({ children }) => {
           </div>
         </div>
         <SidebarMoveShopExplanation />
-      </div>
+      </div> */}
     </>
   )
 }

@@ -2,8 +2,6 @@ import React, { useCallback, useState, type MouseEvent } from "react"
 import useToggleState from "../../../hooks/use-toggle-state"
 import { usePolling } from "../../../providers/polling-provider"
 import Button from "../../fundamentals/button"
-
-import Input from "../../atoms/text-input"
 import { t } from "i18next"
 import IconCircle from "../../fundamentals/icon-circle"
 import InputField from "../../molecules/input"
@@ -27,15 +25,19 @@ const Navbar: React.FC = () => {
   )
 
   return (
-    <div className=" border-grey-20 py-base  border-b bg-[#D9D9D9]">
-      <div className="px-xlarge  flex  w-full items-center justify-between ">
+    <div className=" border-grey-20 lg:py-base   border-b bg-[#D9D9D9]">
+      <div className="lg:px-xlarge flex w-full  items-center  justify-between gap-1 p-2 ">
         <div className="">
           <IconCircle />
         </div>
 
-        <InputField type="search" placeholder="search..." className="w-1/3" />
-        <div className="flex items-center gap-3">
-          <Button size="small" variant="secondary">
+        <InputField
+          type="search"
+          placeholder="search..."
+          className="lg:w-1/3"
+        />
+        <div className="flex items-center gap-1 lg:gap-3">
+          <Button size="small" variant="secondary" className="hidden lg:block">
             My Business Store
           </Button>
           <IconCircle />
