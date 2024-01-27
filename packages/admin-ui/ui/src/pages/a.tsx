@@ -23,6 +23,7 @@ import SalesChannels from "../domain/sales-channels"
 import Settings from "../domain/settings"
 import { useRoutes } from "../providers/route-provider"
 import { isRoute } from "../utils/extensions"
+import Home from "../domain/home"
 
 const IndexPage = () => {
   const navigate = useNavigate()
@@ -58,6 +59,8 @@ const DashboardRoutes = () => {
           <Route path="pricing/*" element={<PriceListRoute />} />
           <Route path="settings/*" element={<Settings />} />
           <Route path="sales-channels/*" element={<SalesChannels />} />
+          <Route path="home/*" element={<Home />} />
+
           <Route
             path="publishable-api-keys/*"
             element={<PublishableApiKeys />}
