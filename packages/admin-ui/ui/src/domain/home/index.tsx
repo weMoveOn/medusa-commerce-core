@@ -23,6 +23,8 @@ import BackButton from "../../components/atoms/back-button"
 import IconCircle from "../../components/fundamentals/icon-circle"
 import IconSquare from "../../components/fundamentals/icon-square"
 import { Step, Stepper } from "react-form-stepper"
+import InputField from "../../components/molecules/input"
+
 const VIEWS = ["orders", "drafts"]
 // eslint-disable-next-line no-undef
 
@@ -111,17 +113,41 @@ const ProgressCard = ({ label }: any) => {
 const BarCard = () => {
   return (
     <>
-      <div className="mt-3 flex items-center justify-between rounded-lg bg-[#E7E7E7] p-4">
-        <div className="flex items-center justify-center gap-3">
-          <p>
-            <IconCircle />
-          </p>
-          <p className="text-2xl font-bold">Add your first product</p>
+      <div className={" rounded-lg bg-[#E7E7E7] p-4"}>
+        <div className=" my-7 flex items-center justify-between">
+          <div className="flex items-center justify-center gap-3">
+
+              <IconCircle />
+
+            <p className="text-2xl font-bold">Add your first product</p>
+          </div>
+
+          <div className="flex gap-5">
+            <span className="border border-b-0  border-l-2 border-r-0 border-t-0 border-black "></span>
+            <IconSquare className="h-7 w-7" />
+          </div>
         </div>
 
-        <div className="flex gap-5">
-          <span className="border border-b-0  border-l-2 border-r-0 border-t-0 border-black "></span>
-          <IconSquare className="h-7 w-7" />
+        <div className={'flex items-center justify-between gap-3'}>
+          <div>
+            <h2>Choose where you ship and how much you charge so your customers can see their shipping costs at
+              checkout. <span className={"underline"}>Learn more</span></h2>
+            <Button variant={"secondary"} className={"my-3"}>Started</Button>
+
+            <div className={"flex items-center gap-3 "}>
+              <label htmlFor="shipping-plan">
+                <InputField type="checkbox" name="shipping-plan" id={"shipping-plan"} />
+              </label>
+              {/*<IconSquare className={"h-4 w-4"} />*/}
+              <p>Mark as completed</p>
+
+            </div>
+          </div>
+          <div>
+            <IconSquare className={"w-32 h-32"} />
+          </div>
+
+
         </div>
       </div>
     </>
@@ -198,7 +224,7 @@ const Setup = () => {
         </Stepper>
       </div>
 
-      <div className="mt-9">
+      <div className="mt-9 flex flex-col gap-7">
         <BarCard />
         <BarCard />
         <BarCard />
@@ -270,9 +296,9 @@ const HomeIndex = () => {
           t("orders-success", "Success"),
           t(
             "orders-successfully-initiated-export",
-            "Successfully initiated export"
+            "Successfully initiated export",
           ),
-          "success"
+          "success",
         )
       },
       onError: (err) => {
