@@ -19,11 +19,10 @@ import { useWidgets } from "../../providers/widget-provider"
 import { getErrorMessage } from "../../utils/error-messages"
 import Details from "./details"
 import { transformFiltersAsExportContext } from "./utils"
-import CircleQuarterSolid from "../../components/fundamentals/icons/circle-quarter-solid"
 import BackButton from "../../components/atoms/back-button"
 import IconCircle from "../../components/fundamentals/icon-circle"
 import IconSquare from "../../components/fundamentals/icon-square"
-
+import { Step, Stepper } from "react-form-stepper"
 const VIEWS = ["orders", "drafts"]
 // eslint-disable-next-line no-undef
 
@@ -32,7 +31,7 @@ const Prepare = () => {
     <>
       <div>
         <div>
-          <h1 className="text-2xl"> Prepare your sail to sell</h1>
+          <h1 className="text-2xl font-bold"> Prepare your sail to sell</h1>
           <p>
             Here’s a guide to get started. As your business grows, you’ll get
             fresh tips and insights here.
@@ -96,37 +95,36 @@ const Prepare = () => {
   )
 }
 
-const ProgressCard = () => {
+const ProgressCard = ({ label }: any) => {
   return (
-    <div>
-      <div className="flex flex-col items-center">
+    <>
+      <div className="mt-9 flex flex-col items-center ">
         <span>
-          <CircleQuarterSolid size={40} />
-          {/* <div className="h-1 w-full bg-black"></div> */}
+          <IconCircle />
         </span>
-        <span className="mt-3 font-medium">Add Product</span>
+        <span className="mt-4 font-medium">{label}</span>
       </div>
-    </div>
+    </>
   )
 }
 
 const BarCard = () => {
   return (
-    <div className="mt-5 flex items-center justify-between rounded bg-[#E7E7E7] p-5">
-      <div className="">
+    <>
+      <div className="mt-3 flex items-center justify-between rounded-lg bg-[#E7E7E7] p-4">
         <div className="flex items-center justify-center gap-3">
           <p>
             <IconCircle />
           </p>
           <p className="text-2xl font-bold">Add your first product</p>
         </div>
-      </div>
-      <div className="flex gap-3 border border-b-0  border-l-2 border-r-0 border-t-0 border-black ">
-        <div className="ml-5">
-          <IconCircle />
+
+        <div className="flex gap-5">
+          <span className="border border-b-0  border-l-2 border-r-0 border-t-0 border-black "></span>
+          <IconSquare className="h-7 w-7" />
         </div>
       </div>
-    </div>
+    </>
   )
 }
 
@@ -162,7 +160,7 @@ const MoveOnGlobalCardSmall = () => {
 }
 const MoveOnGlobal = () => {
   return (
-    <div className="mt-12 rounded-lg bg-[#E7E7E7] p-7">
+    <div className="rounded-3xl bg-[#E7E7E7] p-7">
       <MoveOnGlobalCard />
       <div className="flex items-center justify-between gap-3">
         <MoveOnGlobalCardSmall />
@@ -175,24 +173,32 @@ const MoveOnGlobal = () => {
 
 const Setup = () => {
   return (
-    <div className="mb-9">
+    <div className="mt-9">
       <div className="mb-3 mt-5">
-        <h1 className="text-2xl">Setup with your store</h1>
+        <h1 className="text-2xl font-bold">Setup with your store</h1>
         <p>
           Write a description, add photos, and set pricing for the products you
           plan to sell.
         </p>
       </div>
       <hr />
-      <div className="mt-5 flex justify-between text-center ">
-        <ProgressCard />
-        <ProgressCard />
-        <ProgressCard />
-        <ProgressCard />
-        <ProgressCard />
+      <div className="mt-5  ">
+        {/* <ProgressCard label={"Add Product"} />
+        <ProgressCard label={"Shipping"} />
+        <ProgressCard label={"Payments"} />
+        <ProgressCard label={"Online Store"} />
+        <ProgressCard label={"Launch"} /> */}
+
+        <Stepper activeStep={2}>
+          <Step label="Children Step 1" />
+          <Step label="Children Step 2" />
+          <Step label="Children Step 3" />
+          <Step label="Children Step 4" />
+          <Step label="Children Step 5" />
+        </Stepper>
       </div>
 
-      <div>
+      <div className="mt-9">
         <BarCard />
         <BarCard />
         <BarCard />
@@ -200,17 +206,17 @@ const Setup = () => {
         <BarCard />
       </div>
 
-      <div>
-        <div className="mt-12 grid grid-cols-3 items-center justify-center gap-5">
+      <div className="mt-12">
+        <div className="grid grid-cols-3 items-center justify-center gap-5">
           <div className="h-1 w-full bg-black"></div>
           <div className="flex items-center justify-center gap-3">
-            <IconCircle />
+            <IconSquare className="h-7 w-7" />
             <div className="text-2xl font-bold">Introducing MoveOn</div>
           </div>
           <div className="h-1 w-full bg-black"></div>
         </div>
       </div>
-      <div>
+      <div className="mb-32 mt-12">
         <MoveOnGlobal />
       </div>
     </div>
