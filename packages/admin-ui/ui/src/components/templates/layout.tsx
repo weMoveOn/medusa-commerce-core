@@ -9,7 +9,7 @@ const Layout: React.FC<React.PropsWithChildren> = ({ children }) => {
   return (
     <>
       <Navbar />
-      {/* <div className="inter-base-regular text-grey-90 flex h-screen w-full ">
+      <div className="inter-base-regular text-grey-90 flex h-screen w-full ">
         <Toaster
           containerStyle={{
             top: 74,
@@ -18,17 +18,18 @@ const Layout: React.FC<React.PropsWithChildren> = ({ children }) => {
             right: 24,
           }}
         />
-        <Sidebar />
+
+        {/* <Sidebar /> */}
         <div className="flex flex-1 flex-col">
-          <Topbar />
+          {/* <Topbar /> */}
           <div className="large:px-xlarge py-xlarge bg-grey-5 min-h-content overflow-y-auto">
-            <main className="xsmall:mx-base small:mx-xlarge medium:mx-4xlarge large:mx-auto large:max-w-7xl large:w-full h-full">
+            <main className=" medium:mx-4xlarge large:mx-auto large:max-w-7xl large:w-full h-full">
               {children}
             </main>
           </div>
         </div>
-        <SidebarMoveShopExplanation />
-      </div> */}
+        {/* <SidebarMoveShopExplanation /> */}
+      </div>
     </>
   )
 }

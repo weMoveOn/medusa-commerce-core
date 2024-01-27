@@ -50,7 +50,7 @@ const BodyCard: React.FC<BodyCardProps> = ({
     >
       <div className="relative">
         {isScrolled && (
-          <div className="rounded-t-rounded from-grey-0 h-xlarge absolute top-0 left-0 right-0 z-10 bg-gradient-to-b to-[rgba(255,255,255,0)]" />
+          <div className="rounded-t-rounded from-grey-0 h-xlarge absolute left-0 right-0 top-0 z-10 bg-gradient-to-b to-[rgba(255,255,255,0)]" />
         )}
       </div>
       <div
@@ -60,7 +60,7 @@ const BodyCard: React.FC<BodyCardProps> = ({
         onScroll={scrollListener}
       >
         <div
-          className={clsx("px-xlarge py-large", {
+          className={clsx("medium:px-xlarge medium:py-large", {
             "border-grey-20 border-b border-solid": setBorders,
           })}
         >
@@ -92,7 +92,7 @@ const BodyCard: React.FC<BodyCardProps> = ({
           </div>
         </div>
 
-        <div className="px-xlarge">
+        <div className="medium:px-xlarge  px-small">
           {children && (
             <div
               className={clsx("flex flex-col", {
@@ -105,7 +105,7 @@ const BodyCard: React.FC<BodyCardProps> = ({
         </div>
       </div>
       {events && events.length > 0 ? (
-        <div className="pb-large pt-base px-xlarge border-grey-20 border-t">
+        <div className="pb-large pt-base medium:px-xlarge  border-grey-20 border-t">
           <div className="flex flex-row-reverse items-center">
             {events.map((event, i: React.Key) => {
               return (

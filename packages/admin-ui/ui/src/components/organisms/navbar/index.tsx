@@ -25,8 +25,8 @@ const Navbar: React.FC = () => {
   )
 
   return (
-    <div className=" border-grey-20 lg:py-base   border-b bg-[#D9D9D9]">
-      <div className="lg:px-xlarge flex w-full  items-center  justify-between gap-1 p-2 ">
+    <div className=" border-grey-20 medium:py-base   border-b bg-[#D9D9D9]">
+      <div className="medium:px-xlarge flex w-full  items-center  justify-between gap-1 p-2 ">
         <div className="">
           <IconCircle />
         </div>
@@ -34,10 +34,14 @@ const Navbar: React.FC = () => {
         <InputField
           type="search"
           placeholder="search..."
-          className="lg:w-1/3"
+          className="medium:w-1/3"
         />
-        <div className="flex items-center gap-1 lg:gap-3">
-          <Button size="small" variant="secondary" className="hidden lg:block">
+        <div className="medium:gap-3 flex items-center gap-1">
+          <Button
+            size="small"
+            variant="secondary"
+            className="medium:block hidden"
+          >
             My Business Store
           </Button>
           <IconCircle />

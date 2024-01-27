@@ -32,64 +32,65 @@ const Prepare = () => {
   return (
     <>
       <div>
-        <div>
-          <h1 className="text-2xl font-bold"> Prepare your sail to sell</h1>
-          <p>
-            Here’s a guide to get started. As your business grows, you’ll get
-            fresh tips and insights here.
-          </p>
-        </div>
+        <h1 className="medium:text-2xl text-xl font-bold">
+          Prepare your sail to sell
+        </h1>
+        <p>
+          Here’s a guide to get started. As your business grows, you’ll get
+          fresh tips and insights here.
+        </p>
+      </div>
 
-        <div className="mt-6 rounded-xl bg-[#F2F2F2] p-7">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <IconCircle />
-              <div>
-                <p className=" text-xl font-medium">
-                  Set up your MoveShop Account
-                </p>
-                <p>1/5 steps completed</p>
-              </div>
-            </div>
-
-            <div className=" flex flex-col">
-              <div className="flex flex-col space-y-2">
-                <label htmlFor="file">
-                  <input
-                    className="hidden rounded border p-3"
-                    type="file"
-                    name="file"
-                    id="file"
-                  />
-                  <span className="rounded-lg border bg-white p-3 text-base">
-                    Updated Profile
-                  </span>
-                </label>
-              </div>
+      <div className="p-small mt-6  rounded-xl bg-[#F2F2F2]">
+        <div className="medium:items-center flex flex-col items-start justify-between gap-4">
+          <div className="medium:items-center flex flex-col  items-start gap-3">
+            <IconCircle />
+            <div>
+              <p className=" text-xl font-medium">
+                Set up your MoveShop Account
+              </p>
+              <p>1/5 steps completed</p>
             </div>
           </div>
 
-          <div className="mt-7 flex flex-col">
-            <label htmlFor="search" className="text-lg font-bold">
-              Raptor Shopping
-            </label>
-            <div className="mt-3 flex ">
-              <input
-                className="w-1/2 rounded-xl  p-3"
-                type="search"
-                name="search"
-                id="search"
-                placeholder="raptorshopping.moveshop.store"
-              />
-              <Button
-                key="search"
-                variant="secondary"
-                size="small"
-                className="my-2 -ml-28 bg-[#D1D1D1] text-sm"
-              >
-                Share Shop
-              </Button>
+          <div className=" flex flex-col">
+            <div className="flex flex-col space-y-2">
+              <label htmlFor="file">
+                <input
+                  className="hidden rounded border p-3"
+                  type="file"
+                  name="file"
+                  id="file"
+                />
+                <span className="rounded-lg border bg-white p-3 text-base">
+                  Updated Profile
+                </span>
+              </label>
             </div>
+          </div>
+        </div>
+
+        <div className="mt-7 flex flex-col">
+          <p className="text-xl font-medium">Raptor Shopping</p>
+          <p>
+            Write a description, add photos, and set pricing for the products
+            you plan to sell. 
+          </p>
+          <div className=" flex  ">
+            <InputField
+              type="search"
+              placeholder="raptorshopping.moveshop.store"
+              className="medium:w-1/3 "
+            />
+
+            <Button
+              key="search"
+              variant="secondary"
+              size="small"
+              className="-ml-28 bg-[#D1D1D1] py-1 text-sm"
+            >
+              Share Shop
+            </Button>
           </div>
         </div>
       </div>
@@ -332,10 +333,10 @@ const HomeIndex = () => {
         <div className="flex w-full grow flex-col">
           <BodyCard>
             <Prepare />
-            <Setup />
+            {/* <Setup />
             <div className="mb-32 mt-12">
               <MoveOnGlobal />
-            </div>
+            </div> */}
           </BodyCard>
         </div>
         {getWidgets("order.list.after").map((w, i) => {
