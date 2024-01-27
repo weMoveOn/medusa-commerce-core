@@ -216,9 +216,6 @@ const Setup = () => {
           <div className="h-1 w-full bg-black"></div>
         </div>
       </div>
-      <div className="mb-32 mt-12">
-        <MoveOnGlobal />
-      </div>
     </div>
   )
 }
@@ -302,8 +299,10 @@ const HomeIndex = () => {
         <div className="flex w-full grow flex-col">
           <BodyCard>
             <Prepare />
-
             <Setup />
+            <div className="mb-32 mt-12">
+              <MoveOnGlobal />
+            </div>
           </BodyCard>
         </div>
         {getWidgets("order.list.after").map((w, i) => {

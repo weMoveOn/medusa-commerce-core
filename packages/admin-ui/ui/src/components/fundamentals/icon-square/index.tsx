@@ -21,7 +21,7 @@ const IconSquare: React.FC<IconBadgeProps> = ({
 }) => {
   return (
     <>
-      <div className={clsx("h-4  w-4 bg-black", className)}></div>
+      <div className={clsx(`bg-black `, className)}></div>
     </>
   )
 }
