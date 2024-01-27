@@ -61,6 +61,12 @@ const Sidebar: React.FC = () => {
         </div>
         <div className="py-3.5">
           <SidebarMenuItem
+            pageLink={"/a/home"}
+            icon={<CartIcon size={ICON_SIZE} />}
+            triggerHandler={triggerHandler}
+            text={t("home", "Home")}
+          />
+          <SidebarMenuItem
             pageLink={"/a/orders"}
             icon={<CartIcon size={ICON_SIZE} />}
             triggerHandler={triggerHandler}
