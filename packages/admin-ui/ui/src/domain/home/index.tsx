@@ -113,12 +113,10 @@ const ProgressCard = ({ label }: any) => {
 const BarCard = () => {
   return (
     <>
-      <div className={" rounded-lg bg-[#E7E7E7] p-4"}>
-        <div className=" my-7 flex items-center justify-between">
+      <div className={" rounded-lg bg-[#E7E7E7] p-4 "}>
+        <div className="  flex items-center justify-between border-b-2 border-b-white pb-4">
           <div className="flex items-center justify-center gap-3">
-
-              <IconCircle />
-
+            <IconCircle />
             <p className="text-2xl font-bold">Add your first product</p>
           </div>
 
@@ -128,26 +126,33 @@ const BarCard = () => {
           </div>
         </div>
 
-        <div className={'flex items-center justify-between gap-3'}>
+        <div className={"flex items-center justify-between gap-3"}>
           <div>
-            <h2>Choose where you ship and how much you charge so your customers can see their shipping costs at
-              checkout. <span className={"underline"}>Learn more</span></h2>
-            <Button variant={"secondary"} className={"my-3"}>Started</Button>
+            <h2 className="mt-3">
+              Choose where you ship and how much you charge so your customers{" "}
+              <br />
+              can see their shipping costs at checkout.{" "}
+              <span className={"underline"}>Learn more</span>
+            </h2>
+            <Button variant={"secondary"} className={"my-3"}>
+              Started
+            </Button>
 
             <div className={"flex items-center gap-3 "}>
               <label htmlFor="shipping-plan">
-                <InputField type="checkbox" name="shipping-plan" id={"shipping-plan"} />
+                <InputField
+                  type="checkbox"
+                  name="shipping-plan"
+                  id={"shipping-plan"}
+                />
               </label>
-              {/*<IconSquare className={"h-4 w-4"} />*/}
-              <p>Mark as completed</p>
 
+              <p>Mark as completed</p>
             </div>
           </div>
           <div>
-            <IconSquare className={"w-32 h-32"} />
+            <IconSquare className={"h-32 w-32"} />
           </div>
-
-
         </div>
       </div>
     </>
@@ -296,9 +301,9 @@ const HomeIndex = () => {
           t("orders-success", "Success"),
           t(
             "orders-successfully-initiated-export",
-            "Successfully initiated export",
+            "Successfully initiated export"
           ),
-          "success",
+          "success"
         )
       },
       onError: (err) => {

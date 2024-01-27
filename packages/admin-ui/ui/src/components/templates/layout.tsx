@@ -8,7 +8,7 @@ const Layout: React.FC<React.PropsWithChildren> = ({ children }) => {
   return (
     <>
       <Navbar />
-      <div className="inter-base-regular text-grey-90 flex h-screen w-full">
+      <div className="inter-base-regular text-grey-90 flex h-screen w-full ">
         <Toaster
           containerStyle={{
             top: 74,

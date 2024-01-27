@@ -22,7 +22,7 @@ const Video = () => {
 
 const SuggestedCard = () => {
   return (
-    <div className="border-b-2 py-3 flex items-center justify-between gap-5">
+    <div className="flex items-center justify-between gap-5 border-b-2 py-3">
       <div>
         <IconSquare className="h-10 w-10" />
       </div>
@@ -55,7 +55,7 @@ const Suggested = () => {
 const FaqCard = () => {
   return (
     <div className=" border-t-2">
-      <div className="  py-3 flex items-center justify-between  gap-2 underline">
+      <div className="  flex items-center justify-between gap-2  py-3 underline">
         <p>Is it free?</p>
         <IconSquare className="h-4 w-4" />
       </div>
@@ -92,7 +92,7 @@ const FAQ = () => {
 
 const Join = () => {
   return (
-    <div className=" mt-12 p-5 w-[350px] rounded-xl bg-[#F4F4F4] ">
+    <div className=" mt-12 w-[350px] rounded-xl bg-[#F4F4F4] p-5 ">
       <SuggestedCard />
       <SuggestedCard />
       <SuggestedCard />
@@ -103,7 +103,7 @@ const Join = () => {
 const SidebarMoveShopExplanation: React.FC = () => {
   return (
     <div className="h-full overflow-y-auto  ">
-      <div className="min-w-sidebar bg-gray-0 border-grey-20 py-base mx-[50px]   mt-5 h-screen max-w-[400px]">
+      <div className="min-w-sidebar bg-gray-0 border-grey-20  pr-xlarge pl-base   mt-5 h-screen max-w-[400px]">
         <Video />
         <Suggested />
         <FAQ />
