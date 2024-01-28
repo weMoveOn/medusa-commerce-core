@@ -48,7 +48,7 @@ const Item: React.FC<AccordionItemProps> = ({
 
   const paddingClasses = clsx({
     "pb-0 mb-6 ": headingSize === "medium",
-    "pb-5 radix-state-open:pb-5xlarge mb-5 ": headingSize === "large",
+    "pb-5  mb-5 ": headingSize === "large",
   })
 
   return (

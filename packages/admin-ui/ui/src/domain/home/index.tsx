@@ -22,8 +22,10 @@ import { transformFiltersAsExportContext } from "./utils"
 import IconCircle from "../../components/fundamentals/icon-circle"
 import IconSquare from "../../components/fundamentals/icon-square"
 import InputField from "../../components/molecules/input"
-import { clx, ProgressTabs, Text } from "@medusajs/ui"
+
 import clsx from "clsx"
+import Accordion from "../../components/organisms/accordion"
+import { ProgressAccordion, Text } from "@medusajs/ui"
 
 const VIEWS = ["orders", "drafts"]
 // eslint-disable-next-line no-undef
@@ -99,54 +101,6 @@ const Prepare = () => {
   )
 }
 
-const BarCard = ({ label }: any) => {
-  return (
-    <>
-      <div className={" rounded-lg bg-[#E7E7E7] p-4 "}>
-        <div className="  flex items-center justify-between border-b-2 border-b-white pb-4">
-          <div className="flex items-center justify-center gap-3">
-            <IconCircle />
-            <p className="medium:text-2xl text-base font-bold">{label}</p>
-          </div>
-
-          <div className="flex gap-5">
-            <span className="border border-b-0  border-l-2 border-r-0 border-t-0 border-black "></span>
-            <IconSquare className="h-7 w-7" />
-          </div>
-        </div>
-
-        <div className={"flex flex-col medium:flex-row items-center justify-between gap-3"}>
-          <div>
-            <h2 className="mt-3">
-              Choose where you ship and how much you charge so your customers{" "}
-              <br />
-              can see their shipping costs at checkout.{" "}
-              <span className={"underline"}>Learn more</span>
-            </h2>
-            <Button variant={"secondary"} className={"my-3"}>
-              Started
-            </Button>
-
-            <div className={"flex items-center gap-3 "}>
-              <label htmlFor="shipping-plan">
-                <InputField
-                  type="checkbox"
-                  name="shipping-plan"
-                  id={"shipping-plan"}
-                />
-              </label>
-
-              <p>Mark as completed</p>
-            </div>
-          </div>
-          <div className={"hidden medium:block"}>
-            <IconSquare className={"h-32 w-32"} />
-          </div>
-        </div>
-      </div>
-    </>
-  )
-}
 
 const MoveOnGlobalCard = () => {
   return (
@@ -317,8 +271,259 @@ const Stepper = ({ label }: any) => {
   )
 }
 
+const BarCard = ({ label }: any) => {
+  return (
+    <>
+      <div className={" rounded-lg bg-[#E7E7E7] p-4 "}>
+        <div className="  flex items-center justify-between border-b-2 border-b-white pb-4">
+          <div className="flex items-center justify-center gap-3">
+            <IconCircle />
+            <p className="medium:text-2xl text-base font-bold">{label}</p>
+          </div>
+
+          <div className="flex gap-5">
+            <span className="border border-b-0  border-l-2 border-r-0 border-t-0 border-black "></span>
+            <IconSquare className="h-7 w-7" />
+          </div>
+        </div>
+
+        <div className={"flex flex-col medium:flex-row items-center justify-between gap-3"}>
+          <div>
+            <h2 className="mt-3">
+              Choose where you ship and how much you charge so your customers
+              can see their shipping costs at checkout.{" "}
+              <span className={"underline"}>Learn more</span>
+            </h2>
+            <Button variant={"secondary"} className={"my-3"}>
+              Started
+            </Button>
+
+            <div className={"flex items-center gap-3 "}>
+              <label htmlFor="shipping-plan">
+                <InputField
+                  type="checkbox"
+                  name="shipping-plan"
+                  id={"shipping-plan"}
+                />
+              </label>
+
+              <p>Mark as completed</p>
+            </div>
+          </div>
+          <div className={"hidden medium:block"}>
+            <IconSquare className={"h-32 w-32"} />
+          </div>
+        </div>
+      </div>
+    </>
+  )
+}
+
+
+
+const AccordeianHeader = ({label}:any): JSX.Element => {
+  return (
+    <>
+      <div className="flex items-center justify-center gap-3">
+        <IconCircle />
+        <p className="medium:text-2xl text-base font-bold ">{label}</p>
+      </div>
+    </>
+  )
+}
+
+
+const CardBar = ({ label, desc }: any) => {
+  const { t } = useTranslation()
+  const [sections, setSections] = useState(["details"])
+
+
+
+
+  return (
+    <>
+      <div className=" w-full  my-16 ">
+        <Accordion
+          value={sections}
+          onValueChange={setSections}
+          type="multiple"
+
+        >
+
+
+          <Accordion.Item
+            // @ts-ignore
+            title={<AccordeianHeader label={label} />}
+            value="providers"
+            forceMountContent
+            headingSize={"large"}
+            className={" rounded-lg bg-[#E7E7E7] p-4"}
+          >
+
+
+            <div className={'py-4'}>
+              <div className={'h-[2px] bg-white w-full '}></div>
+              <p className="inter-base-regular text-grey-50 mt-4">
+                {desc}
+              </p>
+            </div>
+
+            <div className={"flex flex-col medium:flex-row items-center justify-between gap-3"}>
+              <div>
+                <Button variant={"secondary"} className={"my-3"}>
+                  Started
+                </Button>
+                <div className={"flex items-center gap-3 "}>
+                  <label htmlFor="shipping-plan">
+                    <InputField
+                      type="checkbox"
+                      name="shipping-plan"
+                      id={"shipping-plan"}
+                    />
+                  </label>
+
+                  <p>Mark as completed</p>
+                </div>
+              </div>
+              <div className={"hidden medium:block"}>
+                <IconSquare className={"h-32 w-32"} />
+              </div>
+            </div>
+          </Accordion.Item>
+
+
+          <Accordion.Item
+            // @ts-ignore
+            title={<AccordeianHeader label={label} />}
+            value="providers"
+            forceMountContent
+            headingSize={"large"}
+            className={" rounded-lg bg-[#E7E7E7] p-4"}
+          >
+
+
+            <div className={'py-4'}>
+              <div className={'h-[2px] bg-white w-full '}></div>
+              <p className="inter-base-regular text-grey-50 mt-4">
+                {desc}
+              </p>
+            </div>
+
+            <div className={"flex flex-col medium:flex-row items-center justify-between gap-3"}>
+              <div>
+                <Button variant={"secondary"} className={"my-3"}>
+                  Started
+                </Button>
+                <div className={"flex items-center gap-3 "}>
+                  <label htmlFor="shipping-plan">
+                    <InputField
+                      type="checkbox"
+                      name="shipping-plan"
+                      id={"shipping-plan"}
+                    />
+                  </label>
+
+                  <p>Mark as completed</p>
+                </div>
+              </div>
+              <div className={"hidden medium:block"}>
+                <IconSquare className={"h-32 w-32"} />
+              </div>
+            </div>
+          </Accordion.Item>
+
+          <Accordion.Item
+            // @ts-ignore
+            title={<AccordeianHeader label={label} />}
+            value="providers"
+            forceMountContent
+            headingSize={"large"}
+            className={" rounded-lg bg-[#E7E7E7] p-4"}
+          >
+
+
+            <div className={'py-4'}>
+              <div className={'h-[2px] bg-white w-full '}></div>
+              <p className="inter-base-regular text-grey-50 mt-4">
+                {desc}
+              </p>
+            </div>
+
+            <div className={"flex flex-col medium:flex-row items-center justify-between gap-3"}>
+              <div>
+                <Button variant={"secondary"} className={"my-3"}>
+                  Started
+                </Button>
+                <div className={"flex items-center gap-3 "}>
+                  <label htmlFor="shipping-plan">
+                    <InputField
+                      type="checkbox"
+                      name="shipping-plan"
+                      id={"shipping-plan"}
+                    />
+                  </label>
+
+                  <p>Mark as completed</p>
+                </div>
+              </div>
+              <div className={"hidden medium:block"}>
+                <IconSquare className={"h-32 w-32"} />
+              </div>
+            </div>
+          </Accordion.Item>
+
+          <Accordion.Item
+            // @ts-ignore
+            title={<AccordeianHeader label={label} />}
+            value="providers"
+            forceMountContent
+            headingSize={"large"}
+            className={" rounded-lg bg-[#E7E7E7] p-4"}
+          >
+
+
+            <div className={'py-4'}>
+              <div className={'h-[2px] bg-white w-full '}></div>
+              <p className="inter-base-regular text-grey-50 mt-4">
+                {desc}
+              </p>
+            </div>
+
+            <div className={"flex flex-col medium:flex-row items-center justify-between gap-3"}>
+              <div>
+                <Button variant={"secondary"} className={"my-3"}>
+                  Started
+                </Button>
+                <div className={"flex items-center gap-3 "}>
+                  <label htmlFor="shipping-plan">
+                    <InputField
+                      type="checkbox"
+                      name="shipping-plan"
+                      id={"shipping-plan"}
+                    />
+                  </label>
+
+                  <p>Mark as completed</p>
+                </div>
+              </div>
+              <div className={"hidden medium:block"}>
+                <IconSquare className={"h-32 w-32"} />
+              </div>
+            </div>
+          </Accordion.Item>
+
+
+        </Accordion>
+      </div>
+    </>
+  )
+
+}
+
 
 const Setup = () => {
+
+
   return (
     <div className="mt-9">
       <div className="mb-3 mt-5">
@@ -336,12 +541,11 @@ const Setup = () => {
 
       </div>
 
-      <div className="mt-9 flex flex-col gap-7">
-        <BarCard label={"Add your first product"} />
-        <BarCard label={"Setup your shipping plan"} />
-        <BarCard label={"Enable Payments"} />
-        <BarCard label={"Create your business store"} />
-        <BarCard label={"Launch your business"} />
+
+      <div className="mt-20 mb-5">
+        <CardBar label={"Add your first product"}
+                 desc={"Choose where you ship and how much you charge so your customers can see their shipping costs at checkout. Learn more ..."} />
+
       </div>
 
 
