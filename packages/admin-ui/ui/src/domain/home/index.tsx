@@ -200,12 +200,13 @@ const StepActive = ({ step }: any) => {
 }
 
 
-const StepTitle = ({ title }: any) => {
+const StepTitle = ({ title, isLastIndex }: any) => {
   return (
 
     <>
       <li className={clsx("flex justify-between items-center w-full", {
         "dark:after:border-gray-700": true,
+        "w-1/12": isLastIndex,
       })}>
         <span
           className={clsx("flex items-center justify-center rounded-full lg:h-12 lg:w-12 dark:bg-gray-700 shrink-0", {
@@ -223,19 +224,16 @@ const StepInactive = ({ isLastIndex, step }: any) => {
   return (
 
     <>
-      <li className={clsx("flex justify-between items-center w-full", {
-        "after:content-[\"\"] after:w-full after:h-1 after:border-b after:border-gray-100 after:border-4 after:inline-block dark:after:border-gray-700": !isLastIndex,
+      <li className={clsx("flex justify-between items-center ", {
+        "after:content-[\"\"] after:w-full after:h-1 after:border-b after:border-gray-100 after:border-4 after:inline-block dark:after:border-gray-700 w-full": !isLastIndex,
+        "w-1/12": isLastIndex,
       })}>
         <span
           className={clsx("flex items-center justify-center w-10 h-10 bg-gray-100 rounded-full lg:h-12 lg:w-12 dark:bg-gray-700 shrink-0", {
             "text-gray-500 lg:w-5 lg:h-5 dark:text-gray-100": true,
           })}>
-        <svg className={clsx("w-4 h-4", {
-          "text-gray-500 lg:w-5 lg:h-5 dark:text-gray-100": true,
-        })} aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 16">
-          <path
-            d="M18 0H2a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2ZM6.5 3a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5ZM3.014 13.021l.157-.625A3.427 3.427 0 0 1 6.5 9.571a3.426 3.426 0 0 1 3.322 2.805l.159.622-6.967.023ZM16 12h-3a1 1 0 0 1 0-2h3a1 1 0 0 1 0 2Zm0-3h-3a1 1 0 1 1 0-2h3a1 1 0 1 1 0 2Zm0-3h-3a1 1 0 1 1 0-2h3a1 1 0 1 1 0 2Z" />
-        </svg>
+
+
       </span>
       </li>
     </>
@@ -263,7 +261,7 @@ const Stepper = ({ label }: any) => {
       </ol>
       <br />
       <ol className="flex items-center justify-between w-full">
-        {stepperData.map((step) => <StepTitle title={step?.content} />)}
+        {stepperData.map((step, index) => <StepTitle title={step?.content} isLastIndex={lastIndex === index} />)}
       </ol>
 
 
@@ -271,57 +269,8 @@ const Stepper = ({ label }: any) => {
   )
 }
 
-const BarCard = ({ label }: any) => {
-  return (
-    <>
-      <div className={" rounded-lg bg-[#E7E7E7] p-4 "}>
-        <div className="  flex items-center justify-between border-b-2 border-b-white pb-4">
-          <div className="flex items-center justify-center gap-3">
-            <IconCircle />
-            <p className="medium:text-2xl text-base font-bold">{label}</p>
-          </div>
 
-          <div className="flex gap-5">
-            <span className="border border-b-0  border-l-2 border-r-0 border-t-0 border-black "></span>
-            <IconSquare className="h-7 w-7" />
-          </div>
-        </div>
-
-        <div className={"flex flex-col medium:flex-row items-center justify-between gap-3"}>
-          <div>
-            <h2 className="mt-3">
-              Choose where you ship and how much you charge so your customers
-              can see their shipping costs at checkout.{" "}
-              <span className={"underline"}>Learn more</span>
-            </h2>
-            <Button variant={"secondary"} className={"my-3"}>
-              Started
-            </Button>
-
-            <div className={"flex items-center gap-3 "}>
-              <label htmlFor="shipping-plan">
-                <InputField
-                  type="checkbox"
-                  name="shipping-plan"
-                  id={"shipping-plan"}
-                />
-              </label>
-
-              <p>Mark as completed</p>
-            </div>
-          </div>
-          <div className={"hidden medium:block"}>
-            <IconSquare className={"h-32 w-32"} />
-          </div>
-        </div>
-      </div>
-    </>
-  )
-}
-
-
-
-const AccordeianHeader = ({label}:any): JSX.Element => {
+const AccordionHeader = ({ label }: any): JSX.Element => {
   return (
     <>
       <div className="flex items-center justify-center gap-3">
@@ -334,26 +283,19 @@ const AccordeianHeader = ({label}:any): JSX.Element => {
 
 
 const CardBar = ({ label, desc }: any) => {
-  const { t } = useTranslation()
-  const [sections, setSections] = useState(["details"])
-
-
 
 
   return (
     <>
-      <div className=" w-full  my-16 ">
+      <div className=" w-full mt-4">
         <Accordion
-          value={sections}
-          onValueChange={setSections}
           type="multiple"
-
         >
 
 
           <Accordion.Item
             // @ts-ignore
-            title={<AccordeianHeader label={label} />}
+            title={<AccordionHeader label={label} />}
             value="providers"
             forceMountContent
             headingSize={"large"}
@@ -361,129 +303,8 @@ const CardBar = ({ label, desc }: any) => {
           >
 
 
-            <div className={'py-4'}>
-              <div className={'h-[2px] bg-white w-full '}></div>
-              <p className="inter-base-regular text-grey-50 mt-4">
-                {desc}
-              </p>
-            </div>
-
-            <div className={"flex flex-col medium:flex-row items-center justify-between gap-3"}>
-              <div>
-                <Button variant={"secondary"} className={"my-3"}>
-                  Started
-                </Button>
-                <div className={"flex items-center gap-3 "}>
-                  <label htmlFor="shipping-plan">
-                    <InputField
-                      type="checkbox"
-                      name="shipping-plan"
-                      id={"shipping-plan"}
-                    />
-                  </label>
-
-                  <p>Mark as completed</p>
-                </div>
-              </div>
-              <div className={"hidden medium:block"}>
-                <IconSquare className={"h-32 w-32"} />
-              </div>
-            </div>
-          </Accordion.Item>
-
-
-          <Accordion.Item
-            // @ts-ignore
-            title={<AccordeianHeader label={label} />}
-            value="providers"
-            forceMountContent
-            headingSize={"large"}
-            className={" rounded-lg bg-[#E7E7E7] p-4"}
-          >
-
-
-            <div className={'py-4'}>
-              <div className={'h-[2px] bg-white w-full '}></div>
-              <p className="inter-base-regular text-grey-50 mt-4">
-                {desc}
-              </p>
-            </div>
-
-            <div className={"flex flex-col medium:flex-row items-center justify-between gap-3"}>
-              <div>
-                <Button variant={"secondary"} className={"my-3"}>
-                  Started
-                </Button>
-                <div className={"flex items-center gap-3 "}>
-                  <label htmlFor="shipping-plan">
-                    <InputField
-                      type="checkbox"
-                      name="shipping-plan"
-                      id={"shipping-plan"}
-                    />
-                  </label>
-
-                  <p>Mark as completed</p>
-                </div>
-              </div>
-              <div className={"hidden medium:block"}>
-                <IconSquare className={"h-32 w-32"} />
-              </div>
-            </div>
-          </Accordion.Item>
-
-          <Accordion.Item
-            // @ts-ignore
-            title={<AccordeianHeader label={label} />}
-            value="providers"
-            forceMountContent
-            headingSize={"large"}
-            className={" rounded-lg bg-[#E7E7E7] p-4"}
-          >
-
-
-            <div className={'py-4'}>
-              <div className={'h-[2px] bg-white w-full '}></div>
-              <p className="inter-base-regular text-grey-50 mt-4">
-                {desc}
-              </p>
-            </div>
-
-            <div className={"flex flex-col medium:flex-row items-center justify-between gap-3"}>
-              <div>
-                <Button variant={"secondary"} className={"my-3"}>
-                  Started
-                </Button>
-                <div className={"flex items-center gap-3 "}>
-                  <label htmlFor="shipping-plan">
-                    <InputField
-                      type="checkbox"
-                      name="shipping-plan"
-                      id={"shipping-plan"}
-                    />
-                  </label>
-
-                  <p>Mark as completed</p>
-                </div>
-              </div>
-              <div className={"hidden medium:block"}>
-                <IconSquare className={"h-32 w-32"} />
-              </div>
-            </div>
-          </Accordion.Item>
-
-          <Accordion.Item
-            // @ts-ignore
-            title={<AccordeianHeader label={label} />}
-            value="providers"
-            forceMountContent
-            headingSize={"large"}
-            className={" rounded-lg bg-[#E7E7E7] p-4"}
-          >
-
-
-            <div className={'py-4'}>
-              <div className={'h-[2px] bg-white w-full '}></div>
+            <div className={"py-4"}>
+              <div className={"h-[2px] bg-white w-full "}></div>
               <p className="inter-base-regular text-grey-50 mt-4">
                 {desc}
               </p>
@@ -543,6 +364,14 @@ const Setup = () => {
 
 
       <div className="mt-20 mb-5">
+        <CardBar label={"Add your first product"}
+                 desc={"Choose where you ship and how much you charge so your customers can see their shipping costs at checkout. Learn more ..."} />
+        <CardBar label={"Setup your shipping plan"}
+                 desc={"Choose where you ship and how much you charge so your customers can see their shipping costs at checkout. Learn more ..."} />
+        <CardBar label={"Add your first product"}
+                 desc={"Choose where you ship and how much you charge so your customers can see their shipping costs at checkout. Learn more ..."} />
+        <CardBar label={"Add your first product"}
+                 desc={"Choose where you ship and how much you charge so your customers can see their shipping costs at checkout. Learn more ..."} />
         <CardBar label={"Add your first product"}
                  desc={"Choose where you ship and how much you charge so your customers can see their shipping costs at checkout. Learn more ..."} />
 
