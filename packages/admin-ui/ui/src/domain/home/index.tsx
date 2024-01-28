@@ -19,18 +19,18 @@ import { useWidgets } from "../../providers/widget-provider"
 import { getErrorMessage } from "../../utils/error-messages"
 import Details from "./details"
 import { transformFiltersAsExportContext } from "./utils"
-import BackButton from "../../components/atoms/back-button"
 import IconCircle from "../../components/fundamentals/icon-circle"
 import IconSquare from "../../components/fundamentals/icon-square"
-import { Step, Stepper } from "react-form-stepper"
 import InputField from "../../components/molecules/input"
+import { clx, ProgressTabs, Text } from "@medusajs/ui"
+import clsx from "clsx"
 
 const VIEWS = ["orders", "drafts"]
 // eslint-disable-next-line no-undef
 
 const Prepare = () => {
   return (
-    <div className={'mt-small'}>
+    <div className={"mt-small"}>
       <div>
         <h1 className="medium:text-2xl text-xl font-bold">
           Prepare your sail to sell
@@ -78,7 +78,7 @@ const Prepare = () => {
           </p>
           <div className=" flex mt-3 ">
             <input
-              name={'search'}
+              name={"search"}
               type="search"
               placeholder="raptorshopping.moveshop.store"
               className="medium:w-1/3 w-full rounded-xl  p-3"
@@ -96,19 +96,6 @@ const Prepare = () => {
         </div>
       </div>
     </div>
-  )
-}
-
-const ProgressCard = ({ label }: any) => {
-  return (
-    <>
-      <div className="mt-9 flex flex-col items-center ">
-        <span>
-          <IconCircle />
-        </span>
-        <span className="mt-4 font-medium">{label}</span>
-      </div>
-    </>
   )
 }
 
@@ -226,6 +213,111 @@ const MoveOnGlobal = () => {
   )
 }
 
+
+const stepperData = [
+  { id: 1, title: "Step 1", content: "Add Product", status: "active" },
+  { id: 2, title: "Step 2", content: "Shipping", status: "active" },
+  { id: 3, title: "Step 3", content: "Payments", status: "inactive" },
+  { id: 4, title: "Step 4", content: "Online Store", status: "inactive" },
+  { id: 5, title: "Step 5", content: "Launch", status: "inactive" },
+
+]
+
+const StepActive = ({ step }: any) => {
+  return (
+    <li className={clsx("flex justify-between  items-center w-full", {
+      "text-blue-600 dark:text-blue-500": true,
+      "after:content-[\"\"] after:w-full after:h-1 after:border-b after:border-blue-100 after:border-4 after:inline-block dark:after:border-blue-800": true, // active line
+    })}>
+      <span
+        className={clsx("flex items-center justify-center w-10 h-10 bg-blue-100 rounded-full lg:h-12 lg:w-12 dark:bg-blue-800 shrink-0", {
+          "text-blue-600 lg:w-4 lg:h-4 dark:text-blue-300": true,
+        })}>
+        <svg className={clsx("w-3.5 h-3.5", {
+          "text-blue-600 lg:w-4 lg:h-4 dark:text-blue-300": true,
+        })} aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 16 12">
+          <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
+                d="M1 5.917 5.724 10.5 15 1.5" />
+        </svg>
+      </span>
+
+    </li>
+  )
+}
+
+
+const StepTitle = ({ title }: any) => {
+  return (
+
+    <>
+      <li className={clsx("flex justify-between items-center w-full", {
+        "dark:after:border-gray-700": true,
+      })}>
+        <span
+          className={clsx("flex items-center justify-center rounded-full lg:h-12 lg:w-12 dark:bg-gray-700 shrink-0", {
+            "text-gray-500 lg:w-5 lg:h-5 dark:text-gray-100": false,
+          })}>
+          {title}
+      </span>
+      </li>
+    </>
+  )
+}
+
+
+const StepInactive = ({ isLastIndex, step }: any) => {
+  return (
+
+    <>
+      <li className={clsx("flex justify-between items-center w-full", {
+        "after:content-[\"\"] after:w-full after:h-1 after:border-b after:border-gray-100 after:border-4 after:inline-block dark:after:border-gray-700": !isLastIndex,
+      })}>
+        <span
+          className={clsx("flex items-center justify-center w-10 h-10 bg-gray-100 rounded-full lg:h-12 lg:w-12 dark:bg-gray-700 shrink-0", {
+            "text-gray-500 lg:w-5 lg:h-5 dark:text-gray-100": true,
+          })}>
+        <svg className={clsx("w-4 h-4", {
+          "text-gray-500 lg:w-5 lg:h-5 dark:text-gray-100": true,
+        })} aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 16">
+          <path
+            d="M18 0H2a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2ZM6.5 3a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5ZM3.014 13.021l.157-.625A3.427 3.427 0 0 1 6.5 9.571a3.426 3.426 0 0 1 3.322 2.805l.159.622-6.967.023ZM16 12h-3a1 1 0 0 1 0-2h3a1 1 0 0 1 0 2Zm0-3h-3a1 1 0 1 1 0-2h3a1 1 0 1 1 0 2Zm0-3h-3a1 1 0 1 1 0-2h3a1 1 0 1 1 0 2Z" />
+        </svg>
+      </span>
+      </li>
+    </>
+  )
+}
+const Stepper = ({ label }: any) => {
+
+  const lastIndex = stepperData.length - 1
+
+
+  return (
+    <div>
+
+      <ol className="flex items-center justify-between w-full">
+        {stepperData.map((step, index) => {
+
+          if (step.status === "active") {
+            return <StepActive isLastIndex={lastIndex === index} step={step} />
+          } else {
+            return <StepInactive isLastIndex={lastIndex === index} step={step} />
+          }
+
+        })}
+
+      </ol>
+      <br />
+      <ol className="flex items-center justify-between w-full">
+        {stepperData.map((step) => <StepTitle title={step?.content} />)}
+      </ol>
+
+
+    </div>
+  )
+}
+
+
 const Setup = () => {
   return (
     <div className="mt-9">
@@ -237,17 +329,10 @@ const Setup = () => {
         </p>
       </div>
       <hr />
-      <div className="mt-5 hidden medium:block">
-
-        <Stepper activeStep={2}>
-          <Step label="Children Step 1" />
-          <Step label="Children Step 2" />
-          <Step label="Children Step 3" />
-          <Step label="Children Step 4" />
-          <Step label="Children Step 5" />
-        </Stepper>
+      <div className="mt-5  medium:block">
 
 
+        <Stepper />
 
       </div>
 
