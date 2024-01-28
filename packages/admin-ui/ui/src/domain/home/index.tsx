@@ -104,7 +104,7 @@ const Prepare = () => {
 
 const MoveOnGlobalCard = () => {
   return (
-    <div className=" hidden  m-5 medium:flex items-center justify-between rounded-lg bg-white p-5">
+    <div className=" hiddenmedium:flex items-center justify-between rounded-lg bg-white p-4">
       <div>
         <h2 className="mb-3 medium:text-2xl text-xl font-bold">MoveOn Global</h2>
         <p>
@@ -171,17 +171,18 @@ const MoveOnGlobal = () => {
 const stepperData = [
   { id: 1, title: "Step 1", content: "Add Product", status: "active" },
   { id: 2, title: "Step 2", content: "Shipping", status: "active" },
-  { id: 3, title: "Step 3", content: "Payments", status: "inactive" },
+  { id: 3, title: "Step 3", content: "Payments", status: "active" },
   { id: 4, title: "Step 4", content: "Online Store", status: "inactive" },
   { id: 5, title: "Step 5", content: "Launch", status: "inactive" },
 
 ]
 
-const StepActive = ({ step }: any) => {
+const StepActive = ({ step, isLastIndex }: any) => {
   return (
     <li className={clsx("flex justify-between  items-center w-full", {
       "text-blue-600 dark:text-blue-500": true,
       "after:content-[\"\"] after:w-full after:h-1 after:border-b after:border-blue-100 after:border-4 after:inline-block dark:after:border-blue-800": true, // active line
+      "w-1/12": isLastIndex,
     })}>
       <span
         className={clsx("flex items-center justify-center w-10 h-10 bg-blue-100 rounded-full lg:h-12 lg:w-12 dark:bg-blue-800 shrink-0", {
@@ -209,7 +210,7 @@ const StepTitle = ({ title, isLastIndex }: any) => {
         "w-1/12": isLastIndex,
       })}>
         <span
-          className={clsx("flex items-center justify-center rounded-full lg:h-12 lg:w-12 dark:bg-gray-700 shrink-0", {
+          className={clsx("flex items-center justify-center rounded-full font-bold lg:h-12 lg:w-12 dark:bg-gray-700 shrink-0", {
             "text-gray-500 lg:w-5 lg:h-5 dark:text-gray-100": false,
           })}>
           {title}
@@ -263,8 +264,6 @@ const Stepper = ({ label }: any) => {
       <ol className="flex items-center justify-between w-full">
         {stepperData.map((step, index) => <StepTitle title={step?.content} isLastIndex={lastIndex === index} />)}
       </ol>
-
-
     </div>
   )
 }
@@ -363,7 +362,7 @@ const Setup = () => {
       </div>
 
 
-      <div className="mt-20 mb-5">
+      <div className="mt-12 mb-5">
         <CardBar label={"Add your first product"}
                  desc={"Choose where you ship and how much you charge so your customers can see their shipping costs at checkout. Learn more ..."} />
         <CardBar label={"Setup your shipping plan"}
