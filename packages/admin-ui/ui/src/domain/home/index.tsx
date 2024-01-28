@@ -239,7 +239,6 @@ const Setup = () => {
       <hr />
       <div className="mt-5 hidden medium:block">
 
-        <h1>stepper here</h1>
         <Stepper activeStep={2}>
           <Step label="Children Step 1" />
           <Step label="Children Step 2" />
@@ -247,6 +246,9 @@ const Setup = () => {
           <Step label="Children Step 4" />
           <Step label="Children Step 5" />
         </Stepper>
+
+
+
       </div>
 
       <div className="mt-9 flex flex-col gap-7">

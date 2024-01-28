@@ -43,21 +43,10 @@ const Sidebar: React.FC = () => {
     isFeatureEnabled("stockLocationService")
 
   return (
-    <div className=" medium:block min-w-sidebar max-w-sidebar bg-gray-0 border-grey-20 py-base px-base hidden h-screen overflow-y-auto border-r ">
+    <div
+      className=" medium:block min-w-sidebar max-w-sidebar bg-gray-0 border-grey-20 py-base px-base hidden h-screen overflow-y-auto border-r ">
       <div className="h-full">
-        {/* <div className="flex justify-between px-2">
-          <div className="rounded-circle flex h-8 w-8 items-center justify-center border border-solid border-gray-300">
-            <UserMenu />
-          </div>
-        </div> */}
-        {/* <div className="my-base flex flex-col px-2">
-          <span className="text-grey-50 text-small font-medium">
-            {t("sidebar-store", "Store")}
-          </span>
-          <span className="text-grey-90 text-medium font-medium">
-            {store?.name}
-          </span>
-        </div> */}
+
         <div className="py-3.5">
           <SidebarMenuItem
             pageLink={"/a/home"}
@@ -71,12 +60,80 @@ const Sidebar: React.FC = () => {
             triggerHandler={triggerHandler}
             text={t("sidebar-orders", "Orders")}
           />
+
           <SidebarMenuItem
             pageLink={"/a/products"}
             icon={<TagIcon size={ICON_SIZE} />}
             text={t("sidebar-products", "Products")}
             triggerHandler={triggerHandler}
           />
+          <SidebarMenuItem
+            pageLink={"/a/customers"}
+            icon={<UsersIcon size={ICON_SIZE} />}
+            triggerHandler={triggerHandler}
+            text={t("sidebar-customers", "Customers")}
+          />
+          <SidebarMenuItem
+            pageLink={"/a/content"}
+            icon={<UsersIcon size={ICON_SIZE} />}
+            triggerHandler={triggerHandler}
+            text={t("sidebar-content", "Content")}
+          />
+
+          <SidebarMenuItem
+            pageLink={"/a/collection"}
+            icon={<UsersIcon size={ICON_SIZE} />}
+            triggerHandler={triggerHandler}
+            text={t("sidebar-collection", "Collection")}
+          />
+
+          <SidebarMenuItem
+            pageLink={"/a/analytics"}
+            icon={<UsersIcon size={ICON_SIZE} />}
+            triggerHandler={triggerHandler}
+            text={t("sidebar-analytics", "Analytics")}
+          />
+          <SidebarMenuItem
+            pageLink={"/a/marketing"}
+            icon={<UsersIcon size={ICON_SIZE} />}
+            triggerHandler={triggerHandler}
+            text={t("sidebar-marketing", "Marketing")}
+          />
+          <SidebarMenuItem
+            pageLink={"/a/discounts"}
+            icon={<SaleIcon size={ICON_SIZE} />}
+            triggerHandler={triggerHandler}
+            text={t("sidebar-discounts", "Discounts")}
+          />
+          <h1>My Store</h1>
+          <SidebarMenuItem
+            pageLink={"/a/online-store"}
+            icon={<SaleIcon size={ICON_SIZE} />}
+            triggerHandler={triggerHandler}
+            text={t("sidebar-online-store", "Online Store")}
+          />
+          <SidebarMenuItem
+            pageLink={"/a/social-media-channels"}
+            icon={<SaleIcon size={ICON_SIZE} />}
+            triggerHandler={triggerHandler}
+            text={t("sidebar-social-media-channels", "Social Media Channels")}
+          />
+          <h1>App Store</h1>
+
+          <SidebarMenuItem
+            pageLink={"/a/app-store"}
+            icon={<SaleIcon size={ICON_SIZE} />}
+            triggerHandler={triggerHandler}
+            text={t("sidebar-app-store", "App Store")}
+          />
+          <SidebarMenuItem
+            pageLink={"/a/installed-apps"}
+            icon={<SaleIcon size={ICON_SIZE} />}
+            triggerHandler={triggerHandler}
+            text={t("sidebar-installed-apps", "Installed App")}
+          />
+          <br/>
+          <hr/>
           {isFeatureEnabled("product_categories") && (
             <SidebarMenuItem
               pageLink={"/a/product-categories"}
@@ -85,12 +142,7 @@ const Sidebar: React.FC = () => {
               triggerHandler={triggerHandler}
             />
           )}
-          <SidebarMenuItem
-            pageLink={"/a/customers"}
-            icon={<UsersIcon size={ICON_SIZE} />}
-            triggerHandler={triggerHandler}
-            text={t("sidebar-customers", "Customers")}
-          />
+
           {inventoryEnabled && (
             <SidebarMenuItem
               pageLink={"/a/inventory"}
@@ -99,12 +151,7 @@ const Sidebar: React.FC = () => {
               text={t("sidebar-inventory", "Inventory")}
             />
           )}
-          <SidebarMenuItem
-            pageLink={"/a/discounts"}
-            icon={<SaleIcon size={ICON_SIZE} />}
-            triggerHandler={triggerHandler}
-            text={t("sidebar-discounts", "Discounts")}
-          />
+
           <SidebarMenuItem
             pageLink={"/a/gift-cards"}
             icon={<GiftIcon size={ICON_SIZE} />}
