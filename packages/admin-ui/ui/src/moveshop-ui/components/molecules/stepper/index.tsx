@@ -74,7 +74,7 @@ const reducer = (state: any, action: any) => {
 
 type SteppedProps = {
   context: ISteppedContext
-  title: string
+  title?: string
   onSubmit: () => void
   lastScreenIsSummary?: boolean
   steps: ReactNode[]
@@ -145,49 +145,69 @@ const StepperMVN: React.FC<SteppedProps> = ({
           "flex max-h-full flex-col justify-between transition-transform duration-100"
         )}
       >
-        <Modal.Header handleClose={resetAndClose}>
-          <div className="flex flex-col">
-            <h2 className="inter-xlarge-semibold">{title}</h2>
-            {!lastScreenIsSummary ||
-              (lastScreenIsSummary &&
-                context.currentStep !== steps.length - 1 && (
-                  <div className="flex items-center">
-                    <span className="text-grey-50 inter-small-regular mr-4 w-[70px]">{`Step ${
-                      context.currentStep + 1
-                    } of ${steps.length}`}</span>
-                    {steps.map((_, i) => (
-                      <span
-                        key={i}
-                        className={clsx(
-                          "mr-3 h-2 w-2 rounded-full",
-                          {
-                            "bg-grey-20": i > context.currentStep,
-                            "bg-violet-60": context.currentStep >= i,
-                          },
-                          {
-                            "outline-violet-20 outline outline-4":
-                              context.currentStep === i,
-                          }
-                        )}
-                      />
-                    ))}
-                  </div>
-                ))}
-          </div>
-        </Modal.Header>
+        {/* <Modal.Header handleClose={resetAndClose}></Modal.Header> */}
+        <div className="flex flex-col">
+          <h2 className="inter-xlarge-semibold">{title}</h2>
+          {!lastScreenIsSummary ||
+            (lastScreenIsSummary &&
+              context.currentStep !== steps.length - 1 && (
+                <div className="flex items-center">
+                  {/* FIXME: here stepper icons */}
+                  <span className="text-grey-50 inter-small-regular mr-4 w-[70px]">{`Step ${
+                    context.currentStep + 1
+                  } of ${steps.length}`}</span>
+
+                  {steps.map((_, i) => (
+                    <span
+                      key={i}
+                      className={clsx(
+                        "mr-3 h-2 w-2 rounded-full",
+                        {
+                          "bg-grey-20": i > context.currentStep,
+                          "bg-violet-60": context.currentStep >= i,
+                        },
+                        {
+                          "outline-violet-20 outline outline-4":
+                            context.currentStep === i,
+                        }
+                      )}
+                    />
+                  ))}
+                </div>
+              ))}
+        </div>
         <Modal.Content>{steps[context.currentStep]}</Modal.Content>
       </Modal.Body>
       <Modal.Footer>
-        <div className="gap-x-xsmall flex w-full justify-end">
-          <Button
-            variant="ghost"
-            size="small"
-            disabled={context.currentStep === 0}
-            onClick={() => context.goToPreviousPage()}
-            className="w-[112px]"
-          >
-            Back
-          </Button>
+        <div className="gap-x-xsmall flex w-full justify-between">
+          <div className="flex gap-3">
+            <Button
+              variant="ghost"
+              size="small"
+              disabled={context.currentStep === 0}
+              onClick={() => context.goToPreviousPage()}
+              className="w-[112px]"
+            >
+              Back
+            </Button>
+
+            {context.currentStep > 0 && (
+              <Button
+                variant="nuclear"
+                size="small"
+                disabled={!context.nextStepEnabled}
+                onClick={() =>
+                  context.currentStep === steps.length - 1
+                    ? resetAndSubmit()
+                    : context.goToNextPage()
+                }
+                className="w-[112px]"
+              >
+                Skip
+              </Button>
+            )}
+          </div>
+
           <Button
             variant="primary"
             size="small"
