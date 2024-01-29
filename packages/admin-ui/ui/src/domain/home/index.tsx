@@ -25,7 +25,6 @@ import InputField from "../../components/molecules/input"
 
 import clsx from "clsx"
 import Accordion from "../../components/organisms/accordion"
-import { ProgressAccordion, Text } from "@medusajs/ui"
 
 const VIEWS = ["orders", "drafts"]
 // eslint-disable-next-line no-undef
@@ -104,7 +103,7 @@ const Prepare = () => {
 
 const MoveOnGlobalCard = () => {
   return (
-    <div className=" hiddenmedium:flex items-center justify-between rounded-lg bg-white p-4">
+    <div className=" hidden medium:flex items-center justify-between rounded-lg bg-white p-4">
       <div>
         <h2 className="mb-3 medium:text-2xl text-xl font-bold">MoveOn Global</h2>
         <p>
@@ -155,7 +154,6 @@ const MoveOnGlobal = () => {
         <MoveOnGlobalCard />
         <div className={"small:block medium:hidden"}>
           <MoveOnGlobalCardSmall />
-
         </div>
         <div className="flex flex-col medium:flex-row items-center justify-between gap-3 mt-3">
           <MoveOnGlobalCardSmall />
@@ -269,7 +267,7 @@ const Stepper = ({ label }: any) => {
 }
 
 
-const AccordionHeader = ({ label }: any): JSX.Element => {
+const AccordionHeader = ({ label }: { label: string }): JSX.Element => {
   return (
     <>
       <div className="flex items-center justify-center gap-3">
@@ -281,22 +279,19 @@ const AccordionHeader = ({ label }: any): JSX.Element => {
 }
 
 
-const CardBar = ({ label, desc }: any) => {
-
+const CardBar = ({ label, desc }: { label: string, desc: string }) => {
 
   return (
     <>
       <div className=" w-full mt-4">
         <Accordion
           type="multiple"
+
         >
-
-
           <Accordion.Item
             // @ts-ignore
             title={<AccordionHeader label={label} />}
             value="providers"
-            forceMountContent
             headingSize={"large"}
             className={" rounded-lg bg-[#E7E7E7] p-4"}
           >
@@ -337,7 +332,6 @@ const CardBar = ({ label, desc }: any) => {
       </div>
     </>
   )
-
 }
 
 

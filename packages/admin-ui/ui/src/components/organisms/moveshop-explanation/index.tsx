@@ -1,6 +1,9 @@
 import React from "react"
 import IconCircle from "../../fundamentals/icon-circle"
 import IconSquare from "../../fundamentals/icon-square"
+import Accordion from "../accordion"
+import Button from "../../fundamentals/button"
+import InputField from "../../molecules/input"
 
 const ICON_SIZE = 20
 
@@ -8,7 +11,7 @@ const Video = () => {
   return (
     <div>
       <h1 className="text-lg font-bold">MoveShop Exploration</h1>
-      <div className=" mt-3    border ">
+      <div className=" mt-3  border ">
         <video
           width={350}
           height={200}
@@ -52,16 +55,53 @@ const Suggested = () => {
   )
 }
 
-const FaqCard = () => {
+
+const AccordionHeader = ({ label }: any): JSX.Element => {
   return (
-    <div className=" border-t-2">
-      <div className="  flex items-center justify-between gap-2  py-3 underline">
-        <p>Is it free?</p>
+    <>
+      <div className="flex items-center justify-center gap-3">
         <IconSquare className="h-4 w-4" />
+        <p className="text-base font-bold ">{label}</p>
       </div>
-    </div>
+    </>
   )
 }
+
+
+const FaqCard = ({ label, desc }: { label: string, desc: string }) => {
+
+  return (
+    <>
+      <div className=" w-full mt-4">
+        <Accordion
+          type="single"
+        >
+          <Accordion.Item
+            // @ts-ignore
+            title={<AccordionHeader label={label} />}
+            value="providers"
+            forceMountContent
+            headingSize={"large"}
+            className={" rounded-lg bg-[#E7E7E7] p-4"}
+          >
+
+
+            <div className={"py-4"}>
+              <div className={"h-[2px] bg-white w-full "}></div>
+              <p className="inter-base-regular text-grey-50 mt-4">
+                {desc}
+              </p>
+            </div>
+
+          </Accordion.Item>
+
+
+        </Accordion>
+      </div>
+    </>
+  )
+}
+
 
 const FAQ = () => {
   return (
@@ -70,21 +110,13 @@ const FAQ = () => {
         <h1 className="text-xl font-bold">FAQ</h1>
         <p>Questions & answers that might help you with MoveShop</p>
       </div>
-
-      <div>
-        <div className="flex items-center justify-between gap-3">
-          <h1 className="text-lg font-bold">View Theme Store</h1>
-
-          <IconCircle />
-        </div>
-        <p>Questions & answers that might help you with MoveShop</p>
-      </div>
-
       <div className="flex flex-col ">
-        <FaqCard />
-        <FaqCard />
-        <FaqCard />
-        <FaqCard />
+
+        <FaqCard label={"Is it free?"} desc={"Questions & answers that might help you with MoveShop"} />
+        <FaqCard label={"Is it free?"} desc={"Questions & answers that might help you with MoveShop"} />
+        <FaqCard label={"Is it free?"} desc={"Questions & answers that might help you with MoveShop"} />
+        <FaqCard label={"Is it free?"} desc={"Questions & answers that might help you with MoveShop"} />
+        <FaqCard label={"Is it free?"} desc={"Questions & answers that might help you with MoveShop"} />
       </div>
     </div>
   )
