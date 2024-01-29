@@ -1,3 +1,4 @@
+/* eslint-disable no-confusing-arrow */
 import clsx from "clsx"
 import React, { ReactNode, useReducer } from "react"
 import Button from "../../fundamentals/button"

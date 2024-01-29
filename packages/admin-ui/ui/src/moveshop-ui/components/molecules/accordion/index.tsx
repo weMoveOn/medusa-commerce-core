@@ -1,4 +1,4 @@
-
+/* eslint-disable spaced-comment */
 import FeatureToggle from "../../fundamentals/feature-toggle"
 import { useTranslation } from "react-i18next"
 import Accordion from "../../../../components/organisms/accordion"
@@ -29,9 +29,7 @@ const AccordionMVN = () => {
           </p>
           <div className="mt-xlarge gap-y-xlarge pb-xsmall flex flex-col">
             <div>
-              <h3 className="inter-base-semibold mb-base">
-                Organize Product
-              </h3>
+              <h3 className="inter-base-semibold mb-base">Organize Product</h3>
               {/*<OrganizeForm form={nestedForm(form, "organize")} />*/}
               <FeatureToggle featureFlag="sales_channels">
                 <div className="mt-xlarge">
@@ -43,12 +41,9 @@ const AccordionMVN = () => {
             </div>
           </div>
         </Accordion.Item>
-
       </Accordion>
     </div>
-
   )
 }
-
 
 export default AccordionMVN
