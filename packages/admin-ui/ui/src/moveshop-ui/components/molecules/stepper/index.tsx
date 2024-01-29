@@ -41,6 +41,15 @@ const defaultContext: ISteppedContext = {
   setPage: (page) => {},
 }
 
+type SteppedProps = {
+  context: ISteppedContext
+  title?: string
+  onSubmit: () => void
+  lastScreenIsSummary?: boolean
+  steps: ReactNode[]
+  layeredContext?: ILayeredModalContext
+} & ModalProps
+
 export const SteppedContext = React.createContext(defaultContext)
 
 const reducer = (state: any, action: any) => {
@@ -71,15 +80,6 @@ const reducer = (state: any, action: any) => {
     }
   }
 }
-
-type SteppedProps = {
-  context: ISteppedContext
-  title?: string
-  onSubmit: () => void
-  lastScreenIsSummary?: boolean
-  steps: ReactNode[]
-  layeredContext?: ILayeredModalContext
-} & ModalProps
 
 export const SteppedProvider = ({ children }: any) => {
   const [state, dispatch] = useReducer(reducer, defaultContext)
@@ -116,6 +116,113 @@ export const SteppedProvider = ({ children }: any) => {
   )
 }
 
+const StepActive = ({
+  isActive,
+  isLastIndex,
+}: {
+  isActive?: boolean
+  isLastIndex?: boolean
+}) => {
+  return (
+    <li
+      className={clsx("flex w-full  items-center justify-between", {
+        "text-blue-600 dark:text-blue-500": true,
+        // eslint-disable-next-line quotes
+        'after:inline-block after:h-1 after:w-full after:border-4 after:border-b after:border-blue-100 after:content-[""] dark:after:border-blue-800':
+          true, // active line
+        "w-1/12": isLastIndex,
+      })}
+    >
+      <span
+        className={clsx(
+          "flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-800 lg:h-12 lg:w-12",
+          {
+            "text-blue-600 dark:text-blue-300 lg:h-4 lg:w-4": true,
+          }
+        )}
+      >
+        <svg
+          className={clsx("h-3.5 w-3.5", {
+            "text-blue-600 dark:text-blue-300 lg:h-4 lg:w-4": true,
+          })}
+          aria-hidden="true"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 16 12"
+        >
+          <path
+            stroke="currentColor"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth="2"
+            d="M1 5.917 5.724 10.5 15 1.5"
+          />
+        </svg>
+      </span>
+    </li>
+  )
+}
+
+const StepTitle = ({
+  title,
+  isLastIndex,
+}: {
+  title: string
+  isLastIndex: boolean
+}) => {
+  return (
+    <>
+      <li
+        className={clsx("flex w-full items-center justify-between", {
+          "dark:after:border-gray-700": true,
+          "w-1/12": isLastIndex,
+        })}
+      >
+        <span
+          className={clsx(
+            "flex shrink-0 items-center justify-center rounded-full font-bold dark:bg-gray-700 lg:h-12 lg:w-12",
+            {
+              "text-gray-500 dark:text-gray-100 lg:h-5 lg:w-5": false,
+            }
+          )}
+        >
+          {title}
+        </span>
+      </li>
+    </>
+  )
+}
+
+const StepInactive = ({
+  isActive,
+  isLastIndex,
+}: {
+  isActive: boolean
+  isLastIndex: boolean
+}) => {
+  return (
+    <>
+      <li
+        className={clsx("flex items-center justify-between ", {
+          // eslint-disable-next-line quotes
+          'w-full after:inline-block after:h-1 after:w-full after:border-4 after:border-b after:border-gray-100 after:content-[""] dark:after:border-gray-700':
+            isLastIndex,
+          "w-1/12": isLastIndex,
+        })}
+      >
+        <span
+          className={clsx(
+            "flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gray-100 dark:bg-gray-700 lg:h-12 lg:w-12",
+            {
+              "text-gray-500 dark:text-gray-100 lg:h-5 lg:w-5": true,
+            }
+          )}
+        ></span>
+      </li>
+    </>
+  )
+}
+
 const StepperMVN: React.FC<SteppedProps> = ({
   context,
   steps,
@@ -136,7 +243,7 @@ const StepperMVN: React.FC<SteppedProps> = ({
   }
   return (
     <div className=" flex items-center justify-center border py-12 ">
-      <div className="w-1/3  rounded-xl p-4    ">
+      <div className="w-1/2  rounded-xl border  p-20  ">
         <div
           className={clsx(
             "flex max-h-full flex-col justify-between  transition-transform duration-100"
@@ -145,12 +252,36 @@ const StepperMVN: React.FC<SteppedProps> = ({
           <header>
             <div className="flex flex-col">
               <h2 className="inter-xlarge-semibold">{title}</h2>
-              {!lastScreenIsSummary ||
-                (lastScreenIsSummary &&
-                  context.currentStep !== steps.length - 1 && (
-                    <div className="mb-12 flex items-center justify-center border p-4">
-                      {/* FIXME: here stepper icons */}
 
+              <div>
+                {
+                  <div className="my-12">
+                    <div className="   ">
+                      <div>
+                        <ol className="flex w-full items-center justify-between">
+                          {steps?.map((_, i) => {
+                            if (context.currentStep >= i) {
+                              return <StepActive />
+                            }
+
+                            return <></>
+                          })}
+                        </ol>
+                        <br />
+                        <ol className="flex w-full items-center justify-between">
+                          <StepTitle title={"Your Need"} isLastIndex={false} />
+                          <StepTitle
+                            title={"Your product type"}
+                            isLastIndex={false}
+                          />
+                          <StepTitle
+                            title={"Where to sell"}
+                            isLastIndex={true}
+                          />
+                        </ol>
+                      </div>
+                    </div>
+                    <div className="my-12 flex items-center justify-center border p-4">
                       <div className="">
                         <span className="text-grey-50 inter-small-regular mr-4 w-[70px]">{`Step ${
                           context.currentStep + 1
@@ -174,7 +305,9 @@ const StepperMVN: React.FC<SteppedProps> = ({
                         />
                       ))}
                     </div>
-                  ))}
+                  </div>
+                }
+              </div>
             </div>
           </header>
           <div>{steps[context.currentStep]}</div>
@@ -229,25 +362,25 @@ const StepperMVN: React.FC<SteppedProps> = ({
   )
 }
 
-const ModalElement = ({
-  layeredContext,
-  handleClose,
-  isLargeModal = true,
-  children,
-}: any) =>
-  layeredContext ? (
-    <LayeredModal
-      context={layeredContext}
-      handleClose={handleClose}
-      isLargeModal={isLargeModal}
-    >
-      {children}
-    </LayeredModal>
-  ) : (
-    <Modal handleClose={handleClose} isLargeModal={isLargeModal}>
-      {children}
-    </Modal>
-  )
+// const ModalElement = ({
+//   layeredContext,
+//   handleClose,
+//   isLargeModal = true,
+//   children,
+// }: any) =>
+//   layeredContext ? (
+//     <LayeredModal
+//       context={layeredContext}
+//       handleClose={handleClose}
+//       isLargeModal={isLargeModal}
+//     >
+//       {children}
+//     </LayeredModal>
+//   ) : (
+//     <Modal handleClose={handleClose} isLargeModal={isLargeModal}>
+//       {children}
+//     </Modal>
+//   )
 
 //   const StepperMVN: React.FC<SteppedProps> = ({
 //     context,
@@ -361,4 +494,30 @@ const ModalElement = ({
 //     )
 //   }
 
+{
+  /* FIXME: here stepper icons */
+}
+// ;<div className="my-12 flex items-center justify-center border p-4">
+//   <div className="">
+//     <span className="text-grey-50 inter-small-regular mr-4 w-[70px]">{`Step ${
+//       context.currentStep + 1
+//     } of ${steps.length}`}</span>
+//   </div>
+
+//   {steps.map((_, i) => (
+//     <span
+//       key={i}
+//       className={clsx(
+//         "mr-3 h-2 w-2 rounded-full",
+//         {
+//           "bg-grey-20": i > context.currentStep,
+//           "bg-violet-60": context.currentStep >= i,
+//         },
+//         {
+//           "outline-violet-20 outline outline-4": context.currentStep === i,
+//         }
+//       )}
+//     />
+//   ))}
+// </div>
 export default StepperMVN
