@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react"
+import React, { useMemo, useState } from "react"
 import { Route, Routes, useNavigate } from "react-router-dom"
 import { useTranslation } from "react-i18next"
 
@@ -19,151 +19,20 @@ import { useWidgets } from "../../providers/widget-provider"
 import { getErrorMessage } from "../../utils/error-messages"
 import Details from "./details"
 import { transformFiltersAsExportContext } from "./utils"
-import IconCircle from "../../components/fundamentals/icon-circle"
-import IconSquare from "../../components/fundamentals/icon-square"
-import InputField from "../../components/molecules/input"
-
 import clsx from "clsx"
-import Accordion from "../../components/organisms/accordion"
+
+import DraftOrders from "./draft-orders"
+import SteppedModal, { SteppedContext } from "../../components/molecules/modal/stepped-modal"
+import SelectRegionScreen from "./new/components/select-region"
+import Items from "./new/components/items"
+import SelectShippingMethod from "./new/components/select-shipping"
+import ShippingDetails from "./new/components/shipping-details"
+import Billing from "./new/components/billing-details"
+import Summary from "./new/components/summary"
+import { LayeredModalContext } from "../../components/molecules/modal/layered-modal"
 
 const VIEWS = ["orders", "drafts"]
 // eslint-disable-next-line no-undef
-
-const Prepare = () => {
-  return (
-    <div className={"mt-small"}>
-      <div>
-        <h1 className="medium:text-2xl text-xl font-bold">
-          Prepare your sail to sell
-        </h1>
-        <p>
-          Here’s a guide to get started. As your business grows, you’ll get
-          fresh tips and insights here.
-        </p>
-      </div>
-
-      <div className="p-small mt-6  rounded-xl bg-[#F2F2F2]">
-        <div className="medium:items-center medium:flex-row flex flex-col items-start justify-between gap-4">
-          <div className="medium:items-center medium:flex-row flex flex-col  items-start gap-3">
-            <IconCircle />
-            <div>
-              <p className=" text-xl font-medium">
-                Set up your MoveShop Account
-              </p>
-              <p>1/5 steps completed</p>
-            </div>
-          </div>
-
-          <div className=" flex flex-col">
-            <div className="flex flex-col space-y-2">
-              <label htmlFor="file">
-                <input
-                  className="hidden rounded border p-3"
-                  type="file"
-                  name="file"
-                  id="file"
-                />
-                <span className="rounded-lg border bg-white p-3 text-base">
-                  Updated Profile
-                </span>
-              </label>
-            </div>
-          </div>
-        </div>
-
-        <div className="mt-7 flex flex-col">
-          <p className="text-xl font-medium">Raptor Shopping</p>
-          <p>
-            Write a description, add photos, and set pricing for the products
-            you plan to sell.
-          </p>
-          <div className=" flex mt-3 ">
-            <input
-              name={"search"}
-              type="search"
-              placeholder="raptorshopping.moveshop.store"
-              className="medium:w-1/3 w-full rounded-xl  p-3"
-            />
-
-            <Button
-              key="search"
-              variant="secondary"
-              size="small"
-              className="-ml-28 bg-[#D1D1D1] my-2 text-sm"
-            >
-              Share Shop
-            </Button>
-          </div>
-        </div>
-      </div>
-    </div>
-  )
-}
-
-
-const MoveOnGlobalCard = () => {
-  return (
-    <div className=" hidden medium:flex items-center justify-between rounded-lg bg-white p-4">
-      <div>
-        <h2 className="mb-3 medium:text-2xl text-xl font-bold">MoveOn Global</h2>
-        <p>
-          Write a description, add photos, and set pricing for the products you
-          plan to sell.
-        </p>
-        <Button size="small" variant="secondary" className="mt-3">
-          Explore now
-        </Button>
-      </div>
-      <div className="h-[200px] w-[400px] rounded-xl  bg-black"></div>
-    </div>
-  )
-}
-
-const MoveOnGlobalCardSmall = () => {
-  return (
-    <div className="rounded-lg bg-white p-small ">
-      <div className="h-[100px] w-[200px] rounded-xl  bg-black"></div>
-      <div className="mt-3">
-        <h2 className="mb-3 text-2xl font-bold">MoveOn Global</h2>
-        <p>
-          Write a description, add photos, and set pricing for the products you
-          plan to sell.
-        </p>
-      </div>
-      <Button size="small" variant="secondary" className="mt-3">
-        Explore now
-      </Button>
-    </div>
-  )
-}
-const MoveOnGlobal = () => {
-  return (
-    <>
-
-      <div className="mt-12 mb-7">
-        <div className="grid grid-cols-3 items-center justify-center gap-5">
-          <div className="h-1 w-full bg-black"></div>
-          <div className="flex items-center justify-center gap-3">
-            <IconSquare className="h-7 w-7" />
-            <div className="medium:text-2xl text-xl font-bold">Introducing MoveOn</div>
-          </div>
-          <div className="h-1  bg-black"></div>
-        </div>
-      </div>
-      <div className="rounded-3xl bg-[#E7E7E7] p-small">
-        <MoveOnGlobalCard />
-        <div className={"small:block medium:hidden"}>
-          <MoveOnGlobalCardSmall />
-        </div>
-        <div className="flex flex-col medium:flex-row items-center justify-between gap-3 mt-3">
-          <MoveOnGlobalCardSmall />
-          <MoveOnGlobalCardSmall />
-          <MoveOnGlobalCardSmall />
-        </div>
-      </div>
-    </>
-  )
-}
 
 
 const stepperData = [
@@ -239,9 +108,7 @@ const StepInactive = ({ isLastIndex, step }: any) => {
   )
 }
 const Stepper = ({ label }: any) => {
-
   const lastIndex = stepperData.length - 1
-
 
   return (
     <div>
@@ -267,16 +134,17 @@ const Stepper = ({ label }: any) => {
 }
 
 
-
-
 const OnboardingIndex = () => {
   const view = "orders"
-
   const { t } = useTranslation()
   const { resetInterval } = usePolling()
   const navigate = useNavigate()
   const createBatchJob = useAdminCreateBatchJob()
   const notification = useNotification()
+
+  const steppedContext = React.useContext(SteppedContext)
+  const layeredContext = React.useContext(LayeredModalContext)
+
 
   const [contextFilters, setContextFilters] =
     useState<Record<string, { filter: string[] }>>()
@@ -348,6 +216,33 @@ const OnboardingIndex = () => {
         <div className="flex w-full grow flex-col">
           <BodyCard>
             <Stepper />
+            {/*<SteppedModal context={} title={} onSubmit={} steps={} handleClose={}*/}
+            <SteppedModal
+              onSubmit={()=>{
+
+
+
+              }}
+              handleClose={()=>{
+
+              }}
+              layeredContext={layeredContext}
+              context={steppedContext}
+              steps={[
+                <h1>1</h1>,
+                <h1>2</h1>,
+                <h1>3</h1>,
+                <h1>4</h1>,
+                <h1>5</h1>,
+              ]}
+              lastScreenIsSummary={true}
+              title={t("new-create-draft-order", "Create Draft Order")}
+
+            />
+
+            <DraftOrders />
+
+
           </BodyCard>
         </div>
         {getWidgets("order.list.after").map((w, i) => {

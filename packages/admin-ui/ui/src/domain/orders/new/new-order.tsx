@@ -132,7 +132,7 @@ const NewOrder = ({ onDismiss }: NewOrderProps) => {
         <Summary />,
       ]}
       lastScreenIsSummary={true}
-      title={t("new-create-draft-order", "Create Draft Order")}
+      title={t("new-create-draft-order", "Create  asda Draft Order")}
       handleClose={onDismiss}
     />
   )

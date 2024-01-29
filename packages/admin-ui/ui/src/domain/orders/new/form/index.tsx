@@ -199,6 +199,7 @@ export const useNewOrderForm = () => {
 
   if (!context) {
     throw new Error(
+    // @ts-ignore
       t(
         "form-use-new-order-form-must-be-used-within-new-order-form-provider",
         "useNewOrderForm must be used within NewOrderFormProvider"

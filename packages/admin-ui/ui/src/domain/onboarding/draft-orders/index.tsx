@@ -24,6 +24,7 @@ const DraftOrderIndex = () => {
 
   const { getWidgets } = useWidgets()
 
+
   const actions = useMemo(() => {
     return [
       {
@@ -85,13 +86,6 @@ const DraftOrderIndex = () => {
   )
 }
 
-const DraftOrders = () => {
-  return (
-    <Routes>
-      <Route index element={<DraftOrderIndex />} />
-      <Route path="/:id" element={<DraftOrderDetails />} />
-    </Routes>
-  )
-}
+const DraftOrders = () => <DraftOrderIndex/>
 
 export default DraftOrders
