@@ -135,92 +135,97 @@ const StepperMVN: React.FC<SteppedProps> = ({
     onSubmit()
   }
   return (
-    <>
-      <div
-        className={clsx(
-          "flex max-h-full flex-col justify-between transition-transform duration-100"
-        )}
-      >
-        <header>
-          <div className="flex flex-col">
-            <h2 className="inter-xlarge-semibold">{title}</h2>
-            {!lastScreenIsSummary ||
-              (lastScreenIsSummary &&
-                context.currentStep !== steps.length - 1 && (
-                  <div className="flex items-center">
-                    {/* FIXME: here stepper icons */}
-                    <span className="text-grey-50 inter-small-regular mr-4 w-[70px]">{`Step ${
-                      context.currentStep + 1
-                    } of ${steps.length}`}</span>
+    <div className=" flex items-center justify-center border py-12 ">
+      <div className="w-1/3  rounded-xl p-4    ">
+        <div
+          className={clsx(
+            "flex max-h-full flex-col justify-between  transition-transform duration-100"
+          )}
+        >
+          <header>
+            <div className="flex flex-col">
+              <h2 className="inter-xlarge-semibold">{title}</h2>
+              {!lastScreenIsSummary ||
+                (lastScreenIsSummary &&
+                  context.currentStep !== steps.length - 1 && (
+                    <div className="mb-12 flex items-center justify-center border p-4">
+                      {/* FIXME: here stepper icons */}
 
-                    {steps.map((_, i) => (
-                      <span
-                        key={i}
-                        className={clsx(
-                          "mr-3 h-2 w-2 rounded-full",
-                          {
-                            "bg-grey-20": i > context.currentStep,
-                            "bg-violet-60": context.currentStep >= i,
-                          },
-                          {
-                            "outline-violet-20 outline outline-4":
-                              context.currentStep === i,
-                          }
-                        )}
-                      />
-                    ))}
-                  </div>
-                ))}
-          </div>
-        </header>
-        <div>{steps[context.currentStep]}</div>
-      </div>
-      <footer>
-        <div className="gap-x-xsmall flex w-full justify-between">
-          <div className="flex gap-3">
-            <Button
-              variant="ghost"
-              size="small"
-              disabled={context.currentStep === 0}
-              onClick={() => context.goToPreviousPage()}
-              className="w-[112px]"
-            >
-              Back
-            </Button>
+                      <div className="">
+                        <span className="text-grey-50 inter-small-regular mr-4 w-[70px]">{`Step ${
+                          context.currentStep + 1
+                        } of ${steps.length}`}</span>
+                      </div>
 
-            {context.currentStep > 0 && (
+                      {steps.map((_, i) => (
+                        <span
+                          key={i}
+                          className={clsx(
+                            "mr-3 h-2 w-2 rounded-full",
+                            {
+                              "bg-grey-20": i > context.currentStep,
+                              "bg-violet-60": context.currentStep >= i,
+                            },
+                            {
+                              "outline-violet-20 outline outline-4":
+                                context.currentStep === i,
+                            }
+                          )}
+                        />
+                      ))}
+                    </div>
+                  ))}
+            </div>
+          </header>
+          <div>{steps[context.currentStep]}</div>
+        </div>
+        <footer className="mt-7">
+          <div className="gap-x-xsmall flex w-full justify-between ">
+            <div className="flex gap-3">
               <Button
-                variant="nuclear"
+                variant="ghost"
                 size="small"
-                disabled={!context.nextStepEnabled}
-                onClick={() =>
-                  context.currentStep === steps.length - 1
-                    ? resetAndSubmit()
-                    : context.goToNextPage()
-                }
+                disabled={context.currentStep === 0}
+                onClick={() => context.goToPreviousPage()}
                 className="w-[112px]"
               >
-                Skip
+                Back
               </Button>
-            )}
-          </div>
 
-          <Button
-            variant="primary"
-            size="small"
-            disabled={!context.nextStepEnabled}
-            onClick={() =>
-              context.currentStep === steps.length - 1
-                ? resetAndSubmit()
-                : context.goToNextPage()
-            }
-            className="w-[112px]"
-          >
-            {context.currentStep === steps.length - 1 ? "Submit" : "Next"}
-          </Button>
-        </div>
-      </footer>
-    </>
+              {context.currentStep > 0 && (
+                <Button
+                  variant="nuclear"
+                  size="small"
+                  disabled={!context.nextStepEnabled}
+                  onClick={() =>
+                    context.currentStep === steps.length - 1
+                      ? resetAndSubmit()
+                      : context.goToNextPage()
+                  }
+                  className="w-[112px]"
+                >
+                  Skip
+                </Button>
+              )}
+            </div>
+
+            <Button
+              variant="primary"
+              size="small"
+              disabled={!context.nextStepEnabled}
+              onClick={() =>
+                context.currentStep === steps.length - 1
+                  ? resetAndSubmit()
+                  : context.goToNextPage()
+              }
+              className="w-[112px]"
+            >
+              {context.currentStep === steps.length - 1 ? "Submit" : "Next"}
+            </Button>
+          </div>
+        </footer>
+      </div>
+    </div>
   )
 }
 
