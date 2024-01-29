@@ -209,7 +209,7 @@ const CreateFulfillmentModal: React.FC<CreateFulfillmentModalProps> = ({
     if (isLocationFulfillmentEnabled) {
       requestObj.location_id = locationSelectValue.value
     }
-    // @ts-ignore
+
     action.mutate(requestObj, {
       onSuccess: () => {
         notification(

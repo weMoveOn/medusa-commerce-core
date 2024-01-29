@@ -47,6 +47,7 @@ const DashboardRoutes = () => {
       <Layout>
         <SEO title="Medusa" />
         <Routes>
+          <Route path="onboarding/*" element={<h1>onboarding</h1>} />
           <Route path="oauth/:app_name" element={<Oauth />} />
           <Route path="products/*" element={<ProductsRoute />} />
           <Route path="product-categories/*" element={<ProductCategories />} />

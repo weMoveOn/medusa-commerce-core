@@ -69,9 +69,11 @@ const CustomerDetail = () => {
     )
   }
 
+
   return (
     <div>
       <BackButton
+        // @ts-ignore
         label={t("details-back-to-customers", "Back to Customers")}
         path="/a/customers"
         className="mb-xsmall"
@@ -144,9 +146,11 @@ const CustomerDetail = () => {
           </div>
         </Section>
         <BodyCard
+          // @ts-ignore
           title={t("details-orders", "Orders {{count}}", {
             count: customer.orders.length,
           })}
+          // @ts-ignore
           subtitle={t(
             "details-an-overview-of-customer-orders",
             "An overview of Customer Orders"
