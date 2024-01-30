@@ -2,9 +2,7 @@
 import clsx from "clsx"
 import React, { ReactNode, useReducer } from "react"
 import Button from "../../fundamentals/button"
-import LayeredModal, {
-  ILayeredModalContext,
-} from "../../../../components/molecules/modal/layered-modal"
+import { ILayeredModalContext } from "../../../../components/molecules/modal/layered-modal"
 import { ModalProps } from "../../../../components/molecules/modal"
 import { clx } from "../../../../utils/clx"
 

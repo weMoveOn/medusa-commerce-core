@@ -1,21 +1,13 @@
 /* eslint-disable react/jsx-key */
 /* eslint-disable quotes */
-import React, { useMemo, useState } from "react"
-import { Route, Routes, useNavigate } from "react-router-dom"
+import React from "react"
+import { Route, Routes } from "react-router-dom"
 import { useTranslation } from "react-i18next"
 
-import clsx from "clsx"
-
 import BodyCard from "../../components/organisms/body-card"
-import SteppedModal, {
-  SteppedContext,
-} from "../../components/molecules/modal/stepped-modal"
+import { SteppedContext } from "../../components/molecules/modal/stepped-modal"
 import { LayeredModalContext } from "../../components/molecules/modal/layered-modal"
 import StepperMVN from "../../moveshop-ui/components/molecules/stepper"
-import Button from "../../components/fundamentals/button"
-
-const VIEWS = ["orders", "drafts"]
-// eslint-disable-next-line no-undef
 
 type StepProps = {
   label: string
