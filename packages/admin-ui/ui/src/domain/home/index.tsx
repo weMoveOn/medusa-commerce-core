@@ -17,7 +17,6 @@ import { usePolling } from "../../providers/polling-provider"
 import { useRoutes } from "../../providers/route-provider"
 import { useWidgets } from "../../providers/widget-provider"
 import { getErrorMessage } from "../../utils/error-messages"
-import Details from "./details"
 import { transformFiltersAsExportContext } from "./utils"
 import IconCircle from "../../components/fundamentals/icon-circle"
 import IconSquare from "../../components/fundamentals/icon-square"
@@ -77,7 +76,7 @@ const Prepare = () => {
             Write a description, add photos, and set pricing for the products
             you plan to sell.
           </p>
-          <div className=" flex mt-3 ">
+          <div className=" mt-3 flex ">
             <input
               name={"search"}
               type="search"
@@ -89,7 +88,7 @@ const Prepare = () => {
               key="search"
               variant="secondary"
               size="small"
-              className="-ml-28 bg-[#D1D1D1] my-2 text-sm"
+              className="my-2 -ml-28 bg-[#D1D1D1] text-sm"
             >
               Share Shop
             </Button>
@@ -100,12 +99,13 @@ const Prepare = () => {
   )
 }
 
-
 const MoveOnGlobalCard = () => {
   return (
-    <div className=" hidden medium:flex items-center justify-between rounded-lg bg-white p-4">
+    <div className=" medium:flex hidden items-center justify-between rounded-lg bg-white p-4">
       <div>
-        <h2 className="mb-3 medium:text-2xl text-xl font-bold">MoveOn Global</h2>
+        <h2 className="medium:text-2xl mb-3 text-xl font-bold">
+          MoveOn Global
+        </h2>
         <p>
           Write a description, add photos, and set pricing for the products you
           plan to sell.
@@ -121,7 +121,7 @@ const MoveOnGlobalCard = () => {
 
 const MoveOnGlobalCardSmall = () => {
   return (
-    <div className="rounded-lg bg-white p-small ">
+    <div className="p-small rounded-lg bg-white ">
       <div className="h-[100px] w-[200px] rounded-xl  bg-black"></div>
       <div className="mt-3">
         <h2 className="mb-3 text-2xl font-bold">MoveOn Global</h2>
@@ -139,23 +139,24 @@ const MoveOnGlobalCardSmall = () => {
 const MoveOnGlobal = () => {
   return (
     <>
-
-      <div className="mt-12 mb-7">
+      <div className="mb-7 mt-12">
         <div className="grid grid-cols-3 items-center justify-center gap-5">
           <div className="h-1 w-full bg-black"></div>
           <div className="flex items-center justify-center gap-3">
             <IconSquare className="h-7 w-7" />
-            <div className="medium:text-2xl text-xl font-bold">Introducing MoveOn</div>
+            <div className="medium:text-2xl text-xl font-bold">
+              Introducing MoveOn
+            </div>
           </div>
           <div className="h-1  bg-black"></div>
         </div>
       </div>
-      <div className="rounded-3xl bg-[#E7E7E7] p-small">
+      <div className="p-small rounded-3xl bg-[#E7E7E7]">
         <MoveOnGlobalCard />
         <div className={"small:block medium:hidden"}>
           <MoveOnGlobalCardSmall />
         </div>
-        <div className="flex flex-col medium:flex-row items-center justify-between gap-3 mt-3">
+        <div className="medium:flex-row mt-3 flex flex-col items-center justify-between gap-3">
           <MoveOnGlobalCardSmall />
           <MoveOnGlobalCardSmall />
           <MoveOnGlobalCardSmall />
@@ -164,7 +165,6 @@ const MoveOnGlobal = () => {
     </>
   )
 }
-
 
 const stepperData = [
   { id: 1, title: "Step 1", content: "Add Product", status: "active" },
@@ -172,100 +172,119 @@ const stepperData = [
   { id: 3, title: "Step 3", content: "Payments", status: "active" },
   { id: 4, title: "Step 4", content: "Online Store", status: "inactive" },
   { id: 5, title: "Step 5", content: "Launch", status: "inactive" },
-
 ]
 
 const StepActive = ({ step, isLastIndex }: any) => {
   return (
-    <li className={clsx("flex justify-between  items-center w-full", {
-      "text-blue-600 dark:text-blue-500": true,
-      "after:content-[\"\"] after:w-full after:h-1 after:border-b after:border-blue-100 after:border-4 after:inline-block dark:after:border-blue-800": true, // active line
-      "w-1/12": isLastIndex,
-    })}>
+    <li
+      className={clsx("flex w-full  items-center justify-between", {
+        "text-blue-600 dark:text-blue-500": true,
+        'after:inline-block after:h-1 after:w-full after:border-4 after:border-b after:border-blue-100 after:content-[""] dark:after:border-blue-800':
+          true, // active line
+        "w-1/12": isLastIndex,
+      })}
+    >
       <span
-        className={clsx("flex items-center justify-center w-10 h-10 bg-blue-100 rounded-full lg:h-12 lg:w-12 dark:bg-blue-800 shrink-0", {
-          "text-blue-600 lg:w-4 lg:h-4 dark:text-blue-300": true,
-        })}>
-        <svg className={clsx("w-3.5 h-3.5", {
-          "text-blue-600 lg:w-4 lg:h-4 dark:text-blue-300": true,
-        })} aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 16 12">
-          <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
-                d="M1 5.917 5.724 10.5 15 1.5" />
+        className={clsx(
+          "flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-800 lg:h-12 lg:w-12",
+          {
+            "text-blue-600 dark:text-blue-300 lg:h-4 lg:w-4": true,
+          }
+        )}
+      >
+        <svg
+          className={clsx("h-3.5 w-3.5", {
+            "text-blue-600 dark:text-blue-300 lg:h-4 lg:w-4": true,
+          })}
+          aria-hidden="true"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 16 12"
+        >
+          <path
+            stroke="currentColor"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth="2"
+            d="M1 5.917 5.724 10.5 15 1.5"
+          />
         </svg>
       </span>
-
     </li>
   )
 }
 
-
 const StepTitle = ({ title, isLastIndex }: any) => {
   return (
-
     <>
-      <li className={clsx("flex justify-between items-center w-full", {
-        "dark:after:border-gray-700": true,
-        "w-1/12": isLastIndex,
-      })}>
+      <li
+        className={clsx("flex w-full items-center justify-between", {
+          "dark:after:border-gray-700": true,
+          "w-1/12": isLastIndex,
+        })}
+      >
         <span
-          className={clsx("flex items-center justify-center rounded-full font-bold lg:h-12 lg:w-12 dark:bg-gray-700 shrink-0", {
-            "text-gray-500 lg:w-5 lg:h-5 dark:text-gray-100": false,
-          })}>
+          className={clsx(
+            "flex shrink-0 items-center justify-center rounded-full font-bold dark:bg-gray-700 lg:h-12 lg:w-12",
+            {
+              "text-gray-500 dark:text-gray-100 lg:h-5 lg:w-5": false,
+            }
+          )}
+        >
           {title}
-      </span>
+        </span>
       </li>
     </>
   )
 }
 
-
 const StepInactive = ({ isLastIndex, step }: any) => {
   return (
-
     <>
-      <li className={clsx("flex justify-between items-center ", {
-        "after:content-[\"\"] after:w-full after:h-1 after:border-b after:border-gray-100 after:border-4 after:inline-block dark:after:border-gray-700 w-full": !isLastIndex,
-        "w-1/12": isLastIndex,
-      })}>
+      <li
+        className={clsx("flex items-center justify-between ", {
+          'w-full after:inline-block after:h-1 after:w-full after:border-4 after:border-b after:border-gray-100 after:content-[""] dark:after:border-gray-700':
+            !isLastIndex,
+          "w-1/12": isLastIndex,
+        })}
+      >
         <span
-          className={clsx("flex items-center justify-center w-10 h-10 bg-gray-100 rounded-full lg:h-12 lg:w-12 dark:bg-gray-700 shrink-0", {
-            "text-gray-500 lg:w-5 lg:h-5 dark:text-gray-100": true,
-          })}>
-
-
-      </span>
+          className={clsx(
+            "flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gray-100 dark:bg-gray-700 lg:h-12 lg:w-12",
+            {
+              "text-gray-500 dark:text-gray-100 lg:h-5 lg:w-5": true,
+            }
+          )}
+        ></span>
       </li>
     </>
   )
 }
 const Stepper = ({ label }: any) => {
-
   const lastIndex = stepperData.length - 1
-
 
   return (
     <div>
-
-      <ol className="flex items-center justify-between w-full">
+      <ol className="flex w-full items-center justify-between">
         {stepperData.map((step, index) => {
-
           if (step.status === "active") {
             return <StepActive isLastIndex={lastIndex === index} step={step} />
           } else {
-            return <StepInactive isLastIndex={lastIndex === index} step={step} />
+            return (
+              <StepInactive isLastIndex={lastIndex === index} step={step} />
+            )
           }
-
         })}
-
       </ol>
       <br />
-      <ol className="flex items-center justify-between w-full">
-        {stepperData.map((step, index) => <StepTitle title={step?.content} isLastIndex={lastIndex === index} />)}
+      <ol className="flex w-full items-center justify-between">
+        {stepperData.map((step, index) => (
+          <StepTitle title={step?.content} isLastIndex={lastIndex === index} />
+        ))}
       </ol>
     </div>
   )
 }
-
 
 const AccordionHeader = ({ label }: { label: string }): JSX.Element => {
   return (
@@ -278,16 +297,11 @@ const AccordionHeader = ({ label }: { label: string }): JSX.Element => {
   )
 }
 
-
-const CardBar = ({ label, desc }: { label: string, desc: string }) => {
-
+const CardBar = ({ label, desc }: { label: string; desc: string }) => {
   return (
     <>
-      <div className=" w-full mt-4">
-        <Accordion
-          type="multiple"
-
-        >
+      <div className=" mt-4 w-full">
+        <Accordion type="multiple">
           <Accordion.Item
             // @ts-ignore
             title={<AccordionHeader label={label} />}
@@ -295,16 +309,16 @@ const CardBar = ({ label, desc }: { label: string, desc: string }) => {
             headingSize={"large"}
             className={" rounded-lg bg-[#E7E7E7] p-4"}
           >
-
-
             <div className={"py-4"}>
-              <div className={"h-[2px] bg-white w-full "}></div>
-              <p className="inter-base-regular text-grey-50 mt-4">
-                {desc}
-              </p>
+              <div className={"h-[2px] w-full bg-white "}></div>
+              <p className="inter-base-regular text-grey-50 mt-4">{desc}</p>
             </div>
 
-            <div className={"flex flex-col medium:flex-row items-center justify-between gap-3"}>
+            <div
+              className={
+                "medium:flex-row flex flex-col items-center justify-between gap-3"
+              }
+            >
               <div>
                 <Button variant={"secondary"} className={"my-3"}>
                   Started
@@ -321,23 +335,18 @@ const CardBar = ({ label, desc }: { label: string, desc: string }) => {
                   <p>Mark as completed</p>
                 </div>
               </div>
-              <div className={"hidden medium:block"}>
+              <div className={"medium:block hidden"}>
                 <IconSquare className={"h-32 w-32"} />
               </div>
             </div>
           </Accordion.Item>
-
-
         </Accordion>
       </div>
     </>
   )
 }
 
-
 const Setup = () => {
-
-
   return (
     <div className="mt-9">
       <div className="mb-3 mt-5">
@@ -348,29 +357,42 @@ const Setup = () => {
         </p>
       </div>
       <hr />
-      <div className="mt-5  medium:block">
-
-
+      <div className="medium:block  mt-5">
         <Stepper />
-
       </div>
 
-
-      <div className="mt-12 mb-5">
-        <CardBar label={"Add your first product"}
-                 desc={"Choose where you ship and how much you charge so your customers can see their shipping costs at checkout. Learn more ..."} />
-        <CardBar label={"Setup your shipping plan"}
-                 desc={"Choose where you ship and how much you charge so your customers can see their shipping costs at checkout. Learn more ..."} />
-        <CardBar label={"Add your first product"}
-                 desc={"Choose where you ship and how much you charge so your customers can see their shipping costs at checkout. Learn more ..."} />
-        <CardBar label={"Add your first product"}
-                 desc={"Choose where you ship and how much you charge so your customers can see their shipping costs at checkout. Learn more ..."} />
-        <CardBar label={"Add your first product"}
-                 desc={"Choose where you ship and how much you charge so your customers can see their shipping costs at checkout. Learn more ..."} />
-
+      <div className="mb-5 mt-12">
+        <CardBar
+          label={"Add your first product"}
+          desc={
+            "Choose where you ship and how much you charge so your customers can see their shipping costs at checkout. Learn more ..."
+          }
+        />
+        <CardBar
+          label={"Setup your shipping plan"}
+          desc={
+            "Choose where you ship and how much you charge so your customers can see their shipping costs at checkout. Learn more ..."
+          }
+        />
+        <CardBar
+          label={"Add your first product"}
+          desc={
+            "Choose where you ship and how much you charge so your customers can see their shipping costs at checkout. Learn more ..."
+          }
+        />
+        <CardBar
+          label={"Add your first product"}
+          desc={
+            "Choose where you ship and how much you charge so your customers can see their shipping costs at checkout. Learn more ..."
+          }
+        />
+        <CardBar
+          label={"Add your first product"}
+          desc={
+            "Choose where you ship and how much you charge so your customers can see their shipping costs at checkout. Learn more ..."
+          }
+        />
       </div>
-
-
     </div>
   )
 }
@@ -425,9 +447,9 @@ const HomeIndex = () => {
           t("orders-success", "Success"),
           t(
             "orders-successfully-initiated-export",
-            "Successfully initiated export",
+            "Successfully initiated export"
           ),
-          "success",
+          "success"
         )
       },
       onError: (err) => {
@@ -491,7 +513,6 @@ const Home = () => {
   return (
     <Routes>
       <Route index element={<HomeIndex />} />
-      <Route path="/:id" element={<Details />} />
       {nestedRoutes.map((r, i) => {
         return (
           <Route
