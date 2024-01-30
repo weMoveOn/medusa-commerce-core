@@ -12,6 +12,7 @@ import SteppedModal, {
 } from "../../components/molecules/modal/stepped-modal"
 import { LayeredModalContext } from "../../components/molecules/modal/layered-modal"
 import StepperMVN from "../../moveshop-ui/components/molecules/stepper"
+import Button from "../../components/fundamentals/button"
 
 const VIEWS = ["orders", "drafts"]
 // eslint-disable-next-line no-undef
@@ -168,6 +169,12 @@ const OnboardingIndex = () => {
       <div className="gap-y-xsmall flex h-full grow flex-col">
         <div className="flex w-full grow flex-col">
           <BodyCard>
+            <div className="mb-5 text-center text-2xl ">
+              <a href="/a/home">
+                click here go to{" "}
+                <span className="underline"> admin home page </span>
+              </a>
+            </div>
             <StepperMVN
               layeredContext={layeredContext}
               context={steppedContext}
