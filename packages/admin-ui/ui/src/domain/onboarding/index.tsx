@@ -26,7 +26,7 @@ const Step1 = () => {
   return (
     <>
       <div>
-        <div className="text-center">
+        <div className="my-10 text-center">
           <p>Hey Ahsan, we’re excited to have you!</p>
           <h1 className="text-4xl font-bold">Tell us about your business</h1>
         </div>
@@ -177,6 +177,9 @@ const OnboardingIndex = () => {
               steps={[<Step1 />, <Step2 />, <Step3 />]}
               handleClose={() => {
                 alert("handleClose")
+              }}
+              handleSkip={() => {
+                alert("handleSkip")
               }}
             />
           </BodyCard>

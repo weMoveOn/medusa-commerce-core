@@ -19,6 +19,7 @@ export const ModalContext = React.createContext<ModalState>({
 export type ModalProps = {
   isLargeModal?: boolean
   handleClose: () => void
+  handleSkip: () => void
   open?: boolean
   children?: React.ReactNode
 }

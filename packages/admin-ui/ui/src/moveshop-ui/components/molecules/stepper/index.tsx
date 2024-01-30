@@ -5,7 +5,8 @@ import Button from "../../fundamentals/button"
 import LayeredModal, {
   ILayeredModalContext,
 } from "../../../../components/molecules/modal/layered-modal"
-import Modal, { ModalProps } from "../../../../components/molecules/modal"
+import { ModalProps } from "../../../../components/molecules/modal"
+import { clx } from "../../../../utils/clx"
 
 enum SteppedActions {
   ENABLENEXTPAGE,
@@ -123,21 +124,25 @@ const StepActive = ({
   currentStep: number
   index: number
 }) => {
-  // currentStep >= index || currentStep === index
+  // currentStep >= index || currentStep === index currentStep <= index
   return (
     <li
-      className={clsx("flex w-full  items-center justify-between", {
-        // eslint-disable-next-line quotes
-        'after:inline-block after:h-1 after:w-full after:border-4 after:border-b after:border-blue-100 after:content-[""] dark:after:border-blue-800':
-          currentStep >= index,
-        // eslint-disable-next-line quotes
-        'after:inline-block after:h-1 after:w-full after:border-4 after:border-b after:border-gray-100 after:content-[""] dark:after:border-gray-800':
-          currentStep <= index,
-      })}
+      className={clx(
+        "flex w-full  items-center justify-between",
+        {
+          // eslint-disable-next-line quotes
+          'after:inline-block after:h-1 after:w-full after:border-4 after:border-b after:border-blue-100 after:content-[""] dark:after:border-blue-800':
+            currentStep >= index,
+          // eslint-disable-next-line quotes
+          'after:inline-block after:h-1 after:w-full after:border-4 after:border-b after:border-gray-100 after:content-[""] dark:after:border-gray-800':
+            currentStep <= index,
+        },
+        {}
+      )}
     >
       {currentStep >= index ? (
         <span
-          className={clsx(
+          className={clx(
             "flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-800 lg:h-12 lg:w-12",
             {
               "text-blue-600 dark:text-blue-300 lg:h-4 lg:w-4": true,
@@ -215,6 +220,7 @@ const StepperMVN: React.FC<SteppedProps> = ({
   onSubmit,
   lastScreenIsSummary = false,
   handleClose,
+  handleSkip,
   isLargeModal = true,
 }) => {
   const resetAndClose = () => {
@@ -222,11 +228,16 @@ const StepperMVN: React.FC<SteppedProps> = ({
     handleClose()
   }
 
+  const resetAndSkip = () => {
+    context.reset()
+    handleSkip()
+  }
+
   const resetAndSubmit = () => {
     onSubmit()
   }
   return (
-    <div className=" flex items-center justify-center border py-12 ">
+    <div className=" flex items-center justify-center  ">
       <div className="w-1/2  rounded-xl border  p-20  ">
         <div
           className={clsx(
@@ -265,30 +276,6 @@ const StepperMVN: React.FC<SteppedProps> = ({
                         </ol>
                       </div>
                     </div>
-                    <div className="my-12 flex items-center justify-center border p-4">
-                      <div className="">
-                        <span className="text-grey-50 inter-small-regular mr-4 w-[70px]">{`Step ${
-                          context.currentStep + 1
-                        } of ${steps.length}`}</span>
-                      </div>
-
-                      {steps.map((_, i) => (
-                        <span
-                          key={i}
-                          className={clsx(
-                            "mr-3 h-2 w-2 rounded-full",
-                            {
-                              "bg-grey-20": i > context.currentStep,
-                              "bg-violet-60": context.currentStep >= i,
-                            },
-                            {
-                              "outline-violet-20 outline outline-4":
-                                context.currentStep === i,
-                            }
-                          )}
-                        />
-                      ))}
-                    </div>
                   </div>
                 }
               </div>
@@ -316,8 +303,8 @@ const StepperMVN: React.FC<SteppedProps> = ({
                   disabled={!context.nextStepEnabled}
                   onClick={() =>
                     context.currentStep === steps.length - 1
-                      ? resetAndSubmit()
-                      : context.goToNextPage()
+                      ? resetAndSkip()
+                      : ""
                   }
                   className="w-[112px]"
                 >
@@ -345,6 +332,34 @@ const StepperMVN: React.FC<SteppedProps> = ({
     </div>
   )
 }
+
+// const StepperCircle = () => {
+//   return (
+//     <div className="my-12 flex items-center justify-center border p-4">
+//       <div className="">
+//         <span className="text-grey-50 inter-small-regular mr-4 w-[70px]">{`Step ${
+//           context.currentStep + 1
+//         } of ${steps.length}`}</span>
+//       </div>
+
+//       {steps.map((_, i) => (
+//         <span
+//           key={i}
+//           className={clsx(
+//             "mr-3 h-2 w-2 rounded-full",
+//             {
+//               "bg-grey-20": i > context.currentStep,
+//               "bg-violet-60": context.currentStep >= i,
+//             },
+//             {
+//               "outline-violet-20 outline outline-4": context.currentStep === i,
+//             }
+//           )}
+//         />
+//       ))}
+//     </div>
+//   )
+// }
 
 // const ModalElement = ({
 //   layeredContext,
