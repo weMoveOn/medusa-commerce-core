@@ -1,10 +1,11 @@
 /* eslint-disable no-confusing-arrow */
 import clsx from "clsx"
 import React, { ReactNode, useReducer } from "react"
-import Button from "../../fundamentals/button"
+
 import { ILayeredModalContext } from "../../../../components/molecules/modal/layered-modal"
 import { ModalProps } from "../../../../components/molecules/modal"
 import { clx } from "../../../../utils/clx"
+import Button from "../../../../components/fundamentals/button"
 
 enum SteppedActions {
   ENABLENEXTPAGE,
