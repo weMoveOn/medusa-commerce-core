@@ -172,7 +172,7 @@ const OnboardingIndex = () => {
             <div className="mb-5 text-center text-2xl ">
               <a href="/a/home">
                 click here go to{" "}
-                <span className="underline"> admin home page </span>
+                <span className="underline"> admin dashboard </span>
               </a>
             </div>
             <StepperMVN
