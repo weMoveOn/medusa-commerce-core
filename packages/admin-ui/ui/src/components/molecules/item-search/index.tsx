@@ -15,6 +15,7 @@ type Props = {
   onItemSelect: (item: DecoratedInventoryItemDTO) => void
   clearOnSelect?: boolean
   filters?: AdminGetInventoryItemsParams
+  placeholder?:string
 }
 
 type ItemOption = {
@@ -23,7 +24,7 @@ type ItemOption = {
   inventoryItem: DecoratedInventoryItemDTO
 }
 
-const ItemSearch = ({ onItemSelect, clearOnSelect, filters = {} }: Props) => {
+const ItemSearch = ({ onItemSelect, clearOnSelect, filters = {}, placeholder }: Props) => {
   const [itemSearchTerm, setItemSearchTerm] = useState<string | undefined>()
 
   const debouncedItemSearchTerm = useDebounce(itemSearchTerm, 500)
@@ -33,6 +34,7 @@ const ItemSearch = ({ onItemSelect, clearOnSelect, filters = {} }: Props) => {
   const { isLoading, inventory_items } = useAdminInventoryItems(
     {
       q: debouncedItemSearchTerm,
+      location_id:"sloc_01HP4813563474QT2GRYENWHMG",
       ...filters,
     },
     { enabled: queryEnabled }
@@ -64,14 +66,14 @@ const ItemSearch = ({ onItemSelect, clearOnSelect, filters = {} }: Props) => {
         components={{ Option: ProductOption, Control: SearchControl }}
         onInputChange={setItemSearchTerm}
         options={options}
-        placeholder="Search by sku..."
+        placeholder={placeholder?? "Search by sku..."}
         isSearchable={true}
         noOptionsMessage={() => "No items found"}
         openMenuOnClick={!!inventory_items?.length}
         onChange={onChange}
         value={null}
         isLoading={queryEnabled && isLoading}
-        filterOption={filterOptions} // TODO: Remove this when we can q for inventory item titles
+        // TODO: Remove this when we can q for inventory item titles
       />
     </div>
   )
