@@ -109,6 +109,21 @@ const ProgressStepper = () => {
   )
 }
 
+const StepHeader = () => {
+  return (
+    <>
+      <div className="text-center">
+        <p className={clx("text-large ")}>
+          Hey Ahsan, we’re excited to have you!
+        </p>
+        <h1 className={clx("mt-3 text-2xl font-medium ")}>
+          Where would you like to sell?
+        </h1>
+      </div>
+    </>
+  )
+}
+
 const StepCardBusiness = ({ icon, title }) => {
   return (
     <>
@@ -132,11 +147,11 @@ const StepCardSell = ({ icon, title }) => {
     <>
       <div className={clx(" items-center rounded-lg border border-black p-5")}>
         <label
-          htmlFor="business"
+          htmlFor={`${title}`}
           className="mb-3  flex items-center  justify-between gap-3"
         >
           {icon}
-          <input type="checkbox" id="business" className={clx(" h-4 w-4")} />
+          <input type="checkbox" id={`${title}`} className={clx(" h-4 w-4")} />
         </label>
         <h3 className="text-large font-semibold">
           Products I buy or make myself
@@ -151,36 +166,29 @@ const Step1 = () => {
   return (
     <>
       <div>
-        <div className="my-10 text-center">
-          <p className={clx("text-large ")}>
-            Hey Ahsan, we’re excited to have you!
-          </p>
-          <h1 className={clx("mt-3 text-2xl font-medium ")}>
-            Tell us about your business
-          </h1>
-        </div>
+        <StepHeader />
         <div className="mt-4">
           <p>What is your Business Need?</p>
 
           <div className="mt-4 flex justify-between gap-3">
             <StepCardBusiness
               icon={<IconCircle className="h-10 w-10" />}
-              title={"I’m just starting my Business"}
+              title={"I’m just starting my Business1"}
             />
             <StepCardBusiness
               icon={<IconCircle className="h-10 w-10" />}
-              title={"I’m just starting my Business"}
+              title={"I’m just starting my Business2"}
             />
           </div>
           <p className="mt-12">What are you planning to sell in your store?</p>
           <div className="mt-4 flex flex-col gap-3">
             <StepCardSell
               icon={<IconCircle className="h-10 w-10" />}
-              title={"I’m just starting my Business Online"}
+              title={"I’m just starting my Business Online3"}
             />
             <StepCardSell
               icon={<IconCircle className="h-10 w-10" />}
-              title={"I’m just starting my Business Online"}
+              title={"I’m just starting my Business Online4"}
             />
           </div>
         </div>
@@ -193,38 +201,27 @@ const Step2 = () => {
   return (
     <>
       <div>
-        <div className="text-center">
-          <p>You are on your way to your new business journey</p>
-          <h1 className="text-4xl font-bold">Where would you like to sell?</h1>
-        </div>
+        <StepHeader />
         <div className="mt-4">
-          <label htmlFor="business">
-            <span>What is your business need?</span>
-          </label>
-          <div className="mb-3 flex gap-3 rounded-lg border p-4">
-            <input type="checkbox" id="business" />
-            <span>I’m just starting my Business Online</span>
-          </div>
-          <div className="flex gap-3 rounded-lg border p-4">
-            <input type="checkbox" id="business" />
-            <span>I already have a Business</span>
-          </div>
-        </div>
-      </div>
+          <p className="mt-12">What are you planning to sell in your store?</p>
+          <div className="mt-4 grid grid-cols-2 gap-3">
+            <StepCardSell
+              icon={<IconCircle className="h-10 w-10" />}
+              title={"I’m just starting my Business Online11"}
+            />
+            <StepCardSell
+              icon={<IconCircle className="h-10 w-10" />}
+              title={"I’m just starting my Business Online22"}
+            />
 
-      <br />
-      <div>
-        <div>
-          <label htmlFor="business">
-            <span>What is your business need?</span>
-          </label>
-          <div className="mb-3 flex gap-3 rounded-lg border p-4">
-            <input type="checkbox" id="business" />
-            <span>I’m just starting my Business Online</span>
-          </div>
-          <div className="flex gap-3 rounded-lg border p-4">
-            <input type="checkbox" id="business" />
-            <span>I already have a Business</span>
+            <StepCardSell
+              icon={<IconCircle className="h-10 w-10" />}
+              title={"I’m just starting my Business Online33"}
+            />
+            <StepCardSell
+              icon={<IconCircle className="h-10 w-10" />}
+              title={"I’m just starting my Business Online44"}
+            />
           </div>
         </div>
       </div>
@@ -236,10 +233,8 @@ const Step3 = () => {
   return (
     <>
       <div>
-        <div className="text-center">
-          <p>You are on your way to your new business journey</p>
-          <h1 className="text-4xl font-bold">Your Store Information</h1>
-        </div>
+        <StepHeader />
+
         <div className="mt-4">
           <label htmlFor="business">
             <span>Where is your business located?</span>
