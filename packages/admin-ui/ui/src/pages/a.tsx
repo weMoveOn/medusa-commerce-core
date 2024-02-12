@@ -66,7 +66,10 @@ const DashboardRoutes = () => {
           <Route path="analytics/*" element={<h1>Analytics</h1>} />
           <Route path="marketing/*" element={<h1>Marketing</h1>} />
           <Route path="online-store/*" element={<h1>Online Store</h1>} />
-          <Route path="social-media-channels/*" element={<h1>Social Media channels</h1>} />
+          <Route
+            path="social-media-channels/*"
+            element={<h1>Social Media channels</h1>}
+          />
           <Route path="app-store/*" element={<h1>App Store</h1>} />
           <Route path="installed-apps/*" element={<h1>Installed Apps</h1>} />
           <Route
