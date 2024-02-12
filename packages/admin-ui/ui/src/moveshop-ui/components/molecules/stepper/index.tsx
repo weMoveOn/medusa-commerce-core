@@ -262,7 +262,7 @@ const StepperMVN: React.FC<SteppedProps> = ({
                           ))}
                         </ol>
                         <br />
-                        <ol className="flex w-full items-center justify-between">
+                        {/* <ol className="flex w-full items-center justify-between">
                           <StepTitle title={"Your Need"} isLastIndex={false} />
                           <StepTitle
                             title={"Your product type"}
@@ -272,7 +272,7 @@ const StepperMVN: React.FC<SteppedProps> = ({
                             title={"Where to sell"}
                             isLastIndex={true}
                           />
-                        </ol>
+                        </ol> */}
                       </div>
                     </div>
                   </div>

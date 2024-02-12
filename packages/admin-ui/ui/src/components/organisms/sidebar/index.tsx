@@ -49,12 +49,6 @@ const Sidebar: React.FC = () => {
 
         <div className="py-3.5">
 
-          <SidebarMenuItem
-            pageLink={"/a/onboarding"}
-            icon={<CartIcon size={ICON_SIZE} />}
-            triggerHandler={triggerHandler}
-            text={t("onboarding", "onboarding")}
-          />
 
           <SidebarMenuItem
             pageLink={"/a/home"}
