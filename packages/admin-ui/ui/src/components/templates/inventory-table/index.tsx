@@ -84,6 +84,8 @@ const LocationDropdown = ({
 const InventoryTable: React.FC<InventoryTableProps> = () => {
   const { store } = useAdminStore()
 
+  console.log(store,"store")
+
   const location = useLocation()
   const { t } = useTranslation()
 
@@ -99,6 +101,8 @@ const InventoryTable: React.FC<InventoryTableProps> = () => {
     }
     return defaultQueryProps
   }, [store])
+
+  console.log(defaultQuery,"defaultQuery")
 
   const {
     reset,

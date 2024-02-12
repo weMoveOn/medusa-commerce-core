@@ -23,6 +23,7 @@ import SalesChannels from "../domain/sales-channels"
 import Settings from "../domain/settings"
 import { useRoutes } from "../providers/route-provider"
 import { isRoute } from "../utils/extensions"
+import CreateOrder from "../domain/orders/create";
 
 const IndexPage = () => {
   const navigate = useNavigate()
@@ -44,7 +45,7 @@ const DashboardRoutes = () => {
   return (
     <DndProvider backend={HTML5Backend}>
       <Layout>
-        <SEO title="Medusa" />
+        <SEO title="MoveShop" />
         <Routes>
           <Route path="oauth/:app_name" element={<Oauth />} />
           <Route path="products/*" element={<ProductsRoute />} />
@@ -53,6 +54,7 @@ const DashboardRoutes = () => {
           <Route path="gift-cards/*" element={<GiftCards />} />
           <Route path="orders/*" element={<Orders />} />
           <Route path="draft-orders/*" element={<DraftOrders />} />
+          <Route path="order/create" element={<CreateOrder />} />
           <Route path="discounts/*" element={<Discounts />} />
           <Route path="customers/*" element={<Customers />} />
           <Route path="pricing/*" element={<PriceListRoute />} />
