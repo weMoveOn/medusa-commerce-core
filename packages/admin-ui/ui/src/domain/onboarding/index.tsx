@@ -12,6 +12,9 @@ import Panels from "../../moveshop-ui/steps/panels"
 import Example from "../../moveshop-ui/steps/circles"
 import IconCircle from "../../moveshop-ui/components/fundamentals/icon-circle"
 
+import { supportedLanguages } from "../../i18n"
+import { Select } from "@medusajs/ui"
+
 type StepProps = {
   label: string
   title: string
@@ -145,7 +148,13 @@ const StepCardBusiness = ({ icon, title }) => {
 const StepCardSell = ({ icon, title }) => {
   return (
     <>
-      <div className={clx(" items-center rounded-lg border border-black p-5")}>
+      <div
+        className={clx(
+          " items-center rounded-lg border border-black p-5",
+          {},
+          {}
+        )}
+      >
         <label
           htmlFor={`${title}`}
           className="mb-3  flex items-center  justify-between gap-3"
@@ -229,6 +238,42 @@ const Step2 = () => {
   )
 }
 
+const StepLanguageMenu: React.FC = () => {
+  const { i18n } = useTranslation()
+
+  const changeLanguage = (lng: string) => {
+    console.log("lng :>> ", lng)
+    // i18n.changeLanguage(lng)
+  }
+
+  return (
+    <div className="w-full ">
+      <Select value={i18n.language} onValueChange={changeLanguage}>
+        <Select.Trigger>
+          <Select.Value />
+        </Select.Trigger>
+        <Select.Content>
+          {supportedLanguages.map((lng) => (
+            <Select.Item key={lng.locale} value={lng.locale}>
+              {lng.name}
+            </Select.Item>
+          ))}
+        </Select.Content>
+      </Select>
+    </div>
+  )
+}
+
+const StepLanguageSettings = () => {
+  const { t } = useTranslation()
+
+  return (
+    <>
+      <StepLanguageMenu />
+    </>
+  )
+}
+
 const Step3 = () => {
   return (
     <>
@@ -236,20 +281,9 @@ const Step3 = () => {
         <StepHeader />
 
         <div className="mt-4">
-          <label htmlFor="business">
-            <span>Where is your business located?</span>
-          </label>
-          <div className="mb-3 flex gap-3 rounded-lg border p-4">
-            <input type="checkbox" id="business" />
-            <span>Bangladesh</span>
-          </div>
-          <div className="flex gap-3 ">
-            <div className=" rounded-lg  border p-3">
-              Bangladeshi Taka (BDT)
-            </div>
-            <div className="  rounded-lg border p-3">
-              Bangladeshi Taka (BDT)
-            </div>
+          <p>Where is your business located?</p>
+          <div className="border-grey-20 py-xlarge border-t">
+            <StepLanguageSettings />
           </div>
         </div>
 
