@@ -220,7 +220,6 @@ const StepperMVN: React.FC<SteppedProps> = ({
   lastScreenIsSummary = false,
   handleClose,
   handleSkip,
-  isLargeModal = true,
 }) => {
   const resetAndClose = () => {
     context.reset()
@@ -236,50 +235,13 @@ const StepperMVN: React.FC<SteppedProps> = ({
     onSubmit()
   }
   return (
-    <div className=" flex items-center justify-center  ">
-      <div className="w-1/2  rounded-xl border  p-20  ">
+    <div className=" flex items-center justify-center ">
+      <div className="mt-14 w-[650px] rounded-xl border   p-9  ">
         <div
           className={clsx(
             "flex max-h-full flex-col justify-between  transition-transform duration-100"
           )}
         >
-          <header>
-            <div className="flex flex-col">
-              <h2 className="inter-xlarge-semibold">{title}</h2>
-
-              <div>
-                {
-                  <div className="my-12">
-                    <div className="   ">
-                      <div>
-                        <ol className="flex w-full items-center justify-between">
-                          {steps?.map((_, i) => (
-                            <StepActive
-                              key={`step-${i}`}
-                              currentStep={context.currentStep}
-                              index={i}
-                            />
-                          ))}
-                        </ol>
-                        <br />
-                        {/* <ol className="flex w-full items-center justify-between">
-                          <StepTitle title={"Your Need"} isLastIndex={false} />
-                          <StepTitle
-                            title={"Your product type"}
-                            isLastIndex={false}
-                          />
-                          <StepTitle
-                            title={"Where to sell"}
-                            isLastIndex={true}
-                          />
-                        </ol> */}
-                      </div>
-                    </div>
-                  </div>
-                }
-              </div>
-            </div>
-          </header>
           <div>{steps[context.currentStep]}</div>
         </div>
         <footer className="mt-7">
@@ -333,3 +295,42 @@ const StepperMVN: React.FC<SteppedProps> = ({
 }
 
 export default StepperMVN
+
+{
+  /* <header>
+            <div className="flex flex-col">
+              <h2 className="inter-xlarge-semibold">{title}</h2>
+              <div>
+                {
+                  <div className="my-12">
+                    <div className="   ">
+                      <div>
+                        <ol className="flex w-full items-center justify-between">
+                          {steps?.map((_, i) => (
+                            <StepActive
+                              key={`step-${i}`}
+                              currentStep={context.currentStep}
+                              index={i}
+                            />
+                          ))}
+                        </ol>
+                        <br />
+                        <ol className="flex w-full items-center justify-between">
+                          <StepTitle title={"Your Need"} isLastIndex={false} />
+                          <StepTitle
+                            title={"Your product type"}
+                            isLastIndex={false}
+                          />
+                          <StepTitle
+                            title={"Where to sell"}
+                            isLastIndex={true}
+                          />
+                        </ol>
+                      </div>
+                    </div>
+                  </div>
+                }
+              </div>
+            </div>
+          </header> */
+}

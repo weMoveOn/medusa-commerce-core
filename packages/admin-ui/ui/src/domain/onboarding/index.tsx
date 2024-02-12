@@ -10,6 +10,7 @@ import StepperMVN from "../../moveshop-ui/components/molecules/stepper"
 import { clx } from "../../utils/clx"
 import Panels from "../../moveshop-ui/steps/panels"
 import Example from "../../moveshop-ui/steps/circles"
+import IconCircle from "../../moveshop-ui/components/fundamentals/icon-circle"
 
 type StepProps = {
   label: string
@@ -108,42 +109,79 @@ const ProgressStepper = () => {
   )
 }
 
+const StepCardBusiness = ({ icon, title }) => {
+  return (
+    <>
+      <div
+        className={clx(
+          " flex w-full flex-col items-center justify-between rounded-lg border-2 border-black p-5"
+        )}
+      >
+        <label htmlFor="business" className="flex flex-col items-center  gap-3">
+          {icon}
+          <input type="checkbox" id="business" className="hidden" />
+          <span className="text-large">{title}</span>
+        </label>
+      </div>
+    </>
+  )
+}
+
+const StepCardSell = ({ icon, title }) => {
+  return (
+    <>
+      <div className={clx(" items-center rounded-lg border border-black p-5")}>
+        <label
+          htmlFor="business"
+          className="mb-3  flex items-center  justify-between gap-3"
+        >
+          {icon}
+          <input type="checkbox" id="business" className={clx(" h-4 w-4")} />
+        </label>
+        <h3 className="text-large font-semibold">
+          Products I buy or make myself
+        </h3>
+        <p className="text-large">{title}</p>
+      </div>
+    </>
+  )
+}
+
 const Step1 = () => {
   return (
     <>
       <div>
         <div className="my-10 text-center">
-          <p>Hey Ahsan, we’re excited to have you!</p>
-          <h1 className="text-4xl font-bold">Tell us about your business</h1>
+          <p className={clx("text-large ")}>
+            Hey Ahsan, we’re excited to have you!
+          </p>
+          <h1 className={clx("mt-3 text-2xl font-medium ")}>
+            Tell us about your business
+          </h1>
         </div>
         <div className="mt-4">
-          <label htmlFor="business">
-            <span>What is your business need?</span>
-          </label>
-          <div className="mb-3 flex gap-3 rounded-lg border p-4">
-            <input type="checkbox" id="business" />
-            <span>I’m just starting my Business Online</span>
-          </div>
-          <div className="flex gap-3 rounded-lg border p-4">
-            <input type="checkbox" id="business" />
-            <span>I already have a Business</span>
-          </div>
-        </div>
-      </div>
+          <p>What is your Business Need?</p>
 
-      <br />
-      <div>
-        <div>
-          <label htmlFor="business">
-            <span>What is your business need?</span>
-          </label>
-          <div className="mb-3 flex gap-3 rounded-lg border p-4">
-            <input type="checkbox" id="business" />
-            <span>I’m just starting my Business Online</span>
+          <div className="mt-4 flex justify-between gap-3">
+            <StepCardBusiness
+              icon={<IconCircle className="h-10 w-10" />}
+              title={"I’m just starting my Business"}
+            />
+            <StepCardBusiness
+              icon={<IconCircle className="h-10 w-10" />}
+              title={"I’m just starting my Business"}
+            />
           </div>
-          <div className="flex gap-3 rounded-lg border p-4">
-            <input type="checkbox" id="business" />
-            <span>I already have a Business</span>
+          <p className="mt-12">What are you planning to sell in your store?</p>
+          <div className="mt-4 flex flex-col gap-3">
+            <StepCardSell
+              icon={<IconCircle className="h-10 w-10" />}
+              title={"I’m just starting my Business Online"}
+            />
+            <StepCardSell
+              icon={<IconCircle className="h-10 w-10" />}
+              title={"I’m just starting my Business Online"}
+            />
           </div>
         </div>
       </div>
@@ -253,7 +291,7 @@ const OnboardingIndex = () => {
       {/* <Panels /> */}
       {/* <Example /> */}
       {/* <ProgressStepper /> */}
-      <div className={clx("my-14")}>
+      <div className={clx("")}>
         <div className="">
           <StepperMVN
             layeredContext={layeredContext}
