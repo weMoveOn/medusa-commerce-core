@@ -119,10 +119,10 @@ const Timeline: React.FC<TimelineProps> = ({ orderId }) => {
       }
     )
   }
-
+  // w-5/12 h-full
   return (
     <>
-      <div className="rounded-rounded border-grey-20 bg-grey-0 h-full w-5/12 border">
+      <div className="rounded-rounded border-grey-20 bg-grey-0   border">
         <div className="border-grey-20 py-large px-xlarge border-b">
           <div className="flex items-center justify-between">
             <h3 className="inter-xlarge-semibold">

@@ -52,16 +52,17 @@ const SelectShippingMethod = () => {
     }
   }, [selectedShippingOption])
 
+
   return (
-    <div className="min-h-[705px]">
-      <span className="inter-base-semibold">
-        Shipping method{" "}
-        <span className="inter-base-regular text-grey-50">
-          {t("select-shipping-to-name", "(To {{name}})", {
-            name: region!.name,
-          })}
-        </span>
-      </span>
+    <div className="">
+      {/*<span className="inter-base-semibold">*/}
+      {/*  Shipping method{" "}*/}
+      {/*  <span className="inter-base-regular text-grey-50">*/}
+      {/*    {t("select-shipping-to-name", "(To {{name}})", {*/}
+      {/*      name: region?.name,*/}
+      {/*    })}*/}
+      {/*  </span>*/}
+      {/*</span>*/}
 
       {region ? (
         !shippingOptions?.length ? (

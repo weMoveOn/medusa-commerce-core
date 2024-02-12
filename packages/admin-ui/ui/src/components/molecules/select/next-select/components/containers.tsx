@@ -176,7 +176,7 @@ export const IndicatorsContainer = <
   children,
 }: IndicatorsContainerProps<Option, IsMulti, Group>) => {
 
-    console.log(children)
+    console.log(children," Find products")
   return (
     <div
       {...innerProps}
@@ -187,7 +187,7 @@ export const IndicatorsContainer = <
         clsx("text-grey-50 gap-x-small px-small flex items-center", className)
       )}
     >
-        <Button className='h-[34px]  rounded-[7px]' variant="primary"> Find products {children}</Button>
+        {/*<Button className='h-[34px]  rounded-[7px]' variant="primary"> Find products {children}</Button>*/}
     </div>
   )
 }
