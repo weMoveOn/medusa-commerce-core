@@ -244,8 +244,8 @@ const StepperMVN: React.FC<SteppedProps> = ({
         >
           <div>{steps[context.currentStep]}</div>
         </div>
-        <footer className=" border-t">
-          <div className=" flex w-full justify-between ">
+        <footer className=" border-t ">
+          <div className=" mt-9 flex w-full justify-between rounded-lg ">
             <div>
               {context.currentStep > 0 && (
                 <button

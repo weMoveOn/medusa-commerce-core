@@ -1,4 +1,11 @@
-import { createContext, ReactNode, useContext } from "react"
+import {
+  createContext,
+  Dispatch,
+  ReactNode,
+  SetStateAction,
+  useContext,
+  useState,
+} from "react"
 import { FormProvider, useForm, useFormContext } from "react-hook-form"
 
 type OnboardingContextValue = {

@@ -1,7 +1,7 @@
 /* eslint-disable react/jsx-key */
 /* eslint-disable quotes */
-import React, { useEffect, useMemo } from "react"
-import { Route, Routes, useParams } from "react-router-dom"
+import React, { useEffect, useMemo, useState } from "react"
+import { Route, Routes } from "react-router-dom"
 import { useTranslation } from "react-i18next"
 
 import { SteppedContext } from "../../components/molecules/modal/stepped-modal"
@@ -9,16 +9,15 @@ import { LayeredModalContext } from "../../components/molecules/modal/layered-mo
 import StepperMVN from "../../moveshop-ui/components/molecules/stepper"
 import { clx } from "../../utils/clx"
 import IconCircle from "../../moveshop-ui/components/fundamentals/icon-circle"
-import { useAdminRegion, useAdminRegions, useAdminStore } from "medusa-react"
+import { useAdminRegions, useAdminStore } from "medusa-react"
 
 import Select from "react-select"
 import { countries } from "../../utils/countries"
-import { Controller, useForm, useWatch } from "react-hook-form"
+import { Controller, useWatch } from "react-hook-form"
 import OnboardingFormProvider, {
   useOnboardingForm,
 } from "../../moveshop-ui/components/molecules/stepper/OnboardingFormProvider"
-import { NextSelect } from "../../components/molecules/select/next-select"
-
+import "./onboarding.css"
 type StepProps = {
   label: string
   title: string
@@ -124,62 +123,27 @@ const StepHeader = () => {
   )
 }
 
-const StepCardBusiness = ({ icon, title }) => {
-  const { t } = useTranslation()
-  const { enableNextPage, disableNextPage } = React.useContext(SteppedContext)
-  const { onboardingForm } = useOnboardingForm()
-
-  const {
-    formState: { errors },
-    handleSubmit,
-    control,
-  } = onboardingForm
-
-  const reg = useWatch({
-    control,
-    name: "region",
-  })
-
-  const { regions } = useAdminRegions()
-
-  const regionOptions = useMemo(() => {
-    if (!regions) {
-      return []
-    }
-
-    return regions.map((region) => ({
-      label: region.name,
-      value: region.id,
-    }))
-  }, [regions])
-
-  useEffect(() => {
-    if (!reg) {
-      disableNextPage()
-    } else {
-      enableNextPage()
-    }
-    enableNextPage()
-  }, [reg])
-
+const StepCardBusiness = ({
+  icon,
+  title,
+  htmlFor,
+}: {
+  icon: any
+  title: string
+  htmlFor: string
+}) => {
   return (
     <>
-      <div
-        className={clx(
-          " flex w-full flex-col items-center justify-between rounded-lg border-2 border-black p-5"
-        )}
-      >
-        <label htmlFor="business" className="flex flex-col items-center  gap-3">
-          {icon}
-          <input type="checkbox" id="business" className="hidden" />
-          <span className="text-large">{title}</span>
-        </label>
-      </div>
+      <label htmlFor={htmlFor} className="flex flex-col items-center  gap-3">
+        {icon}
+        <input type="checkbox" id={htmlFor} className="hidden" />
+        <span className="text-large">{title}</span>
+      </label>
     </>
   )
 }
 
-const StepCardSell = ({ icon, title }) => {
+const StepCardSell = ({ icon, title, name }) => {
   const { t } = useTranslation()
   const { enableNextPage, disableNextPage } = React.useContext(SteppedContext)
 
@@ -187,12 +151,12 @@ const StepCardSell = ({ icon, title }) => {
 
   const {
     formState: { errors },
-    handleSubmit,
+    register,
     control,
   } = onboardingForm
   const reg = useWatch({
     control,
-    name: "region",
+    name: "f",
   })
 
   const { regions } = useAdminRegions()
@@ -224,7 +188,14 @@ const StepCardSell = ({ icon, title }) => {
           className="mb-3  flex items-center  justify-between gap-3"
         >
           {icon}
-          <input type="checkbox" id={`${title}`} className={clx(" h-5 w-5")} />
+          <input
+            {...register(`business${name}`, {
+              valueAsNumber: true,
+            })}
+            type="checkbox"
+            id={`${title}`}
+            className={clx(" h-5 w-5 rounded-lg border border-[#B2B2B2]")}
+          />
         </label>
         <h3 className="text-large font-semibold">
           Products I buy or make myself
@@ -236,6 +207,43 @@ const StepCardSell = ({ icon, title }) => {
 }
 
 const Step1 = () => {
+  const { t } = useTranslation()
+  const { enableNextPage, disableNextPage } = React.useContext(SteppedContext)
+  const [isSelect, setIsSelect] = useState("business1")
+  const { onboardingForm } = useOnboardingForm()
+  const {
+    formState: { errors },
+    handleSubmit,
+    register,
+    control,
+  } = onboardingForm
+
+  const reg = useWatch({
+    control,
+    name: "region",
+  })
+
+  const { regions } = useAdminRegions()
+
+  const regionOptions = useMemo(() => {
+    if (!regions) {
+      return []
+    }
+
+    return regions.map((region) => ({
+      label: region.name,
+      value: region.id,
+    }))
+  }, [regions])
+
+  useEffect(() => {
+    if (!reg) {
+      disableNextPage()
+    } else {
+      enableNextPage()
+    }
+    enableNextPage()
+  }, [reg])
   return (
     <>
       <div>
@@ -244,23 +252,69 @@ const Step1 = () => {
           <p>What is your Business Need?</p>
 
           <div className="mt-4 flex justify-between gap-3">
-            <StepCardBusiness
-              icon={<IconCircle className="h-10 w-10" />}
-              title={"I’m just starting my Business1"}
-            />
-            <StepCardBusiness
-              icon={<IconCircle className="h-10 w-10" />}
-              title={"I’m just starting my Business2"}
-            />
+            <div
+              onClick={() => setIsSelect("business1")}
+              className={clx(
+                " flex w-full flex-col items-center justify-between rounded-lg border border-[#AFAFAF] p-5",
+                {
+                  "border-2 border-black p-5": isSelect === "business1",
+                }
+              )}
+            >
+              <label
+                htmlFor="business1"
+                className="flex flex-col items-center  gap-3"
+              >
+                <IconCircle />
+                <input
+                  {...register(`business1`, {
+                    valueAsNumber: true,
+                  })}
+                  type="checkbox"
+                  className="hidden"
+                />
+                <span className="text-large">
+                  I’m just starting my Business2
+                </span>
+              </label>
+            </div>
+            <div
+              onClick={() => setIsSelect("business2")}
+              className={clx(
+                " flex w-full flex-col items-center justify-between rounded-lg  border border-[#AFAFAF] p-5",
+                {
+                  "border-2 border-black p-5": isSelect === "business2",
+                }
+              )}
+            >
+              <label
+                htmlFor="business2"
+                className="flex flex-col items-center  gap-3"
+              >
+                <IconCircle />
+                <input
+                  {...register(`business2`, {
+                    valueAsNumber: true,
+                  })}
+                  type="checkbox"
+                  className="hidden"
+                />
+                <span className="text-large">
+                  I’m just starting my Business1
+                </span>
+              </label>
+            </div>
           </div>
           <p className="mt-12">What are you planning to sell in your store?</p>
           <div className="mt-4 flex flex-col gap-3">
             <StepCardSell
-              icon={<IconCircle className="h-10 w-10" />}
+              name={"business3"}
+              icon={<IconCircle />}
               title={"I’m just starting my Business Online3"}
             />
             <StepCardSell
-              icon={<IconCircle className="h-10 w-10" />}
+              name={"business4"}
+              icon={<IconCircle />}
               title={"I’m just starting my Business Online4"}
             />
           </div>
@@ -279,20 +333,24 @@ const Step2 = () => {
           <p className="mt-12">What are you planning to sell in your store?</p>
           <div className="mt-4 grid grid-cols-2 gap-3">
             <StepCardSell
-              icon={<IconCircle className="h-10 w-10" />}
+              name={"business4"}
+              icon={<IconCircle />}
               title={"I’m just starting my Business Online11"}
             />
             <StepCardSell
-              icon={<IconCircle className="h-10 w-10" />}
+              name={"business5"}
+              icon={<IconCircle />}
               title={"I’m just starting my Business Online22"}
             />
 
             <StepCardSell
-              icon={<IconCircle className="h-10 w-10" />}
+              name={"business6"}
+              icon={<IconCircle />}
               title={"I’m just starting my Business Online33"}
             />
             <StepCardSell
-              icon={<IconCircle className="h-10 w-10" />}
+              name={"business7"}
+              icon={<IconCircle />}
               title={"I’m just starting my Business Online44"}
             />
           </div>
@@ -305,7 +363,8 @@ const Step2 = () => {
 const formatOptionLabel = ({ label }: { label: string }) => (
   <div style={{ display: "flex", alignItems: "center" }}>
     <img
-      src={"https://source.unsplash.com/user/c_v_r/32x32"}
+      className="rounded-lg"
+      src={"https://source.unsplash.com/user/c_v_r/26x26"}
       alt="Location Icon"
       style={{ marginRight: "8px" }}
     />
@@ -550,6 +609,19 @@ const Step3 = () => {
   )
 }
 
+const CustomShape = () => {
+  const shapeStyle = {
+    width: 0,
+    height: 0,
+    border: "1px solid red",
+    borderLeft: "40px solid transparent",
+    borderRight: "40px solid transparent",
+    borderBottom: "40px solid #171717",
+    transform: "rotate(-90deg)",
+  }
+
+  return <div style={shapeStyle}></div>
+}
 const OnboardingIndex = () => {
   const { t } = useTranslation()
 
@@ -569,6 +641,9 @@ const OnboardingIndex = () => {
   return (
     <>
       <div className={clx("")}>
+        <div className="m-20 flex">
+          <div id="hexagon"></div>
+        </div>
         <div className="">
           <StepperMVN
             layeredContext={layeredContext}

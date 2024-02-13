@@ -21,7 +21,7 @@ const IconCircle: React.FC<IconBadgeProps> = ({
   return (
     <>
       <div
-        className={clsx("h-10  w-10  rounded-full bg-black", className)}
+        className={clsx("h-[24px] w-[24px] rounded-full bg-black", className)}
       ></div>
     </>
   )
