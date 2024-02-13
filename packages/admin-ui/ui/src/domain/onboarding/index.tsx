@@ -13,10 +13,11 @@ import { useAdminRegion, useAdminRegions, useAdminStore } from "medusa-react"
 
 import Select from "react-select"
 import { countries } from "../../utils/countries"
-import { useForm, useWatch } from "react-hook-form"
+import { Controller, useForm, useWatch } from "react-hook-form"
 import OnboardingFormProvider, {
   useOnboardingForm,
 } from "../../moveshop-ui/components/molecules/stepper/OnboardingFormProvider"
+import { NextSelect } from "../../components/molecules/select/next-select"
 
 type StepProps = {
   label: string
@@ -115,7 +116,7 @@ const StepHeader = () => {
         <p className={clx("text-large ")}>
           Hey Ahsan, we’re excited to have you!
         </p>
-        <h1 className={clx("mt-3 text-2xl font-medium ")}>
+        <h1 className={clx("mt-3 text-2xl font-semibold ")}>
           Where would you like to sell?
         </h1>
       </div>
@@ -158,6 +159,7 @@ const StepCardBusiness = ({ icon, title }) => {
     } else {
       enableNextPage()
     }
+    enableNextPage()
   }, [reg])
 
   return (
@@ -212,6 +214,7 @@ const StepCardSell = ({ icon, title }) => {
     } else {
       enableNextPage()
     }
+    enableNextPage()
   }, [reg])
   return (
     <>
@@ -268,41 +271,6 @@ const Step1 = () => {
 }
 
 const Step2 = () => {
-  const { t } = useTranslation()
-  const { enableNextPage, disableNextPage } = React.useContext(SteppedContext)
-  const { onboardingForm } = useOnboardingForm()
-
-  const {
-    formState: { errors },
-    handleSubmit,
-    control,
-  } = onboardingForm
-
-  const reg = useWatch({
-    control,
-    name: "region",
-  })
-
-  const { regions } = useAdminRegions()
-
-  const regionOptions = useMemo(() => {
-    if (!regions) {
-      return []
-    }
-
-    return regions.map((region) => ({
-      label: region.name,
-      value: region.id,
-    }))
-  }, [regions])
-
-  useEffect(() => {
-    if (!reg) {
-      disableNextPage()
-    } else {
-      enableNextPage()
-    }
-  }, [reg])
   return (
     <>
       <div>
@@ -334,6 +302,17 @@ const Step2 = () => {
   )
 }
 
+const formatOptionLabel = ({ label }: { label: string }) => (
+  <div style={{ display: "flex", alignItems: "center" }}>
+    <img
+      src={"https://source.unsplash.com/user/c_v_r/32x32"}
+      alt="Location Icon"
+      style={{ marginRight: "8px" }}
+    />
+    {label}
+  </div>
+)
+
 const Step3 = () => {
   const { store, isLoading } = useAdminStore()
 
@@ -361,7 +340,6 @@ const Step3 = () => {
 
   const {
     formState: { errors },
-    handleSubmit,
     control,
   } = onboardingForm
 
@@ -389,150 +367,183 @@ const Step3 = () => {
     } else {
       enableNextPage()
     }
+    enableNextPage()
   }, [reg])
+
   return (
     <>
       <div>
         <StepHeader />
 
-        <div className="mt-4">
-          <p>Where is your business located?</p>
+        <div className="mt-12 flex flex-col gap-8">
+          <div>
+            <p className="mb-4">Where is your business located?</p>
+            <Controller
+              control={control}
+              name="country"
+              render={({ field: { onChange, value } }) => {
+                return (
+                  <Select
+                    value={value}
+                    onChange={onChange}
+                    options={countryOptions}
+                    defaultValue={countryOptions[13]}
+                    isSearchable
+                    classNamePrefix="react-select"
+                    formatOptionLabel={formatOptionLabel}
+                    styles={{
+                      // Your styles here
+                      // You can either include all styles directly or import them from an external CSS file
+                      control: (provided, state) => {
+                        return {
+                          ...provided,
+                          fontSize: "16px",
+                          borderRadius: "8px",
+                          borderColor: "#AFAFAF",
+                          padding: "20px",
+                          boxShadow: "none",
+                          "&:hover": {
+                            borderColor: "#dddddd",
+                          },
+                        }
+                      },
+                      valueContainer: (provided, state) => ({
+                        ...provided,
+                      }),
+                      input: (provided, state) => ({
+                        ...provided,
+                      }),
+                      indicatorsContainer: (provided, state) => ({
+                        ...provided,
+                      }),
+                      indicatorSeparator: (provided, state) => ({
+                        ...provided,
+                        display: "none",
+                      }),
+                      dropdownIndicator: (provided, state) => ({
+                        ...provided,
+                      }),
+                      menu: (provided, state) => ({
+                        ...provided,
+                        paddingLeft: "4px",
+                        paddingRight: "4px",
+                      }),
+                      option: (provided, state) => ({
+                        ...provided,
+                        borderRadius: "4px",
+                        marginTop: "4px",
+                        marginBottom: "4px",
+                        color: "#4d4d4d",
+                        backgroundColor: "transparent",
+                        "&:hover": {
+                          backgroundColor: "#eeeeee",
+                        },
+                      }),
+                      menuList: (provided, state) => ({
+                        ...provided,
+                        "&::-webkit-scrollbar": {
+                          width: "7.2px",
+                          height: "0px",
+                        },
+                        "&::-webkit-scrollbar-track": {
+                          background: "transparent",
+                        },
+                        "&::-webkit-scrollbar-thumb": {
+                          background: "#ddddde",
+                          borderRadius: "9999px",
+                        },
+                      }),
+                    }}
+                  />
+                )
+              }}
+            />
+          </div>
 
-          <Select
-            options={countryOptions}
-            isSearchable
-            classNamePrefix="react-select"
-            isMulti
-            styles={{
-              // Your styles here
-              // You can either include all styles directly or import them from an external CSS file
-              control: (provided, state) => {
-                return {
-                  ...provided,
-                  borderColor: "#dddddd",
-                  boxShadow: "none",
-                  "&:hover": {
-                    borderColor: "#dddddd",
-                  },
-                }
-              },
-              valueContainer: (provided, state) => ({
-                ...provided,
-              }),
-              input: (provided, state) => ({
-                ...provided,
-              }),
-              indicatorsContainer: (provided, state) => ({
-                ...provided,
-              }),
-              indicatorSeparator: (provided, state) => ({
-                ...provided,
-                display: "none",
-              }),
-              dropdownIndicator: (provided, state) => ({
-                ...provided,
-              }),
-              menu: (provided, state) => ({
-                ...provided,
-                paddingLeft: "4px",
-                paddingRight: "4px",
-              }),
-              option: (provided, state) => ({
-                ...provided,
-                borderRadius: "4px",
-                marginTop: "4px",
-                marginBottom: "4px",
-                color: "#4d4d4d",
-                backgroundColor: "transparent",
-                "&:hover": {
-                  backgroundColor: "#eeeeee",
-                },
-              }),
-              menuList: (provided, state) => ({
-                ...provided,
-                "&::-webkit-scrollbar": {
-                  width: "7.2px",
-                  height: "0px",
-                },
-                "&::-webkit-scrollbar-track": {
-                  background: "transparent",
-                },
-                "&::-webkit-scrollbar-thumb": {
-                  background: "#ddddde",
-                  borderRadius: "9999px",
-                },
-              }),
-            }}
-          />
-          <br />
+          <div>
+            <p className="mb-4">What is your store currency?</p>
 
-          <p>What is your store currency?</p>
-          <Select
-            options={countryOptions}
-            isSearchable
-            classNamePrefix="react-select"
-            isMulti
-            styles={{
-              // Your styles here
-              // You can either include all styles directly or import them from an external CSS file
-              control: (provided, state) => {
-                return {
-                  ...provided,
-                  borderColor: "#dddddd",
-                  boxShadow: "none",
-                  "&:hover": {
-                    borderColor: "#dddddd",
-                  },
-                }
-              },
-              valueContainer: (provided, state) => ({
-                ...provided,
-              }),
-              input: (provided, state) => ({
-                ...provided,
-              }),
-              indicatorsContainer: (provided, state) => ({
-                ...provided,
-              }),
-              indicatorSeparator: (provided, state) => ({
-                ...provided,
-                display: "none",
-              }),
-              dropdownIndicator: (provided, state) => ({
-                ...provided,
-              }),
-              menu: (provided, state) => ({
-                ...provided,
-                paddingLeft: "4px",
-                paddingRight: "4px",
-              }),
-              option: (provided, state) => ({
-                ...provided,
-                borderRadius: "4px",
-                marginTop: "4px",
-                marginBottom: "4px",
-                color: "#4d4d4d",
-                backgroundColor: "transparent",
-                "&:hover": {
-                  backgroundColor: "#eeeeee",
-                },
-              }),
-              menuList: (provided, state) => ({
-                ...provided,
-                "&::-webkit-scrollbar": {
-                  width: "7.2px",
-                  height: "0px",
-                },
-                "&::-webkit-scrollbar-track": {
-                  background: "transparent",
-                },
-                "&::-webkit-scrollbar-thumb": {
-                  background: "#ddddde",
-                  borderRadius: "9999px",
-                },
-              }),
-            }}
-          />
+            <Controller
+              name="currency"
+              control={control}
+              render={({ field: { onChange, value } }) => {
+                return (
+                  <Select
+                    onChange={onChange}
+                    value={value}
+                    formatOptionLabel={formatOptionLabel}
+                    options={countryOptions}
+                    defaultValue={countryOptions[0]}
+                    isSearchable
+                    classNamePrefix="react-select"
+                    styles={{
+                      // Your styles here
+                      // You can either include all styles directly or import them from an external CSS file
+                      control: (provided, state) => {
+                        return {
+                          ...provided,
+                          fontSize: "16px",
+                          borderColor: "#AFAFAF",
+                          borderRadius: "8px",
+                          padding: "20px",
+                          boxShadow: "none",
+                          "&:hover": {
+                            borderColor: "#dddddd",
+                          },
+                        }
+                      },
+                      valueContainer: (provided, state) => ({
+                        ...provided,
+                      }),
+                      input: (provided, state) => ({
+                        ...provided,
+                      }),
+                      indicatorsContainer: (provided, state) => ({
+                        ...provided,
+                      }),
+                      indicatorSeparator: (provided, state) => ({
+                        ...provided,
+                        display: "none",
+                      }),
+                      dropdownIndicator: (provided, state) => ({
+                        ...provided,
+                      }),
+                      menu: (provided, state) => ({
+                        ...provided,
+                        paddingLeft: "4px",
+                        paddingRight: "4px",
+                      }),
+                      option: (provided, state) => ({
+                        ...provided,
+                        borderRadius: "4px",
+                        marginTop: "4px",
+                        marginBottom: "4px",
+                        color: "#4d4d4d",
+                        backgroundColor: "transparent",
+                        "&:hover": {
+                          backgroundColor: "#eeeeee",
+                        },
+                      }),
+                      menuList: (provided, state) => ({
+                        ...provided,
+                        "&::-webkit-scrollbar": {
+                          width: "7.2px",
+                          height: "0px",
+                        },
+                        "&::-webkit-scrollbar-track": {
+                          background: "transparent",
+                        },
+                        "&::-webkit-scrollbar-thumb": {
+                          background: "#ddddde",
+                          borderRadius: "9999px",
+                        },
+                      }),
+                    }}
+                  />
+                )
+              }}
+            />
+          </div>
         </div>
       </div>
     </>

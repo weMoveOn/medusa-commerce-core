@@ -244,49 +244,50 @@ const StepperMVN: React.FC<SteppedProps> = ({
         >
           <div>{steps[context.currentStep]}</div>
         </div>
-        <footer className="mt-7">
-          <div className="gap-x-xsmall flex w-full justify-between ">
-            <div className="flex gap-3">
-              <Button
-                variant="ghost"
-                size="small"
-                disabled={context.currentStep === 0}
-                onClick={() => context.goToPreviousPage()}
-                className="w-[112px]"
-              >
-                Back
-              </Button>
-
+        <footer className=" border-t">
+          <div className=" flex w-full justify-between ">
+            <div>
               {context.currentStep > 0 && (
-                <Button
-                  variant="nuclear"
-                  size="small"
+                <button
                   disabled={!context.nextStepEnabled}
                   onClick={() =>
                     context.currentStep === steps.length - 1
                       ? resetAndSkip()
                       : ""
                   }
-                  className="w-[112px]"
+                  className={clx(
+                    "text-large rounded-lg px-10 py-5 font-medium text-black "
+                  )}
                 >
                   Skip
-                </Button>
+                </button>
               )}
             </div>
-
-            <Button
-              variant="primary"
-              size="small"
-              disabled={!context.nextStepEnabled}
-              onClick={() =>
-                context.currentStep === steps.length - 1
-                  ? resetAndSubmit()
-                  : context.goToNextPage()
-              }
-              className="w-[112px]"
-            >
-              {context.currentStep === steps.length - 1 ? "Submit" : "Next"}
-            </Button>
+            <div className="flex gap-3">
+              <button
+                disabled={context.currentStep === 0}
+                onClick={() => context.goToPreviousPage()}
+                className={clx(
+                  "text-large rounded-lg px-10 py-5 font-medium text-black"
+                )}
+              >
+                Back
+              </button>
+              <button
+                type="submit"
+                className={clx(
+                  "text-large rounded-lg bg-black px-10 py-5 font-medium text-white"
+                )}
+                disabled={!context.nextStepEnabled}
+                onClick={() =>
+                  context.currentStep === steps.length - 1
+                    ? resetAndSubmit()
+                    : context.goToNextPage()
+                }
+              >
+                {context.currentStep === steps.length - 1 ? "Submit" : "Next"}
+              </button>
+            </div>
           </div>
         </footer>
       </div>
