@@ -7846,7 +7846,7 @@ __metadata:
     react-nestable: ^2.0.0
     react-refresh: ^0.14.0
     react-router-dom: 6.8.0
-    react-select: ^5.5.4
+    react-select: ^5.8.0
     react-table: ^7.7.0
     style-loader: ^3.3.3
     swc-loader: ^0.2.3
@@ -43694,9 +43694,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-select@npm:^5.5.4":
-  version: 5.7.3
-  resolution: "react-select@npm:5.7.3"
+"react-select@npm:^5.8.0":
+  version: 5.8.0
+  resolution: "react-select@npm:5.8.0"
   dependencies:
     "@babel/runtime": ^7.12.0
     "@emotion/cache": ^11.4.0
@@ -43710,7 +43710,7 @@ __metadata:
   peerDependencies:
     react: ^16.8.0 || ^17.0.0 || ^18.0.0
     react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
-  checksum: a8000c55812651b2f16eebb9fc04ee3c4500a2e4984fc79964243a42132ade7ad1edb6421b908b4ead87ff1ae01cbc20be5f96eae934938e93b46bbdfee3c353
+  checksum: b4b98aaf117ee5cc4642871b7bd51fd0e2697988d0b880f30b21e933ca90258959147117d8aada36713b622e0e4cb06bd18ec02069f3f108896e0d31e69e3c16
   languageName: node
   linkType: hard
 

@@ -118,7 +118,7 @@ const RegionDetailsForm = ({ form, isCreate = false }: Props) => {
                 label={t("region-form-countries", "Countries")}
                 placeholder={t(
                   "region-form-choose-countries",
-                  "Choose countries"
+                  "Choose countries "
                 )}
                 isMulti
                 selectAll
