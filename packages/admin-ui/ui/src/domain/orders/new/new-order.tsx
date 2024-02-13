@@ -35,6 +35,7 @@ const NewOrder = ({ onDismiss }: NewOrderProps) => {
   } = useNewOrderForm()
 
   const onSubmit = handleSubmit((data) => {
+    console.log("data SteppedModal:>> ", data)
     mutate(
       {
         email: data.email,

@@ -1,6 +1,6 @@
 /* eslint-disable react/jsx-key */
 /* eslint-disable quotes */
-import React from "react"
+import React, { useEffect, useMemo } from "react"
 import { Route, Routes, useParams } from "react-router-dom"
 import { useTranslation } from "react-i18next"
 
@@ -8,16 +8,15 @@ import { SteppedContext } from "../../components/molecules/modal/stepped-modal"
 import { LayeredModalContext } from "../../components/molecules/modal/layered-modal"
 import StepperMVN from "../../moveshop-ui/components/molecules/stepper"
 import { clx } from "../../utils/clx"
-
 import IconCircle from "../../moveshop-ui/components/fundamentals/icon-circle"
-
-import { supportedLanguages } from "../../i18n"
-
-import { useAdminRegion } from "medusa-react"
-import Spinner from "../../components/atoms/spinner"
+import { useAdminRegion, useAdminRegions, useAdminStore } from "medusa-react"
 
 import Select from "react-select"
-import { useStoreData } from "../settings/regions/components/region-form/use-store-data"
+import { countries } from "../../utils/countries"
+import { useForm, useWatch } from "react-hook-form"
+import OnboardingFormProvider, {
+  useOnboardingForm,
+} from "../../moveshop-ui/components/molecules/stepper/OnboardingFormProvider"
 
 type StepProps = {
   label: string
@@ -125,6 +124,42 @@ const StepHeader = () => {
 }
 
 const StepCardBusiness = ({ icon, title }) => {
+  const { t } = useTranslation()
+  const { enableNextPage, disableNextPage } = React.useContext(SteppedContext)
+  const { onboardingForm } = useOnboardingForm()
+
+  const {
+    formState: { errors },
+    handleSubmit,
+    control,
+  } = onboardingForm
+
+  const reg = useWatch({
+    control,
+    name: "region",
+  })
+
+  const { regions } = useAdminRegions()
+
+  const regionOptions = useMemo(() => {
+    if (!regions) {
+      return []
+    }
+
+    return regions.map((region) => ({
+      label: region.name,
+      value: region.id,
+    }))
+  }, [regions])
+
+  useEffect(() => {
+    if (!reg) {
+      disableNextPage()
+    } else {
+      enableNextPage()
+    }
+  }, [reg])
+
   return (
     <>
       <div
@@ -143,6 +178,41 @@ const StepCardBusiness = ({ icon, title }) => {
 }
 
 const StepCardSell = ({ icon, title }) => {
+  const { t } = useTranslation()
+  const { enableNextPage, disableNextPage } = React.useContext(SteppedContext)
+
+  const { onboardingForm } = useOnboardingForm()
+
+  const {
+    formState: { errors },
+    handleSubmit,
+    control,
+  } = onboardingForm
+  const reg = useWatch({
+    control,
+    name: "region",
+  })
+
+  const { regions } = useAdminRegions()
+
+  const regionOptions = useMemo(() => {
+    if (!regions) {
+      return []
+    }
+
+    return regions.map((region) => ({
+      label: region.name,
+      value: region.id,
+    }))
+  }, [regions])
+
+  useEffect(() => {
+    if (!reg) {
+      disableNextPage()
+    } else {
+      enableNextPage()
+    }
+  }, [reg])
   return (
     <>
       <div className={clx(" items-center rounded-lg border p-5", {}, {})}>
@@ -198,6 +268,41 @@ const Step1 = () => {
 }
 
 const Step2 = () => {
+  const { t } = useTranslation()
+  const { enableNextPage, disableNextPage } = React.useContext(SteppedContext)
+  const { onboardingForm } = useOnboardingForm()
+
+  const {
+    formState: { errors },
+    handleSubmit,
+    control,
+  } = onboardingForm
+
+  const reg = useWatch({
+    control,
+    name: "region",
+  })
+
+  const { regions } = useAdminRegions()
+
+  const regionOptions = useMemo(() => {
+    if (!regions) {
+      return []
+    }
+
+    return regions.map((region) => ({
+      label: region.name,
+      value: region.id,
+    }))
+  }, [regions])
+
+  useEffect(() => {
+    if (!reg) {
+      disableNextPage()
+    } else {
+      enableNextPage()
+    }
+  }, [reg])
   return (
     <>
       <div>
@@ -229,191 +334,62 @@ const Step2 = () => {
   )
 }
 
-const RegionForm = () => {
-  const params = useParams()
-  const id: string | undefined = params["*"]
+const Step3 = () => {
+  const { store, isLoading } = useAdminStore()
+
+  const currencyOptions = useMemo(() => {
+    if (isLoading) {
+      return []
+    }
+
+    return (
+      store?.currencies.map((c) => ({
+        label: c.name,
+        value: c.code,
+      })) || []
+    )
+  }, [store, isLoading])
+
+  const countryOptions = countries?.map((c) => ({
+    label: c.name,
+    value: c.alpha2.toLowerCase(),
+  }))
+
   const { t } = useTranslation()
-  const { region, isLoading, isError } = useAdminRegion(id!, {
-    enabled: !!id,
+  const { enableNextPage, disableNextPage } = React.useContext(SteppedContext)
+  const { onboardingForm } = useOnboardingForm()
+
+  const {
+    formState: { errors },
+    handleSubmit,
+    control,
+  } = onboardingForm
+
+  const reg = useWatch({
+    control,
+    name: "region",
   })
 
-  if (isLoading) {
-    return (
-      <div className="flex h-full w-full items-center justify-center">
-        <Spinner variant="secondary" />
-      </div>
-    )
-  }
+  const { regions } = useAdminRegions()
 
-  if (isError) {
-    return (
-      <div className="bg-grey-0 rounded-rounded border-grey-20 gap-y-xsmall flex h-full w-full flex-col items-center justify-center border text-center ">
-        <h1 className="inter-large-semibold">
-          {t("edit-something-went-wrong", "Something went wrong...")}
-        </h1>
-        <p className="inter-base-regular text-grey-50">
-          {t(
-            "edit-no-region-found",
-            "We can't find a region with that ID, use the menu to the left to select a region."
-          )}
-        </p>
-      </div>
-    )
-  }
+  const regionOptions = useMemo(() => {
+    if (!regions) {
+      return []
+    }
 
-  if (!region) {
-    return null
-  }
+    return regions.map((region) => ({
+      label: region.name,
+      value: region.id,
+    }))
+  }, [regions])
 
-  return <></>
-}
-
-export interface ColourOption {
-  readonly value: string
-  readonly label: string
-  readonly color: string
-  readonly isFixed?: boolean
-  readonly isDisabled?: boolean
-}
-
-export const colourOptions: readonly ColourOption[] = [
-  { value: "ocean", label: "Ocean", color: "#00B8D9", isFixed: true },
-  { value: "blue", label: "Blue", color: "#0052CC", isDisabled: true },
-  { value: "purple", label: "Purple", color: "#5243AA" },
-  { value: "red", label: "Red", color: "#FF5630", isFixed: true },
-  { value: "orange", label: "Orange", color: "#FF8B00" },
-  { value: "yellow", label: "Yellow", color: "#FFC400" },
-  { value: "green", label: "Green", color: "#36B37E" },
-  { value: "forest", label: "Forest", color: "#00875A" },
-  { value: "slate", label: "Slate", color: "#253858" },
-  { value: "silver", label: "Silver", color: "#666666" },
-]
-
-export interface FlavourOption {
-  readonly value: string
-  readonly label: string
-  readonly rating: string
-}
-
-export const flavourOptions: readonly FlavourOption[] = [
-  { value: "vanilla", label: "Vanilla", rating: "safe" },
-  { value: "chocolate", label: "Chocolate", rating: "good" },
-  { value: "strawberry", label: "Strawberry", rating: "wild" },
-  { value: "salted-caramel", label: "Salted Caramel", rating: "crazy" },
-]
-
-export interface StateOption {
-  readonly value: string
-  readonly label: string
-}
-
-export const stateOptions: readonly StateOption[] = [
-  { value: "AL", label: "Alabama" },
-  { value: "AK", label: "Alaska" },
-  { value: "AS", label: "American Samoa" },
-  { value: "AZ", label: "Arizona" },
-  { value: "AR", label: "Arkansas" },
-  { value: "CA", label: "California" },
-  { value: "CO", label: "Colorado" },
-  { value: "CT", label: "Connecticut" },
-  { value: "DE", label: "Delaware" },
-  { value: "DC", label: "District Of Columbia" },
-  { value: "FM", label: "Federated States Of Micronesia" },
-  { value: "FL", label: "Florida" },
-  { value: "GA", label: "Georgia" },
-  { value: "GU", label: "Guam" },
-  { value: "HI", label: "Hawaii" },
-  { value: "ID", label: "Idaho" },
-  { value: "IL", label: "Illinois" },
-  { value: "IN", label: "Indiana" },
-  { value: "IA", label: "Iowa" },
-  { value: "KS", label: "Kansas" },
-  { value: "KY", label: "Kentucky" },
-  { value: "LA", label: "Louisiana" },
-  { value: "ME", label: "Maine" },
-  { value: "MH", label: "Marshall Islands" },
-  { value: "MD", label: "Maryland" },
-  { value: "MA", label: "Massachusetts" },
-  { value: "MI", label: "Michigan" },
-  { value: "MN", label: "Minnesota" },
-  { value: "MS", label: "Mississippi" },
-  { value: "MO", label: "Missouri" },
-  { value: "MT", label: "Montana" },
-  { value: "NE", label: "Nebraska" },
-  { value: "NV", label: "Nevada" },
-  { value: "NH", label: "New Hampshire" },
-  { value: "NJ", label: "New Jersey" },
-  { value: "NM", label: "New Mexico" },
-  { value: "NY", label: "New York" },
-  { value: "NC", label: "North Carolina" },
-  { value: "ND", label: "North Dakota" },
-  { value: "MP", label: "Northern Mariana Islands" },
-  { value: "OH", label: "Ohio" },
-  { value: "OK", label: "Oklahoma" },
-  { value: "OR", label: "Oregon" },
-  { value: "PW", label: "Palau" },
-  { value: "PA", label: "Pennsylvania" },
-  { value: "PR", label: "Puerto Rico" },
-  { value: "RI", label: "Rhode Island" },
-  { value: "SC", label: "South Carolina" },
-  { value: "SD", label: "South Dakota" },
-  { value: "TN", label: "Tennessee" },
-  { value: "TX", label: "Texas" },
-  { value: "UT", label: "Utah" },
-  { value: "VT", label: "Vermont" },
-  { value: "VI", label: "Virgin Islands" },
-  { value: "VA", label: "Virginia" },
-  { value: "WA", label: "Washington" },
-  { value: "WV", label: "West Virginia" },
-  { value: "WI", label: "Wisconsin" },
-  { value: "WY", label: "Wyoming" },
-]
-
-export const optionLength = [
-  { value: 1, label: "general" },
-  {
-    value: 2,
-    label:
-      "Evil is the moment when I lack the strength to be true to the Good that compels me.",
-  },
-  {
-    value: 3,
-    label:
-      "It is now an easy matter to spell out the ethic of a truth: 'Do all that you can to persevere in that which exceeds your perseverance. Persevere in the interruption. Seize in your being that which has seized and broken you.",
-  },
-]
-
-export const dogOptions = [
-  { id: 1, label: "Chihuahua" },
-  { id: 2, label: "Bulldog" },
-  { id: 3, label: "Dachshund" },
-  { id: 4, label: "Akita" },
-]
-
-// let bigOptions = [];
-// for (let i = 0; i < 10000; i++) {
-// 	bigOptions = bigOptions.concat(colourOptions);
-// }
-
-export interface GroupedOption {
-  readonly label: string
-  readonly options: readonly ColourOption[] | readonly FlavourOption[]
-}
-
-export const groupedOptions: readonly GroupedOption[] = [
-  {
-    label: "Colours",
-    options: colourOptions,
-  },
-  {
-    label: "Flavours",
-    options: flavourOptions,
-  },
-]
-const Step3 = () => {
-  const { currencyOptions, countryOptions } = useStoreData()
-
-  console.log("countryOptions :>> ", countryOptions)
+  useEffect(() => {
+    if (!reg) {
+      disableNextPage()
+    } else {
+      enableNextPage()
+    }
+  }, [reg])
   return (
     <>
       <div>
@@ -421,17 +397,142 @@ const Step3 = () => {
 
         <div className="mt-4">
           <p>Where is your business located?</p>
-          <br />
 
           <Select
             options={countryOptions}
-            isMulti
             isSearchable
-            name="colors"
-            className="basic-multi-select"
-            classNamePrefix="select"
+            classNamePrefix="react-select"
+            isMulti
+            styles={{
+              // Your styles here
+              // You can either include all styles directly or import them from an external CSS file
+              control: (provided, state) => {
+                return {
+                  ...provided,
+                  borderColor: "#dddddd",
+                  boxShadow: "none",
+                  "&:hover": {
+                    borderColor: "#dddddd",
+                  },
+                }
+              },
+              valueContainer: (provided, state) => ({
+                ...provided,
+              }),
+              input: (provided, state) => ({
+                ...provided,
+              }),
+              indicatorsContainer: (provided, state) => ({
+                ...provided,
+              }),
+              indicatorSeparator: (provided, state) => ({
+                ...provided,
+                display: "none",
+              }),
+              dropdownIndicator: (provided, state) => ({
+                ...provided,
+              }),
+              menu: (provided, state) => ({
+                ...provided,
+                paddingLeft: "4px",
+                paddingRight: "4px",
+              }),
+              option: (provided, state) => ({
+                ...provided,
+                borderRadius: "4px",
+                marginTop: "4px",
+                marginBottom: "4px",
+                color: "#4d4d4d",
+                backgroundColor: "transparent",
+                "&:hover": {
+                  backgroundColor: "#eeeeee",
+                },
+              }),
+              menuList: (provided, state) => ({
+                ...provided,
+                "&::-webkit-scrollbar": {
+                  width: "7.2px",
+                  height: "0px",
+                },
+                "&::-webkit-scrollbar-track": {
+                  background: "transparent",
+                },
+                "&::-webkit-scrollbar-thumb": {
+                  background: "#ddddde",
+                  borderRadius: "9999px",
+                },
+              }),
+            }}
           />
-          <div className="border-grey-20  "></div>
+          <br />
+
+          <p>What is your store currency?</p>
+          <Select
+            options={countryOptions}
+            isSearchable
+            classNamePrefix="react-select"
+            isMulti
+            styles={{
+              // Your styles here
+              // You can either include all styles directly or import them from an external CSS file
+              control: (provided, state) => {
+                return {
+                  ...provided,
+                  borderColor: "#dddddd",
+                  boxShadow: "none",
+                  "&:hover": {
+                    borderColor: "#dddddd",
+                  },
+                }
+              },
+              valueContainer: (provided, state) => ({
+                ...provided,
+              }),
+              input: (provided, state) => ({
+                ...provided,
+              }),
+              indicatorsContainer: (provided, state) => ({
+                ...provided,
+              }),
+              indicatorSeparator: (provided, state) => ({
+                ...provided,
+                display: "none",
+              }),
+              dropdownIndicator: (provided, state) => ({
+                ...provided,
+              }),
+              menu: (provided, state) => ({
+                ...provided,
+                paddingLeft: "4px",
+                paddingRight: "4px",
+              }),
+              option: (provided, state) => ({
+                ...provided,
+                borderRadius: "4px",
+                marginTop: "4px",
+                marginBottom: "4px",
+                color: "#4d4d4d",
+                backgroundColor: "transparent",
+                "&:hover": {
+                  backgroundColor: "#eeeeee",
+                },
+              }),
+              menuList: (provided, state) => ({
+                ...provided,
+                "&::-webkit-scrollbar": {
+                  width: "7.2px",
+                  height: "0px",
+                },
+                "&::-webkit-scrollbar-track": {
+                  background: "transparent",
+                },
+                "&::-webkit-scrollbar-thumb": {
+                  background: "#ddddde",
+                  borderRadius: "9999px",
+                },
+              }),
+            }}
+          />
         </div>
       </div>
     </>
@@ -444,19 +545,24 @@ const OnboardingIndex = () => {
   const steppedContext = React.useContext(SteppedContext)
   const layeredContext = React.useContext(LayeredModalContext)
 
+  const { onboardingForm } = useOnboardingForm()
+
+  const {
+    formState: { errors },
+    handleSubmit,
+  } = onboardingForm
+  const onSubmit = handleSubmit((data) => {
+    console.log("data :>> ", data)
+  })
+
   return (
     <>
-      {/* <Panels /> */}
-      {/* <Example /> */}
-      {/* <ProgressStepper /> */}
       <div className={clx("")}>
         <div className="">
           <StepperMVN
             layeredContext={layeredContext}
             context={steppedContext}
-            onSubmit={() => {
-              alert("onsubmit")
-            }}
+            onSubmit={onSubmit}
             steps={[<Step1 />, <Step2 />, <Step3 />]}
             handleClose={() => {
               alert("handleClose")
@@ -481,7 +587,14 @@ const OnboardingIndex = () => {
 const Onboarding = () => {
   return (
     <Routes>
-      <Route index element={<OnboardingIndex />} />
+      <Route
+        index
+        element={
+          <OnboardingFormProvider>
+            <OnboardingIndex />
+          </OnboardingFormProvider>
+        }
+      />
     </Routes>
   )
 }

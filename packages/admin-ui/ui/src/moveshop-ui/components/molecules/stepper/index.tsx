@@ -236,7 +236,7 @@ const StepperMVN: React.FC<SteppedProps> = ({
   }
   return (
     <div className=" flex items-center justify-center ">
-      <div className="mt-14 w-[650px] rounded-xl border   p-9  ">
+      <div className="mt-14 flex h-[780px] w-[650px] flex-col justify-between rounded-xl border  p-9  ">
         <div
           className={clsx(
             "flex max-h-full flex-col justify-between  transition-transform duration-100"
