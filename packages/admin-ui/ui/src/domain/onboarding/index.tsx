@@ -10,7 +10,7 @@ import { clx } from "../../utils/clx"
 import IconCircle from "../../moveshop-ui/components/fundamentals/icon-circle"
 import { useAdminRegions, useAdminStore } from "medusa-react"
 
-import Select from "react-select"
+import Select, { components } from "react-select"
 import { countries } from "../../utils/countries"
 import { Controller, useWatch } from "react-hook-form"
 import OnboardingFormProvider, {
@@ -122,26 +122,6 @@ const StepHeader = () => {
   )
 }
 
-const StepCardBusiness = ({
-  icon,
-  title,
-  htmlFor,
-}: {
-  icon: any
-  title: string
-  htmlFor: string
-}) => {
-  return (
-    <>
-      <label htmlFor={htmlFor} className="flex flex-col items-center  gap-3">
-        {icon}
-        <input type="checkbox" id={htmlFor} className="hidden" />
-        <span className="text-large">{title}</span>
-      </label>
-    </>
-  )
-}
-
 const StepCardSell = ({ icon, title, name }) => {
   const { t } = useTranslation()
   const { enableNextPage, disableNextPage } = React.useContext(SteppedContext)
@@ -222,19 +202,6 @@ const Step1 = () => {
     name: "region",
   })
 
-  const { regions } = useAdminRegions()
-
-  const regionOptions = useMemo(() => {
-    if (!regions) {
-      return []
-    }
-
-    return regions.map((region) => ({
-      label: region.name,
-      value: region.id,
-    }))
-  }, [regions])
-
   useEffect(() => {
     if (!reg) {
       disableNextPage()
@@ -304,6 +271,7 @@ const Step1 = () => {
               </label>
             </div>
           </div>
+
           <p className="mt-12">What are you planning to sell in your store?</p>
           <div className="mt-4 flex flex-col gap-3">
             <StepCardSell
@@ -356,6 +324,17 @@ const Step2 = () => {
         </div>
       </div>
     </>
+  )
+}
+
+const { DropdownIndicator } = components
+
+// Define a custom DropdownIndicator component
+const CustomDropdownIndicator = (props: any) => {
+  return (
+    <DropdownIndicator {...props}>
+      <IconCircle /> {/* Assuming IconCircle is your custom icon component */}
+    </DropdownIndicator>
   )
 }
 
@@ -435,172 +414,180 @@ const Step3 = () => {
 
         <div className="mt-12 flex flex-col gap-8">
           <div>
-            <p className="mb-4">Where is your business located?</p>
-            <Controller
-              control={control}
-              name="country"
-              render={({ field: { onChange, value } }) => {
-                return (
-                  <Select
-                    value={value}
-                    onChange={onChange}
-                    options={countryOptions}
-                    defaultValue={countryOptions[13]}
-                    isSearchable
-                    classNamePrefix="react-select"
-                    formatOptionLabel={formatOptionLabel}
-                    styles={{
-                      // Your styles here
-                      // You can either include all styles directly or import them from an external CSS file
-                      control: (provided, state) => {
-                        return {
+            <p className="mb-4 ">Where is your business located?</p>
+            <div>
+              <Controller
+                control={control}
+                name="country"
+                render={({ field: { onChange, value } }) => {
+                  return (
+                    <Select
+                      value={value}
+                      onChange={onChange}
+                      options={countryOptions}
+                      defaultValue={countryOptions[13]}
+                      isSearchable
+                      classNamePrefix="react-select"
+                      formatOptionLabel={formatOptionLabel}
+                      components={{
+                        DropdownIndicator: CustomDropdownIndicator,
+                      }} // Use your custom DropdownIndicator
+                      styles={{
+                        control: (provided, state) => {
+                          return {
+                            ...provided,
+                            fontSize: "16px",
+                            height: "64px",
+                            borderRadius: "8px",
+                            paddingLeft: "20px",
+                            paddingRight: "20px",
+                            borderColor: "#AFAFAF",
+                            boxShadow: "none",
+                            "&:hover": {
+                              borderColor: "#dddddd",
+                            },
+                          }
+                        },
+                        valueContainer: (provided, state) => ({
                           ...provided,
-                          fontSize: "16px",
-                          borderRadius: "8px",
-                          borderColor: "#AFAFAF",
-                          padding: "20px",
-                          boxShadow: "none",
+                        }),
+                        input: (provided, state) => ({
+                          ...provided,
+                        }),
+                        indicatorsContainer: (provided, state) => ({
+                          ...provided,
+                        }),
+                        indicatorSeparator: (provided, state) => ({
+                          ...provided,
+                          display: "none",
+                        }),
+                        dropdownIndicator: (provided, state) => ({
+                          ...provided,
+                          // Example: You can use an SVG icon here
+                        }),
+                        menu: (provided, state) => ({
+                          ...provided,
+                        }),
+                        option: (provided, state) => ({
+                          ...provided,
+                          borderRadius: "4px",
+                          marginTop: "4px",
+                          marginBottom: "4px",
+                          color: "#4d4d4d",
+                          backgroundColor: "transparent",
                           "&:hover": {
-                            borderColor: "#dddddd",
+                            backgroundColor: "#eeeeee",
                           },
-                        }
-                      },
-                      valueContainer: (provided, state) => ({
-                        ...provided,
-                      }),
-                      input: (provided, state) => ({
-                        ...provided,
-                      }),
-                      indicatorsContainer: (provided, state) => ({
-                        ...provided,
-                      }),
-                      indicatorSeparator: (provided, state) => ({
-                        ...provided,
-                        display: "none",
-                      }),
-                      dropdownIndicator: (provided, state) => ({
-                        ...provided,
-                      }),
-                      menu: (provided, state) => ({
-                        ...provided,
-                        paddingLeft: "4px",
-                        paddingRight: "4px",
-                      }),
-                      option: (provided, state) => ({
-                        ...provided,
-                        borderRadius: "4px",
-                        marginTop: "4px",
-                        marginBottom: "4px",
-                        color: "#4d4d4d",
-                        backgroundColor: "transparent",
-                        "&:hover": {
-                          backgroundColor: "#eeeeee",
-                        },
-                      }),
-                      menuList: (provided, state) => ({
-                        ...provided,
-                        "&::-webkit-scrollbar": {
-                          width: "7.2px",
-                          height: "0px",
-                        },
-                        "&::-webkit-scrollbar-track": {
-                          background: "transparent",
-                        },
-                        "&::-webkit-scrollbar-thumb": {
-                          background: "#ddddde",
-                          borderRadius: "9999px",
-                        },
-                      }),
-                    }}
-                  />
-                )
-              }}
-            />
+                        }),
+                        menuList: (provided, state) => ({
+                          ...provided,
+                          "&::-webkit-scrollbar": {
+                            width: "7.2px",
+                            height: "0px",
+                          },
+                          "&::-webkit-scrollbar-track": {
+                            background: "transparent",
+                          },
+                          "&::-webkit-scrollbar-thumb": {
+                            background: "#ddddde",
+                            borderRadius: "9999px",
+                          },
+                        }),
+                      }}
+                    />
+                  )
+                }}
+              />
+            </div>
           </div>
 
           <div>
             <p className="mb-4">What is your store currency?</p>
+            <div>
+              <Controller
+                name="currency"
+                control={control}
+                render={({ field: { onChange, value } }) => {
+                  return (
+                    <Select
+                      onChange={onChange}
+                      value={value}
+                      formatOptionLabel={formatOptionLabel}
+                      options={countryOptions}
+                      defaultValue={countryOptions[0]}
+                      isSearchable
+                      classNamePrefix="react-select"
+                      styles={{
+                        // Your styles here
+                        // You can either include all styles directly or import them from an external CSS file
+                        control: (provided, state) => {
+                          return {
+                            ...provided,
+                            fontSize: "16px",
+                            height: "64px",
+                            paddingLeft: "20px",
+                            paddingRight: "20px",
+                            borderColor: "#AFAFAF",
+                            borderRadius: "8px",
+                            boxShadow: "none",
+                            "&:hover": {
+                              borderColor: "#dddddd",
+                            },
+                          }
+                        },
 
-            <Controller
-              name="currency"
-              control={control}
-              render={({ field: { onChange, value } }) => {
-                return (
-                  <Select
-                    onChange={onChange}
-                    value={value}
-                    formatOptionLabel={formatOptionLabel}
-                    options={countryOptions}
-                    defaultValue={countryOptions[0]}
-                    isSearchable
-                    classNamePrefix="react-select"
-                    styles={{
-                      // Your styles here
-                      // You can either include all styles directly or import them from an external CSS file
-                      control: (provided, state) => {
-                        return {
+                        valueContainer: (provided, state) => ({
                           ...provided,
-                          fontSize: "16px",
-                          borderColor: "#AFAFAF",
-                          borderRadius: "8px",
-                          padding: "20px",
-                          boxShadow: "none",
+                        }),
+                        input: (provided, state) => ({
+                          ...provided,
+                        }),
+                        indicatorsContainer: (provided, state) => ({
+                          ...provided,
+                        }),
+                        indicatorSeparator: (provided, state) => ({
+                          ...provided,
+                          display: "none",
+                        }),
+                        dropdownIndicator: (provided, state) => ({
+                          ...provided,
+                        }),
+                        menu: (provided, state) => ({
+                          ...provided,
+                          paddingLeft: "4px",
+                          paddingRight: "4px",
+                        }),
+                        option: (provided, state) => ({
+                          ...provided,
+                          borderRadius: "4px",
+                          marginTop: "4px",
+                          marginBottom: "4px",
+                          color: "#4d4d4d",
+                          backgroundColor: "transparent",
                           "&:hover": {
-                            borderColor: "#dddddd",
+                            backgroundColor: "#eeeeee",
                           },
-                        }
-                      },
-                      valueContainer: (provided, state) => ({
-                        ...provided,
-                      }),
-                      input: (provided, state) => ({
-                        ...provided,
-                      }),
-                      indicatorsContainer: (provided, state) => ({
-                        ...provided,
-                      }),
-                      indicatorSeparator: (provided, state) => ({
-                        ...provided,
-                        display: "none",
-                      }),
-                      dropdownIndicator: (provided, state) => ({
-                        ...provided,
-                      }),
-                      menu: (provided, state) => ({
-                        ...provided,
-                        paddingLeft: "4px",
-                        paddingRight: "4px",
-                      }),
-                      option: (provided, state) => ({
-                        ...provided,
-                        borderRadius: "4px",
-                        marginTop: "4px",
-                        marginBottom: "4px",
-                        color: "#4d4d4d",
-                        backgroundColor: "transparent",
-                        "&:hover": {
-                          backgroundColor: "#eeeeee",
-                        },
-                      }),
-                      menuList: (provided, state) => ({
-                        ...provided,
-                        "&::-webkit-scrollbar": {
-                          width: "7.2px",
-                          height: "0px",
-                        },
-                        "&::-webkit-scrollbar-track": {
-                          background: "transparent",
-                        },
-                        "&::-webkit-scrollbar-thumb": {
-                          background: "#ddddde",
-                          borderRadius: "9999px",
-                        },
-                      }),
-                    }}
-                  />
-                )
-              }}
-            />
+                        }),
+                        menuList: (provided, state) => ({
+                          ...provided,
+                          "&::-webkit-scrollbar": {
+                            width: "7.2px",
+                            height: "0px",
+                          },
+                          "&::-webkit-scrollbar-track": {
+                            background: "transparent",
+                          },
+                          "&::-webkit-scrollbar-thumb": {
+                            background: "#ddddde",
+                            borderRadius: "9999px",
+                          },
+                        }),
+                      }}
+                    />
+                  )
+                }}
+              />
+            </div>
           </div>
         </div>
       </div>
@@ -612,7 +599,6 @@ const OnboardingIndex = () => {
   const { t } = useTranslation()
 
   const steppedContext = React.useContext(SteppedContext)
-
 
   const { onboardingForm } = useOnboardingForm()
 
