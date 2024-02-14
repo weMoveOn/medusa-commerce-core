@@ -17,6 +17,7 @@ import { Controller, useWatch } from "react-hook-form"
 import OnboardingFormProvider, {
   useOnboardingForm,
 } from "./onboarding-stepper/OnboardingFormProvider"
+import { Check } from "@medusajs/icons"
 
 type StepProps = {
   label: string
@@ -609,19 +610,7 @@ const Step3 = () => {
   )
 }
 
-const CustomShape = () => {
-  const shapeStyle = {
-    width: 0,
-    height: 0,
-    border: "1px solid red",
-    borderLeft: "40px solid transparent",
-    borderRight: "40px solid transparent",
-    borderBottom: "40px solid #171717",
-    transform: "rotate(-90deg)",
-  }
 
-  return <div style={shapeStyle}></div>
-}
 const OnboardingIndex = () => {
   const { t } = useTranslation()
 
@@ -654,13 +643,6 @@ const OnboardingIndex = () => {
               alert("handleSkip")
             }}
           />
-
-          {/* <div className="mb-5 text-center text-2xl ">
-            <a href="/a/home">
-              click here go to{" "}
-              <span className="underline"> admin dashboard </span>
-            </a>
-          </div> */}
         </div>
       </div>
     </>

@@ -7,6 +7,10 @@ import { ModalProps } from "../../../components/molecules/modal"
 import { clx } from "../../../utils/clx"
 import IconCircle from "../../../moveshop-ui/components/fundamentals/icon-circle"
 import "../onboarding-stepper/onboarding-stepper.css"
+import { Check } from "@medusajs/icons"
+import IconStepperArrowComplete from "./onboarding-stepper-atoms/complete"
+import IconStepperArrowCurrent from "./onboarding-stepper-atoms/current"
+import IconStepperArrowInComplete from "./onboarding-stepper-atoms/incomplete"
 enum SteppedActions {
   ENABLENEXTPAGE,
   DISABLENEXTPAGE,
@@ -220,7 +224,9 @@ const stepperArrow = (
           className="absolute z-20 flex items-center justify-center"
         >
           <div className="flex gap-1 text-white">
-            <IconCircle className="bg-white" />
+            <div className="flex h-[24px] w-[24px]  items-center justify-center  rounded-full bg-white ">
+              <Check className="   text-black " />
+            </div>
             <h4>Business Need</h4>
           </div>
         </div>
@@ -229,7 +235,9 @@ const stepperArrow = (
           className="absolute z-10 flex items-center justify-center"
         >
           <div className="flex gap-1 text-white">
-            <IconCircle className="bg-white" />
+            <div className="h-[24px] w-[24px] rounded-full bg-white">
+              <Check />
+            </div>
             <h4>Product Type</h4>
           </div>
         </div>
@@ -299,13 +307,30 @@ const StepperMVN: React.FC<SteppedProps> = ({
   const resetAndSubmit = () => {
     onSubmit()
   }
+
   return (
-    <div className=" mt-[52px] flex h-[780px] w-[650px] items-center justify-center">
-      <div className=" flex   flex-col justify-between rounded-xl border  p-9  ">
-        <header className="border-b   pb-[18px]">{stepperArrow}</header>
-        <div className={clsx(" mt-8 flex  flex-col justify-between  ")}>
+    <div className=" flex items-center justify-center ">
+      <div className="mt-14 flex h-[880px] w-[650px] flex-col justify-between rounded-xl border  p-9  ">
+        {/* header */}
+        <>
+          <div>
+            <div className="relative flex gap-3">
+              <IconStepperArrowComplete cssId="pointer1" className="z-20" />
+              <IconStepperArrowCurrent cssId="pointer2" className="z-10" />
+              <IconStepperArrowInComplete cssId="pointer3" />
+            </div>
+          </div>
+        </>
+
+        {/* body */}
+        <div
+          className={clsx(
+            "flex min-h-[600px] flex-col justify-between  transition-transform duration-100"
+          )}
+        >
           <div>{steps[context.currentStep]}</div>
         </div>
+
         <footer className=" border-t ">
           <div className=" mt-9 flex w-full justify-between rounded-lg ">
             <div>
