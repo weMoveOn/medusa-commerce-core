@@ -1,5 +1,6 @@
 import clsx from "clsx"
 import React from "react"
+import { clx } from "../../../../utils/clx"
 
 type IconBadgeProps = {
   variant?:
@@ -21,7 +22,7 @@ const IconCircle: React.FC<IconBadgeProps> = ({
   return (
     <>
       <div
-        className={clsx("h-[24px] w-[24px] rounded-full bg-black", className)}
+        className={clx("h-[24px] w-[24px] rounded-full bg-black", className)}
       ></div>
     </>
   )

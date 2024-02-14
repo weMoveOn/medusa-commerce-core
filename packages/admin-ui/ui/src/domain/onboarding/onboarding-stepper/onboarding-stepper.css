@@ -1,0 +1,143 @@
+#hexagon {
+  width: 100px;
+  height: 57.735px;
+  background: black;
+  border-radius: 1px;
+  position: relative;
+}
+#hexagon::before {
+  content: "";
+  position: absolute;
+  top: 14px;
+  transform: rotate(90deg);
+  left: 66.8675px;
+  width: 0;
+  height: 0;
+  border-left: 40px solid transparent;
+  border-right: 40.5px solid transparent;
+  border-bottom: 25px solid black;
+}
+#hexagon::after {
+  content: "";
+  position: absolute;
+  top: 14px;
+  transform: rotate(90deg);
+  left: -35.6px;
+  width: 0;
+  height: 0;
+  border-left: 44px solid transparent;
+  border-right: 40px solid transparent;
+  border-bottom: 25px solid white;
+}
+
+#base {
+  background: red;
+  display: inline-block;
+  height: 55px;
+  margin-left: 20px;
+  margin-top: 55px;
+  position: relative;
+  width: 100px;
+}
+#base:before {
+  border-bottom: 35px solid red;
+  border-left: 50px solid transparent;
+  border-right: 50px solid transparent;
+  content: "";
+  height: 0;
+  left: 0;
+  position: absolute;
+  top: -35px;
+  width: 0;
+}
+
+/* 1 */
+
+#pointer1 {
+  width: 210px;
+  height: 46px;
+  position: relative;
+  background: #171717;
+}
+#pointer1:after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 0;
+  height: 0;
+  border-left: 20px solid #171717;
+  border-top: 23px solid transparent;
+  border-bottom: 23px solid transparent;
+}
+#pointer1:before {
+  content: "";
+  position: absolute;
+  right: -20px;
+  bottom: 0;
+  width: 0;
+  height: 0;
+  border-left: 20px solid #171717;
+  border-top: 23px solid transparent;
+  border-bottom: 23px solid transparent;
+}
+
+/* 2 */
+#pointer2 {
+  width: 210px;
+  height: 46px;
+  position: relative;
+  background: #171717;
+}
+#pointer2:after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 0;
+  height: 0;
+  border-left: 20px solid white;
+  border-top: 23px solid transparent;
+  border-bottom: 23px solid transparent;
+}
+#pointer2:before {
+  content: "";
+  position: absolute;
+  right: -20px;
+  bottom: 0;
+  width: 0;
+  height: 0;
+  border-left: 20px solid #171717;
+  border-top: 23px solid transparent;
+  border-bottom: 23px solid transparent;
+}
+
+/* 3 */
+#pointer3 {
+  width: 210px;
+  height: 46px;
+  position: relative;
+  background: #171717;
+}
+#pointer3:after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 0;
+  height: 0;
+  border-left: 20px solid white;
+  border-top: 23px solid transparent;
+  border-bottom: 23px solid transparent;
+}
+#pointer3:before {
+  content: "";
+  position: absolute;
+  right: -20px;
+  bottom: 0;
+  width: 0;
+  height: 0;
+  border-left: 20px solid #171717;
+  border-top: 23px solid transparent;
+  border-bottom: 23px solid transparent;
+}

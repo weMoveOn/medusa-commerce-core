@@ -2,11 +2,11 @@
 import clsx from "clsx"
 import React, { ReactNode, useReducer } from "react"
 
-import { ILayeredModalContext } from "../../../../components/molecules/modal/layered-modal"
-import { ModalProps } from "../../../../components/molecules/modal"
-import { clx } from "../../../../utils/clx"
-import Button from "../../../../components/fundamentals/button"
-
+import { ILayeredModalContext } from "../../../components/molecules/modal/layered-modal"
+import { ModalProps } from "../../../components/molecules/modal"
+import { clx } from "../../../utils/clx"
+import IconCircle from "../../../moveshop-ui/components/fundamentals/icon-circle"
+import "../onboarding-stepper/onboarding-stepper.css"
 enum SteppedActions {
   ENABLENEXTPAGE,
   DISABLENEXTPAGE,
@@ -211,6 +211,71 @@ const StepTitle = ({
   )
 }
 
+const stepperArrow = (
+  <>
+    <div>
+      <div className="relative flex gap-3">
+        <div
+          id="pointer1"
+          className="absolute z-20 flex items-center justify-center"
+        >
+          <div className="flex gap-1 text-white">
+            <IconCircle className="bg-white" />
+            <h4>Business Need</h4>
+          </div>
+        </div>
+        <div
+          id="pointer2"
+          className="absolute z-10 flex items-center justify-center"
+        >
+          <div className="flex gap-1 text-white">
+            <IconCircle className="bg-white" />
+            <h4>Product Type</h4>
+          </div>
+        </div>
+        <div id="pointer3" className="absolute "></div>
+      </div>
+    </div>
+  </>
+)
+
+const stepperHeader = (
+  <>
+    <header>
+      <div className="flex flex-col">
+        <h2 className="inter-xlarge-semibold">{"title"}</h2>
+        <div>
+          {
+            <div className="my-12">
+              <div className="   ">
+                <div>
+                  <ol className="flex w-full items-center justify-between">
+                    {[]?.map((_, i) => (
+                      <StepActive
+                        key={`step-${i}`}
+                        currentStep={context.currentStep}
+                        index={i}
+                      />
+                    ))}
+                  </ol>
+                  <br />
+                  <ol className="flex w-full items-center justify-between">
+                    <StepTitle title={"Your Need"} isLastIndex={false} />
+                    <StepTitle
+                      title={"Your product type"}
+                      isLastIndex={false}
+                    />
+                    <StepTitle title={"Where to sell"} isLastIndex={true} />
+                  </ol>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    </header>
+  </>
+)
 const StepperMVN: React.FC<SteppedProps> = ({
   context,
   steps,
@@ -235,13 +300,10 @@ const StepperMVN: React.FC<SteppedProps> = ({
     onSubmit()
   }
   return (
-    <div className=" flex items-center justify-center ">
-      <div className="mt-14 flex h-[780px] w-[650px] flex-col justify-between rounded-xl border  p-9  ">
-        <div
-          className={clsx(
-            "flex max-h-full flex-col justify-between  transition-transform duration-100"
-          )}
-        >
+    <div className=" mt-[52px] flex h-[780px] w-[650px] items-center justify-center">
+      <div className=" flex   flex-col justify-between rounded-xl border  p-9  ">
+        <header className="border-b   pb-[18px]">{stepperArrow}</header>
+        <div className={clsx(" mt-8 flex  flex-col justify-between  ")}>
           <div>{steps[context.currentStep]}</div>
         </div>
         <footer className=" border-t ">
@@ -296,42 +358,3 @@ const StepperMVN: React.FC<SteppedProps> = ({
 }
 
 export default StepperMVN
-
-{
-  /* <header>
-            <div className="flex flex-col">
-              <h2 className="inter-xlarge-semibold">{title}</h2>
-              <div>
-                {
-                  <div className="my-12">
-                    <div className="   ">
-                      <div>
-                        <ol className="flex w-full items-center justify-between">
-                          {steps?.map((_, i) => (
-                            <StepActive
-                              key={`step-${i}`}
-                              currentStep={context.currentStep}
-                              index={i}
-                            />
-                          ))}
-                        </ol>
-                        <br />
-                        <ol className="flex w-full items-center justify-between">
-                          <StepTitle title={"Your Need"} isLastIndex={false} />
-                          <StepTitle
-                            title={"Your product type"}
-                            isLastIndex={false}
-                          />
-                          <StepTitle
-                            title={"Where to sell"}
-                            isLastIndex={true}
-                          />
-                        </ol>
-                      </div>
-                    </div>
-                  </div>
-                }
-              </div>
-            </div>
-          </header> */
-}

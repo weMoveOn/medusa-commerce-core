@@ -6,7 +6,7 @@ import { useTranslation } from "react-i18next"
 
 import { SteppedContext } from "../../components/molecules/modal/stepped-modal"
 import { LayeredModalContext } from "../../components/molecules/modal/layered-modal"
-import StepperMVN from "../../moveshop-ui/components/molecules/stepper"
+import StepperMVN from "./onboarding-stepper"
 import { clx } from "../../utils/clx"
 import IconCircle from "../../moveshop-ui/components/fundamentals/icon-circle"
 import { useAdminRegions, useAdminStore } from "medusa-react"
@@ -16,8 +16,8 @@ import { countries } from "../../utils/countries"
 import { Controller, useWatch } from "react-hook-form"
 import OnboardingFormProvider, {
   useOnboardingForm,
-} from "../../moveshop-ui/components/molecules/stepper/OnboardingFormProvider"
-import "./onboarding.css"
+} from "./onboarding-stepper/OnboardingFormProvider"
+
 type StepProps = {
   label: string
   title: string
@@ -641,9 +641,6 @@ const OnboardingIndex = () => {
   return (
     <>
       <div className={clx("")}>
-        <div className="m-20 flex">
-          <div id="hexagon"></div>
-        </div>
         <div className="">
           <StepperMVN
             layeredContext={layeredContext}
@@ -658,12 +655,12 @@ const OnboardingIndex = () => {
             }}
           />
 
-          <div className="mb-5 text-center text-2xl ">
+          {/* <div className="mb-5 text-center text-2xl ">
             <a href="/a/home">
               click here go to{" "}
               <span className="underline"> admin dashboard </span>
             </a>
-          </div>
+          </div> */}
         </div>
       </div>
     </>
