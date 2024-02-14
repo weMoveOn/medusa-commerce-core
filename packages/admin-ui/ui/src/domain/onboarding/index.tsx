@@ -5,8 +5,7 @@ import { Route, Routes } from "react-router-dom"
 import { useTranslation } from "react-i18next"
 
 import { SteppedContext } from "../../components/molecules/modal/stepped-modal"
-import { LayeredModalContext } from "../../components/molecules/modal/layered-modal"
-import StepperMVN from "./onboarding-stepper"
+import OnboardingStepper from "./onboarding-stepper"
 import { clx } from "../../utils/clx"
 import IconCircle from "../../moveshop-ui/components/fundamentals/icon-circle"
 import { useAdminRegions, useAdminStore } from "medusa-react"
@@ -17,7 +16,6 @@ import { Controller, useWatch } from "react-hook-form"
 import OnboardingFormProvider, {
   useOnboardingForm,
 } from "./onboarding-stepper/OnboardingFormProvider"
-import { Check } from "@medusajs/icons"
 
 type StepProps = {
   label: string
@@ -309,7 +307,7 @@ const Step1 = () => {
           <p className="mt-12">What are you planning to sell in your store?</p>
           <div className="mt-4 flex flex-col gap-3">
             <StepCardSell
-              name={"business3"}
+              name={"Online3"}
               icon={<IconCircle />}
               title={"I’m just starting my Business Online3"}
             />
@@ -610,12 +608,11 @@ const Step3 = () => {
   )
 }
 
-
 const OnboardingIndex = () => {
   const { t } = useTranslation()
 
   const steppedContext = React.useContext(SteppedContext)
-  const layeredContext = React.useContext(LayeredModalContext)
+
 
   const { onboardingForm } = useOnboardingForm()
 
@@ -629,10 +626,10 @@ const OnboardingIndex = () => {
 
   return (
     <>
+      {/* <Panels /> */}
       <div className={clx("")}>
         <div className="">
-          <StepperMVN
-            layeredContext={layeredContext}
+          <OnboardingStepper
             context={steppedContext}
             onSubmit={onSubmit}
             steps={[<Step1 />, <Step2 />, <Step3 />]}

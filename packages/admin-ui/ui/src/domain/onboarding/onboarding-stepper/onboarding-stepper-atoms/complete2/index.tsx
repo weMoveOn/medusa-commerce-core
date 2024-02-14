@@ -1,6 +1,7 @@
-import { Check } from "@medusajs/icons"
 import { clx } from "../../../../../utils/clx"
-const IconStepperArrowCurrent = ({
+import { Check } from "@medusajs/icons"
+
+const IconStepperArrowComplete2 = ({
   className,
   cssId,
 }: {
@@ -13,8 +14,8 @@ const IconStepperArrowCurrent = ({
       className={clx(" absolute  flex items-center justify-center", className)}
     >
       <div className="flex gap-1 text-white ">
-        <div className="h-[24px]  w-[24px] rounded-full bg-white">
-          <Check />
+        <div className="flex  h-[24px] w-[24px] items-center justify-center rounded-full bg-white">
+          <Check className=" text-black " />
         </div>
         <h4>Product Type</h4>
       </div>
@@ -22,4 +23,4 @@ const IconStepperArrowCurrent = ({
   )
 }
 
-export default IconStepperArrowCurrent
+export default IconStepperArrowComplete2

@@ -1,6 +1,6 @@
 /* eslint-disable no-confusing-arrow */
 import clsx from "clsx"
-import React, { ReactNode, useReducer } from "react"
+import React, { ReactNode, useEffect, useReducer } from "react"
 
 import { ILayeredModalContext } from "../../../components/molecules/modal/layered-modal"
 import { ModalProps } from "../../../components/molecules/modal"
@@ -11,6 +11,10 @@ import { Check } from "@medusajs/icons"
 import IconStepperArrowComplete from "./onboarding-stepper-atoms/complete"
 import IconStepperArrowCurrent from "./onboarding-stepper-atoms/current"
 import IconStepperArrowInComplete from "./onboarding-stepper-atoms/incomplete"
+import { useWatch } from "react-hook-form"
+import { useTranslation } from "react-i18next"
+import { useOnboardingForm } from "./OnboardingFormProvider"
+import IconStepperArrowComplete2 from "./onboarding-stepper-atoms/complete2"
 enum SteppedActions {
   ENABLENEXTPAGE,
   DISABLENEXTPAGE,
@@ -87,7 +91,6 @@ const reducer = (state: any, action: any) => {
 
 export const SteppedProvider = ({ children }: any) => {
   const [state, dispatch] = useReducer(reducer, defaultContext)
-
   return (
     <SteppedContext.Provider
       value={{
@@ -120,177 +123,10 @@ export const SteppedProvider = ({ children }: any) => {
   )
 }
 
-const StepActive = ({
-  currentStep,
-  index,
-}: {
-  currentStep: number
-  index: number
-}) => {
-  // currentStep >= index || currentStep === index currentStep <= index
-  return (
-    <li
-      className={clx(
-        "flex w-full  items-center justify-between",
-        {
-          // eslint-disable-next-line quotes
-          'after:inline-block after:h-1 after:w-full after:border-4 after:border-b after:border-blue-100 after:content-[""] dark:after:border-blue-800':
-            currentStep >= index,
-          // eslint-disable-next-line quotes
-          'after:inline-block after:h-1 after:w-full after:border-4 after:border-b after:border-gray-100 after:content-[""] dark:after:border-gray-800':
-            currentStep <= index,
-        },
-        {}
-      )}
-    >
-      {currentStep >= index ? (
-        <span
-          className={clx(
-            "flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-800 lg:h-12 lg:w-12",
-            {
-              "text-blue-600 dark:text-blue-300 lg:h-4 lg:w-4": true,
-              "text-gray-500 dark:text-gray-100 lg:h-5 lg:w-5": true,
-            }
-          )}
-        >
-          <svg
-            className={clsx(
-              "h-3.5 w-3.5 text-blue-600 dark:text-blue-300 lg:h-4 lg:w-4"
-            )}
-            aria-hidden="true"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 16 12"
-          >
-            <path
-              stroke="currentColor"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M1 5.917 5.724 10.5 15 1.5"
-            />
-          </svg>
-        </span>
-      ) : (
-        <span
-          className={clsx(
-            " h-10 w-10 shrink-0 rounded-full bg-gray-100 dark:bg-gray-700",
-            {
-              "text-gray-500 dark:text-gray-100 ": true,
-            }
-          )}
-        ></span>
-      )}
-    </li>
-  )
-}
-
-const StepTitle = ({
-  title,
-  isLastIndex,
-}: {
-  title: string
-  isLastIndex: boolean
-}) => {
-  return (
-    <>
-      <li
-        className={clsx("flex w-full items-center justify-between", {
-          "dark:after:border-gray-700": true,
-          "w-1/12": isLastIndex,
-        })}
-      >
-        <span
-          className={clsx(
-            "flex shrink-0 items-center justify-center rounded-full font-bold dark:bg-gray-700 lg:h-12 lg:w-12",
-            {
-              "text-gray-500 dark:text-gray-100 lg:h-5 lg:w-5": false,
-            }
-          )}
-        >
-          {title}
-        </span>
-      </li>
-    </>
-  )
-}
-
-const stepperArrow = (
-  <>
-    <div>
-      <div className="relative flex gap-3">
-        <div
-          id="pointer1"
-          className="absolute z-20 flex items-center justify-center"
-        >
-          <div className="flex gap-1 text-white">
-            <div className="flex h-[24px] w-[24px]  items-center justify-center  rounded-full bg-white ">
-              <Check className="   text-black " />
-            </div>
-            <h4>Business Need</h4>
-          </div>
-        </div>
-        <div
-          id="pointer2"
-          className="absolute z-10 flex items-center justify-center"
-        >
-          <div className="flex gap-1 text-white">
-            <div className="h-[24px] w-[24px] rounded-full bg-white">
-              <Check />
-            </div>
-            <h4>Product Type</h4>
-          </div>
-        </div>
-        <div id="pointer3" className="absolute "></div>
-      </div>
-    </div>
-  </>
-)
-
-const stepperHeader = (
-  <>
-    <header>
-      <div className="flex flex-col">
-        <h2 className="inter-xlarge-semibold">{"title"}</h2>
-        <div>
-          {
-            <div className="my-12">
-              <div className="   ">
-                <div>
-                  <ol className="flex w-full items-center justify-between">
-                    {[]?.map((_, i) => (
-                      <StepActive
-                        key={`step-${i}`}
-                        currentStep={context.currentStep}
-                        index={i}
-                      />
-                    ))}
-                  </ol>
-                  <br />
-                  <ol className="flex w-full items-center justify-between">
-                    <StepTitle title={"Your Need"} isLastIndex={false} />
-                    <StepTitle
-                      title={"Your product type"}
-                      isLastIndex={false}
-                    />
-                    <StepTitle title={"Where to sell"} isLastIndex={true} />
-                  </ol>
-                </div>
-              </div>
-            </div>
-          }
-        </div>
-      </div>
-    </header>
-  </>
-)
-const StepperMVN: React.FC<SteppedProps> = ({
+const OnboardingStepper: React.FC<SteppedProps> = ({
   context,
   steps,
-  layeredContext,
-  title,
   onSubmit,
-  lastScreenIsSummary = false,
   handleClose,
   handleSkip,
 }) => {
@@ -308,16 +144,79 @@ const StepperMVN: React.FC<SteppedProps> = ({
     onSubmit()
   }
 
+  const { t } = useTranslation()
+
+  const { onboardingForm } = useOnboardingForm()
+
+  const {
+    formState: { errors },
+    control,
+  } = onboardingForm
+
+  console.log("steps.length :>> ", steps.length)
+  console.log("context.currentStep :>> ", context.currentStep)
   return (
     <div className=" flex items-center justify-center ">
       <div className="mt-14 flex h-[880px] w-[650px] flex-col justify-between rounded-xl border  p-9  ">
-        {/* header */}
         <>
           <div>
             <div className="relative flex gap-3">
-              <IconStepperArrowComplete cssId="pointer1" className="z-20" />
-              <IconStepperArrowCurrent cssId="pointer2" className="z-10" />
-              <IconStepperArrowInComplete cssId="pointer3" />
+              {/* {steps.length === context.currentStep ? (
+                  <IconStepperArrowCurrent cssId="pointer2" className="z-10" />
+                ) : (
+                  <IconStepperArrowComplete cssId="pointer1" className="z-20" />
+                )} */}
+              {[1, 2, 3]?.map((_, i) => {
+                if (i > context.currentStep) {
+                  return (
+                    <IconStepperArrowInComplete
+                      key={`step-${i}`}
+                      cssId="incomplete"
+                      className=""
+                    />
+                  )
+                }
+
+                if (context.currentStep === i) {
+                  if (i === 0) {
+                    return (
+                      <IconStepperArrowCurrent
+                        key={`step-${i}`}
+                        cssId="current"
+                        className="z-20"
+                      />
+                    )
+                  } else {
+                    return (
+                      <IconStepperArrowCurrent
+                        key={`step-${i}`}
+                        cssId="current2"
+                        className="z-20"
+                      />
+                    )
+                  }
+                }
+
+                if (context.currentStep >= i) {
+                  if (i === 0) {
+                    return (
+                      <IconStepperArrowComplete
+                        key={`step-${i}`}
+                        cssId="complete"
+                        className="z-50"
+                      />
+                    )
+                  } else if (i === 1) {
+                    return (
+                      <IconStepperArrowComplete2
+                        key={`step-${i}`}
+                        cssId="complete2"
+                        className="z-30"
+                      />
+                    )
+                  }
+                }
+              })}
             </div>
           </div>
         </>
@@ -382,4 +281,4 @@ const StepperMVN: React.FC<SteppedProps> = ({
   )
 }
 
-export default StepperMVN
+export default OnboardingStepper

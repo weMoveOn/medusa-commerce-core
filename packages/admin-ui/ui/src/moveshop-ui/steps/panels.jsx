@@ -19,6 +19,9 @@ export default function Panels() {
           {steps.map((step, stepIdx) => (
             <li key={step.name} className="relative border bg-black md:flex md:flex text-white" 
             style={{ clipPath: 'polygon(80% 0, 100% 50%, 80% 100%, 0 100%, 20% 50%, 0 0)' }}>
+
+
+              
               {step.status === "complete" ? (
                 <div className="group flex w-full items-center  ">
                   <span className="flex items-center px-6 py-4 text-sm font-medium">

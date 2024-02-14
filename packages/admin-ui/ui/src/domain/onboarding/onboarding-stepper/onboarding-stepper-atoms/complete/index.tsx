@@ -1,4 +1,4 @@
-import React from "react"
+
 import { clx } from "../../../../../utils/clx"
 import { Check } from "@medusajs/icons"
 
@@ -20,7 +20,7 @@ const IconStepperArrowComplete = ({
             "flex h-[24px] w-[24px]  items-center justify-center  rounded-full bg-white"
           )}
         >
-          <Check className="   text-black " />
+          <Check className=" text-black " />
         </div>
         <h4>Business Need</h4>
       </div>
