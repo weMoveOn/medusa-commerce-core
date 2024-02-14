@@ -32,6 +32,8 @@ type ModalChildProps = {
 type ModalHeaderProps = {
   handleClose: () => void
   children?: React.ReactNode
+  className?: string
+  iconClass?: string
 }
 
 type ModalType = React.FC<ModalProps> & {
@@ -122,14 +124,14 @@ Modal.Content = ({ children, className }) => {
   )
 }
 
-Modal.Header = ({ handleClose = undefined, children }) => {
+Modal.Header = ({ handleClose = undefined, children, className, iconClass="self-end" }) => {
   return (
     <div
-      className="flex w-full items-center border-b px-8 py-6"
+      className={`flex w-full items-center border-b px-8 py-6 bg-gray-100 ${className}`}
       onClick={(e) => e.stopPropagation()}
     >
       <div className="flex flex-grow">{children}</div>
-      <div className="self-end">
+      <div className={iconClass}>
         {handleClose && (
           <Button
             variant="ghost"

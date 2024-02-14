@@ -21,6 +21,11 @@ import { useMedusa } from "medusa-react"
 import StatusIndicator from "../../../../components/fundamentals/status-indicator"
 import useToggleState from "../../../../hooks/use-toggle-state"
 import { useFeatureFlag } from "../../../../providers/feature-flag-provider"
+import Checkbox from "../../../../components/atoms/checkbox"
+import PlusIcon from "../../../../components/fundamentals/icons/plus-icon"
+import { useState } from "react"
+import InputField from "../../../../components/molecules/input"
+import CrossIcon from "../../../../components/fundamentals/icons/cross-icon"
 
 type SummaryCardProps = {
   order: Order
@@ -39,6 +44,7 @@ const SummaryCard: React.FC<SummaryCardProps> = ({ order, reservations }) => {
   const { client } = useMedusa()
   const { isFeatureEnabled } = useFeatureFlag()
   const inventoryEnabled = isFeatureEnabled("inventoryService")
+  const [showDiscountField, setShowDiscountField] = useState(true)
 
   const [variantInventoryMap, setVariantInventoryMap] = React.useState<
     Map<string, VariantInventory>
@@ -170,7 +176,7 @@ const SummaryCard: React.FC<SummaryCardProps> = ({ order, reservations }) => {
 
   return (
     <BodyCard
-      className={"h-auto min-h-0 w-full my-4"}
+      className={"my-4 h-auto min-h-0 w-full"}
       title="Summary"
       status={
         isFeatureEnabled("inventoryService") &&
@@ -250,6 +256,40 @@ const SummaryCard: React.FC<SummaryCardProps> = ({ order, reservations }) => {
           totalAmount={order.shipping_total}
           totalTitle={t("detail-cards-shipping", "Shipping")}
         />
+        <DisplayTotal
+          currency={order.currency_code}
+          totalAmount={order.tax_total}
+          totalTitle={t("discount", "discount")}
+        />
+
+        {!showDiscountField ? (
+          <div className="flex justify-between">
+            <div className="flex">
+              <PlusIcon size={20} />
+              <p
+                className="cursor-pointer font-bold underline"
+                onClick={() => setShowDiscountField(true)}
+              >
+                {" "}
+                Add discount
+              </p>
+            </div>
+          </div>
+        ) : (
+          <div className="flex items-center">
+
+              <InputField
+                placeholder="Discount"
+                
+              />
+             <CrossIcon size={20} onClick={
+              () => setShowDiscountField(false)
+             } />
+           
+          
+          </div>
+        )}
+
         <DisplayTotal
           currency={order.currency_code}
           totalAmount={order.tax_total}

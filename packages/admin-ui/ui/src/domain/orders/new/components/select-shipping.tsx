@@ -100,7 +100,7 @@ const SelectShippingMethod = () => {
                         label: `${so.name} - ${extractOptionPrice(
                           so.amount,
                           region
-                        )}`,
+                        )}`
                       })) || []
                     }
                   />
