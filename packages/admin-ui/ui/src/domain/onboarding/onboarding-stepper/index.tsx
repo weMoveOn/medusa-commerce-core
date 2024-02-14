@@ -1,11 +1,10 @@
 /* eslint-disable no-confusing-arrow */
 import clsx from "clsx"
-import React, { ReactNode, useEffect, useReducer } from "react"
+import React, { ReactNode, useReducer } from "react"
 
 import { ILayeredModalContext } from "../../../components/molecules/modal/layered-modal"
 import { ModalProps } from "../../../components/molecules/modal"
 import { clx } from "../../../utils/clx"
-import IconCircle from "../../../moveshop-ui/components/fundamentals/icon-circle"
 import "../onboarding-stepper/onboarding-stepper.css"
 import { Check } from "@medusajs/icons"
 import IconStepperArrowComplete from "./onboarding-stepper-atoms/complete"
@@ -153,75 +152,64 @@ const OnboardingStepper: React.FC<SteppedProps> = ({
     control,
   } = onboardingForm
 
-  console.log("steps.length :>> ", steps.length)
-  console.log("context.currentStep :>> ", context.currentStep)
   return (
     <div className=" flex items-center justify-center ">
       <div className="mt-14 flex h-[880px] w-[650px] flex-col justify-between rounded-xl border  p-9  ">
         <>
-          <div>
-            <div className="relative flex gap-3">
-              {/* {steps.length === context.currentStep ? (
-                  <IconStepperArrowCurrent cssId="pointer2" className="z-10" />
-                ) : (
-                  <IconStepperArrowComplete cssId="pointer1" className="z-20" />
-                )} */}
-              {[1, 2, 3]?.map((_, i) => {
-                if (i > context.currentStep) {
+          <div className="relative flex gap-3 rounded-lg border-b pb-[18px]">
+            {[1, 2, 3]?.map((_, i) => {
+              if (i > context.currentStep) {
+                return (
+                  <IconStepperArrowInComplete
+                    key={`step-${i}`}
+                    cssId="incomplete"
+                    className=""
+                  />
+                )
+              }
+
+              if (context.currentStep === i) {
+                if (i === 0) {
                   return (
-                    <IconStepperArrowInComplete
+                    <IconStepperArrowCurrent
                       key={`step-${i}`}
-                      cssId="incomplete"
-                      className=""
+                      cssId="current"
+                      className="z-20"
+                    />
+                  )
+                } else {
+                  return (
+                    <IconStepperArrowCurrent
+                      key={`step-${i}`}
+                      cssId="current2"
+                      className="z-20"
                     />
                   )
                 }
+              }
 
-                if (context.currentStep === i) {
-                  if (i === 0) {
-                    return (
-                      <IconStepperArrowCurrent
-                        key={`step-${i}`}
-                        cssId="current"
-                        className="z-20"
-                      />
-                    )
-                  } else {
-                    return (
-                      <IconStepperArrowCurrent
-                        key={`step-${i}`}
-                        cssId="current2"
-                        className="z-20"
-                      />
-                    )
-                  }
+              if (context.currentStep >= i) {
+                if (i === 0) {
+                  return (
+                    <IconStepperArrowComplete
+                      key={`step-${i}`}
+                      cssId="complete"
+                      className="z-50"
+                    />
+                  )
+                } else if (i === 1) {
+                  return (
+                    <IconStepperArrowComplete2
+                      key={`step-${i}`}
+                      cssId="complete2"
+                      className="z-30"
+                    />
+                  )
                 }
-
-                if (context.currentStep >= i) {
-                  if (i === 0) {
-                    return (
-                      <IconStepperArrowComplete
-                        key={`step-${i}`}
-                        cssId="complete"
-                        className="z-50"
-                      />
-                    )
-                  } else if (i === 1) {
-                    return (
-                      <IconStepperArrowComplete2
-                        key={`step-${i}`}
-                        cssId="complete2"
-                        className="z-30"
-                      />
-                    )
-                  }
-                }
-              })}
-            </div>
+              }
+            })}
           </div>
         </>
-
-        {/* body */}
         <div
           className={clsx(
             "flex min-h-[600px] flex-col justify-between  transition-transform duration-100"
@@ -229,9 +217,8 @@ const OnboardingStepper: React.FC<SteppedProps> = ({
         >
           <div>{steps[context.currentStep]}</div>
         </div>
-
-        <footer className=" border-t ">
-          <div className=" mt-9 flex w-full justify-between rounded-lg ">
+        <div className=" border-t ">
+          <div className=" mt-9 flex w-full items-center justify-between rounded-lg ">
             <div>
               {context.currentStep > 0 && (
                 <button
@@ -242,14 +229,14 @@ const OnboardingStepper: React.FC<SteppedProps> = ({
                       : ""
                   }
                   className={clx(
-                    "text-large rounded-lg px-10 py-5 font-medium text-black "
+                    "text-large h-[48px] rounded-lg font-medium text-black "
                   )}
                 >
                   Skip
                 </button>
               )}
             </div>
-            <div className="flex gap-3">
+            <div className="flex items-center gap-3">
               <button
                 disabled={context.currentStep === 0}
                 onClick={() => context.goToPreviousPage()}
@@ -259,23 +246,27 @@ const OnboardingStepper: React.FC<SteppedProps> = ({
               >
                 Back
               </button>
+
               <button
-                type="submit"
-                className={clx(
-                  "text-large rounded-lg bg-black px-10 py-5 font-medium text-white"
-                )}
                 disabled={!context.nextStepEnabled}
                 onClick={() =>
                   context.currentStep === steps.length - 1
                     ? resetAndSubmit()
                     : context.goToNextPage()
                 }
+                className="inline-flex h-[52px] w-[116px] flex-col items-center justify-center gap-2.5 rounded-lg bg-black px-10 py-5"
               >
-                {context.currentStep === steps.length - 1 ? "Submit" : "Next"}
+                <div className="inline-flex items-center justify-start gap-2">
+                  <div className="font-['Inter'] text-base font-medium text-white">
+                    {context.currentStep === steps.length - 1
+                      ? "Submit"
+                      : "Next"}
+                  </div>
+                </div>
               </button>
             </div>
           </div>
-        </footer>
+        </div>
       </div>
     </div>
   )

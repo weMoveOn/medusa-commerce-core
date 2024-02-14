@@ -47,7 +47,6 @@
   border-bottom: 23px solid transparent;
 }
 
-
 #complete2:before {
   content: "";
   position: absolute;
@@ -89,7 +88,6 @@
   border-top: 23px solid transparent;
   border-bottom: 23px solid transparent;
 }
-
 
 /*current 2 */
 #current2 {
@@ -146,6 +144,7 @@
   bottom: 0;
   width: 0;
   height: 0;
+  z-index: 1;
   border-left: 20px solid #eeeeee;
   border-top: 23px solid transparent;
   border-bottom: 23px solid transparent;
