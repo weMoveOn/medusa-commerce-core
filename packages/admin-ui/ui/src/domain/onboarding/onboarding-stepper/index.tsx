@@ -46,16 +46,17 @@ const OnboardingStepper: React.FC<SteppedProps> = ({
           <div className=" relative left-[12px] flex rounded-lg pb-[18px]">
             {[1, 2, 3]?.map((_, i) => {
               if (i > context.currentStep) {
-                return <Step key={uuidv4()} label="Coming Step" />
-              }
-              if (context.currentStep === i) {
                 return (
                   <Step
                     key={uuidv4()}
-                    className=" text-white"
-                    label="Current Step"
-                    color="black"
+                    label="Coming Step"
+                    textColor="text-white"
                   />
+                )
+              }
+              if (context.currentStep === i) {
+                return (
+                  <Step key={uuidv4()} label="Current Step" color="black" />
                 )
               }
               if (context.currentStep >= i) {
@@ -63,7 +64,7 @@ const OnboardingStepper: React.FC<SteppedProps> = ({
                   <Step
                     key={uuidv4()}
                     icon={<Check />}
-                    className="text-white"
+                    textColor="text-white"
                     label="Complete Step"
                     color="green"
                   />

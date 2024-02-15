@@ -24,78 +24,96 @@ import InputField from "../../components/molecules/input"
 
 import clsx from "clsx"
 import Accordion from "../../components/organisms/accordion"
+import ProgressCircle from "./progress-circle"
 
 const VIEWS = ["orders", "drafts"]
 // eslint-disable-next-line no-undef
 
 const Prepare = () => {
+  const [stepsCompleted, setStepsCompleted] = useState(0)
+
+  const handleStepCompletion = () => {
+    if (stepsCompleted < 5) {
+      setStepsCompleted(stepsCompleted + 1)
+    }
+  }
   return (
-    <div className={"mt-small"}>
-      <div>
-        <h1 className="medium:text-2xl text-xl font-bold">
-          Prepare your sail to sell
-        </h1>
-        <p>
-          Here’s a guide to get started. As your business grows, you’ll get
-          fresh tips and insights here.
-        </p>
-      </div>
-
-      <div className="p-small mt-6  rounded-xl bg-[#F2F2F2]">
-        <div className="medium:items-center medium:flex-row flex flex-col items-start justify-between gap-4">
-          <div className="medium:items-center medium:flex-row flex flex-col  items-start gap-3">
-            <IconCircle />
-            <div>
-              <p className=" text-xl font-medium">
-                Set up your MoveShop Account
-              </p>
-              <p>1/5 steps completed</p>
-            </div>
-          </div>
-
-          <div className=" flex flex-col">
-            <div className="flex flex-col space-y-2">
-              <label htmlFor="file">
-                <input
-                  className="hidden rounded border p-3"
-                  type="file"
-                  name="file"
-                  id="file"
-                />
-                <span className="rounded-lg border bg-white p-3 text-base">
-                  Updated Profile
-                </span>
-              </label>
-            </div>
-          </div>
-        </div>
-
-        <div className="mt-7 flex flex-col">
-          <p className="text-xl font-medium">Raptor Shopping</p>
+    <>
+      <div className={"mt-small"}>
+        <div>
+          <h1 className="medium:text-2xl text-xl font-bold">
+            Prepare your sail to sell
+          </h1>
           <p>
-            Write a description, add photos, and set pricing for the products
-            you plan to sell.
+            Here’s a guide to get started. As your business grows, you’ll get
+            fresh tips and insights here.
           </p>
-          <div className=" mt-3 flex ">
-            <input
-              name={"search"}
-              type="search"
-              placeholder="raptorshopping.moveshop.store"
-              className="medium:w-1/3 w-full rounded-xl  p-3"
-            />
+        </div>
 
-            <Button
-              key="search"
-              variant="secondary"
-              size="small"
-              className="my-2 -ml-28 bg-[#D1D1D1] text-sm"
-            >
-              Share Shop
-            </Button>
+        <div className="p-small mt-6  rounded-xl bg-[#F2F2F2]">
+          <div className="medium:items-center medium:flex-row flex flex-col items-start justify-between gap-4">
+            <div className="medium:items-center medium:flex-row flex flex-col  items-start gap-3">
+              <div>
+                {/* <div>
+                <button onClick={handleStepCompletion}>
+                  Complete Step {stepsCompleted}
+                </button>
+
+                <ProgressCircle stepsCompleted={stepsCompleted} />
+              </div> */}
+              </div>
+              <div>
+                <p className=" text-xl font-medium">
+                  Set up your MoveShop Account
+                </p>
+                <p>1/5 steps completed</p>
+              </div>
+            </div>
+
+            <div className=" flex flex-col">
+              <div className="flex flex-col space-y-2">
+                <label htmlFor="file">
+                  <input
+                    className="hidden rounded border p-3"
+                    type="file"
+                    name="file"
+                    id="file"
+                  />
+                  <span className="rounded-lg border bg-white p-3 text-base">
+                    Updated Profile
+                  </span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-7 flex flex-col">
+            <p className="text-xl font-medium">Raptor Shopping</p>
+            <p>
+              Write a description, add photos, and set pricing for the products
+              you plan to sell.
+            </p>
+            <div className=" mt-3 flex ">
+              <input
+                name={"search"}
+                type="search"
+                placeholder="raptorshopping.moveshop.store"
+                className="medium:w-1/3 w-full rounded-xl  p-3"
+              />
+
+              <Button
+                key="search"
+                variant="secondary"
+                size="small"
+                className="my-2 -ml-28 bg-[#D1D1D1] text-sm"
+              >
+                Share Shop
+              </Button>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </>
   )
 }
 
@@ -459,7 +477,13 @@ const HomeIndex = () => {
 
     closeExportModal()
   }
+  const [stepsCompleted, setStepsCompleted] = useState(0)
 
+  const handleStepCompletion = () => {
+    if (stepsCompleted < 5) {
+      setStepsCompleted(stepsCompleted + 1)
+    }
+  }
   return (
     <>
       <div className="gap-y-xsmall flex h-full grow flex-col">
@@ -475,6 +499,14 @@ const HomeIndex = () => {
         })}
         <div className="flex w-full grow flex-col">
           <BodyCard>
+            <div className="">
+              <button onClick={handleStepCompletion}>
+                Complete Step {stepsCompleted}
+              </button>
+              <div>
+                <ProgressCircle stepsCompleted={stepsCompleted} />
+              </div>
+            </div>
             <Prepare />
             <Setup />
             <div className="mb-32 mt-12">
