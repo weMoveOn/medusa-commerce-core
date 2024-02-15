@@ -7,6 +7,7 @@ interface StepProps {
   icon?: ReactNode
   color?: string
   className?: string
+  textColor?: string
 }
 
 interface StepProviderProps {
@@ -19,7 +20,7 @@ const StepProvider: React.FC<StepProviderProps> = ({
   color = "#EEE",
 }) => {
   return (
-    <div className="relative">
+    <div className="relative -ml-[12px]">
       <div>
         <StepperArrow color={color} />
       </div>
@@ -30,18 +31,26 @@ const StepProvider: React.FC<StepProviderProps> = ({
   )
 }
 
-const Step: React.FC<StepProps> = ({ label, icon, color, className }) => {
+const Step: React.FC<StepProps> = ({
+  label,
+  icon,
+  color,
+  className,
+  textColor,
+}) => {
   return (
-    <StepProvider color={color}>
-      <div className={clx("flex items-center justify-center gap-1 ")}>
-        <div className="h-6 w-6 rounded-full border bg-white ">
-          <div className="flex flex-col items-center justify-center">
-            {icon}
+    <div className={clx(className)}>
+      <StepProvider color={color}>
+        <div className={clx("flex items-center justify-center gap-1 ")}>
+          <div className="h-6 w-6 rounded-full border bg-white ">
+            <div className="flex flex-col items-center justify-center">
+              {icon}
+            </div>
           </div>
+          <p className={clx(textColor)}>{label}</p>
         </div>
-        <p className={clx(className)}>{label}</p>
-      </div>
-    </StepProvider>
+      </StepProvider>
+    </div>
   )
 }
 

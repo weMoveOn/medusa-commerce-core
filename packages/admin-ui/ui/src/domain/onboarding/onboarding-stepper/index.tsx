@@ -43,7 +43,7 @@ const OnboardingStepper: React.FC<SteppedProps> = ({
     <div className=" flex items-center justify-center ">
       <div className="mt-14 flex h-[880px] w-[650px] flex-col justify-between rounded-xl border  p-9  ">
         <>
-          <div className=" relative -ml-[1.25rem] flex rounded-lg border-b pb-[18px]">
+          <div className=" relative left-[12px] flex rounded-lg pb-[18px]">
             {[1, 2, 3]?.map((_, i) => {
               if (i > context.currentStep) {
                 return <Step key={uuidv4()} label="Coming Step" />
@@ -52,7 +52,7 @@ const OnboardingStepper: React.FC<SteppedProps> = ({
                 return (
                   <Step
                     key={uuidv4()}
-                    className="text-white"
+                    className=" text-white"
                     label="Current Step"
                     color="black"
                   />
@@ -71,6 +71,7 @@ const OnboardingStepper: React.FC<SteppedProps> = ({
               }
             })}
           </div>
+          <hr />
         </>
         <div
           className={clsx(
