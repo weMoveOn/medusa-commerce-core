@@ -54,19 +54,17 @@ const Prepare = () => {
           <div className="medium:items-center medium:flex-row flex flex-col items-start justify-between gap-4">
             <div className="medium:items-center medium:flex-row flex flex-col  items-start gap-3">
               <div>
-                {/* <div>
-                <button onClick={handleStepCompletion}>
-                  Complete Step {stepsCompleted}
-                </button>
-
-                <ProgressCircle stepsCompleted={stepsCompleted} />
-              </div> */}
+                <div className="-ml-2 -mt-2">
+                  <ProgressCircle stepsCompleted={stepsCompleted} />
+                </div>
               </div>
               <div>
                 <p className=" text-xl font-medium">
                   Set up your MoveShop Account
                 </p>
-                <p>1/5 steps completed</p>
+                <button onClick={handleStepCompletion}>
+                  {stepsCompleted}/5 steps completed
+                </button>
               </div>
             </div>
 
@@ -477,13 +475,7 @@ const HomeIndex = () => {
 
     closeExportModal()
   }
-  const [stepsCompleted, setStepsCompleted] = useState(0)
 
-  const handleStepCompletion = () => {
-    if (stepsCompleted < 5) {
-      setStepsCompleted(stepsCompleted + 1)
-    }
-  }
   return (
     <>
       <div className="gap-y-xsmall flex h-full grow flex-col">
@@ -499,14 +491,6 @@ const HomeIndex = () => {
         })}
         <div className="flex w-full grow flex-col">
           <BodyCard>
-            <div className="">
-              <button onClick={handleStepCompletion}>
-                Complete Step {stepsCompleted}
-              </button>
-              <div>
-                <ProgressCircle stepsCompleted={stepsCompleted} />
-              </div>
-            </div>
             <Prepare />
             <Setup />
             <div className="mb-32 mt-12">
