@@ -6148,15 +6148,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@heroicons/react@npm:v1":
-  version: 1.0.6
-  resolution: "@heroicons/react@npm:1.0.6"
-  peerDependencies:
-    react: ">= 16"
-  checksum: 04d77c604be6a9d3373e2cf773ef0f3e9fa02b52ed85260c440e629682dc3045935090811dda0423fa9bb2d5f8090cdbdda54c901dd3598c9bad691d0abce3d6
-  languageName: node
-  linkType: hard
-
 "@hookform/error-message@npm:^2.0.1":
   version: 2.0.1
   resolution: "@hookform/error-message@npm:2.0.1"
@@ -7768,7 +7759,6 @@ __metadata:
     "@babel/parser": 7.22.5
     "@babel/traverse": 7.22.5
     "@babel/types": 7.22.5
-    "@heroicons/react": v1
     "@hookform/error-message": ^2.0.1
     "@hookform/resolvers": ^3.3.1
     "@medusajs/icons": ^1.1.0
