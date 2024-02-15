@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react"
-import { Route, Routes, useNavigate } from "react-router-dom"
+import { Link, Route, Routes, useNavigate } from "react-router-dom"
 import { useTranslation } from "react-i18next"
 
 import { useAdminCreateBatchJob } from "medusa-react"
@@ -22,35 +22,26 @@ import IconCircle from "../../components/fundamentals/icon-circle"
 import IconSquare from "../../components/fundamentals/icon-square"
 import InputField from "../../components/molecules/input"
 
-import clsx from "clsx"
 import Accordion from "../../components/organisms/accordion"
 import ProgressCircle from "./progress-circle"
+import { clx } from "../../utils/clx"
+import CopyToClipboard from "../../components/atoms/copy-to-clipboard"
+import CopyIcon from "../../components/fundamentals/icons/copy-icon"
 
-const VIEWS = ["orders", "drafts"]
 // eslint-disable-next-line no-undef
-
+const copy_value = "raptorshopping.moveshop.store"
 const Prepare = () => {
-  const [stepsCompleted, setStepsCompleted] = useState(0)
+  const [stepsCompleted, setStepsCompleted] = useState(1)
 
   const handleStepCompletion = () => {
     if (stepsCompleted < 5) {
-      setStepsCompleted(stepsCompleted + 1)
+      setStepsCompleted((c) => stepsCompleted + 1)
     }
   }
   return (
     <>
-      <div className={"mt-small"}>
-        <div>
-          <h1 className="medium:text-2xl text-xl font-bold">
-            Prepare your sail to sell
-          </h1>
-          <p>
-            Here’s a guide to get started. As your business grows, you’ll get
-            fresh tips and insights here.
-          </p>
-        </div>
-
-        <div className="p-small mt-6  rounded-xl bg-[#F2F2F2]">
+      <div className="rounded-lg border bg-white p-4 shadow">
+        <div className="  ">
           <div className="medium:items-center medium:flex-row flex flex-col items-start justify-between gap-4">
             <div className="medium:items-center medium:flex-row flex flex-col  items-start gap-3">
               <div>
@@ -68,45 +59,41 @@ const Prepare = () => {
               </div>
             </div>
 
-            <div className=" flex flex-col">
+            <div className=" flex flex-col ">
               <div className="flex flex-col space-y-2">
-                <label htmlFor="file">
-                  <input
-                    className="hidden rounded border p-3"
-                    type="file"
-                    name="file"
-                    id="file"
-                  />
-                  <span className="rounded-lg border bg-white p-3 text-base">
-                    Updated Profile
-                  </span>
-                </label>
+                <Link
+                  to={"/a/home"}
+                  className="rounded-lg border bg-white p-3 text-base"
+                >
+                  Updated Profile
+                </Link>
               </div>
             </div>
           </div>
 
-          <div className="mt-7 flex flex-col">
-            <p className="text-xl font-medium">Raptor Shopping</p>
-            <p>
-              Write a description, add photos, and set pricing for the products
-              you plan to sell.
-            </p>
-            <div className=" mt-3 flex ">
-              <input
-                name={"search"}
-                type="search"
-                placeholder="raptorshopping.moveshop.store"
-                className="medium:w-1/3 w-full rounded-xl  p-3"
-              />
-
-              <Button
-                key="search"
-                variant="secondary"
-                size="small"
-                className="my-2 -ml-28 bg-[#D1D1D1] text-sm"
+          <p className="mb-2 mt-6 text-xl font-semibold">Raptor Shop</p>
+          <div className=" inline-flex  h-11 w-[442px] items-center justify-between rounded-lg bg-neutral-100 py-1 pl-4 pr-1">
+            <div className="font-['Inter'] text-base font-normal leading-normal text-black">
+              raptorshopping.moveshop.store
+            </div>
+            <div className="flex items-center justify-start gap-2">
+              <div className="relative h-6 w-6">
+                <div className="absolute left-[4px] top-[4px] flex h-4 w-4 items-center">
+                  <CopyToClipboard
+                    icon={<CopyIcon />}
+                    value={copy_value}
+                    onCopy={() => {}}
+                  />
+                </div>
+              </div>
+              <Link
+                to={"raptorshopping.moveshop.store"}
+                className="flex items-center justify-center gap-2.5 rounded border border-neutral-200 bg-white px-4 py-2"
               >
-                Share Shop
-              </Button>
+                <div className="font-['Inter'] text-sm font-medium leading-tight text-black">
+                  Share Shop
+                </div>
+              </Link>
             </div>
           </div>
         </div>
@@ -193,7 +180,7 @@ const stepperData = [
 const StepActive = ({ step, isLastIndex }: any) => {
   return (
     <li
-      className={clsx("flex w-full  items-center justify-between", {
+      className={clx("flex w-full  items-center justify-between", {
         "text-blue-600 dark:text-blue-500": true,
         'after:inline-block after:h-1 after:w-full after:border-4 after:border-b after:border-blue-100 after:content-[""] dark:after:border-blue-800':
           true, // active line
@@ -201,7 +188,7 @@ const StepActive = ({ step, isLastIndex }: any) => {
       })}
     >
       <span
-        className={clsx(
+        className={clx(
           "flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-800 lg:h-12 lg:w-12",
           {
             "text-blue-600 dark:text-blue-300 lg:h-4 lg:w-4": true,
@@ -209,7 +196,7 @@ const StepActive = ({ step, isLastIndex }: any) => {
         )}
       >
         <svg
-          className={clsx("h-3.5 w-3.5", {
+          className={clx("h-3.5 w-3.5", {
             "text-blue-600 dark:text-blue-300 lg:h-4 lg:w-4": true,
           })}
           aria-hidden="true"
@@ -234,13 +221,13 @@ const StepTitle = ({ title, isLastIndex }: any) => {
   return (
     <>
       <li
-        className={clsx("flex w-full items-center justify-between", {
+        className={clx("flex w-full items-center justify-between", {
           "dark:after:border-gray-700": true,
           "w-1/12": isLastIndex,
         })}
       >
         <span
-          className={clsx(
+          className={clx(
             "flex shrink-0 items-center justify-center rounded-full font-bold dark:bg-gray-700 lg:h-12 lg:w-12",
             {
               "text-gray-500 dark:text-gray-100 lg:h-5 lg:w-5": false,
@@ -258,14 +245,14 @@ const StepInactive = ({ isLastIndex, step }: any) => {
   return (
     <>
       <li
-        className={clsx("flex items-center justify-between ", {
+        className={clx("flex items-center justify-between ", {
           'w-full after:inline-block after:h-1 after:w-full after:border-4 after:border-b after:border-gray-100 after:content-[""] dark:after:border-gray-700':
             !isLastIndex,
           "w-1/12": isLastIndex,
         })}
       >
         <span
-          className={clsx(
+          className={clx(
             "flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gray-100 dark:bg-gray-700 lg:h-12 lg:w-12",
             {
               "text-gray-500 dark:text-gray-100 lg:h-5 lg:w-5": true,

@@ -5,7 +5,7 @@ import { JSONTree } from "react-json-tree"
 import useClipboard from "../../../hooks/use-clipboard"
 import Button from "../../fundamentals/button"
 import ChevronDownIcon from "../../fundamentals/icons/chevron-down"
-import ClipboardCopyIcon from "../../fundamentals/icons/clipboard-copy-icon"
+import CopyIcon from "../../fundamentals/icons/copy-icon"
 
 type JSONViewProps = {
   data: object
@@ -81,7 +81,7 @@ const JSONView = ({ data }: JSONViewProps) => {
                   handleCopy()
                 }}
               >
-                <ClipboardCopyIcon size={20} />
+                <CopyIcon size={20} />
               </Button>
             </div>
           </div>

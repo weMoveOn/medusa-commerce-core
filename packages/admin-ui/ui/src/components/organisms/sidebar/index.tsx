@@ -43,13 +43,9 @@ const Sidebar: React.FC = () => {
     isFeatureEnabled("stockLocationService")
 
   return (
-    <div
-      className=" medium:block min-w-sidebar max-w-sidebar bg-gray-0 border-grey-20 py-base px-base hidden h-screen overflow-y-auto border-r ">
+    <div className=" medium:block min-w-sidebar max-w-sidebar bg-gray-0 border-grey-20 py-base px-base hidden h-screen overflow-y-auto border-r ">
       <div className="h-full">
-
         <div className="py-3.5">
-
-
           <SidebarMenuItem
             pageLink={"/a/home"}
             icon={<CartIcon size={ICON_SIZE} />}
@@ -134,8 +130,8 @@ const Sidebar: React.FC = () => {
             triggerHandler={triggerHandler}
             text={t("sidebar-installed-apps", "Installed App")}
           />
-          <br/>
-          <hr/>
+          <br />
+          <hr />
           {isFeatureEnabled("product_categories") && (
             <SidebarMenuItem
               pageLink={"/a/product-categories"}

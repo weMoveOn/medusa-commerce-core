@@ -1,15 +1,17 @@
-import clsx from "clsx"
 import React, { useEffect } from "react"
 import useClipboard from "../../../hooks/use-clipboard"
 import useNotification from "../../../hooks/use-notification"
 import Button from "../../fundamentals/button"
-import ClipboardCopyIcon from "../../fundamentals/icons/clipboard-copy-icon"
+import CopyIcon from "../../fundamentals/icons/copy-icon"
+import { ReactElement } from "react"
+import { clx } from "../../../utils/clx"
 
 type CopyToClipboardProps = {
   value: string
   displayValue?: string
   successDuration?: number
   showValue?: boolean
+  icon?: ReactElement // Changed prop to accept any valid React element
   iconSize?: number
   onCopy?: () => void
 }
@@ -19,6 +21,7 @@ const CopyToClipboard: React.FC<CopyToClipboardProps> = ({
   displayValue,
   successDuration = 3000,
   showValue = true,
+  icon = <CopyIcon />, // Default icon
   iconSize = 20,
   onCopy = () => {},
 }) => {
@@ -36,21 +39,15 @@ const CopyToClipboard: React.FC<CopyToClipboardProps> = ({
 
   return (
     <div className="inter-small-regular text-grey-50 gap-x-xsmall flex items-center">
-      <Button
-        variant="ghost"
-        size="small"
+      <button
         type="button"
-        className={clsx("text-grey-50 p-0", {
-          ["text-violet-60"]: isCopied,
-        })}
+        className={clx("text-grey-50 p-0", {})}
         onClick={handleCopy}
       >
-        <ClipboardCopyIcon size={iconSize} />
-      </Button>
+        {icon} {/* Render the icon here */}
+      </button>
       {showValue && (
-        <span className="w-full truncate">
-          {displayValue ? displayValue : value}
-        </span>
+        <span className="w-full truncate">{displayValue && displayValue}</span>
       )}
     </div>
   )
