@@ -170,7 +170,7 @@ const SummaryCard: React.FC<SummaryCardProps> = ({ order, reservations }) => {
 
   return (
     <BodyCard
-      className={"h-auto min-h-0 w-full"}
+      className={"h-auto min-h-0 w-full my-4"}
       title="Summary"
       status={
         isFeatureEnabled("inventoryService") &&

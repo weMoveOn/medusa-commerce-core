@@ -195,7 +195,7 @@ async function capturePaymentIfNecessary({
     .withTransaction(transactionManager)
     .retrieveByCartId(cartId)
     .catch(() => undefined)
-
+ 
   if (order && order.payment_status !== "captured") {
     await orderService
       .withTransaction(transactionManager)

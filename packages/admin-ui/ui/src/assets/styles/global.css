@@ -287,7 +287,7 @@
   }
 
   .btn-primary {
-    @apply bg-violet-60 text-grey-0 active:bg-violet-70 disabled:bg-grey-20  disabled:text-grey-40 hover:bg-violet-50;
+    @apply bg-black text-white active:bg-violet-70 disabled:bg-grey-20  disabled:text-grey-40 hover:bg-violet-50;
   }
 
   .btn-secondary {
