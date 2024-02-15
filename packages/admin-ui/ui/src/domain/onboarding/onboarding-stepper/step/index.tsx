@@ -1,10 +1,12 @@
 import React, { ReactNode } from "react"
-import StepperArrow from "../../../components/fundamentals/icons/stepper-arrow"
+import StepperArrow from "../../../../components/fundamentals/icons/stepper-arrow"
+import { clx } from "../../../../utils/clx"
 
 interface StepProps {
   label: string
   icon?: ReactNode
   color?: string
+  className?: string
 }
 
 interface StepProviderProps {
@@ -28,16 +30,16 @@ const StepProvider: React.FC<StepProviderProps> = ({
   )
 }
 
-const Step: React.FC<StepProps> = ({ label, icon, color }) => {
+const Step: React.FC<StepProps> = ({ label, icon, color, className }) => {
   return (
     <StepProvider color={color}>
-      <div className="flex items-center justify-center gap-1">
+      <div className={clx("flex items-center justify-center gap-1 ")}>
         <div className="h-6 w-6 rounded-full border bg-white ">
           <div className="flex flex-col items-center justify-center">
             {icon}
           </div>
         </div>
-        <p>{label}</p>
+        <p className={clx(className)}>{label}</p>
       </div>
     </StepProvider>
   )
