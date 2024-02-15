@@ -1,5 +1,4 @@
 /* eslint-disable react/jsx-key */
-/* eslint-disable quotes */
 import React, { useEffect, useMemo, useState } from "react"
 import { Route, Routes } from "react-router-dom"
 import { useTranslation } from "react-i18next"
@@ -16,6 +15,8 @@ import { Controller, useWatch } from "react-hook-form"
 import OnboardingFormProvider, {
   useOnboardingForm,
 } from "./onboarding-stepper/OnboardingFormProvider"
+import TriangleDown from "../../components/fundamentals/icons/triangle-down"
+import StepperArrow from "../../components/fundamentals/icons/stepper-arrow"
 
 type StepProps = {
   label: string
@@ -27,84 +28,6 @@ interface ProgressStepProps {
   isComplete?: boolean
   label?: string
   icon?: boolean
-}
-
-const ProgressStep: React.FC<ProgressStepProps> = ({
-  isComplete,
-  label,
-  icon,
-}) => {
-  return (
-    <div className="relative flex items-center justify-center">
-      <div>
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="192"
-          height="46"
-          viewBox="0 0 192 46"
-          fill="none"
-        >
-          <path d="M0 0H176L192 23L176 46H0V0Z" fill="#171717" />
-        </svg>
-      </div>
-      <div className=" absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transform  ">
-        <div className="flex">
-          <div>
-            <p>Business Need</p>
-          </div>
-          <div className={clx("rounded-lg border bg-white")}>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="13"
-              height="13"
-              viewBox="0 0 13 13"
-              fill="none"
-            >
-              <path
-                d="M5.37473 9.66787L2.47949 6.77264L3.2033 6.04883L5.37473 8.22025L10.035 3.55994L10.7589 4.28375L5.37473 9.66787Z"
-                fill="black"
-              />
-            </svg>
-          </div>
-        </div>
-      </div>
-    </div>
-  )
-}
-
-const ProgressStepper = () => {
-  return (
-    <div className={clx("flex justify-center")}>
-      <div className={clx("flex")}>
-        <ProgressStep />
-        <div>
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="210"
-            height="46"
-            viewBox="0 0 210 46"
-            fill="none"
-          >
-            <path
-              d="M0 0H191.852L210 23L191.852 46H0L16.4667 23L0 0Z"
-              fill="#171717"
-            />
-          </svg>
-        </div>
-        <div>
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="187"
-            height="46"
-            viewBox="0 0 187 46"
-            fill="none"
-          >
-            <path d="M169 46H0L17.5 23L0 0H169L187 23L169 46Z" fill="#EEEEEE" />
-          </svg>
-        </div>
-      </div>
-    </div>
-  )
 }
 
 const StepHeader = () => {
@@ -329,23 +252,26 @@ const Step2 = () => {
 
 const { DropdownIndicator } = components
 
-// Define a custom DropdownIndicator component
 const CustomDropdownIndicator = (props: any) => {
   return (
     <DropdownIndicator {...props}>
-      <IconCircle /> {/* Assuming IconCircle is your custom icon component */}
+      <TriangleDown />
     </DropdownIndicator>
   )
 }
 
 const formatOptionLabel = ({ label }: { label: string }) => (
-  <div style={{ display: "flex", alignItems: "center" }}>
-    <img
-      className="rounded-lg"
-      src={"https://source.unsplash.com/user/c_v_r/26x26"}
-      alt="Location Icon"
-      style={{ marginRight: "8px" }}
-    />
+  <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
+    <div>
+      <img
+        src="https://flagcdn.com/16x12/ua.png"
+        srcSet="https://flagcdn.com/32x24/ua.png 2x,
+    https://flagcdn.com/48x36/ua.png 3x"
+        width="16"
+        height="12"
+        alt="Ukraine"
+      />
+    </div>
     {label}
   </div>
 )
@@ -513,13 +439,14 @@ const Step3 = () => {
                       onChange={onChange}
                       value={value}
                       formatOptionLabel={formatOptionLabel}
+                      components={{
+                        DropdownIndicator: CustomDropdownIndicator,
+                      }}
                       options={countryOptions}
                       defaultValue={countryOptions[0]}
                       isSearchable
                       classNamePrefix="react-select"
                       styles={{
-                        // Your styles here
-                        // You can either include all styles directly or import them from an external CSS file
                         control: (provided, state) => {
                           return {
                             ...provided,
@@ -612,7 +539,6 @@ const OnboardingIndex = () => {
 
   return (
     <>
-      {/* <Panels /> */}
       <div className={clx("")}>
         <div className="">
           <OnboardingStepper

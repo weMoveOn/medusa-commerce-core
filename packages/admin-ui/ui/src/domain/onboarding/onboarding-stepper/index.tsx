@@ -1,19 +1,14 @@
 /* eslint-disable no-confusing-arrow */
 import clsx from "clsx"
 import React, { ReactNode, useReducer } from "react"
-
 import { ILayeredModalContext } from "../../../components/molecules/modal/layered-modal"
 import { ModalProps } from "../../../components/molecules/modal"
 import { clx } from "../../../utils/clx"
-import "../onboarding-stepper/onboarding-stepper.css"
 import { Check } from "@medusajs/icons"
-import IconStepperArrowComplete from "./onboarding-stepper-atoms/complete"
-import IconStepperArrowCurrent from "./onboarding-stepper-atoms/current"
-import IconStepperArrowInComplete from "./onboarding-stepper-atoms/incomplete"
-import { useWatch } from "react-hook-form"
 import { useTranslation } from "react-i18next"
 import { useOnboardingForm } from "./OnboardingFormProvider"
-import IconStepperArrowComplete2 from "./onboarding-stepper-atoms/complete2"
+import { v4 as uuidv4 } from "uuid"
+import Step from "./step"
 enum SteppedActions {
   ENABLENEXTPAGE,
   DISABLENEXTPAGE,
@@ -156,56 +151,25 @@ const OnboardingStepper: React.FC<SteppedProps> = ({
     <div className=" flex items-center justify-center ">
       <div className="mt-14 flex h-[880px] w-[650px] flex-col justify-between rounded-xl border  p-9  ">
         <>
-          <div className="relative flex gap-3 rounded-lg border-b pb-[18px]">
+          <div className=" relative -ml-[1.25rem] flex rounded-lg border-b pb-[18px]">
             {[1, 2, 3]?.map((_, i) => {
               if (i > context.currentStep) {
+                return <Step key={uuidv4()} label="Coming Step" />
+              }
+              if (context.currentStep === i) {
                 return (
-                  <IconStepperArrowInComplete
-                    key={`step-${i}`}
-                    cssId="incomplete"
-                    className=""
-                  />
+                  <Step key={uuidv4()} label="Current Step" color="black" />
                 )
               }
-
-              if (context.currentStep === i) {
-                if (i === 0) {
-                  return (
-                    <IconStepperArrowCurrent
-                      key={`step-${i}`}
-                      cssId="current"
-                      className="z-20"
-                    />
-                  )
-                } else {
-                  return (
-                    <IconStepperArrowCurrent
-                      key={`step-${i}`}
-                      cssId="current2"
-                      className="z-20"
-                    />
-                  )
-                }
-              }
-
               if (context.currentStep >= i) {
-                if (i === 0) {
-                  return (
-                    <IconStepperArrowComplete
-                      key={`step-${i}`}
-                      cssId="complete"
-                      className="z-50"
-                    />
-                  )
-                } else if (i === 1) {
-                  return (
-                    <IconStepperArrowComplete2
-                      key={`step-${i}`}
-                      cssId="complete2"
-                      className="z-30"
-                    />
-                  )
-                }
+                return (
+                  <Step
+                    key={uuidv4()}
+                    icon={<Check />}
+                    label="Complete Step"
+                    color="green"
+                  />
+                )
               }
             })}
           </div>
