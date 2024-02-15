@@ -27,7 +27,9 @@ import ProgressCircle from "./progress-circle"
 import { clx } from "../../utils/clx"
 import CopyToClipboard from "../../components/atoms/copy-to-clipboard"
 import CopyIcon from "../../components/fundamentals/icons/copy-icon"
-
+import Step from "../onboarding/onboarding-stepper/step"
+import { v4 as uuidv4 } from "uuid"
+import { Check } from "@medusajs/icons"
 // eslint-disable-next-line no-undef
 const copy_value = "raptorshopping.moveshop.store"
 const Prepare = () => {
@@ -170,124 +172,12 @@ const MoveOnGlobal = () => {
 }
 
 const stepperData = [
-  { id: 1, title: "Step 1", content: "Add Product", status: "active" },
-  { id: 2, title: "Step 2", content: "Shipping", status: "active" },
-  { id: 3, title: "Step 3", content: "Payments", status: "active" },
-  { id: 4, title: "Step 4", content: "Online Store", status: "inactive" },
-  { id: 5, title: "Step 5", content: "Launch", status: "inactive" },
+  { id: 1, title: "Step 1", content: "Add Product", status: "complete" },
+  { id: 2, title: "Step 2", content: "Shipping", status: "complete" },
+  { id: 3, title: "Step 3", content: "Payments", status: "current" },
+  { id: 4, title: "Step 4", content: "Online Store", status: "incoming" },
+  { id: 5, title: "Step 5", content: "Launch", status: "incoming" },
 ]
-
-const StepActive = ({ step, isLastIndex }: any) => {
-  return (
-    <li
-      className={clx("flex w-full  items-center justify-between", {
-        "text-blue-600 dark:text-blue-500": true,
-        'after:inline-block after:h-1 after:w-full after:border-4 after:border-b after:border-blue-100 after:content-[""] dark:after:border-blue-800':
-          true, // active line
-        "w-1/12": isLastIndex,
-      })}
-    >
-      <span
-        className={clx(
-          "flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-800 lg:h-12 lg:w-12",
-          {
-            "text-blue-600 dark:text-blue-300 lg:h-4 lg:w-4": true,
-          }
-        )}
-      >
-        <svg
-          className={clx("h-3.5 w-3.5", {
-            "text-blue-600 dark:text-blue-300 lg:h-4 lg:w-4": true,
-          })}
-          aria-hidden="true"
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 16 12"
-        >
-          <path
-            stroke="currentColor"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth="2"
-            d="M1 5.917 5.724 10.5 15 1.5"
-          />
-        </svg>
-      </span>
-    </li>
-  )
-}
-
-const StepTitle = ({ title, isLastIndex }: any) => {
-  return (
-    <>
-      <li
-        className={clx("flex w-full items-center justify-between", {
-          "dark:after:border-gray-700": true,
-          "w-1/12": isLastIndex,
-        })}
-      >
-        <span
-          className={clx(
-            "flex shrink-0 items-center justify-center rounded-full font-bold dark:bg-gray-700 lg:h-12 lg:w-12",
-            {
-              "text-gray-500 dark:text-gray-100 lg:h-5 lg:w-5": false,
-            }
-          )}
-        >
-          {title}
-        </span>
-      </li>
-    </>
-  )
-}
-
-const StepInactive = ({ isLastIndex, step }: any) => {
-  return (
-    <>
-      <li
-        className={clx("flex items-center justify-between ", {
-          'w-full after:inline-block after:h-1 after:w-full after:border-4 after:border-b after:border-gray-100 after:content-[""] dark:after:border-gray-700':
-            !isLastIndex,
-          "w-1/12": isLastIndex,
-        })}
-      >
-        <span
-          className={clx(
-            "flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gray-100 dark:bg-gray-700 lg:h-12 lg:w-12",
-            {
-              "text-gray-500 dark:text-gray-100 lg:h-5 lg:w-5": true,
-            }
-          )}
-        ></span>
-      </li>
-    </>
-  )
-}
-const Stepper = ({ label }: any) => {
-  const lastIndex = stepperData.length - 1
-
-  return (
-    <div>
-      <ol className="flex w-full items-center justify-between">
-        {stepperData.map((step, index) => {
-          if (step.status === "active") {
-            return <StepActive isLastIndex={lastIndex === index} step={step} />
-          } else {
-            return (
-              <StepInactive isLastIndex={lastIndex === index} step={step} />
-            )
-          }
-        })}
-      </ol>
-      <br />
-      <ol className="flex w-full items-center justify-between">
-        {stepperData.map((step, index) => (
-          <StepTitle title={step?.content} isLastIndex={lastIndex === index} />
-        ))}
-      </ol>
-    </div>
-  )
-}
 
 const AccordionHeader = ({ label }: { label: string }): JSX.Element => {
   return (
@@ -353,16 +243,45 @@ const Setup = () => {
   return (
     <div className="mt-9">
       <div className="mb-3 mt-5">
-        <h1 className="text-2xl font-bold">Setup with your store</h1>
+        <h1 className="text-xl font-bold">Setup with your store</h1>
         <p>
           Write a description, add photos, and set pricing for the products you
           plan to sell.
         </p>
       </div>
-      <hr />
-      <div className="medium:block  mt-5">
-        <Stepper />
-      </div>
+
+      <>
+        <div className=" relative left-[12px] mb-[18px] flex justify-between rounded-lg px-4  ">
+          {stepperData?.map((item, i) => {
+            if (item.status === "complete") {
+              return (
+                <Step
+                  key={uuidv4()}
+                  icon={<Check />}
+                  textColor="text-white"
+                  label="Complete Step"
+                  color="green"
+                />
+              )
+            }
+
+            if (item.status === "current") {
+              return (
+                <Step
+                  key={uuidv4()}
+                  label="Current Step"
+                  color="black"
+                  textColor="text-white"
+                />
+              )
+            }
+
+            return (
+              <Step key={uuidv4()} label="Coming Step" textColor="text-black" />
+            )
+          })}
+        </div>
+      </>
 
       <div className="mb-5 mt-12">
         <CardBar
