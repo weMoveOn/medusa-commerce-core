@@ -104,7 +104,7 @@ const HomeIndex = () => {
             <div className="flex gap-4">
               <div className="mb-20 ">
                 <SetupAccount />
-                <SetupStore />
+                {/* <SetupStore /> */}
                 <SetupProduct />
                 <MoveOnGlobal />
               </div>

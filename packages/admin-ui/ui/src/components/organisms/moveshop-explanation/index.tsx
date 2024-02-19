@@ -106,7 +106,7 @@ const Join = () => {
 const SidebarMoveShopExplanation: React.FC = () => {
   return (
     // overflow-y-auto
-    <div className="medium:block hidden h-full  ">
+    <div className="medium:block hidden    ">
       {/* min-w-sidebar bg-gray-0 border-grey-20  pr-xlarge pl-base    h-screen max-w-[400px] */}
       <div className=" mb-5 flex min-w-[436px] flex-col gap-6 ">
         <Video />
