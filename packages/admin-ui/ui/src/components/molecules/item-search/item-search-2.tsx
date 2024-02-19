@@ -7,15 +7,28 @@ import { ControlProps, OptionProps, SingleValue } from "react-select"
 import Control from "../select/next-select/components/control"
 import { NextSelect } from "../select/next-select"
 import SearchIcon from "../../fundamentals/icons/search-icon"
-import { useAdminInventoryItems } from "medusa-react"
+import {
+  useAdminInventoryItems,
+  useAdminProduct,
+  useAdminProducts,
+  useAdminVariants,
+} from "medusa-react"
 import { useDebounce } from "../../../hooks/use-debounce"
-import { useState } from "react"
+import { useEffect, useState } from "react"
+import Table from "../table"
+import TableContainer from "../../organisms/table-container"
+import RMASelectProductSubModal from "../../../domain/orders/details/rma-sub-modals/products"
+import Items2 from "../../../domain/orders/new/components/items2"
+import RMASelectProductSubModal2 from "../../../domain/orders/details/rma-sub-modals/products2"
+import Table2 from "../table/table-2"
+// import TableContainer from "../../../../components/organisms/table-container"
+
 
 type Props = {
   onItemSelect: (item: DecoratedInventoryItemDTO) => void
   clearOnSelect?: boolean
   filters?: AdminGetInventoryItemsParams
-  placeholder?:string
+  placeholder?: string
 }
 
 type ItemOption = {
@@ -24,62 +37,78 @@ type ItemOption = {
   inventoryItem: DecoratedInventoryItemDTO
 }
 
-const ItemSearch = ({ onItemSelect, clearOnSelect, filters = {}, placeholder }: Props) => {
+const ItemSearch2 = ({
+  onItemSelect,
+  clearOnSelect,
+  filters = {},
+  placeholder,
+}: Props) => {
   const [itemSearchTerm, setItemSearchTerm] = useState<string | undefined>()
 
   const debouncedItemSearchTerm = useDebounce(itemSearchTerm, 500)
 
   const queryEnabled = !!debouncedItemSearchTerm?.length
 
-  const { isLoading, inventory_items } = useAdminInventoryItems(
-    {
-      q: debouncedItemSearchTerm,
-      location_id:"sloc_01HP4813563474QT2GRYENWHMG",
-      ...filters,
-    },
-    { enabled: queryEnabled }
-  )
+  // const { isLoading, products } = useAdminProducts()
+
+  const { isLoading,variants } = useAdminVariants()
+  // console.log("variants ->", variants)
+
+  // console.log("products ->", )
 
   const onChange = (item: SingleValue<ItemOption>) => {
     if (item) {
       onItemSelect(item.inventoryItem)
     }
   }
+  useEffect(()=>{},[variants])
 
-  const options = inventory_items?.map(
-    (inventoryItem: DecoratedInventoryItemDTO) => ({
-      label:
-        inventoryItem.title ||
-        inventoryItem.variants?.[0]?.product?.title ||
-        inventoryItem.sku,
-      value: inventoryItem.id,
-      inventoryItem,
-    })
-  ) as ItemOption[]
+  const options = variants?.map((variant) => ({
+    label: variant.product?.title,
+    value: "100",
+    inventoryItem: {
+      sku: variant.sku,
+      stocked_quantity: variant.inventory_quantity,
+    },
+  })) as ItemOption[]
 
   const filterOptions = () => true
 
   return (
     <div>
-      <NextSelect
-        isMulti={false}
+      {/* <NextSelect
+        isMulti={true}
         components={{ Option: ProductOption, Control: SearchControl }}
         // onInputChange={setItemSearchTerm}
-        // options={options}
-        placeholder={placeholder?? "Search by sku..."}
+        options={options}
+        placeholder={placeholder ?? "Search by sku..."}
         isSearchable={true}
-        // noOptionsMessage={() => "No items found"}
+        noOptionsMessage={() => "No items found"}
         // openMenuOnClick={!!inventory_items?.length}
         // onChange={onChange}
-        // value={null}
-        // isLoading={queryEnabled && isLoading}
+        value={null}
+        isLoading={queryEnabled && isLoading}
         // TODO: Remove this when we can q for inventory item titles
+      /> */}
+      <RMASelectProductSubModal2
+        selectedItems={variants || []}
+        onSubmit={()=> {}}
       />
     </div>
   )
 }
 
+const SearchControl = ({ children, ...props }: ControlProps<ItemOption>) => (
+  <Control {...props}>
+    <span className="mr-4">
+      <SearchIcon size={16} className="text-grey-50" />
+    </span>
+    {children}
+  </Control>
+)
+
 const ProductOption = ({ innerProps, data }: OptionProps<ItemOption>) => {
+  console.log("data ->", data)
   return (
     <div
       {...innerProps}
@@ -96,17 +125,9 @@ const ProductOption = ({ innerProps, data }: OptionProps<ItemOption>) => {
           data.inventoryItem.reserved_quantity
         } available`}</p>
       </div>
+
     </div>
   )
 }
 
-const SearchControl = ({ children, ...props }: ControlProps<ItemOption>) => (
-  <Control {...props}>
-    <span className="mr-4">
-      <SearchIcon size={16} className="text-grey-50" />
-    </span>
-    {children}
-  </Control>
-)
-
-export default ItemSearch
+export default ItemSearch2

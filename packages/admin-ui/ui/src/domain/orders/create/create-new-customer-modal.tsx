@@ -6,9 +6,11 @@ import AddCustomerForm from "../new/components/add-customer";
 type CreateNewCustomerModalProps = {
     openCreateCustomerModal: boolean;
     setOpenCreateCustomerModal: (open: boolean) => void;
+    title: string;
+    openWithBillingAddress: boolean;
 }
 
-const CreateNewCustomerModal = ({openCreateCustomerModal, setOpenCreateCustomerModal}: CreateNewCustomerModalProps) => {
+const CreateNewCustomerModal = ({title, openWithBillingAddress, openCreateCustomerModal, setOpenCreateCustomerModal}: CreateNewCustomerModalProps) => {
     
     return (
       <Modal
@@ -22,11 +24,11 @@ const CreateNewCustomerModal = ({openCreateCustomerModal, setOpenCreateCustomerM
         >
           <div className="flex items-end justify-center gap-2 ">
             <UsersIcon size={20} />
-            <p className="font-bold">Create a new customer</p>
+            <p className="font-bold">{title}</p>
           </div>
         </Modal.Header>
         <Modal.Body>
-          <AddCustomerForm />
+          <AddCustomerForm openWithBillingAddress={openWithBillingAddress} />
         </Modal.Body>
         <Modal.Footer className="justify-end !px-4">
           <div className="flex gap-4">

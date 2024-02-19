@@ -24,11 +24,15 @@ import { useNewOrderForm } from "../form"
 import Checkbox from "../../../../components/atoms/checkbox"
 import PlusIcon from "../../../../components/fundamentals/icons/plus-icon"
 
-const AddCustomerForm = () => {
+type AddCustomerFormProps = {
+  openWithBillingAddress: boolean
+}
+
+const AddCustomerForm = ({openWithBillingAddress}: AddCustomerFormProps) => {
   const { t } = useTranslation()
   const [addNew, setAddNew] = useState(false)
   const { disableNextPage, enableNextPage } = useContext(SteppedContext)
-  const [showBillingAddress, setShowBillingAddress] = useState(false)
+  const [showBillingAddress, setShowBillingAddress] = useState(openWithBillingAddress)
 
   const {
     context: { validCountries },
