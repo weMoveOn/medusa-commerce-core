@@ -1,10 +1,12 @@
 import * as AccordionPrimitive from "@radix-ui/react-accordion"
 import clsx from "clsx"
-import React from "react"
-import IconTooltip from "../../molecules/icon-tooltip"
+import React, { useState } from "react"
+import IconTooltip from "../../../components/molecules/icon-tooltip"
+import TriangleDown from "../../../components/fundamentals/icons/triangle-down"
+import TriangleUp from "../../../components/fundamentals/icons/triangle-up"
 
 type AccordionItemProps = AccordionPrimitive.AccordionItemProps & {
-  title: string
+  title: React.ReactNode
   subtitle?: string
   description?: string
   required?: boolean
@@ -51,8 +53,16 @@ const Item: React.FC<AccordionItemProps> = ({
     "pb-5  mb-5 ": headingSize === "large",
   })
 
+  const [isExpand, setIsExpand] = useState(true)
+  console.log("isExpand :>> ", isExpand)
+
+  const onExpand = () => {
+    setIsExpand(!isExpand)
+  }
+
   return (
     <AccordionPrimitive.Item
+      onClick={onExpand}
       {...props}
       className={clsx(
         "border-grey-20 group border-b last:mb-0",
@@ -70,9 +80,10 @@ const Item: React.FC<AccordionItemProps> = ({
                   {title}
                   {required && <span className="text-rose-50">*</span>}
                 </span>
+                {/* {tooltip && <IconTooltip content={tooltip} />} */}
                 {tooltip && <IconTooltip content={tooltip} />}
               </div>
-              {customTrigger || <MorphingTrigger />}
+              {customTrigger || isExpand ? <TriangleDown /> : <TriangleUp />}
             </div>
             {subtitle && (
               <span className="inter-small-regular text-grey-50 mt-1">
