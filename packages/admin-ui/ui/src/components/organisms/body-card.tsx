@@ -42,7 +42,7 @@ const BodyCard: React.FC<BodyCardProps> = ({
   return (
     <div
       className={clsx(
-        "rounded-rounded  flex h-full w-full flex-col overflow-hidden  bg-[#F2F4F6] ",
+        "flex h-full w-full flex-col   ",
         { "min-h-[350px]": !compact },
         className
       )}
@@ -50,7 +50,7 @@ const BodyCard: React.FC<BodyCardProps> = ({
     >
       <div className="relative">
         {isScrolled && (
-          <div className="rounded-t-rounded from-grey-0 h-xlarge absolute left-0 right-0 top-0 z-10 bg-gradient-to-b to-[rgba(255,255,255,0)]" />
+          <div className="rounded-t-rounded from-grey-0  absolute left-0 right-0 top-0 z-10 bg-gradient-to-b to-[rgba(255,255,255,0)]" />
         )}
       </div>
       <div
@@ -59,8 +59,9 @@ const BodyCard: React.FC<BodyCardProps> = ({
         })}
         onScroll={scrollListener}
       >
+        {/* medium:px-xlarge medium:py-large */}
         <div
-          className={clsx("medium:px-xlarge medium:py-large", {
+          className={clsx("pt-6", {
             "border-grey-20 border-b border-solid": setBorders,
           })}
         >

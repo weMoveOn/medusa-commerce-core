@@ -1,41 +1,49 @@
 import React from "react"
-import IconCircle from "../../fundamentals/icon-circle"
-import IconSquare from "../../fundamentals/icon-square"
-import Accordion from "../accordion"
-import Button from "../../fundamentals/button"
-import InputField from "../../molecules/input"
 
-const ICON_SIZE = 20
+import { ArrowLongRight } from "@medusajs/icons"
+import { FAQ } from "./faq"
 
 const Video = () => {
   return (
     <div>
       <h1 className="text-lg font-bold">MoveShop Exploration</h1>
       <div className=" mt-3  border ">
-        <video
-          width={350}
-          height={200}
-          src="https://www.sample-videos.com/video123/mp4/720/big_buck_bunny_720p_20mb.mp4"
-          controls
-        ></video>
+        <div className="inline-flex h-[210px] w-[436px] items-center justify-center rounded-lg bg-black py-[69px] shadow">
+          <div className="relative flex h-[72px] w-[72px] flex-col items-start justify-start rounded-[48px] border-2 border-white bg-white bg-opacity-20 backdrop-blur-lg" />
+        </div>
       </div>
     </div>
   )
 }
 
-const SuggestedCard = () => {
+const SuggestedCard = ({
+  title,
+  content,
+  linkText,
+}: {
+  title: string
+  content: string
+  linkText: string
+}) => {
   return (
-    <div className="flex items-center justify-between gap-5 border-b-2 py-3">
-      <div>
-        <IconSquare className="h-10 w-10" />
-      </div>
+    <div className="border-b-2py-3 flex items-start  justify-between gap-5">
+      <img
+        className="h-12 w-12 rounded-lg"
+        src="https://source.unsplash.com/user/c_v_r/48x48"
+      />
 
       <div>
-        <h2 className="text-xl font-bold">Browse 100 of theme</h2>
-        <p>Here’s a guide to get started. As your business grows.</p>
-        <div className="flex items-center gap-2  underline">
-          <p>View Theme Store</p>
-          <IconSquare className="h-4 w-4" />
+        <p className=" mb-3 text-sm font-semibold leading-normal text-black">
+          {title}
+        </p>
+        <p className="text-sm font-normal leading-tight text-neutral-700">
+          {content}
+        </p>
+        <div className="mt-4 flex items-center gap-3  ">
+          <div className=" text-sm font-medium leading-tight text-black">
+            {linkText}
+          </div>
+          <ArrowLongRight />
         </div>
       </div>
     </div>
@@ -43,80 +51,28 @@ const SuggestedCard = () => {
 }
 const Suggested = () => {
   return (
-    <div className=" mt-12 w-[350px]   rounded-xl bg-[#F4F4F4] p-5">
+    <div className=" rounded-lg  bg-white  p-5 shadow">
       <div>
-        <h1 className="text-xl font-bold">Suggested for you</h1>
-        <p>Here’s a guide to get started. As your business grows.</p>
+        <h3 className=" text-base font-semibold leading-normal text-black">
+          Suggested for you
+        </h3>
+        <p className=" font-['Inter'] text-sm font-normal leading-tight text-black">
+          Here’s a guide to get started. As your business grows.
+        </p>
       </div>
 
-      <SuggestedCard />
-      <SuggestedCard />
-    </div>
-  )
-}
-
-
-const AccordionHeader = ({ label }: any): JSX.Element => {
-  return (
-    <>
-      <div className="flex items-center justify-center gap-3">
-        <IconSquare className="h-4 w-4" />
-        <p className="text-base font-bold ">{label}</p>
-      </div>
-    </>
-  )
-}
-
-
-const FaqCard = ({ label, desc }: { label: string, desc: string }) => {
-
-  return (
-    <>
-      <div className=" w-full mt-4">
-        <Accordion
-          type="single"
-        >
-          <Accordion.Item
-            // @ts-ignore
-            title={<AccordionHeader label={label} />}
-            value="providers"
-            forceMountContent
-            headingSize={"large"}
-            className={" rounded-lg bg-[#E7E7E7] p-4"}
-          >
-
-
-            <div className={"py-4"}>
-              <div className={"h-[2px] bg-white w-full "}></div>
-              <p className="inter-base-regular text-grey-50 mt-4">
-                {desc}
-              </p>
-            </div>
-
-          </Accordion.Item>
-
-
-        </Accordion>
-      </div>
-    </>
-  )
-}
-
-
-const FAQ = () => {
-  return (
-    <div className=" mt-12 w-[350px]   rounded-xl bg-[#F4F4F4] p-5">
-      <div>
-        <h1 className="text-xl font-bold">FAQ</h1>
-        <p>Questions & answers that might help you with MoveShop</p>
-      </div>
-      <div className="flex flex-col ">
-
-        <FaqCard label={"Is it free?"} desc={"Questions & answers that might help you with MoveShop"} />
-        <FaqCard label={"Is it free?"} desc={"Questions & answers that might help you with MoveShop"} />
-        <FaqCard label={"Is it free?"} desc={"Questions & answers that might help you with MoveShop"} />
-        <FaqCard label={"Is it free?"} desc={"Questions & answers that might help you with MoveShop"} />
-        <FaqCard label={"Is it free?"} desc={"Questions & answers that might help you with MoveShop"} />
+      <div className="mt-8 ">
+        <SuggestedCard
+          linkText="View Theme Store"
+          title="Join our facebook group"
+          content="Here’s a guide to get started. As your business grows."
+        />
+        <hr className="my-3" />
+        <SuggestedCard
+          linkText="View Theme Store"
+          title="Join our facebook group"
+          content="Here’s a guide to get started. As your business grows."
+        />
       </div>
     </div>
   )
@@ -124,10 +80,24 @@ const FAQ = () => {
 
 const Join = () => {
   return (
-    <div className=" mt-12 w-[350px] rounded-xl bg-[#F4F4F4] p-5 ">
-      <SuggestedCard />
-      <SuggestedCard />
-      <SuggestedCard />
+    <div className=" rounded-lg  bg-white p-5 shadow">
+      <SuggestedCard
+        linkText="View Theme Store"
+        title="Join our facebook group"
+        content="Here’s a guide to get started. As your business grows."
+      />
+      <hr className="my-3" />
+      <SuggestedCard
+        linkText="View Theme Store"
+        title="Join our facebook group"
+        content="Here’s a guide to get started. As your business grows."
+      />
+      <hr className="my-3" />
+      <SuggestedCard
+        linkText="View Theme Store"
+        title="Join our facebook group"
+        content="Here’s a guide to get started. As your business grows."
+      />
       <div className="mb-32"></div>
     </div>
   )
@@ -135,8 +105,10 @@ const Join = () => {
 
 const SidebarMoveShopExplanation: React.FC = () => {
   return (
-    <div className="h-full overflow-y-auto hidden medium:block ">
-      <div className="min-w-sidebar bg-gray-0 border-grey-20  pr-xlarge pl-base   mt-5 h-screen max-w-[400px]">
+    // overflow-y-auto
+    <div className="medium:block hidden h-full  ">
+      {/* min-w-sidebar bg-gray-0 border-grey-20  pr-xlarge pl-base    h-screen max-w-[400px] */}
+      <div className=" mb-5 flex min-w-[436px] flex-col gap-6 ">
         <Video />
         <Suggested />
         <FAQ />

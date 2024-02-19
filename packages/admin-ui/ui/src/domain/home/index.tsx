@@ -8,9 +8,7 @@ import WidgetContainer from "../../components/extensions/widget-container"
 import Button from "../../components/fundamentals/button"
 import ExportIcon from "../../components/fundamentals/icons/export-icon"
 import BodyCard from "../../components/organisms/body-card"
-
 import ExportModal from "../../components/organisms/export-modal"
-
 import useNotification from "../../hooks/use-notification"
 import useToggleState from "../../hooks/use-toggle-state"
 import { usePolling } from "../../providers/polling-provider"
@@ -18,14 +16,11 @@ import { useRoutes } from "../../providers/route-provider"
 import { useWidgets } from "../../providers/widget-provider"
 import { getErrorMessage } from "../../utils/error-messages"
 import { transformFiltersAsExportContext } from "./utils"
-import IconSquare from "../../components/fundamentals/icon-square"
 import { SetupAccount } from "./setup-account"
 import { SetupStore } from "./setup-store"
-
 import { SetupProduct } from "./setup-product"
 import MoveOnGlobal from "./moveon-global"
-// eslint-disable-next-line no-undef
-
+import SidebarMoveShopExplanation from "../../components/organisms/moveshop-explanation"
 
 const HomeIndex = () => {
   const view = "orders"
@@ -106,12 +101,15 @@ const HomeIndex = () => {
 
         <div className="flex w-full grow flex-col">
           <BodyCard>
-            <div className="">
-              <SetupAccount />
-              <SetupStore />
-              <SetupProduct />
-              <div className="mb-32 mt-12">
+            <div className="flex gap-4">
+              <div className="mb-20 ">
+                <SetupAccount />
+                <SetupStore />
+                <SetupProduct />
                 <MoveOnGlobal />
+              </div>
+              <div>
+                <SidebarMoveShopExplanation />
               </div>
             </div>
           </BodyCard>

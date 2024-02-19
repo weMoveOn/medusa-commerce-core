@@ -50,7 +50,7 @@ const Card = () => {
 }
 const MoveOnGlobal = () => {
   return (
-    <div className="rounded-lg bg-white p-3 shadow">
+    <div className="mt-6 rounded-lg bg-white  p-3 shadow">
       <MoveOnGlobalCard />
       <div className=" ">
         <div className={"small:block medium:hidden"}>
