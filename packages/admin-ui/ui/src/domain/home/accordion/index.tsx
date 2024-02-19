@@ -1,11 +1,12 @@
 import * as AccordionPrimitive from "@radix-ui/react-accordion"
 import clsx from "clsx"
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import IconTooltip from "../../../components/molecules/icon-tooltip"
 import TriangleDown from "../../../components/fundamentals/icons/triangle-down"
 import TriangleUp from "../../../components/fundamentals/icons/triangle-up"
 
 type AccordionItemProps = AccordionPrimitive.AccordionItemProps & {
+  index: number
   title: React.ReactNode
   subtitle?: string
   description?: string
@@ -30,6 +31,7 @@ const Accordion: React.FC<
 }
 
 const Item: React.FC<AccordionItemProps> = ({
+  index,
   title,
   subtitle,
   description,
@@ -48,33 +50,35 @@ const Item: React.FC<AccordionItemProps> = ({
     "inter-large-semibold": headingSize === "large",
   })
 
-  const paddingClasses = clsx({
-    "pb-0 mb-6 ": headingSize === "medium",
-    "pb-5  mb-5 ": headingSize === "large",
-  })
-
-  const [isExpand, setIsExpand] = useState(true)
-  console.log("isExpand :>> ", isExpand)
+  const [isExpand, setIsExpand] = useState(false)
 
   const onExpand = () => {
     setIsExpand(!isExpand)
   }
 
+  useEffect(() => {
+    if (index === 0) {
+      setIsExpand(true)
+    }
+  }, [])
+
   return (
     <AccordionPrimitive.Item
-      onClick={onExpand}
       {...props}
       className={clsx(
         "border-grey-20 group border-b last:mb-0",
         { "opacity-30": props.disabled },
-        paddingClasses,
         className
       )}
     >
-      <AccordionPrimitive.Header className="px-1">
-        <AccordionPrimitive.Trigger className="w-full" asChild>
+      <AccordionPrimitive.Header className="p-5">
+        <AccordionPrimitive.Trigger
+          className="w-full"
+          asChild
+          onClick={onExpand}
+        >
           <div className="flex flex-col">
-            <div className="flex w-full items-center justify-between">
+            <div className="flex w-full items-center justify-between ">
               <div className="gap-x-2xsmall flex items-center">
                 <span className={headerClass}>
                   {title}
@@ -83,10 +87,10 @@ const Item: React.FC<AccordionItemProps> = ({
                 {/* {tooltip && <IconTooltip content={tooltip} />} */}
                 {tooltip && <IconTooltip content={tooltip} />}
               </div>
-              {customTrigger || isExpand ? <TriangleDown /> : <TriangleUp />}
+              {customTrigger || isExpand ? <TriangleUp /> : <TriangleDown />}
             </div>
             {subtitle && (
-              <span className="inter-small-regular text-grey-50 mt-1">
+              <span className="inter-small-regular text-grey-50 ">
                 {subtitle}
               </span>
             )}
@@ -96,10 +100,10 @@ const Item: React.FC<AccordionItemProps> = ({
       <AccordionPrimitive.Content
         forceMount={forceMountContent}
         className={clsx(
-          "radix-state-closed:animate-accordion-close radix-state-open:animate-accordion-open radix-state-closed:pointer-events-none px-1"
+          "radix-state-closed:animate-accordion-close radix-state-open:animate-accordion-open radix-state-closed:pointer-events-none "
         )}
       >
-        <div className="inter-base-regular group-radix-state-closed:animate-accordion-close">
+        <div className="inter-base-regular group-radix-state-closed:animate-accordion-close ">
           {description && <p className="text-grey-50 ">{description}</p>}
           <div className="w-full">{children}</div>
         </div>

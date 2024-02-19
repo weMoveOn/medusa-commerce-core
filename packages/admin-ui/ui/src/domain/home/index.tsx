@@ -168,10 +168,7 @@ const HomeIndex = () => {
             />
           )
         })}
-        <>
-          {/* <Accordion title="tttt"  /> */}
-          <AccordionMVN />
-        </>
+
         <div className="flex w-full grow flex-col">
           <BodyCard>
             <div className="">
