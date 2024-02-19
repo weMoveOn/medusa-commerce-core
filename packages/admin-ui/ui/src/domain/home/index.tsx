@@ -23,74 +23,9 @@ import { SetupAccount } from "./setup-account"
 import { SetupStore } from "./setup-store"
 
 import { SetupProduct } from "./setup-product"
+import MoveOnGlobal from "./moveon-global"
 // eslint-disable-next-line no-undef
 
-const MoveOnGlobalCard = () => {
-  return (
-    <div className=" medium:flex hidden items-center justify-between rounded-lg bg-white p-4">
-      <div>
-        <h2 className="medium:text-2xl mb-3 text-xl font-bold">
-          MoveOn Global
-        </h2>
-        <p>
-          Write a description, add photos, and set pricing for the products you
-          plan to sell.
-        </p>
-        <Button size="small" variant="secondary" className="mt-3">
-          Explore now
-        </Button>
-      </div>
-      <div className="h-[200px] w-[400px] rounded-xl  bg-black"></div>
-    </div>
-  )
-}
-
-const MoveOnGlobalCardSmall = () => {
-  return (
-    <div className="p-small rounded-lg bg-white ">
-      <div className="h-[100px] w-[200px] rounded-xl  bg-black"></div>
-      <div className="mt-3">
-        <h2 className="mb-3 text-2xl font-bold">MoveOn Global</h2>
-        <p>
-          Write a description, add photos, and set pricing for the products you
-          plan to sell.
-        </p>
-      </div>
-      <Button size="small" variant="secondary" className="mt-3">
-        Explore now
-      </Button>
-    </div>
-  )
-}
-const MoveOnGlobal = () => {
-  return (
-    <>
-      <div className="mb-7 mt-12">
-        <div className="grid grid-cols-3 items-center justify-center gap-5">
-          <div className="h-1 w-full bg-black"></div>
-          <div className="flex items-center justify-center gap-3">
-            <IconSquare className="h-7 w-7" />
-            <div className="medium:text-2xl text-xl font-bold">
-              Introducing MoveOn
-            </div>
-          </div>
-          <div className="h-1  rounded-lg bg-black"></div>
-        </div>
-      </div>
-      <div className="p-small rounded-3xl bg-white">
-        <MoveOnGlobalCard />
-        <div className={"small:block medium:hidden"}>
-          <MoveOnGlobalCardSmall />
-        </div>
-        <div className="medium:flex-row mt-3 flex flex-col items-center justify-between gap-3">
-          <MoveOnGlobalCardSmall />
-          <MoveOnGlobalCardSmall />
-          <MoveOnGlobalCardSmall />
-        </div>
-      </div>
-    </>
-  )
-}
 
 const HomeIndex = () => {
   const view = "orders"

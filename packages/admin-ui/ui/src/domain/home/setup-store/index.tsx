@@ -13,17 +13,17 @@ const stepperData = [
 
 export const SetupStore = () => {
   return (
-    <div className="mt-9">
-      <div className="mb-3 mt-5">
-        <h1 className="text-xl font-bold">SetupStore with your store</h1>
-        <p>
+    <div className="my-6 ">
+      <div>
+        <h1 className="mb-2 text-xl font-bold">SetupStore with your store</h1>
+        <p className="mb-6">
           Write a description, add photos, and set pricing for the products you
           plan to sell.
         </p>
       </div>
 
       <>
-        <div className=" relative left-[12px] mb-[18px] flex justify-between rounded-lg px-4  ">
+        <div className=" relative left-[12px]  flex justify-between rounded-lg px-4  ">
           {stepperData?.map((item, i) => {
             if (item.status === "complete") {
               return (
