@@ -1,12 +1,17 @@
+import { t } from "i18next"
+import Checkbox, { CheckboxProps } from "../../../components/atoms/checkbox"
+import CheckCircleSolid from "../../../components/fundamentals/icons/check-circle-solid"
 import CircleDottedLine from "../../../components/fundamentals/icons/circle-dotted-line"
-import TriangleDown from "../../../components/fundamentals/icons/triangle-down"
-import TriangleUp from "../../../components/fundamentals/icons/triangle-up"
+
 import Accordion from "../accordion"
+import { Control, Controller, useForm, useWatch } from "react-hook-form"
+import { useTranslation } from "react-i18next"
 
 const products = [
   {
     id: 1,
     title: "Step 1",
+    label: "Add your first product",
     content:
       "Write a description, add photos, and set pricing for the products you plan to sell.",
     status: "complete",
@@ -14,6 +19,8 @@ const products = [
   {
     id: 2,
     title: "Step 2",
+    label: "Setup your shipping plan",
+
     content:
       "Write a description, add photos, and set pricing for the products you plan to sell.",
     status: "complete",
@@ -21,6 +28,8 @@ const products = [
   {
     id: 3,
     title: "Step 3",
+    label: "Enable payments",
+
     content:
       "Write a description, add photos, and set pricing for the products you plan to sell.",
     status: "current",
@@ -28,6 +37,8 @@ const products = [
   {
     id: 4,
     title: "Step 4",
+    label: "Create your business store",
+
     content:
       "Write a description, add photos, and set pricing for the products you plan to sell.",
     status: "incoming",
@@ -35,29 +46,100 @@ const products = [
   {
     id: 5,
     title: "Step 5",
+    label: "Launch your business",
+
     content:
       "Write a description, add photos, and set pricing for the products you plan to sell.",
     status: "incoming",
   },
 ]
 
-const AccordionHeader = ({ label }: { label: string }) => {
+const AccordionHeader = ({
+  label,
+  isComplete,
+}: {
+  label: string
+  isComplete: Boolean
+}) => {
   return (
     <>
       <div className="flex items-center  gap-3 ">
-        <CircleDottedLine width={40} height={40} />
-        <p className="medium:text-2xl text-base font-bold ">{label}</p>
+        {isComplete ? (
+          <CheckCircleSolid width={40} height={40} />
+        ) : (
+          <CircleDottedLine width={40} height={40} />
+        )}
+
+        <p className="medium:text-2xl text-base font-semibold ">{label}</p>
       </div>
     </>
   )
 }
 
-export const SetupProduct = () => {
+type ControlledCheckboxProps = {
+  control: Control
+  name: string
+  id: string
+  index: number
+} & CheckboxProps
+
+const ControlledCheckbox = ({
+  control,
+  name,
+  id,
+  index,
+  value,
+  ...props
+}: ControlledCheckboxProps) => {
+  const variants = useWatch({
+    control,
+    name,
+  })
+
   return (
-    <>
+    <Controller
+      control={control}
+      name={name}
+      render={({ field }) => {
+        return (
+          <Checkbox
+            className="inter-small-regular shrink-0"
+            {...props}
+            {...field}
+          />
+        )
+      }}
+    />
+  )
+}
+
+export const SetupProduct = () => {
+  const { t } = useTranslation()
+
+  const {
+    handleSubmit,
+    control,
+    reset,
+    formState: { isSubmitting },
+  } = useForm({
+    defaultValues: {
+      "Step 1": false,
+      "Step 2": false,
+      "Step 3": false,
+      "Step 4": false,
+      "Step 5": false,
+    },
+  })
+
+  const onSubmit = (data) => {
+    console.log("data :>> ", data)
+  }
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)}>
       <div className=" mt-4 w-full">
         <Accordion
-          defaultValue={[`step1`]}
+          defaultValue={[`initialExpanded`]}
           type="multiple"
           className="flex flex-col gap-4"
         >
@@ -67,8 +149,13 @@ export const SetupProduct = () => {
                 key={product.title}
                 index={i}
                 // @ts-ignore
-                title={<AccordionHeader label={product.title} />}
-                value={i === 0 ? "step1" : product.title}
+                title={
+                  <AccordionHeader
+                    label={product.label}
+                    isComplete={product.status === "complete"}
+                  />
+                }
+                value={i === 0 ? "initialExpanded" : product.title}
                 headingSize={"large"}
                 className={" rounded-lg bg-white "}
               >
@@ -84,15 +171,14 @@ export const SetupProduct = () => {
                       </button>
                       <div className={" mt-[14px] "}>
                         <label
-                          htmlFor="shipping-plan"
+                          htmlFor={product.title}
                           className="flex items-center gap-3"
                         >
-                          <input
-                            type="checkbox"
-                            name="shipping-plan"
-                            id={"shipping-plan"}
+                          <ControlledCheckbox
+                            control={control}
+                            label="Mark as completed"
+                            name={product.title}
                           />
-                          <p>Mark as completed</p>
                         </label>
                       </div>
                     </div>
@@ -112,6 +198,7 @@ export const SetupProduct = () => {
           })}
         </Accordion>
       </div>
-    </>
+      <button type="submit">Submit</button>
+    </form>
   )
 }

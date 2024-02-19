@@ -21,7 +21,7 @@ import { transformFiltersAsExportContext } from "./utils"
 import IconSquare from "../../components/fundamentals/icon-square"
 import { SetupAccount } from "./setup-account"
 import { SetupStore } from "./setup-store"
-import AccordionMVN from "../../moveshop-ui/components/molecules/accordion"
+
 import { SetupProduct } from "./setup-product"
 // eslint-disable-next-line no-undef
 

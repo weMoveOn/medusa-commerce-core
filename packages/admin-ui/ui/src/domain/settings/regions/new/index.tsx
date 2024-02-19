@@ -34,7 +34,6 @@ const NewRegion = ({ onClose }: Props) => {
   const form = useForm<NewRegionFormType>({
     defaultValues: getDefaultValues(),
   })
-  console.log("sections :>> ", sections)
   const {
     formState: { isDirty },
     handleSubmit,

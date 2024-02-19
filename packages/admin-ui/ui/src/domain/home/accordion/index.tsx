@@ -84,7 +84,6 @@ const Item: React.FC<AccordionItemProps> = ({
                   {title}
                   {required && <span className="text-rose-50">*</span>}
                 </span>
-                {/* {tooltip && <IconTooltip content={tooltip} />} */}
                 {tooltip && <IconTooltip content={tooltip} />}
               </div>
               {customTrigger || isExpand ? <TriangleUp /> : <TriangleDown />}
