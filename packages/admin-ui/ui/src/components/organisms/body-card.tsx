@@ -93,7 +93,7 @@ const BodyCard: React.FC<BodyCardProps> = ({
           </div>
         </div>
 
-        <div className="medium:px-xlarge  px-small">
+        <div className="  px-large">
           {children && (
             <div
               className={clsx("flex flex-col", {

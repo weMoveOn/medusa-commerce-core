@@ -5,9 +5,11 @@ import { clx } from "../../../utils/clx"
 import { Check } from "@medusajs/icons"
 import { useTranslation } from "react-i18next"
 import { v4 as uuidv4 } from "uuid"
-import Step from "./step"
+
 import { SteppedProps } from "../onboarding-stepper-context"
 import { useOnboardingForm } from "../onboarding-form-provider"
+import Step from "../../../components/atoms/step"
+import StepperArrowIcon from "../../../components/fundamentals/icons/stepper-arrow"
 
 const OnboardingStepper: React.FC<SteppedProps> = ({
   context,
@@ -48,6 +50,7 @@ const OnboardingStepper: React.FC<SteppedProps> = ({
               if (i > context.currentStep) {
                 return (
                   <Step
+                    IconArrowBg={<StepperArrowIcon color="white" />}
                     key={uuidv4()}
                     label="Coming Step"
                     textColor="text-white"
@@ -56,17 +59,22 @@ const OnboardingStepper: React.FC<SteppedProps> = ({
               }
               if (context.currentStep === i) {
                 return (
-                  <Step key={uuidv4()} label="Current Step" color="black" />
+                  <Step
+                    key={uuidv4()}
+                    label="Current Step"
+                    color="black"
+                    IconArrowBg={<StepperArrowIcon color="black" />}
+                  />
                 )
               }
               if (context.currentStep >= i) {
                 return (
                   <Step
+                    IconArrowBg={<StepperArrowIcon color="green" />}
                     key={uuidv4()}
                     icon={<Check />}
                     textColor="text-white"
                     label="Complete Step"
-                    color="green"
                   />
                 )
               }

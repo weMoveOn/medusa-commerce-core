@@ -1,7 +1,9 @@
 /* eslint-disable no-undef */
 import { Check } from "@medusajs/icons"
-import Step from "../../onboarding/onboarding-stepper/step"
+
 import { v4 as uuidv4 } from "uuid"
+import StepperArrowSetupStoreIcon from "./arrow-stepper-setup-store-icon"
+import Step from "../../../components/atoms/step"
 
 const stepperData = [
   { id: 1, title: "Step 1", content: "Add Product", status: "complete" },
@@ -23,7 +25,7 @@ export const SetupStore = () => {
       </div>
 
       <>
-        <div className=" relative left-[12px]  flex justify-between rounded-lg px-4  ">
+        <div className=" relative left-[17px]  flex justify-between rounded-lg px-4  ">
           {stepperData?.map((item, i) => {
             if (item.status === "complete") {
               return (
@@ -31,8 +33,8 @@ export const SetupStore = () => {
                   key={uuidv4()}
                   icon={<Check />}
                   textColor="text-white"
-                  label="Complete Step"
-                  color="green"
+                  label="Complete "
+                  IconArrowBg={<StepperArrowSetupStoreIcon color="green" />}
                 />
               )
             }
@@ -41,15 +43,20 @@ export const SetupStore = () => {
               return (
                 <Step
                   key={uuidv4()}
-                  label="Current Step"
-                  color="black"
+                  label="Current "
                   textColor="text-white"
+                  IconArrowBg={<StepperArrowSetupStoreIcon color="black" />}
                 />
               )
             }
 
             return (
-              <Step key={uuidv4()} label="Coming Step" textColor="text-black" />
+              <Step
+                key={uuidv4()}
+                label="Coming "
+                textColor="text-black"
+                IconArrowBg={<StepperArrowSetupStoreIcon color="gray" />}
+              />
             )
           })}
         </div>

@@ -1,4 +1,3 @@
-import { t } from "i18next"
 import Checkbox, { CheckboxProps } from "../../../components/atoms/checkbox"
 import CheckCircleSolid from "../../../components/fundamentals/icons/check-circle-solid"
 import CircleDottedLine from "../../../components/fundamentals/icons/circle-dotted-line"
@@ -70,7 +69,7 @@ const AccordionHeader = ({
           <CircleDottedLine width={40} height={40} />
         )}
 
-        <p className="medium:text-2xl text-base font-semibold ">{label}</p>
+        <p className="text-large  font-semibold ">{label}</p>
       </div>
     </>
   )
@@ -131,7 +130,7 @@ export const SetupProduct = () => {
     },
   })
 
-  const onSubmit = (data) => {
+  const onSubmit = (data: any) => {
     console.log("data :>> ", data)
   }
 
