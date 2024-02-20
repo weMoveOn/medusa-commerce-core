@@ -58,11 +58,32 @@ const AccordionTitle = ({
   isComplete: Boolean
 }) => {
   return (
-    <>
+    <div className="flex items-center gap-3">
+      <div>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="22"
+          height="22"
+          viewBox="0 0 22 22"
+          fill="none"
+        >
+          <path
+            d="M7.99932 21L7.74868 17.4911C7.61394 15.6046 9.10803 14 10.9993 14C12.8906 14 14.3847 15.6046 14.25 17.4911L13.9993 21"
+            stroke="#262B28"
+            strokeWidth="2"
+          />
+          <path
+            d="M1.35139 12.2135C0.998371 9.91624 0.821861 8.76763 1.25617 7.74938C1.69047 6.73112 2.65403 6.03443 4.58114 4.64106L6.02099 3.6C8.41829 1.86667 9.61694 1 11 1C12.3831 1 13.5817 1.86667 15.979 3.6L17.4189 4.64106C19.346 6.03443 20.3095 6.73112 20.7438 7.74938C21.1781 8.76763 21.0016 9.91624 20.6486 12.2135L20.3476 14.1724C19.8471 17.4289 19.5969 19.0572 18.429 20.0286C17.2611 21 15.5537 21 12.1388 21H9.86119C6.44633 21 4.73891 21 3.571 20.0286C2.40309 19.0572 2.15287 17.4289 1.65243 14.1724L1.35139 12.2135Z"
+            stroke="#262B28"
+            strokeWidth="2"
+            strokeLinejoin="round"
+          />
+        </svg>
+      </div>
       <p className=" text-base font-medium leading-normal text-gray-900">
         {label}
       </p>
-    </>
+    </div>
   )
 }
 const ICON_SIZE = 20
@@ -95,7 +116,7 @@ const Sidebar: React.FC = () => {
     <div className=" medium:block min-w-sidebar max-w-sidebar bg-gray-0 border-grey-20 py-base px-base hidden h-screen overflow-y-auto border-r ">
       <div className="h-full">
         <div className="py-3.5">
-          <AccordionSidebar
+          {/* <AccordionSidebar
             defaultValue={[`initialExpanded`]}
             type="multiple"
             className="flex flex-col gap-4"
@@ -118,9 +139,14 @@ const Sidebar: React.FC = () => {
                 </div>
               </div>
             </AccordionSidebar.Item>
-          </AccordionSidebar>
+          </AccordionSidebar> */}
 
           <SidebarMenuItem
+            subItems={[
+              { pageLink: "/a/orders", text: "Orders" },
+              { pageLink: "/a/products", text: "products" },
+              { pageLink: "/a/home", text: "Home 3" },
+            ]}
             pageLink={"/a/home"}
             icon={<CartIcon size={ICON_SIZE} />}
             triggerHandler={triggerHandler}
@@ -131,6 +157,11 @@ const Sidebar: React.FC = () => {
             icon={<CartIcon size={ICON_SIZE} />}
             triggerHandler={triggerHandler}
             text={t("sidebar-orders", "Orders")}
+            subItems={[
+              { pageLink: "/a/orders", text: "Orders" },
+              { pageLink: "/a/products", text: "products" },
+              { pageLink: "/a/home", text: "Home 3" },
+            ]}
           />
 
           <SidebarMenuItem
@@ -138,12 +169,22 @@ const Sidebar: React.FC = () => {
             icon={<TagIcon size={ICON_SIZE} />}
             text={t("sidebar-products", "Products")}
             triggerHandler={triggerHandler}
+            subItems={[
+              { pageLink: "/a/orders", text: "Orders" },
+              { pageLink: "/a/products", text: "products" },
+              { pageLink: "/a/home", text: "Home 3" },
+            ]}
           />
           <SidebarMenuItem
             pageLink={"/a/customers"}
             icon={<UsersIcon size={ICON_SIZE} />}
             triggerHandler={triggerHandler}
             text={t("sidebar-customers", "Customers")}
+            subItems={[
+              { pageLink: "/a/orders", text: "Orders" },
+              { pageLink: "/a/products", text: "products" },
+              { pageLink: "/a/home", text: "Home 3" },
+            ]}
           />
           <SidebarMenuItem
             pageLink={"/a/content"}

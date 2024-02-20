@@ -1,7 +1,9 @@
-import React, { useCallback } from "react"
+import React, { useCallback, useState } from "react"
 import Collapsible from "react-collapsible"
 import { NavLink } from "react-router-dom"
 import Badge from "../../fundamentals/badge"
+import ChevronUpIcon from "../../fundamentals/icons/chevron-up"
+import ChevronDownIcon from "../../fundamentals/icons/chevron-down"
 
 type SidebarMenuSubitemProps = {
   pageLink: string
@@ -27,13 +29,23 @@ const SidebarMenuItem: React.FC<SidebarMenuItemProps> & {
   subItems = [],
   isNew,
 }: SidebarMenuItemProps) => {
+  const [isExpand, setIsExpand] = useState(false)
+
+  const onExpand = (str?: any) => {
+    // if (str) {
+    //   setIsExpand(true)
+    // } else {
+    //   setIsExpand(false)
+    // }
+    setIsExpand(!isExpand)
+  }
   const styles =
-    "group py-1.5 my-0.5 rounded-rounded flex text-grey-50 hover:bg-grey-10 items-center px-2"
+    "group py-1.5 my-0.5 rounded-rounded flex justify-between text-grey-50 hover:bg-grey-10 items-center px-2"
   const activeStyles = "bg-grey-10 is-active"
-  const classNameFn = useCallback(
-    ({ isActive }) => (isActive ? `${styles} ${activeStyles}` : styles),
-    []
-  )
+  const classNameFn = useCallback(({ isActive }: any) => {
+    const str = isActive ? `${styles} ${activeStyles}` : styles
+    return str
+  }, [])
 
   return (
     <Collapsible
@@ -41,9 +53,16 @@ const SidebarMenuItem: React.FC<SidebarMenuItemProps> & {
       transitionCloseTime={150}
       {...triggerHandler()}
       trigger={
-        <NavLink className={classNameFn} to={pageLink}>
-          <span className="items-start">{icon}</span>
-          <span className="group-[.is-active]:text-grey-90 ml-3">{text}</span>
+        <NavLink className={classNameFn} to={pageLink} onClick={onExpand}>
+          <div className="flex items-center gap-3">
+            <span className="">{icon}</span>
+            <span className="group-[.is-active]:text-grey-90">{text}</span>
+          </div>
+          <div>
+            <span className="group-[.is-active]:text-grey-90">
+              {isExpand ? <ChevronDownIcon /> : <ChevronUpIcon />}
+            </span>
+          </div>
           {isNew && (
             <Badge variant={"new-feature"} className="ml-auto">
               New
