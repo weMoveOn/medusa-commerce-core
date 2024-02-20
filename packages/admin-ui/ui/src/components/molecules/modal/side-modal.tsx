@@ -2,7 +2,7 @@ import { PropsWithChildren } from "react"
 import { AnimatePresence, motion } from "framer-motion"
 import * as Portal from "@radix-ui/react-portal"
 
-const MODAL_WIDTH = 560
+const MODAL_WIDTH = 300
 
 type SideModalProps = PropsWithChildren<{
   close: () => void
@@ -37,19 +37,19 @@ function SideModal(props: SideModalProps) {
             ></motion.div>
             <motion.div
               transition={{ ease: "easeInOut" }}
-              initial={{ right: -MODAL_WIDTH }}
+              initial={{ left: -MODAL_WIDTH }} // Change from right to left
               style={{
                 position: "fixed",
                 height: "100%",
                 width: MODAL_WIDTH,
                 background: "white",
-                right: 0,
+                left: 0, // Change from right: 0 to left: 0
                 top: 0,
                 zIndex: 200,
               }}
               className="overflow-hidden rounded border"
-              animate={{ right: 0 }}
-              exit={{ right: -MODAL_WIDTH }}
+              animate={{ left: 0 }} // Change from right: 0 to left: 0
+              exit={{ left: -MODAL_WIDTH }} // Change from right to left
             >
               {children}
             </motion.div>

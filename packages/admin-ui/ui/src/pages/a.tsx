@@ -24,7 +24,7 @@ import Settings from "../domain/settings"
 import { useRoutes } from "../providers/route-provider"
 import { isRoute } from "../utils/extensions"
 import Home from "../domain/home"
-import CreateOrder from "../domain/orders/create";
+import CreateOrder from "../domain/orders/create"
 
 const IndexPage = () => {
   const navigate = useNavigate()
@@ -63,10 +63,7 @@ const DashboardRoutes = () => {
           <Route path="sales-channels/*" element={<SalesChannels />} />
           <Route path="home/*" element={<Home />} />
           <Route path="content/*" element={<h1>Content</h1>} />
-          <Route path="collection/*" element={<h1>Collection</h1>} />
-          <Route path="analytics/*" element={<h1>Analytics</h1>} />
-          <Route path="marketing/*" element={<h1>Marketing</h1>} />
-          <Route path="online-store/*" element={<h1>Online Store</h1>} />
+
           <Route
             path="social-media-channels/*"
             element={<h1>Social Media channels</h1>}

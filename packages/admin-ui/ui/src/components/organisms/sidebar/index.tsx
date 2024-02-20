@@ -15,7 +15,56 @@ import SwatchIcon from "../../fundamentals/icons/swatch-icon"
 import TagIcon from "../../fundamentals/icons/tag-icon"
 import UsersIcon from "../../fundamentals/icons/users-icon"
 import SidebarMenuItem from "../../molecules/sidebar-menu-item"
+import AccordionSidebar from "../accordian-sidebar"
 
+const navigates = [
+  {
+    id: 1,
+    title: "Home",
+    label: "Home",
+    path: "home",
+  },
+  {
+    id: 2,
+    title: "Home",
+    label: "Home",
+    path: "home",
+  },
+  {
+    id: 3,
+    title: "Home",
+    label: "Home",
+    path: "home",
+  },
+  {
+    id: 4,
+    title: "Home",
+    label: "Home",
+    path: "home",
+  },
+  {
+    id: 5,
+    title: "Home",
+    label: "Home",
+    path: "home",
+  },
+]
+
+const AccordionTitle = ({
+  label,
+  isComplete,
+}: {
+  label: string
+  isComplete: Boolean
+}) => {
+  return (
+    <>
+      <p className=" text-base font-medium leading-normal text-gray-900">
+        {label}
+      </p>
+    </>
+  )
+}
 const ICON_SIZE = 20
 
 const Sidebar: React.FC = () => {
@@ -46,6 +95,31 @@ const Sidebar: React.FC = () => {
     <div className=" medium:block min-w-sidebar max-w-sidebar bg-gray-0 border-grey-20 py-base px-base hidden h-screen overflow-y-auto border-r ">
       <div className="h-full">
         <div className="py-3.5">
+          <AccordionSidebar
+            defaultValue={[`initialExpanded`]}
+            type="multiple"
+            className="flex flex-col gap-4"
+          >
+            <AccordionSidebar.Item
+              // @ts-ignore
+              title={<AccordionTitle label={"Home"} />}
+              value={"initialExpanded"}
+              headingSize={"small"}
+              className={" rounded-lg bg-white "}
+            >
+              <div className="flex items-center justify-between ">
+                <div>
+                  <p className="inter-base-regular text-black  ">
+                    Manual Orders
+                  </p>
+                  <p className="inter-base-regular text-grey-50  ">
+                    Abandoned Checkouts
+                  </p>
+                </div>
+              </div>
+            </AccordionSidebar.Item>
+          </AccordionSidebar>
+
           <SidebarMenuItem
             pageLink={"/a/home"}
             icon={<CartIcon size={ICON_SIZE} />}
