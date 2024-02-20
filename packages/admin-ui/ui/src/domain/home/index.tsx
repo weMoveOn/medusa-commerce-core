@@ -102,7 +102,7 @@ const HomeIndex = () => {
         <div className="flex w-full grow flex-col">
           <BodyCard>
             <div className="flex gap-4">
-              <div className="mb-20 ">
+              <div className="">
                 <SetupAccount />
                 <SetupStore />
                 <SetupProduct />

@@ -25,7 +25,7 @@ export const SetupStore = () => {
       </div>
 
       <>
-        <div className=" relative left-[17px]  flex justify-between rounded-lg px-4  ">
+        <div className=" relative flex items-center justify-center  rounded-lg   ">
           {stepperData?.map((item, i) => {
             if (item.status === "complete") {
               return (
@@ -34,6 +34,7 @@ export const SetupStore = () => {
                   icon={<Check />}
                   textColor="text-white"
                   label="Complete "
+                  iconBorderClassName="border-white"
                   IconArrowBg={<StepperArrowSetupStoreIcon color="green" />}
                 />
               )
@@ -45,6 +46,7 @@ export const SetupStore = () => {
                   key={uuidv4()}
                   label="Current "
                   textColor="text-white"
+                  iconBorderClassName="border-white"
                   IconArrowBg={<StepperArrowSetupStoreIcon color="black" />}
                 />
               )
@@ -53,9 +55,9 @@ export const SetupStore = () => {
             return (
               <Step
                 key={uuidv4()}
-                label="Coming "
+                label="incoming "
                 textColor="text-black"
-                IconArrowBg={<StepperArrowSetupStoreIcon color="gray" />}
+                IconArrowBg={<StepperArrowSetupStoreIcon color="white" />}
               />
             )
           })}

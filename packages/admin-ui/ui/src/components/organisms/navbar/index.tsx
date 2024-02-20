@@ -1,14 +1,13 @@
 import React, { useCallback, useState, type MouseEvent } from "react"
 import useToggleState from "../../../hooks/use-toggle-state"
 import { usePolling } from "../../../providers/polling-provider"
-import Button from "../../fundamentals/button"
-
-import InputField from "../../molecules/input"
 import Logo from "../../fundamentals/Logo"
 import { BellAlert, MagnifyingGlass } from "@medusajs/icons"
 import Avatar from "../../atoms/avatar"
+import { useForm } from "react-hook-form"
 
 const Navbar: React.FC = () => {
+  const { register, handleSubmit, reset, formState } = useForm()
   const {
     state: activityDrawerState,
     toggle: toggleActivityDrawer,
@@ -27,6 +26,15 @@ const Navbar: React.FC = () => {
     [toggleActivityDrawer]
   )
 
+  const onSubmit = (data: any) => {
+    // console.log("data :>> ", data)
+  }
+
+  React.useEffect(() => {
+    if (formState.isSubmitSuccessful) {
+      reset()
+    }
+  }, [formState, reset])
   return (
     <div className=" w-full bg-[#1B241F] px-6 py-[14px]">
       <div className=" flex w-full  items-center  justify-between  ">
@@ -37,23 +45,22 @@ const Navbar: React.FC = () => {
           </h1>
         </div>
 
-        {/* <InputField
-          type="search"
-          placeholder="search..."
-          className="medium:w-1/3"
-        /> */}
-
-        <form>
-          <div className="inline-flex h-12 w-[812px] items-center justify-start gap-2 rounded-lg border border-neutral-700 bg-white bg-opacity-10 px-4 py-2.5 shadow">
-            <div className="flex h-6 shrink grow basis-0 items-start justify-start gap-2">
-              <div className="relative h-6 w-6 text-white">
-                <MagnifyingGlass />
-              </div>
-              {/* FIXME: here is input field */}
-              <div className="font-['Inter'] text-base font-normal leading-normal text-white">
-                Search
-              </div>
-            </div>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <div className="relative">
+            <button
+              type="submit"
+              className=" pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3"
+            >
+              <MagnifyingGlass className="h-5 w-5 text-white" />
+            </button>
+            <input
+              {...register("search")}
+              className="h-12 w-[812px] rounded-lg border border-neutral-700 bg-white bg-opacity-10 px-4 py-2.5 pl-10 text-white shadow"
+              type="search"
+              name="search"
+              id="search"
+              placeholder="Search"
+            />
           </div>
         </form>
 

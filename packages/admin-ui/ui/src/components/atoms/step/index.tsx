@@ -10,6 +10,7 @@ interface StepProps {
   width?: number
   height?: number
   IconArrowBg: ReactNode
+  iconBorderClassName?: string
 }
 
 interface StepProviderProps {
@@ -46,6 +47,7 @@ const Step: React.FC<StepProps> = ({
   width,
   height,
   IconArrowBg,
+  iconBorderClassName,
 }) => {
   return (
     <div className={clx(className)}>
@@ -56,7 +58,12 @@ const Step: React.FC<StepProps> = ({
         color={color}
       >
         <div className={clx("flex items-center justify-center gap-1 ")}>
-          <div className="h-6 w-6 rounded-full border bg-white ">
+          <div
+            className={clx(
+              "h-6 w-6 rounded-full border border-black bg-white ",
+              iconBorderClassName
+            )}
+          >
             <div className="flex flex-col items-center justify-center">
               {icon}
             </div>

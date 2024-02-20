@@ -98,7 +98,6 @@ const Join = () => {
         title="Join our facebook group"
         content="Here’s a guide to get started. As your business grows."
       />
-      <div className="mb-32"></div>
     </div>
   )
 }
@@ -106,9 +105,9 @@ const Join = () => {
 const SidebarMoveShopExplanation: React.FC = () => {
   return (
     // overflow-y-auto
-    <div className="medium:block hidden    ">
-      {/* min-w-sidebar bg-gray-0 border-grey-20  pr-xlarge pl-base    h-screen max-w-[400px] */}
-      <div className=" mb-5 flex min-w-[436px] flex-col gap-6 ">
+    <div className="medium:block  hidden ">
+      {/* min-w-sidebar bg-gray-0 border-grey-20  pr-xlarge pl-base    h-screen max-w-[400px] medium:block hidden    */}
+      <div className="  flex  flex-col gap-6 ">
         <Video />
         <Suggested />
         <FAQ />

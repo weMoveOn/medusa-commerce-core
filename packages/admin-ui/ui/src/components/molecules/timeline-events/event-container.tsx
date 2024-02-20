@@ -75,7 +75,7 @@ const EventContainer: React.FC<EventContainerProps> = ({
       </div>
       <div className="gap-x-xsmall flex">
         <div className="pt-base flex w-5 justify-center">
-          {!isFirst && <div className="min-h-[24px] w-px" />}
+          {!isFirst && <div className=" w-px" />}
         </div>
         <div className="inter-small-regular mt-2xsmall w-full">
           <div className="flex items-center">
