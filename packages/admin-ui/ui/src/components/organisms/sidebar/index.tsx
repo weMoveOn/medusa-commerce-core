@@ -51,7 +51,7 @@ const Sidebar: React.FC = () => {
 
   return (
     // min-w-sidebar max-w-sidebar  medium:block bg-gray-0 border-grey-20 py-base px-base hidden h-screen min-w-[232px]
-    <div className=" h-full overflow-y-auto border p-6">
+    <div className=" h-screen overflow-y-auto border p-6">
       <div className="">
         <div className="">
           <div className="flex flex-col gap-5 ">
@@ -135,7 +135,7 @@ const Sidebar: React.FC = () => {
           </div>
           <hr className="my-8" />
         </div>
-        <div className=" grid grid-cols-1 justify-between ">
+        <div className="pb-32">
           <div className="flex flex-col gap-5 ">
             <SidebarMenuItem
               pageLink={"/a/my-store"}
@@ -156,7 +156,7 @@ const Sidebar: React.FC = () => {
             />
           </div>
 
-          <div className=" flex flex-col gap-5 ">
+          <div className=" mt-64  flex flex-col gap-5 ">
             <SidebarMenuItem
               pageLink={"/a/help"}
               icon={<HelpIcon />}
