@@ -47,7 +47,7 @@ const products = [
   },
 ]
 
-const AccordionHeader = ({
+const AccordionTitle = ({
   label,
   isComplete,
 }: {
@@ -56,7 +56,7 @@ const AccordionHeader = ({
 }) => {
   return (
     <>
-      <p className="w-[376px] font-['Inter'] text-base font-medium leading-normal text-gray-900">
+      <p className=" text-base font-medium leading-normal text-gray-900">
         {label}
       </p>
     </>
@@ -67,10 +67,12 @@ export const FAQ = () => {
   return (
     <div className="rounded-lg  bg-white  p-5 shadow">
       <div>
-        <h4 className="w-[404px] font-['Inter'] text-base font-semibold leading-normal text-black">
+        <h4 className=" text-large  w-full font-semibold leading-normal text-black">
           FAQ
         </h4>
-        <p>Questions & answers that might help you with MoveShop</p>
+        <p>
+          Questions & answers that might help <br /> you with MoveShop
+        </p>
       </div>
       <div>
         <Accordion
@@ -85,7 +87,7 @@ export const FAQ = () => {
                 index={i}
                 // @ts-ignore
                 title={
-                  <AccordionHeader
+                  <AccordionTitle
                     label={product.label}
                     isComplete={product.status === "complete"}
                   />

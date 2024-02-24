@@ -5,7 +5,7 @@ import Logo from "../../fundamentals/Logo"
 import { BarsThree, BellAlert, MagnifyingGlass } from "@medusajs/icons"
 import Avatar from "../../atoms/avatar"
 import { useForm } from "react-hook-form"
-import MenuSideModal from "./menu/side-modal"
+import MenuSideModal from "./menu/side-bar-menu"
 
 const Navbar: React.FC = () => {
   const { register, handleSubmit, reset, formState } = useForm()

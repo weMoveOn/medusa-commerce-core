@@ -5,10 +5,10 @@ import { FAQ } from "./faq"
 
 const Video = () => {
   return (
-    <div>
+    <div className="mt-6  ">
       <h1 className="text-lg font-bold">MoveShop Exploration</h1>
       <div className=" mt-3  border ">
-        <div className="inline-flex h-[210px] w-[436px] items-center justify-center rounded-lg bg-black py-[69px] shadow">
+        <div className="medium:w-[436px] inline-flex h-[210px] w-full items-center justify-center rounded-lg bg-black py-[69px] shadow">
           <div className="relative flex h-[72px] w-[72px] flex-col items-start justify-start rounded-[48px] border-2 border-white bg-white bg-opacity-20 backdrop-blur-lg" />
         </div>
       </div>
@@ -105,7 +105,7 @@ const Join = () => {
 const SidebarMoveShopExplanation: React.FC = () => {
   return (
     // overflow-y-auto
-    <div className="medium:block  hidden ">
+    <div className="medium:block  ">
       {/* min-w-sidebar bg-gray-0 border-grey-20  pr-xlarge pl-base    h-screen max-w-[400px] medium:block hidden    */}
       <div className="  flex  flex-col gap-6 ">
         <Video />

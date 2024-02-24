@@ -1,6 +1,3 @@
-import { useRef, useState } from "react"
-import { useAdminSalesChannels } from "medusa-react"
-import { SalesChannel } from "@medusajs/medusa"
 import { useTranslation } from "react-i18next"
 import SideModal from "../../../../molecules/modal/side-modal"
 import Button from "../../../../fundamentals/button"
