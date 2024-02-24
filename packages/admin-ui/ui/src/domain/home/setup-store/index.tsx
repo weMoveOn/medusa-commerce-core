@@ -26,7 +26,7 @@ export const SetupStore = () => {
       </div>
 
       <>
-        <div className=" medium:flex relative  hidden items-center justify-center  rounded-lg   ">
+        <div className="  relative  hidden items-center justify-center  rounded-lg   ">
           {stepperData?.map((item, i) => {
             if (item.status === "complete") {
               return (
@@ -65,8 +65,14 @@ export const SetupStore = () => {
         </div>
 
         <div>
-
-          <div ></div>
+          <div className="inline-flex h-3 w-[336px] items-center justify-start gap-2 rounded-[64px] bg-white pr-[200px]">
+            <div className="w-[115px] self-stretch rounded-[64px] bg-zinc-800" />
+            <div className="h-1 w-1 rounded-full bg-blue-50" />
+            <div className="h-1 w-1 rounded-full bg-blue-50" />
+            <div className="h-1 w-1 rounded-full bg-zinc-800" />
+            <div className="h-1 w-1 rounded-full bg-zinc-800" />
+            <div className="h-1 w-1 rounded-full bg-zinc-800" />
+          </div>
         </div>
       </>
     </div>
