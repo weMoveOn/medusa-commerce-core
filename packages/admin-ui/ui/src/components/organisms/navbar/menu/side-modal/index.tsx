@@ -27,13 +27,10 @@ function MenuSideModal(props: AddSalesChannelsSideModalProps) {
 
   return (
     <SideModal close={onClose} isVisible={!!isVisible}>
-      <div className="flex h-full flex-col justify-between p-6">
+      <div className="flex h-screen flex-col justify-between ">
         {/* === HEADER === */}
 
-        <div className="flex items-center justify-between">
-          <h3 className="inter-large-semibold flex items-center gap-2 text-xl text-gray-900">
-            {t("modals-add-sales-channels", "MoveShop")}
-          </h3>
+        <div className="mb-4 mr-4 mt-4 flex items-center justify-end">
           <Button
             variant="secondary"
             className="h-8 w-8 p-2"
@@ -46,10 +43,8 @@ function MenuSideModal(props: AddSalesChannelsSideModalProps) {
         <Sidebar />
         {/* === FOOTER === */}
 
-        <div className="flex justify-end gap-2">
-          <Button size="small" variant="ghost" onClick={onClose}>
-            {t("modals-cancel", "Cancel")}
-          </Button>
+        <div className="flex justify-end gap-2 p-4">
+          <div className="h-8 w-8 rounded-full border bg-black"></div>
         </div>
       </div>
     </SideModal>

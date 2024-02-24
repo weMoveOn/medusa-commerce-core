@@ -54,7 +54,7 @@ const Sidebar: React.FC = () => {
     <div className=" h-screen overflow-y-auto border p-6">
       <div className="">
         <div className="">
-          <div className="flex flex-col gap-5 ">
+          <div className="medium:gap-5 flex flex-col gap-3 ">
             <SidebarMenuItem
               pageLink={"/a/home"}
               icon={<HomeIcon />}
@@ -136,7 +136,7 @@ const Sidebar: React.FC = () => {
           <hr className="my-8" />
         </div>
         <div className="pb-32">
-          <div className="flex flex-col gap-5 ">
+          <div className="medium:gap-5 flex flex-col gap-3 ">
             <SidebarMenuItem
               pageLink={"/a/my-store"}
               icon={<StoreIcon />}
@@ -156,7 +156,7 @@ const Sidebar: React.FC = () => {
             />
           </div>
 
-          <div className=" mt-64  flex flex-col gap-5 ">
+          <div className=" medium:mt-64 medium:gap-5  mt-12 flex flex-col gap-3 ">
             <SidebarMenuItem
               pageLink={"/a/help"}
               icon={<HelpIcon />}

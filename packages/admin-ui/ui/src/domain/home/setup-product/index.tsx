@@ -2,7 +2,7 @@ import Checkbox, { CheckboxProps } from "../../../components/atoms/checkbox"
 import CheckCircleSolid from "../../../components/fundamentals/icons/check-circle-solid"
 import CircleDottedLine from "../../../components/fundamentals/icons/circle-dotted-line"
 
-import Accordion from "../accordion"
+import Accordion from "../accordion-home"
 import { Control, Controller, useForm, useWatch } from "react-hook-form"
 import { useTranslation } from "react-i18next"
 

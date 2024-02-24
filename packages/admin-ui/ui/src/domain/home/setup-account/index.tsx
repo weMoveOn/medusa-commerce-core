@@ -47,8 +47,8 @@ export const SetupAccount = () => {
           </div>
 
           <p className="mb-2 mt-6 text-xl font-semibold">Raptor Shop</p>
-          <div className=" inline-flex  h-11 w-[442px] items-center justify-between rounded-lg bg-neutral-100 py-1 pl-4 pr-1">
-            <div className="font-['Inter'] text-base font-normal leading-normal text-black">
+          <div className=" inline-flex  h-11 w-full max-w-[442px] items-center justify-between rounded-lg bg-neutral-100 py-1 pl-4 pr-1">
+            <div className=" medium:text-base text-small font-normal leading-normal text-black">
               raptorshopping.moveshop.store
             </div>
             <div className="flex items-center justify-start gap-2">

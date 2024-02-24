@@ -21,21 +21,12 @@ const Layout: React.FC<React.PropsWithChildren> = ({ children }) => {
           right: 24,
         }}
       />
-      {/* <Button
-        size="small"
-        variant="secondary"
-        className="h-[40px]"
-        onClick={showModal}
-      >
-        {t("pages-add-sales-channels", "Add sales channels")}
-      </Button> */}
 
-      <MenuSideModal close={hideModal} isVisible={isModalVisible} />
-      <div className="medium:block hidden">
+      <div className="medium:block ">
         <Navbar />
       </div>
       <div className=" flex w-full  ">
-        <div>
+        <div className="medium:block hidden">
           <Sidebar />
         </div>
         <div className="flex h-screen flex-1 flex-col">

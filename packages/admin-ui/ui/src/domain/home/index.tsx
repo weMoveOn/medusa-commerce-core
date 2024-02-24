@@ -101,10 +101,10 @@ const HomeIndex = () => {
 
         <div className="flex w-full grow flex-col">
           <BodyCard>
-            <div className="flex gap-4 pb-32">
+            <div className="flex  pb-32">
               <div className="">
                 <SetupAccount />
-                <SetupStore />
+                {/* <SetupStore /> */}
                 <SetupProduct />
                 <MoveOnGlobal />
               </div>
