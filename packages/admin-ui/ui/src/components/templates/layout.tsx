@@ -21,28 +21,28 @@ const Layout: React.FC<React.PropsWithChildren> = ({ children }) => {
           right: 24,
         }}
       />
-      <Button
+      {/* <Button
         size="small"
         variant="secondary"
         className="h-[40px]"
         onClick={showModal}
       >
         {t("pages-add-sales-channels", "Add sales channels")}
-      </Button>
+      </Button> */}
 
       <MenuSideModal close={hideModal} isVisible={isModalVisible} />
       <div className="medium:block hidden">
         <Navbar />
       </div>
-      <div className=" flex h-screen w-full ">
+      <div className=" flex w-full  ">
         <div>
           <Sidebar />
         </div>
-        <div className="flex flex-1 flex-col">
+        <div className="flex h-screen flex-1 flex-col">
           {/* min-h-content */}
-          <div className=" overflow-y-auto  bg-[#F2F4F6]">
+          <div className=" overflow-y-auto   bg-[#F2F4F6]">
             {/*  medium:mx-4xlarge large:mx-auto large:max-w-7xl large:w-full h-full */}
-            <main className="">{children}</main>
+            <main className="h-full w-full">{children}</main>
           </div>
         </div>
       </div>

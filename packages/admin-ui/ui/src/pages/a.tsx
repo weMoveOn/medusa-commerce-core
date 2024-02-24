@@ -48,6 +48,15 @@ const DashboardRoutes = () => {
       <Layout>
         <SEO title="MoveShop" />
         <Routes>
+          {/* in future apply */}
+
+          <Route path="manual-orders/*" element={<h1>manual-orders</h1>} />
+          <Route
+            path="abandoned-checkouts/*"
+            element={<h1>Abandoned Checkouts</h1>}
+          />
+          <Route path="my-store/*" element={<h1>My Store</h1>} />
+          {/* end */}
           <Route path="oauth/:app_name" element={<Oauth />} />
           <Route path="products/*" element={<ProductsRoute />} />
           <Route path="product-categories/*" element={<ProductCategories />} />
