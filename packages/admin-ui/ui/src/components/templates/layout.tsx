@@ -1,4 +1,4 @@
-import React, { useCallback } from "react"
+import React from "react"
 import { Toaster } from "react-hot-toast"
 import Sidebar from "../organisms/sidebar"
 import Navbar from "../organisms/navbar"

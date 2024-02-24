@@ -4,6 +4,7 @@ import CopyIcon from "../../../components/fundamentals/icons/copy-icon"
 import ProgressCircle from "../progress-circle"
 import { useState } from "react"
 
+
 const copy_value = "raptorshopping.moveshop.store"
 export const SetupAccount = () => {
   const [stepsCompleted, setStepsCompleted] = useState(1)
@@ -20,7 +21,7 @@ export const SetupAccount = () => {
           <div className="medium:items-center medium:flex-row flex flex-col items-start justify-between gap-4">
             <div className="medium:items-center medium:flex-row flex flex-col  items-start gap-3">
               <div>
-                <div className="-ml-2 -mt-2">
+                <div className="-ml-2 -mt-2 ">
                   <ProgressCircle stepsCompleted={stepsCompleted} />
                 </div>
               </div>

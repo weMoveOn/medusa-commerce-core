@@ -105,7 +105,6 @@ const HomeIndex = () => {
               <div className="">
                 <SetupAccount />
                 <SetupStore />
-
                 <SetupProduct />
                 <MoveOnGlobal />
               </div>

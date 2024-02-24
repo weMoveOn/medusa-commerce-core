@@ -4,6 +4,7 @@ import { Check } from "@medusajs/icons"
 import { v4 as uuidv4 } from "uuid"
 import StepperArrowSetupStoreIcon from "./arrow-stepper-setup-store-icon"
 import Step from "../../../components/atoms/step"
+import ProgressStepper from "./progress-stepper"
 
 const stepperData = [
   { id: 1, title: "Step 1", content: "Add Product", status: "complete" },
@@ -15,7 +16,7 @@ const stepperData = [
 
 export const SetupStore = () => {
   return (
-    <div className="medium:block my-6 hidden">
+    <div className=" my-6 ">
       <div>
         <h1 className="mb-2 text-xl font-bold">SetupStore with your store</h1>
         <p className="mb-6">
@@ -25,7 +26,7 @@ export const SetupStore = () => {
       </div>
 
       <>
-        <div className=" relative flex items-center justify-center  rounded-lg   ">
+        <div className=" medium:flex relative  hidden items-center justify-center  rounded-lg   ">
           {stepperData?.map((item, i) => {
             if (item.status === "complete") {
               return (
@@ -61,6 +62,11 @@ export const SetupStore = () => {
               />
             )
           })}
+        </div>
+
+        <div>
+
+          <div ></div>
         </div>
       </>
     </div>
