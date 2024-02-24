@@ -15,7 +15,7 @@ const stepperData = [
 
 export const SetupStore = () => {
   return (
-    <div className="my-6 ">
+    <div className="medium:block my-6 hidden">
       <div>
         <h1 className="mb-2 text-xl font-bold">SetupStore with your store</h1>
         <p className="mb-6">

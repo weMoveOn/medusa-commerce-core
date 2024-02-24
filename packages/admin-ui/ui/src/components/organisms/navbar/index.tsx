@@ -48,11 +48,10 @@ const Navbar: React.FC = () => {
             </h1>
           </div>
 
-          <button onClick={showModal}>
+          <button className="medium:hidden" onClick={showModal}>
             <BarsThree className="text-2xl text-white  " />
           </button>
-
-          <form onSubmit={handleSubmit(onSubmit)} className="w-full">
+          <form onSubmit={handleSubmit(onSubmit)}>
             <div className="relative">
               <button
                 type="submit"
@@ -62,7 +61,7 @@ const Navbar: React.FC = () => {
               </button>
               <input
                 {...register("search")}
-                className="medium:h-12 medium:px-4                                     w-full max-w-[812px] rounded-lg border border-neutral-700 bg-white bg-opacity-10 p-2 py-2.5 pl-10 text-white shadow"
+                className="medium:w-[812px] h-12  w-full rounded-lg border border-neutral-700 bg-white bg-opacity-10 px-4 py-2.5 pl-10 text-white shadow"
                 type="search"
                 name="search"
                 id="search"
