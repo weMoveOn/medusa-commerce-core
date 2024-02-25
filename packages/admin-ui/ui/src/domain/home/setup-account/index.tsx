@@ -4,7 +4,6 @@ import CopyIcon from "../../../components/fundamentals/icons/copy-icon"
 import ProgressCircle from "../progress-circle"
 import { useState } from "react"
 
-
 const copy_value = "raptorshopping.moveshop.store"
 export const SetupAccount = () => {
   const [stepsCompleted, setStepsCompleted] = useState(1)

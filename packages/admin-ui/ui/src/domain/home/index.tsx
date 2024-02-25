@@ -20,7 +20,7 @@ import { SetupAccount } from "./setup-account"
 import { SetupStore } from "./setup-store"
 import { SetupProduct } from "./setup-product"
 import MoveOnGlobal from "./moveon-global"
-import SidebarMoveShopExplanation from "../../components/organisms/moveshop-explanation"
+import SidebarMoveShopExplanation from "./sidebar-right-home"
 
 const HomeIndex = () => {
   const view = "orders"

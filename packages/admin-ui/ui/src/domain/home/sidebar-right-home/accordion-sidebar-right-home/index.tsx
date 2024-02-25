@@ -1,10 +1,10 @@
 import * as AccordionPrimitive from "@radix-ui/react-accordion"
 import clsx from "clsx"
 import React, { useEffect, useState } from "react"
-import IconTooltip from "../../../molecules/icon-tooltip"
+import IconTooltip from "../../../../components/molecules/icon-tooltip"
 
-import ChevronUpIcon from "../../../fundamentals/icons/chevron-up"
-import ChevronDownIcon from "../../../fundamentals/icons/chevron-down"
+import ChevronUpIcon from "../../../../components/fundamentals/icons/chevron-up"
+import ChevronDownIcon from "../../../../components/fundamentals/icons/chevron-down"
 
 type AccordionItemProps = AccordionPrimitive.AccordionItemProps & {
   index: number
