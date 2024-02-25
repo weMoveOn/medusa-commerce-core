@@ -342,23 +342,23 @@ const OrderDetails = () => {
                 )
               })}
             </div>
-            <div className="flex space-x-4">
+            <div className="m-6   flex  space-x-4">
               <div className="gap-y-base flex h-full w-7/12 flex-col">
                 <BodyCard
-                  className={"min-h-[200px] w-full"}
+                  className={" w-full rounded-lg  bg-white p-5 shadow"}
                   customHeader={
-                    <Tooltip side="top" content={"Copy ID"}>
+                    <>
                       <button
-                        className="inter-xlarge-semibold text-grey-90 active:text-violet-90 flex cursor-pointer items-center gap-x-2"
+                        className="inter-xlarge-semibold text-grey-90 active:text-violet-90 pointer-events-none flex cursor-pointer items-center gap-x-2"
                         onClick={handleCopy}
                       >
-                        #{order.display_id} <CopyIcon size={16} />
+                        #{order.display_id}
                       </button>
-                    </Tooltip>
+                    </>
                   }
-                  subtitle={moment(order.created_at).format(
-                    "D MMMM YYYY hh:mm a"
-                  )}
+                  // subtitle={moment(order.created_at).format(
+                  //   "D MMMM YYYY hh:mm a"
+                  // )}
                   status={<OrderStatusComponent status={order.status} />}
                   forceDropdown={true}
                   actionables={[
@@ -370,7 +370,7 @@ const OrderDetails = () => {
                     },
                   ]}
                 >
-                  <div className="mt-6 flex space-x-6 divide-x">
+                  {/* <div className="mt-6 flex space-x-6 divide-x">
                     <div className="flex flex-col">
                       <div className="inter-smaller-regular text-grey-50 mb-1">
                         {t("details-email", "Email")}
@@ -399,7 +399,7 @@ const OrderDetails = () => {
                           .join(", ")}
                       </div>
                     </div>
-                  </div>
+                  </div> */}
                 </BodyCard>
 
                 <SummaryCard order={order} reservations={reservations || []} />
@@ -589,7 +589,7 @@ const OrderDetails = () => {
                 />
                 <Spacer />
               </div>
-              <Timeline orderId={order.id} />
+              {/* <Timeline orderId={order.id} /> */}
             </div>
 
             <AddressModal

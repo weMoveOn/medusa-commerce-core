@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-key */
 import clsx from "clsx"
 import { isEmpty } from "lodash"
 import { useAdminOrders } from "medusa-react"

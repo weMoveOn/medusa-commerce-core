@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-key */
 import { useMemo, useState } from "react"
 import { Route, Routes, useNavigate } from "react-router-dom"
 import { useTranslation } from "react-i18next"
@@ -20,8 +21,8 @@ import { useWidgets } from "../../providers/widget-provider"
 import { getErrorMessage } from "../../utils/error-messages"
 import Details from "./details"
 import { transformFiltersAsExportContext } from "./utils"
-import EditIcon from "../../components/fundamentals/icons/edit-icon";
-import OrderCrate from "./create";
+import EditIcon from "../../components/fundamentals/icons/edit-icon"
+import OrderCrate from "./create"
 
 const VIEWS = ["orders", "drafts"]
 
@@ -48,25 +49,25 @@ const OrderIndex = () => {
   const actions = useMemo(() => {
     return [
       <div className="flex space-x-2">
-      <Button
-        key="export"
-        variant="secondary"
-        size="small"
-        onClick={() => openExportModal()}
-      >
-        <ExportIcon size={20} />
-        Export Orders
-      </Button>
-      <Button
+        <Button
+          key="export"
+          variant="secondary"
+          size="small"
+          onClick={() => openExportModal()}
+        >
+          <ExportIcon size={20} />
+          Export Orders
+        </Button>
+        <Button
           key="order_create"
           variant="secondary"
           size="small"
           onClick={() => navigate(`/a/order/create`)}
-      >
-        <EditIcon size={20} />
-        Create order
-      </Button>
-      </div>
+        >
+          <EditIcon size={20} />
+          Create order
+        </Button>
+      </div>,
     ]
   }, [view])
 
