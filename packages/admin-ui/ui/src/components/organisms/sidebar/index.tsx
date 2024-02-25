@@ -23,7 +23,7 @@ import AppIcon from "../../fundamentals/icons/app-icon"
 
 import HelpIcon from "../../fundamentals/icons/help-icon"
 
-const ICON_SIZE = 32
+const ICON_SIZE = 28
 
 const Sidebar: React.FC = () => {
   const { t } = useTranslation()
@@ -58,17 +58,13 @@ const Sidebar: React.FC = () => {
             <SidebarMenuItem
               pageLink={"/a/home"}
               icon={<HomeIcon />}
-              triggerHandler={() => {
-                console.log("triggerHandler")
-              }}
+              triggerHandler={() => {}}
               text={t("home", "Home")}
             />
             <SidebarMenuItem
               pageLink={"/a/orders"}
               icon={<OrdersIcon />}
-              triggerHandler={() => {
-                console.log("triggerHandler")
-              }}
+              triggerHandler={() => {}}
               text={t("sidebar-orders", "Orders")}
               subItems={[
                 { pageLink: "/a/manual-orders", text: "Manual Orders" },
@@ -82,9 +78,7 @@ const Sidebar: React.FC = () => {
               pageLink={"/a/products"}
               icon={<ProductsIcon />}
               text={t("sidebar-products", "Products")}
-              triggerHandler={() => {
-                console.log("triggerHandler")
-              }}
+              triggerHandler={() => {}}
               subItems={[
                 { pageLink: "/a/inventory", text: "Inventory" },
                 { pageLink: "/a/purchase-orders", text: "Purchase Orders" },
@@ -103,17 +97,13 @@ const Sidebar: React.FC = () => {
             <SidebarMenuItem
               pageLink={"/a/customers"}
               icon={<CustomersIcon />}
-              triggerHandler={() => {
-                console.log("triggerHandler")
-              }}
+              triggerHandler={() => {}}
               text={t("sidebar-customers", "Customers")}
             />
             <SidebarMenuItem
               pageLink={"/a/content"}
               icon={<ContentIcon />}
-              triggerHandler={() => {
-                console.log("triggerHandler")
-              }}
+              triggerHandler={() => {}}
               text={t("sidebar-content", "Content")}
               subItems={[
                 { pageLink: "/a/meta-object", text: "MetaObject" },
@@ -123,9 +113,7 @@ const Sidebar: React.FC = () => {
             <SidebarMenuItem
               pageLink={"/a/discounts"}
               icon={<DiscountsIcon />}
-              triggerHandler={() => {
-                console.log("triggerHandler")
-              }}
+              triggerHandler={() => {}}
               text={t("sidebar-discounts", "Discounts")}
               subItems={[
                 { pageLink: "/a/discount", text: "Discount" },
@@ -149,28 +137,22 @@ const Sidebar: React.FC = () => {
             <SidebarMenuItem
               pageLink={"/a/my-apps"}
               icon={<AppIcon />}
-              triggerHandler={() => {
-                console.log("triggerHandler")
-              }}
+              triggerHandler={() => {}}
               text={t("sidebar-my-apps", "My Apps")}
             />
           </div>
 
-          <div className=" medium:mt-64 medium:gap-5  mt-12 flex flex-col gap-3 ">
+          <div className=" medium:mt-60 medium:gap-5  mt-12 flex flex-col gap-3 ">
             <SidebarMenuItem
               pageLink={"/a/help"}
               icon={<HelpIcon />}
-              triggerHandler={() => {
-                console.log("triggerHandler")
-              }}
+              triggerHandler={() => {}}
               text={t("sidebar-help", "Help")}
             />
             <SidebarMenuItem
               pageLink={"/a/settings"}
               icon={<GearIcon size={ICON_SIZE} />}
-              triggerHandler={() => {
-                console.log("triggerHandler")
-              }}
+              triggerHandler={() => {}}
               text={t("sidebar-settings", "Settings")}
             />
             {isFeatureEnabled("product_categories") && (
@@ -178,9 +160,7 @@ const Sidebar: React.FC = () => {
                 pageLink={"/a/product-categories"}
                 icon={<SwatchIcon size={ICON_SIZE} />}
                 text={t("sidebar-categories", "Categories")}
-                triggerHandler={() => {
-                  console.log("triggerHandler")
-                }}
+                triggerHandler={() => {}}
               />
             )}
 
@@ -188,9 +168,7 @@ const Sidebar: React.FC = () => {
               <SidebarMenuItem
                 pageLink={"/a/inventory"}
                 icon={<BuildingsIcon size={ICON_SIZE} />}
-                triggerHandler={() => {
-                  console.log("triggerHandler")
-                }}
+                triggerHandler={() => {}}
                 text={t("sidebar-inventory", "Inventory")}
               />
             )}
@@ -205,9 +183,7 @@ const Sidebar: React.FC = () => {
                   key={index}
                   pageLink={`/a${cleanLink}`}
                   icon={icon ? <Icon /> : <SquaresPlus size={ICON_SIZE} />}
-                  triggerHandler={() => {
-                    console.log("triggerHandler")
-                  }}
+                  triggerHandler={() => {}}
                   text={label}
                 />
               )
