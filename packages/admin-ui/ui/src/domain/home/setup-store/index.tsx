@@ -64,7 +64,7 @@ export const SetupStore = () => {
           })}
         </div>
 
-        <div>
+        <div className="medium:hidden">
           <div className="inline-flex h-3 w-[336px] items-center justify-start gap-2 rounded-[64px] bg-white pr-[200px]">
             <div className="w-[115px] self-stretch rounded-[64px] bg-zinc-800" />
             <div className="h-1 w-1 rounded-full bg-blue-50" />

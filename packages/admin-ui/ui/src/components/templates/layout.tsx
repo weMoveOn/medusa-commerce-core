@@ -4,7 +4,7 @@ import Sidebar from "../organisms/sidebar"
 import Navbar from "../organisms/navbar"
 
 import { useTranslation } from "react-i18next"
-import PhoneMenu from "../organisms/navbar/menu/phone-menu"
+import BottomMenu from "../organisms/navbar/menu/bottom-menu"
 
 const Layout: React.FC<React.PropsWithChildren> = ({ children }) => {
   const { t } = useTranslation()
@@ -39,7 +39,7 @@ const Layout: React.FC<React.PropsWithChildren> = ({ children }) => {
         </div>
       </div>
 
-      <PhoneMenu />
+      <BottomMenu />
     </>
   )
 }

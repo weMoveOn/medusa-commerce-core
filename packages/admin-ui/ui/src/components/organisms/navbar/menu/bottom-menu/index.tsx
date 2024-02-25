@@ -4,7 +4,7 @@ import HomeIcon from "../../../../fundamentals/icons/home-icon"
 import OrdersIcon from "../../../../fundamentals/icons/orders-icon"
 import ProductsIcon from "../../../../fundamentals/icons/products-icon"
 
-const PhoneMenu: React.FC = () => {
+const BottomMenu: React.FC = () => {
   const styles =
     "group  flex font-bold justify-between text-large text-grey-50  items-center px-2"
   const activeStyles = "is-active text-green-500"
@@ -14,7 +14,7 @@ const PhoneMenu: React.FC = () => {
   }, [])
   return (
     <>
-      <div className="fixed bottom-0 z-50 w-full ">
+      <div className="medium:hidden fixed bottom-0 z-50 w-full ">
         <div>
           <div className="flex h-16   items-center justify-between border bg-white px-4  shadow-lg">
             <NavLink className={classNameFn} to={"/a/home"}>
@@ -80,4 +80,4 @@ const PhoneMenu: React.FC = () => {
   )
 }
 
-export default PhoneMenu
+export default BottomMenu
