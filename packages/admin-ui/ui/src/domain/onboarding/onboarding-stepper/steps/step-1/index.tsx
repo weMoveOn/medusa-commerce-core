@@ -1,15 +1,12 @@
 import React, { useEffect, useState } from "react"
 import { clx } from "../../../../../utils/clx"
 import { useTranslation } from "react-i18next"
-
 import StepContentHeader from "../../step-content-header"
 import { useWatch } from "react-hook-form"
-
 import { SteppedContext } from "../../../onboarding-stepper-context"
 import { useOnboardingForm } from "../../../onboarding-form-provider"
 import IconCircle from "../../../../../components/fundamentals/icon-circle"
 import { StepCard } from "../../step-card"
-
 export const Step1 = () => {
   const { t } = useTranslation()
   const { enableNextPage, disableNextPage } = React.useContext(SteppedContext)

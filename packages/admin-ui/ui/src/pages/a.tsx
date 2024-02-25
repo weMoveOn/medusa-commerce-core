@@ -24,7 +24,7 @@ import Settings from "../domain/settings"
 import { useRoutes } from "../providers/route-provider"
 import { isRoute } from "../utils/extensions"
 import Home from "../domain/home"
-import CreateOrder from "../domain/orders/create";
+import CreateOrder from "../domain/orders/create"
 
 const IndexPage = () => {
   const navigate = useNavigate()
@@ -48,6 +48,15 @@ const DashboardRoutes = () => {
       <Layout>
         <SEO title="MoveShop" />
         <Routes>
+          {/* in future apply */}
+
+          <Route path="manual-orders/*" element={<h1>manual-orders</h1>} />
+          <Route
+            path="abandoned-checkouts/*"
+            element={<h1>Abandoned Checkouts</h1>}
+          />
+          <Route path="my-store/*" element={<h1>My Store</h1>} />
+          {/* end */}
           <Route path="oauth/:app_name" element={<Oauth />} />
           <Route path="products/*" element={<ProductsRoute />} />
           <Route path="product-categories/*" element={<ProductCategories />} />
@@ -63,10 +72,7 @@ const DashboardRoutes = () => {
           <Route path="sales-channels/*" element={<SalesChannels />} />
           <Route path="home/*" element={<Home />} />
           <Route path="content/*" element={<h1>Content</h1>} />
-          <Route path="collection/*" element={<h1>Collection</h1>} />
-          <Route path="analytics/*" element={<h1>Analytics</h1>} />
-          <Route path="marketing/*" element={<h1>Marketing</h1>} />
-          <Route path="online-store/*" element={<h1>Online Store</h1>} />
+
           <Route
             path="social-media-channels/*"
             element={<h1>Social Media channels</h1>}

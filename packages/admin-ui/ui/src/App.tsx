@@ -20,7 +20,6 @@ const ResetPasswordPage = lazy(() => import("./pages/reset-password"))
 const router = createBrowserRouter(
   createRoutesFromElements(
     <>
-
       <Route path="/" element={<Onboarding />} />
 
       {/*<Route path="/" element={<IndexPage />} />*/}
@@ -43,11 +42,11 @@ const router = createBrowserRouter(
       <Route path="login" element={<LoginPage />} />
       <Route path="reset-password" element={<ResetPasswordPage />} />
       <Route path="*" element={<NotFound />} />
-    </>,
+    </>
   ),
   {
     basename: process.env.ADMIN_PATH,
-  },
+  }
 )
 
 const Loading = () => (

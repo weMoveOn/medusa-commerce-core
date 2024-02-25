@@ -39,7 +39,7 @@ import WidgetContainer from "../../../components/extensions/widget-container"
 import Button from "../../../components/fundamentals/button"
 import DetailsIcon from "../../../components/fundamentals/details-icon"
 import CancelIcon from "../../../components/fundamentals/icons/cancel-icon"
-import ClipboardCopyIcon from "../../../components/fundamentals/icons/clipboard-copy-icon"
+import CopyIcon from "../../../components/fundamentals/icons/copy-icon"
 import CornerDownRightIcon from "../../../components/fundamentals/icons/corner-down-right-icon"
 import DollarSignIcon from "../../../components/fundamentals/icons/dollar-sign-icon"
 import MailIcon from "../../../components/fundamentals/icons/mail-icon"
@@ -352,7 +352,7 @@ const OrderDetails = () => {
                         className="inter-xlarge-semibold text-grey-90 active:text-violet-90 flex cursor-pointer items-center gap-x-2"
                         onClick={handleCopy}
                       >
-                        #{order.display_id} <ClipboardCopyIcon size={16} />
+                        #{order.display_id} <CopyIcon size={16} />
                       </button>
                     </Tooltip>
                   }
@@ -380,7 +380,7 @@ const OrderDetails = () => {
                         onClick={handleCopyEmail}
                       >
                         {order.email}
-                        <ClipboardCopyIcon size={12} />
+                        <CopyIcon size={12} />
                       </button>
                     </div>
                     <div className="flex flex-col pl-6">

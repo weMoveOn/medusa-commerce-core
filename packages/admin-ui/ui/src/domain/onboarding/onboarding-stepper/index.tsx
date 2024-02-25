@@ -5,9 +5,11 @@ import { clx } from "../../../utils/clx"
 import { Check } from "@medusajs/icons"
 import { useTranslation } from "react-i18next"
 import { v4 as uuidv4 } from "uuid"
-import Step from "./step"
+
 import { SteppedProps } from "../onboarding-stepper-context"
 import { useOnboardingForm } from "../onboarding-form-provider"
+import Step from "../../../components/atoms/step"
+import StepperArrowIcon from "../../../components/fundamentals/icons/stepper-arrow"
 
 const OnboardingStepper: React.FC<SteppedProps> = ({
   context,
@@ -43,29 +45,36 @@ const OnboardingStepper: React.FC<SteppedProps> = ({
     <div className=" flex items-center justify-center ">
       <div className="mt-14 flex h-[880px] w-[650px] flex-col justify-between rounded-xl border  p-9  ">
         <>
-          <div className=" relative left-[12px] flex rounded-lg pb-[18px]">
+          <div className=" medium:flex relative left-[12px]  hidden rounded-lg pb-[18px]">
             {[1, 2, 3]?.map((_, i) => {
               if (i > context.currentStep) {
-                return <Step key={uuidv4()} label="Coming Step" />
+                return (
+                  <Step
+                    IconArrowBg={<StepperArrowIcon color="white" />}
+                    key={uuidv4()}
+                    label="Coming Step"
+                    textColor="text-white"
+                  />
+                )
               }
               if (context.currentStep === i) {
                 return (
                   <Step
                     key={uuidv4()}
-                    className=" text-white"
                     label="Current Step"
                     color="black"
+                    IconArrowBg={<StepperArrowIcon color="black" />}
                   />
                 )
               }
               if (context.currentStep >= i) {
                 return (
                   <Step
+                    IconArrowBg={<StepperArrowIcon color="green" />}
                     key={uuidv4()}
                     icon={<Check />}
-                    className="text-white"
+                    textColor="text-white"
                     label="Complete Step"
-                    color="green"
                   />
                 )
               }

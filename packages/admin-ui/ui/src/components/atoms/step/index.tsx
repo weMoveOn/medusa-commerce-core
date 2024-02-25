@@ -1,6 +1,5 @@
 import React, { ReactNode } from "react"
-import StepperArrow from "../../../../components/fundamentals/icons/stepper-arrow"
-import { clx } from "../../../../utils/clx"
+import { clx } from "../../../utils/clx"
 
 interface StepProps {
   label: string
@@ -8,22 +7,30 @@ interface StepProps {
   color?: string
   className?: string
   textColor?: string
+  width?: number
+  height?: number
+  IconArrowBg: ReactNode
+  iconBorderClassName?: string
 }
 
 interface StepProviderProps {
   children: ReactNode
   color?: string
+  width?: number
+  height?: number
+  IconArrowBg: ReactNode
 }
 
 const StepProvider: React.FC<StepProviderProps> = ({
   children,
   color = "#EEE",
+  width,
+  height,
+  IconArrowBg,
 }) => {
   return (
     <div className="relative -ml-[12px]">
-      <div>
-        <StepperArrow color={color} />
-      </div>
+      <div>{IconArrowBg}</div>
       <div className="absolute inset-0 flex items-center justify-center">
         <div>{children}</div>
       </div>
@@ -37,12 +44,26 @@ const Step: React.FC<StepProps> = ({
   color,
   className,
   textColor,
+  width,
+  height,
+  IconArrowBg,
+  iconBorderClassName,
 }) => {
   return (
     <div className={clx(className)}>
-      <StepProvider color={color}>
+      <StepProvider
+        IconArrowBg={IconArrowBg}
+        width={width}
+        height={height}
+        color={color}
+      >
         <div className={clx("flex items-center justify-center gap-1 ")}>
-          <div className="h-6 w-6 rounded-full border bg-white ">
+          <div
+            className={clx(
+              "h-6 w-6 rounded-full border border-black bg-white ",
+              iconBorderClassName
+            )}
+          >
             <div className="flex flex-col items-center justify-center">
               {icon}
             </div>

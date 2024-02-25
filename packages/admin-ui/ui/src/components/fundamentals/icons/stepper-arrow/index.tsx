@@ -1,7 +1,7 @@
 import * as React from "react"
 import { IconProps } from "./types"
 
-const StepperArrow = React.forwardRef<SVGSVGElement, IconProps>(
+const StepperArrowIcon = React.forwardRef<SVGSVGElement, IconProps>(
   ({ color = "currentColor", width = 200, height = 56, ...props }, ref) => {
     return (
       <svg
@@ -59,6 +59,6 @@ const StepperArrow = React.forwardRef<SVGSVGElement, IconProps>(
   }
 )
 
-StepperArrow.displayName = "StepperArrow"
+StepperArrowIcon.displayName = "StepperArrow"
 
-export default StepperArrow
+export default StepperArrowIcon
