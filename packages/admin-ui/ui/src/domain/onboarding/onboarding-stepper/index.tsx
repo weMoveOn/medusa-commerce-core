@@ -45,7 +45,7 @@ const OnboardingStepper: React.FC<SteppedProps> = ({
     <div className=" flex items-center justify-center ">
       <div className="mt-14 flex h-[880px] w-[650px] flex-col justify-between rounded-xl border  p-9  ">
         <>
-          <div className=" relative left-[12px] flex rounded-lg pb-[18px]">
+          <div className=" medium:flex relative left-[12px]  hidden rounded-lg pb-[18px]">
             {[1, 2, 3]?.map((_, i) => {
               if (i > context.currentStep) {
                 return (
