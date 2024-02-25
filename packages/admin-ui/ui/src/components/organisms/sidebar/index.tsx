@@ -5,7 +5,6 @@ import { useFeatureFlag } from "../../../providers/feature-flag-provider"
 import { useRoutes } from "../../../providers/route-provider"
 import BuildingsIcon from "../../fundamentals/icons/buildings-icon"
 import GearIcon from "../../fundamentals/icons/gear-icon"
-import SaleIcon from "../../fundamentals/icons/sale-icon"
 import SquaresPlus from "../../fundamentals/icons/squares-plus"
 import SwatchIcon from "../../fundamentals/icons/swatch-icon"
 
@@ -142,7 +141,7 @@ const Sidebar: React.FC = () => {
             />
           </div>
 
-          <div className=" medium:mt-60 medium:gap-5  mt-12 flex flex-col gap-3 ">
+          <div className=" medium:mt-44 medium:gap-5  mt-12 flex flex-col gap-3 ">
             <SidebarMenuItem
               pageLink={"/a/help"}
               icon={<HelpIcon />}
