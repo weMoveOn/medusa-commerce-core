@@ -11,7 +11,7 @@ type SidebarMenuSubitemProps = {
 }
 
 type SidebarMenuItemProps = {
-  pageLink: string
+  pageLink?: string
   text: string
   icon: ReactNode
   triggerHandler: () => any
@@ -22,7 +22,7 @@ type SidebarMenuItemProps = {
 const SidebarMenuItem: React.FC<SidebarMenuItemProps> & {
   SubItem: (props: SidebarMenuSubitemProps) => JSX.Element
 } = ({
-  pageLink,
+  pageLink = "",
   icon,
   text,
   triggerHandler,
@@ -48,37 +48,64 @@ const SidebarMenuItem: React.FC<SidebarMenuItemProps> & {
     !pageLink.includes("settings") &&
     !pageLink.includes("help")
 
+  const triggerElement = pageLink ? (
+    <NavLink className={classNameFn} to={pageLink} onClick={onExpand}>
+      <div className="flex items-center gap-3">
+        <span className="">{icon}</span>
+        <span className="group-[.is-active]:text-grey-90">{text}</span>
+      </div>
+      <div>
+        <span className="group-[.is-active]:text-grey-90">
+          {isExpandIcon ? (
+            isExpand ? (
+              <ChevronDownIcon />
+            ) : (
+              <ChevronUpIcon />
+            )
+          ) : (
+            ""
+          )}
+        </span>
+      </div>
+      {isNew && (
+        <Badge variant={"new-feature"} className="ml-auto">
+          New
+        </Badge>
+      )}
+    </NavLink>
+  ) : (
+    <div className={styles} onClick={onExpand}>
+      <div className="flex items-center gap-3">
+        <span className="">{icon}</span>
+        <span className="group-[.is-active]:text-grey-90">{text}</span>
+      </div>
+      <div>
+        <span className="group-[.is-active]:text-grey-90">
+          {isExpandIcon ? (
+            isExpand ? (
+              <ChevronDownIcon />
+            ) : (
+              <ChevronUpIcon />
+            )
+          ) : (
+            ""
+          )}
+        </span>
+      </div>
+      {isNew && (
+        <Badge variant={"new-feature"} className="ml-auto">
+          New
+        </Badge>
+      )}
+    </div>
+  )
+
   return (
     <Collapsible
       transitionTime={150}
       transitionCloseTime={150}
       {...triggerHandler()}
-      trigger={
-        <NavLink className={classNameFn} to={pageLink} onClick={onExpand}>
-          <div className="flex items-center gap-3">
-            <span className="">{icon}</span>
-            <span className="group-[.is-active]:text-grey-90">{text}</span>
-          </div>
-          <div>
-            <span className="group-[.is-active]:text-grey-90">
-              {isExpandIcon ? (
-                isExpand ? (
-                  <ChevronDownIcon />
-                ) : (
-                  <ChevronUpIcon />
-                )
-              ) : (
-                ""
-              )}
-            </span>
-          </div>
-          {isNew && (
-            <Badge variant={"new-feature"} className="ml-auto">
-              New
-            </Badge>
-          )}
-        </NavLink>
-      }
+      trigger={triggerElement}
     >
       <div className="flex flex-col gap-3">
         {subItems?.length > 0 &&

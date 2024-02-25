@@ -61,7 +61,6 @@ const Sidebar: React.FC = () => {
               text={t("home", "Home")}
             />
             <SidebarMenuItem
-              pageLink={"/a/orders"}
               icon={<OrdersIcon />}
               triggerHandler={() => {}}
               text={t("sidebar-orders", "Orders")}
