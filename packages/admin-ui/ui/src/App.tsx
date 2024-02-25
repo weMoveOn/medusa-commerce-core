@@ -8,6 +8,7 @@ import {
 import Spinner from "./components/atoms/spinner"
 import { AnalyticsProvider } from "./providers/analytics-provider"
 import { WRITE_KEY } from "./constants/analytics"
+import Onboarding from "./domain/onboarding"
 
 const NotFound = lazy(() => import("./pages/404"))
 const Dashboard = lazy(() => import("./pages/a"))
@@ -19,7 +20,9 @@ const ResetPasswordPage = lazy(() => import("./pages/reset-password"))
 const router = createBrowserRouter(
   createRoutesFromElements(
     <>
-      <Route path="/" element={<IndexPage />} />
+      <Route path="/" element={<Onboarding />} />
+
+      {/*<Route path="/" element={<IndexPage />} />*/}
       <Route
         path="a/*"
         element={

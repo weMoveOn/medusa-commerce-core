@@ -4,7 +4,7 @@ import { useAdminStore } from "medusa-react"
 import React, { useEffect, useMemo, useState } from "react"
 import useNotification from "../../hooks/use-notification"
 import Medusa from "../../services/api"
-import ClipboardCopyIcon from "../fundamentals/icons/clipboard-copy-icon"
+import CopyIcon from "../fundamentals/icons/copy-icon"
 import EditIcon from "../fundamentals/icons/edit-icon"
 import RefreshIcon from "../fundamentals/icons/refresh-icon"
 import TrashIcon from "../fundamentals/icons/trash-icon"
@@ -154,7 +154,7 @@ const UserTable: React.FC<UserTableProps> = ({
                 "success"
               )
             },
-            icon: <ClipboardCopyIcon size={20} />,
+            icon: <CopyIcon size={20} />,
           },
           {
             label: t("templates-remove-invitation", "Remove Invitation"),
