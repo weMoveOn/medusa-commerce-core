@@ -317,11 +317,11 @@ const OrderDetails = () => {
   )
 
   return (
-    <div>
+    <div className="m-6">
       <OrderEditProvider orderId={id!}>
         <BackButton
           path="/a/orders"
-          label={t("details-back-to-orders", "Back to Orders")}
+          label={`Orders#${order?.display_id}`}
           className="mb-xsmall"
         />
         {isLoading || !order ? (
@@ -342,7 +342,7 @@ const OrderDetails = () => {
                 )
               })}
             </div>
-            <div className="m-6   flex  space-x-4">
+            <div className="flex  space-x-4">
               <div className="gap-y-base flex h-full w-7/12 flex-col">
                 <BodyCard
                   className={" w-full rounded-lg  bg-white p-5 shadow"}
@@ -356,9 +356,6 @@ const OrderDetails = () => {
                       </button>
                     </>
                   }
-                  // subtitle={moment(order.created_at).format(
-                  //   "D MMMM YYYY hh:mm a"
-                  // )}
                   status={<OrderStatusComponent status={order.status} />}
                   forceDropdown={true}
                   actionables={[
@@ -369,38 +366,7 @@ const OrderDetails = () => {
                       onClick: () => handleDeleteOrder(),
                     },
                   ]}
-                >
-                  {/* <div className="mt-6 flex space-x-6 divide-x">
-                    <div className="flex flex-col">
-                      <div className="inter-smaller-regular text-grey-50 mb-1">
-                        {t("details-email", "Email")}
-                      </div>
-                      <button
-                        className="text-grey-90 active:text-violet-90 flex cursor-pointer items-center gap-x-1"
-                        onClick={handleCopyEmail}
-                      >
-                        {order.email}
-                        <CopyIcon size={12} />
-                      </button>
-                    </div>
-                    <div className="flex flex-col pl-6">
-                      <div className="inter-smaller-regular text-grey-50 mb-1">
-                        {t("details-phone", "Phone")}
-                      </div>
-                      <div>{order.shipping_address?.phone || "N/A"}</div>
-                    </div>
-                    <div className="flex flex-col pl-6">
-                      <div className="inter-smaller-regular text-grey-50 mb-1">
-                        {t("details-payment", "Payment")}
-                      </div>
-                      <div>
-                        {order.payments
-                          ?.map((p) => capitalize(p.provider_id))
-                          .join(", ")}
-                      </div>
-                    </div>
-                  </div> */}
-                </BodyCard>
+                ></BodyCard>
 
                 <SummaryCard order={order} reservations={reservations || []} />
 

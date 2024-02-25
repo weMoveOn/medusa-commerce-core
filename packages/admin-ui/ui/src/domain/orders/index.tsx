@@ -23,6 +23,7 @@ import Details from "./details"
 import { transformFiltersAsExportContext } from "./utils"
 import EditIcon from "../../components/fundamentals/icons/edit-icon"
 import OrderCrate from "./create"
+import NewOrderFormProvider from "./new/form"
 
 const VIEWS = ["orders", "drafts"]
 
@@ -164,7 +165,14 @@ const Orders = () => {
   return (
     <Routes>
       <Route index element={<OrderIndex />} />
-      <Route path="/:id" element={<Details />} />
+      <Route
+        path="/:id"
+        element={
+          <NewOrderFormProvider>
+            <Details />
+          </NewOrderFormProvider>
+        }
+      />
       {nestedRoutes.map((r, i) => {
         return (
           <Route
