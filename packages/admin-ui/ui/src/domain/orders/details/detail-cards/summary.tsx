@@ -264,10 +264,10 @@ const SummaryCard: React.FC<SummaryCardProps> = ({ order, reservations }) => {
 
         {!showDiscountField ? (
           <div className="flex justify-between">
-            <div className="flex">
-              <PlusIcon size={20} />
+            <div className="flex justify-center items-center">
+              <PlusIcon size={10} />
               <p
-                className="cursor-pointer font-bold underline"
+                className="cursor-pointer text-[10px] font-bold underline"
                 onClick={() => setShowDiscountField(true)}
               >
                 {" "}
@@ -293,7 +293,7 @@ const SummaryCard: React.FC<SummaryCardProps> = ({ order, reservations }) => {
             </div>
 
             {showDiscountField && (
-              <div className="mt-4 max-w-xs overflow-hidden rounded-lg border border-gray-300 shadow-lg">
+              <div className="mt-4 hidden max-w-xs overflow-hidden rounded-lg border border-gray-300 shadow-lg">
                 <div className="bg-[#D9D9D9] px-4 py-2 ">
                   <h2 className="text-xl font-bold">Special Offer!</h2>
                   <p>-20%</p>

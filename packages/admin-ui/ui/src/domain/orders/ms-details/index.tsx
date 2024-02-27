@@ -583,13 +583,13 @@ const OrderDetails = () => {
                     )
                   })}
                 </div>
+                <Timeline orderId={order.id} />
                 <RawJSON
                   data={order}
                   title={t("details-raw-order", "Raw order")}
                 />
                 <Spacer />
               </div>
-              <Timeline orderId={order.id} />
             </div>
 
             <AddressModal
