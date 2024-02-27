@@ -65,7 +65,7 @@ const Sidebar: React.FC = () => {
               triggerHandler={() => {}}
               text={t("sidebar-orders", "Orders")}
               subItems={[
-                { pageLink: "/a/manual-orders", text: "Manual Orders" },
+                { pageLink: "/a/orders", text: "Manual Orders" },
                 {
                   pageLink: "/a/abandoned-checkouts",
                   text: "Abandoned Checkouts",

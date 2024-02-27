@@ -11,17 +11,16 @@ import ExportIcon from "../../components/fundamentals/icons/export-icon"
 import BodyCard from "../../components/organisms/body-card"
 import TableViewHeader from "../../components/organisms/custom-table-header"
 import ExportModal from "../../components/organisms/export-modal"
-import OrderTable from "../../components/templates/order-table"
 import useNotification from "../../hooks/use-notification"
 import useToggleState from "../../hooks/use-toggle-state"
 import { usePolling } from "../../providers/polling-provider"
 import { useRoutes } from "../../providers/route-provider"
 import { useWidgets } from "../../providers/widget-provider"
 import { getErrorMessage } from "../../utils/error-messages"
-import Details from "./details"
+import Details from "./ms-details"
 import { transformFiltersAsExportContext } from "./utils"
 import EditIcon from "../../components/fundamentals/icons/edit-icon";
-import OrderCrate from "./create";
+import MsOrderTable from "../../components/templates/ms-order-table"
 
 const VIEWS = ["orders", "drafts"]
 
@@ -128,7 +127,7 @@ const OrderIndex = () => {
             className="h-fit"
             customActionable={actions}
           >
-            <OrderTable setContextFilters={setContextFilters} />
+            <MsOrderTable setContextFilters={setContextFilters} />
           </BodyCard>
         </div>
         {getWidgets("order.list.after").map((w, i) => {

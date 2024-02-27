@@ -175,8 +175,6 @@ export const IndicatorsContainer = <
   innerProps,
   children,
 }: IndicatorsContainerProps<Option, IsMulti, Group>) => {
-
-    console.log(children," Find products")
   return (
     <div
       {...innerProps}
