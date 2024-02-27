@@ -3,10 +3,10 @@ import { useAdminCreateNote, useAdminOrder } from "medusa-react"
 import React, { useState } from "react"
 import { useTranslation } from "react-i18next"
 
-import RegisterClaimMenu from "../../../domain/ms-orders/details/claim/register-claim-menu"
-import ReturnMenu from "../../../domain/ms-orders/details/returns"
-import SwapMenu from "../../../domain/ms-orders/details/swap/create"
-import useOrdersExpandParam from "../../../domain/ms-orders/details/utils/use-admin-expand-paramter"
+import RegisterClaimMenu from "../../../domain/orders/details/claim/register-claim-menu"
+import ReturnMenu from "../../../domain/orders/details/returns"
+import SwapMenu from "../../../domain/orders/details/swap/create"
+import useOrdersExpandParam from "../../../domain/orders/details/utils/use-admin-expand-paramter"
 import {
   ClaimEvent,
   ExchangeEvent,

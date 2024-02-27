@@ -6,7 +6,7 @@ import { formatAmountWithSymbol } from "../../../../utils/prices"
 import Button from "../../../fundamentals/button"
 import AlertIcon from "../../../fundamentals/icons/alert-icon"
 import EventContainer, { EventIconColor } from "../event-container"
-import CreateRefundModal from "../../../../domain/ms-orders/details/refund"
+import CreateRefundModal from "../../../../domain/orders/details/refund"
 
 type RequestedProps = {
   event: RefundRequiredEvent

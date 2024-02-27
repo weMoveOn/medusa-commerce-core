@@ -15,7 +15,7 @@ import BuildingsIcon from "../../fundamentals/icons/buildings-icon"
 import Button from "../../fundamentals/button"
 import DeletePrompt from "../../organisms/delete-prompt"
 import EditIcon from "../../fundamentals/icons/edit-icon"
-import EditReservationDrawer from "../../../domain/ms-orders/details/reservation/edit-reservation-modal"
+import EditReservationDrawer from "../../../domain/orders/details/reservation/edit-reservation-modal"
 import Fade from "../../atoms/fade-wrapper"
 import NewReservation from "./new"
 import { Option } from "../../../types/shared"
@@ -117,7 +117,7 @@ const LocationDropdown = ({
           {locationOptions.map((o, i) => (
             <div
               key={i}
-              className="hover:bg-grey-5 rounded-rounded mb-1 flex px-2 py-1.5"
+              className="hover:bg-grey-5 rounded-rounded mb-1 flex py-1.5 px-2"
               onClick={() => {
                 setOpen(false)
                 onChange(o!.value)

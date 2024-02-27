@@ -5,7 +5,7 @@ import Spacer from "../../../components/atoms/spacer"
 import WidgetContainer from "../../../components/extensions/widget-container"
 
 import PlusIcon from "../../../components/fundamentals/icons/plus-icon"
-import BodyCard from "../../../components/organisms/ms-body-card"
+import BodyCard from "../../../components/organisms/body-card"
 import TableViewHeader from "../../../components/organisms/custom-table-header"
 import DraftOrderTable from "../../../components/templates/draft-order-table"
 import { useWidgets } from "../../../providers/widget-provider"

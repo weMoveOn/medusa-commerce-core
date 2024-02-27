@@ -4,7 +4,7 @@ import React from "react"
 import { OrderEditEvent } from "../../../../hooks/use-build-timeline"
 import FastDeliveryIcon from "../../../fundamentals/icons/fast-delivery-icon"
 import EventContainer from "../event-container"
-import { isConfirmedByUser } from "../../../../domain/ms-orders/edit/utils/user"
+import { isConfirmedByUser } from "../../../../domain/orders/edit/utils/user"
 import { ByLine } from "."
 
 type ConfirmedProps = {

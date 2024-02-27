@@ -16,7 +16,7 @@ import Button from "../../../fundamentals/button"
 import EditIcon from "../../../fundamentals/icons/edit-icon"
 import ImagePlaceholder from "../../../fundamentals/image-placeholder"
 import EventContainer from "../event-container"
-import { OrderEditContext } from "../../../../domain/ms-orders/edit/context"
+import { OrderEditContext } from "../../../../domain/orders/edit/context"
 import CopyToClipboard from "../../../atoms/copy-to-clipboard"
 import { ByLine } from "."
 

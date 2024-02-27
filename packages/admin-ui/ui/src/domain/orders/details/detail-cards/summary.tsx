@@ -9,7 +9,7 @@ import { useTranslation } from "react-i18next"
 
 import { ActionType } from "../../../../components/molecules/actionables"
 import Badge from "../../../../components/fundamentals/badge"
-import BodyCard from "../../../../components/organisms/ms-body-card"
+import BodyCard from "../../../../components/organisms/body-card"
 import CopyToClipboard from "../../../../components/atoms/copy-to-clipboard"
 import { OrderEditContext } from "../../edit/context"
 import OrderLine from "../order-line"
@@ -176,7 +176,7 @@ const SummaryCard: React.FC<SummaryCardProps> = ({ order, reservations }) => {
 
   return (
     <BodyCard
-      className={"h-auto min-h-0 w-full"}
+      className={"my-4 h-auto min-h-0 w-full"}
       title="Summary"
       status={
         isFeatureEnabled("inventoryService") &&
@@ -264,7 +264,7 @@ const SummaryCard: React.FC<SummaryCardProps> = ({ order, reservations }) => {
 
         {!showDiscountField ? (
           <div className="flex justify-between">
-            <div className="flex items-center justify-center">
+            <div className="flex justify-center items-center">
               <PlusIcon size={10} />
               <p
                 className="cursor-pointer text-[10px] font-bold underline"

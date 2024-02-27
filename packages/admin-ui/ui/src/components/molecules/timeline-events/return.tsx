@@ -1,7 +1,7 @@
 import clsx from "clsx"
 import { useAdminCancelReturn } from "medusa-react"
 import React, { useState } from "react"
-import { ReceiveReturnMenu } from "../../../domain/ms-orders/details/receive-return"
+import { ReceiveReturnMenu } from "../../../domain/orders/details/receive-return"
 import { ReturnEvent } from "../../../hooks/use-build-timeline"
 import useToggleState from "../../../hooks/use-toggle-state"
 import Button from "../../fundamentals/button"

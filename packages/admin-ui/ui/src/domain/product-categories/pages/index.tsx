@@ -5,7 +5,7 @@ import { useAdminProductCategories } from "medusa-react"
 import { useTranslation } from "react-i18next"
 
 import Spacer from "../../../components/atoms/spacer"
-import BodyCard from "../../../components/organisms/ms-body-card"
+import BodyCard from "../../../components/organisms/body-card"
 import useToggleState from "../../../hooks/use-toggle-state"
 import ProductCategoriesList from "../components/product-categories-list"
 import CreateProductCategory from "../modals/add-product-category"

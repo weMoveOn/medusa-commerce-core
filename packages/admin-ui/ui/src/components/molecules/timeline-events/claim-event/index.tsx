@@ -4,9 +4,9 @@ import {
   useAdminOrder,
 } from "medusa-react"
 import { Fragment } from "react"
-import CreateFulfillmentModal from "../../../../domain/ms-orders/details/create-fulfillment"
-import { ReceiveReturnMenu } from "../../../../domain/ms-orders/details/receive-return"
-import useOrdersExpandParam from "../../../../domain/ms-orders/details/utils/use-admin-expand-paramter"
+import CreateFulfillmentModal from "../../../../domain/orders/details/create-fulfillment"
+import { ReceiveReturnMenu } from "../../../../domain/orders/details/receive-return"
+import useOrdersExpandParam from "../../../../domain/orders/details/utils/use-admin-expand-paramter"
 import { ClaimEvent } from "../../../../hooks/use-build-timeline"
 import useNotification from "../../../../hooks/use-notification"
 import useToggleState from "../../../../hooks/use-toggle-state"

@@ -1,5 +1,5 @@
 import Spacer from "../../../components/atoms/spacer"
-import BodyCard from "../../../components/organisms/ms-body-card"
+import BodyCard from "../../../components/organisms/body-card"
 import ReservationsTable from "../../../components/templates/reservations-table"
 import InventoryPageTableHeader from "../header"
 

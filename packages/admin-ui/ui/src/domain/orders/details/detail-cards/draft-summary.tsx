@@ -8,7 +8,7 @@ import { useAdminReservations, useMedusa } from "medusa-react"
 import { useTranslation } from "react-i18next"
 import { ActionType } from "../../../../components/molecules/actionables"
 import Badge from "../../../../components/fundamentals/badge"
-import BodyCard from "../../../../components/organisms/ms-body-card"
+import BodyCard from "../../../../components/organisms/body-card"
 import { DisplayTotal } from "../templates"
 import ImagePlaceholder from "../../../../components/fundamentals/image-placeholder"
 import ReservationIndicator from "../../components/reservation-indicator/reservation-indicator"
@@ -166,7 +166,7 @@ const DraftSummaryCard: React.FC<DraftSummaryCardProps> = ({ order }) => {
         {cart?.items?.map((item, i) => (
           <div
             key={i}
-            className="hover:bg-grey-5 rounded-rounded mx-[-5px] mb-1 flex h-[64px] justify-between px-[5px] py-2"
+            className="hover:bg-grey-5 rounded-rounded mx-[-5px] mb-1 flex h-[64px] justify-between py-2 px-[5px]"
           >
             <div className="flex justify-center space-x-4">
               <div className="rounded-rounded flex h-[48px] w-[36px] items-center justify-center">

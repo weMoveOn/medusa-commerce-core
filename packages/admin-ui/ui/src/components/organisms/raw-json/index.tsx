@@ -1,6 +1,6 @@
 import JSONView from "../../molecules/json-view"
 
-import BodyCard from "../ms-body-card"
+import BodyCard from "../body-card"
 
 type RawJSONProps = {
   /**

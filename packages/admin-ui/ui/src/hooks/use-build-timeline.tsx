@@ -13,7 +13,7 @@ import {
   useAdminOrderEdits,
 } from "medusa-react"
 import { useMemo } from "react"
-import useOrdersExpandParam from "../domain/ms-orders/details/utils/use-admin-expand-paramter"
+import useOrdersExpandParam from "../domain/orders/details/utils/use-admin-expand-paramter"
 import { useFeatureFlag } from "../providers/feature-flag-provider"
 import useStockLocations from "./use-stock-locations"
 
