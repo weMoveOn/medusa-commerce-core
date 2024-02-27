@@ -8,7 +8,6 @@ import MinusIcon from "../../../../components/fundamentals/icons/minus-icon"
 import PlusIcon from "../../../../components/fundamentals/icons/plus-icon"
 import TrashIcon from "../../../../components/fundamentals/icons/trash-icon"
 import ImagePlaceholder from "../../../../components/fundamentals/image-placeholder"
-import InputField from "../../../../components/molecules/input"
 import { LayeredModalContext } from "../../../../components/molecules/modal/layered-modal"
 import { SteppedContext } from "../../../../components/molecules/modal/stepped-modal"
 import Table from "../../../../components/molecules/table"
@@ -22,6 +21,7 @@ import RMASelectProductSubModal from "../rma-sub-modals/products"
 import { useNewOrderForm } from "../../new/form"
 import CustomItemSubModal from "../../new/components/custom-item-sub-modal"
 import { useMedusa } from "medusa-react"
+import InputNumber from "../../../../components/molecules/ms-input-number"
 
 const ItemsEdit = () => {
   const { t } = useTranslation()
@@ -150,9 +150,9 @@ const ItemsEdit = () => {
   return (
     <div className="flex  flex-col pt-4">
       {true && (
-        <Table className="rounded-lg border p-3 ">
+        <Table className="rounded-lg  p-3 ">
           <Table.Head className="border">
-            <Table.HeadRow className="text-grey-50 inter-small-semibold ">
+            <Table.HeadRow className="text-grey-50 inter-small-semibold mt-3 ">
               <Table.HeadCell>
                 {t("components-item-name", "Item Name")}
               </Table.HeadCell>
@@ -168,7 +168,7 @@ const ItemsEdit = () => {
               </Table.HeadCell>
             </Table.HeadRow>
           </Table.Head>
-          <Table.Body>
+          <Table.Body className="mt-3">
             {fieldsItems?.map((item, index) => {
               return (
                 <Table.Row
@@ -204,6 +204,7 @@ const ItemsEdit = () => {
                     X
                   </Table.Cell>
                   <Table.Cell className="text-center ">
+                    <InputNumber type="number" value={item?.quantity} />
                     <span>{item.quantity}</span>
                   </Table.Cell>
                   <Table.Cell>
