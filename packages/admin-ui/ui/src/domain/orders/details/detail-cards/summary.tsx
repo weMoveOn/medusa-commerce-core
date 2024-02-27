@@ -9,7 +9,7 @@ import { useTranslation } from "react-i18next"
 
 import { ActionType } from "../../../../components/molecules/actionables"
 import Badge from "../../../../components/fundamentals/badge"
-import BodyCard from "../../../../components/organisms/body-card"
+import BodyCard from "../../../../components/organisms/ms-body-card"
 import CopyToClipboard from "../../../../components/atoms/copy-to-clipboard"
 import { OrderEditContext } from "../../edit/context"
 import OrderLine from "../order-line"

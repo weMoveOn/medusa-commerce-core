@@ -1,4 +1,4 @@
-import BodyCard from "../../../components/organisms/body-card"
+import BodyCard from "../../../components/organisms/ms-body-card"
 import Button from "../../../components/fundamentals/button"
 import Fade from "../../../components/atoms/fade-wrapper"
 import InventoryPageTableHeader from "../header"

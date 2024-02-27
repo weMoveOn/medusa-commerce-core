@@ -47,7 +47,7 @@ import RefreshIcon from "../../../components/fundamentals/icons/refresh-icon"
 import TruckIcon from "../../../components/fundamentals/icons/truck-icon"
 import { ActionType } from "../../../components/molecules/actionables"
 import JSONView from "../../../components/molecules/json-view"
-import BodyCard from "../../../components/organisms/body-card"
+import BodyCard from "../../../components/organisms/ms-body-card"
 import RawJSON from "../../../components/organisms/raw-json"
 import Timeline from "../../../components/organisms/timeline"
 import { AddressType } from "../../../components/templates/address-form"
@@ -372,7 +372,7 @@ const OrderDetails = () => {
                   order={order}
                   reservations={reservations || []}
                 />
-                <SummaryCard order={order} reservations={reservations || []} />
+                {/* <SummaryCard order={order} reservations={reservations || []} /> */}
 
                 <BodyCard
                   className={"h-auto min-h-0 w-full"}

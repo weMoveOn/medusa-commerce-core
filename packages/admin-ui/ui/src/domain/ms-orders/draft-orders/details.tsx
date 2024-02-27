@@ -21,7 +21,7 @@ import DollarSignIcon from "../../../components/fundamentals/icons/dollar-sign-i
 import TruckIcon from "../../../components/fundamentals/icons/truck-icon"
 import StatusDot from "../../../components/fundamentals/status-indicator"
 import JSONView from "../../../components/molecules/json-view"
-import BodyCard from "../../../components/organisms/body-card"
+import BodyCard from "../../../components/organisms/ms-body-card"
 import ConfirmationPrompt from "../../../components/organisms/confirmation-prompt"
 import DeletePrompt from "../../../components/organisms/delete-prompt"
 import { AddressType } from "../../../components/templates/address-form"

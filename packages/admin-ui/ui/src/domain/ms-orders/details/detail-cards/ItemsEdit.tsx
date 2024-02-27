@@ -148,21 +148,24 @@ const ItemsEdit = () => {
     },
   ]
   return (
-    <div className="flex min-h-[705px] flex-col pt-4">
+    <div className="flex  flex-col pt-4">
       {true && (
-        <Table>
-          <Table.Head>
-            <Table.HeadRow className="text-grey-50 inter-small-semibold border-t">
+        <Table className="rounded-lg border p-3 ">
+          <Table.Head className="border">
+            <Table.HeadRow className="text-grey-50 inter-small-semibold ">
               <Table.HeadCell>
-                {t("components-details", "Details")}
+                {t("components-item-name", "Item Name")}
               </Table.HeadCell>
-              <Table.HeadCell className="pr-8 text-right">
-                {t("components-quantity", "Quantity")}
-              </Table.HeadCell>
-              <Table.HeadCell className="text-right">
-                {t("components-price-excl-taxes", "Price (excl. Taxes)")}
+              <Table.HeadCell className="pr-8 text-center ">
+                {t("components-item-price", "Item Price")}
               </Table.HeadCell>
               <Table.HeadCell></Table.HeadCell>
+              <Table.HeadCell className="pr-8 text-center ">
+                {t("components-quantity", "Quantity")}
+              </Table.HeadCell>
+              <Table.HeadCell className="text-center ">
+                {t("components-total-price", "Total Price")}
+              </Table.HeadCell>
             </Table.HeadRow>
           </Table.Head>
           <Table.Body>
@@ -194,97 +197,14 @@ const ItemsEdit = () => {
                       </div>
                     </div>
                   </Table.Cell>
-                  <Table.Cell className="w-32 pr-8 text-right">
-                    {editQuantity === index ? (
-                      <InputField
-                        type="number"
-                        {...register(`items.${index}.quantity`, {
-                          valueAsNumber: true,
-                        })}
-                        onBlur={() => setEditQuantity(-1)}
-                      />
-                    ) : (
-                      <div className="text-grey-50 flex w-full justify-end text-right ">
-                        <span
-                          onClick={() => handleEditQuantity(index, -1)}
-                          className="hover:bg-grey-20 mr-2 flex h-5 w-5 cursor-pointer items-center justify-center rounded"
-                        >
-                          <MinusIcon size={16} />
-                        </span>
-                        <button
-                          type="button"
-                          className="hover:bg-grey-20 cursor-pointer rounded px-1"
-                          onClick={() => setEditQuantity(index)}
-                        >
-                          <input
-                            type="number"
-                            {...register(`items.${index}.quantity`, {
-                              valueAsNumber: true,
-                            })}
-                            className="text-grey-90 w-full bg-transparent text-center"
-                            disabled
-                          />
-                        </button>
-                        <span
-                          onClick={() => handleEditQuantity(index, 1)}
-                          className={clsx(
-                            "hover:bg-grey-20 ml-2 flex h-5 w-5 cursor-pointer items-center justify-center rounded"
-                          )}
-                        >
-                          <PlusIcon size={16} />
-                        </span>
-                      </div>
-                    )}
+                  <Table.Cell className="w-32 pr-8 text-center ">
+                    <span>{item.unit_price}</span>
                   </Table.Cell>
-                  <Table.Cell className="text-right">
-                    {editPrice === index ? (
-                      <Controller
-                        control={control}
-                        name={`items.${index}.unit_price`}
-                        render={({ field: { value } }) => {
-                          return (
-                            <InputField
-                              type="number"
-                              // value={displayAmount(
-                              //   region?.currency_code,
-                              //   value
-                              // )}
-                              onBlur={() => {
-                                setEditPrice(-1)
-                              }}
-                              // prefix={getNativeSymbol(region?.currency_code)}
-                              onChange={(e) => {
-                                // handlePriceChange(
-                                //   index,
-                                //   +e.target.value,
-                                //   region?.currency_code
-                                // )
-                              }}
-                            />
-                          )
-                        }}
-                      />
-                    ) : (
-                      <Controller
-                        name={`items.${index}.unit_price`}
-                        control={control}
-                        render={({ field: { value } }) => {
-                          return (
-                            <span
-                              className="cursor-pointer"
-                              onClick={() => {
-                                setEditPrice(index)
-                              }}
-                            >
-                              {/* {displayAmount(region!?.currency_code, value)} */}
-                            </span>
-                          )
-                        }}
-                      />
-                    )}
+                  <Table.Cell className="text-grey-40 pr-1 text-center ">
+                    X
                   </Table.Cell>
-                  <Table.Cell className="text-grey-40 pr-1 text-right">
-                    {/* {region!?.currency_code?.toUpperCase()} */}
+                  <Table.Cell className="text-center ">
+                    <span>{item.quantity}</span>
                   </Table.Cell>
                   <Table.Cell>
                     <Button

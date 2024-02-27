@@ -292,46 +292,6 @@ export function OrderEditModal(props: OrderEditModalProps) {
     <>
       <div>
         <div>
-          <div className="mb-4 flex items-center justify-between">
-            <span className="text-large font-semibold text-gray-900">
-              {t("edit-items", "Items")}
-            </span>
-            <div className="flex items-center justify-between">
-              <Button
-                size="small"
-                variant="ghost"
-                className="border-grey-20 mr-2 h-[32px] flex-shrink-0 border text-gray-900"
-                onClick={() => {}}
-              >
-                {t("edit-add-items", "Add items")}
-              </Button>
-              {!showFilter && (
-                <Button
-                  size="small"
-                  variant="secondary"
-                  className={clsx("h–[32px] h-full w-[32px] flex-shrink-0", {
-                    "focus:bg-grey-20": showFilter,
-                  })}
-                  onClick={() => setShowFilter(true)}
-                >
-                  <SearchIcon size={16} className="text-gray-500" />
-                </Button>
-              )}
-              {showFilter && (
-                <InputField
-                  small
-                  deletable
-                  ref={filterRef}
-                  value={filterTerm}
-                  onDelete={hideFilter}
-                  placeholder={t("edit-filter-items", "Filter items...")}
-                  onChange={(e) => setFilterTerm(e.target.value)}
-                  prefix={<SearchIcon size={14} className="text-gray-400" />}
-                />
-              )}
-            </div>
-          </div>
-
           {/* ITEMS */}
           {displayItems.map((oi) => (
             <OrderEditLine
@@ -351,7 +311,8 @@ export function OrderEditModal(props: OrderEditModalProps) {
           <div className="mt-8" />
 
           {/* TOTALS */}
-          {showTotals && (
+          {/* showTotals */}
+          {true && (
             <TotalsSection
               currencyCode={currencyCode}
               amountPaid={paidTotal - refundedTotal}
@@ -420,6 +381,9 @@ function OrderEditContainer(props: OrderEditContainerProps) {
 
   const orderEdit = orderEdits?.find((oe) => oe.id === activeOrderEditId)
 
+  // const orderEdit =
+
+  console.log("orderEdit :>> ", orderEdit)
   useEffect(() => {
     if (activeOrderEditId || isRequestRunningFlag) {
       return

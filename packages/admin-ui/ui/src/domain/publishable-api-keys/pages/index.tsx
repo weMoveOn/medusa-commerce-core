@@ -16,7 +16,7 @@ import CrossIcon from "../../../components/fundamentals/icons/cross-icon"
 import InputField from "../../../components/molecules/input"
 import FocusModal from "../../../components/molecules/modal/focus-modal"
 import SalesChannelsSummary from "../../../components/molecules/sales-channels-summary"
-import BodyCard from "../../../components/organisms/body-card"
+import BodyCard from "../../../components/organisms/ms-body-card"
 import useNotification from "../../../hooks/use-notification"
 import useToggleState from "../../../hooks/use-toggle-state"
 import AddSalesChannelsSideModal from "../modals/add-sales-channels"
@@ -216,7 +216,7 @@ function CreatePublishableKey(props: CreatePublishableKeyProps) {
             onChange={(ev) => setName(ev.target.value)}
           />
 
-          <div className="mt-16 mb-8 h-[1px] w-[100%] bg-gray-200" />
+          <div className="mb-8 mt-16 h-[1px] w-[100%] bg-gray-200" />
 
           <AddSalesChannelsSection
             selectedChannels={selectedChannels}

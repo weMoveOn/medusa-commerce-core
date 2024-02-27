@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form"
 import { useTranslation } from "react-i18next"
 import BackButton from "../../components/atoms/back-button"
 import Input from "../../components/molecules/input"
-import BodyCard from "../../components/organisms/body-card"
+import BodyCard from "../../components/organisms/ms-body-card"
 import useNotification from "../../hooks/use-notification"
 import { getErrorMessage } from "../../utils/error-messages"
 

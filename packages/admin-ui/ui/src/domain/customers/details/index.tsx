@@ -12,7 +12,7 @@ import StatusDot from "../../../components/fundamentals/status-indicator"
 import Actionables, {
   ActionType,
 } from "../../../components/molecules/actionables"
-import BodyCard from "../../../components/organisms/body-card"
+import BodyCard from "../../../components/organisms/ms-body-card"
 import RawJSON from "../../../components/organisms/raw-json"
 import Section from "../../../components/organisms/section"
 import CustomerOrdersTable from "../../../components/templates/customer-orders-table"
@@ -68,7 +68,6 @@ const CustomerDetail = () => {
       </div>
     )
   }
-
 
   return (
     <div>
