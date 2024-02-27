@@ -19,9 +19,7 @@ import SearchIcon from "../../../../../components/fundamentals/icons/search-icon
 import OrderEditLine from "../../order-line/edit"
 import InputField from "../../../../../components/molecules/input"
 import { OrderEditContext } from "../../../edit/context"
-import LayeredModal, {
-  LayeredModalContext,
-} from "../../../../../components/molecules/ms-modal/layered-modal"
+import { LayeredModalContext } from "../../../../../components/molecules/modal/layered-modal"
 
 type TotalsSectionProps = {
   amountPaid: number

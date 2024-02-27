@@ -21,7 +21,6 @@ import RMASelectProductSubModal from "../rma-sub-modals/products"
 import { useNewOrderForm } from "../../new/form"
 import CustomItemSubModal from "../../new/components/custom-item-sub-modal"
 import { useMedusa } from "medusa-react"
-import InputNumber from "../../../../components/molecules/ms-input-number"
 
 const ItemsEdit = () => {
   const { t } = useTranslation()
@@ -204,7 +203,7 @@ const ItemsEdit = () => {
                     X
                   </Table.Cell>
                   <Table.Cell className="text-center ">
-                    <InputNumber type="number" value={item?.quantity} />
+                    {/* <InputNumber type="number" value={item?.quantity} /> */}
                     <span>{item.quantity}</span>
                   </Table.Cell>
                   <Table.Cell>
