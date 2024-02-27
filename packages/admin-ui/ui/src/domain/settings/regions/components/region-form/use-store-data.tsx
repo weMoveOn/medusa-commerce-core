@@ -44,7 +44,7 @@ export const useStoreData = () => {
     )
   }, [store, isLoading])
 
-  const countryOptions = countries.map((c) => ({
+  const countryOptions = countries?.map((c) => ({
     label: c.name,
     value: c.alpha2.toLowerCase(),
   }))

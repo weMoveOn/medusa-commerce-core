@@ -1,4 +1,6 @@
+// @ts-ignore
 import type { Metadata } from "next"
+// @ts-ignore
 import { Inter, Roboto_Mono } from "next/font/google"
 
 import { Navbar } from "@/components/navbar"
@@ -6,6 +8,7 @@ import { Providers } from "@/providers"
 
 import { siteConfig } from "@/config/site"
 import "../styles/globals.css"
+// @ts-ignore
 import { Sidebar } from "docs-ui"
 
 const inter = Inter({ subsets: ["latin"], variable: "--inter" })

@@ -15,7 +15,7 @@ import TableContainer from "../../../components/organisms/table-container"
 import Table from "../../../components/molecules/table"
 import { ActionType } from "../../../components/molecules/actionables"
 import TrashIcon from "../../../components/fundamentals/icons/trash-icon"
-import ClipboardCopyIcon from "../../../components/fundamentals/icons/clipboard-copy-icon"
+import CopyIcon from "../../../components/fundamentals/icons/copy-icon"
 import EditIcon from "../../../components/fundamentals/icons/edit-icon"
 import StatusIndicator from "../../../components/fundamentals/status-indicator"
 import StopIcon from "../../../components/fundamentals/icons/stop-icon"
@@ -160,7 +160,7 @@ function PublishableKeyTableRow(props: PublishableKeyTableRowProps) {
     {
       label: t("tables-copy-token", "Copy token"),
       onClick: () => navigator.clipboard.writeText(pubKeyId),
-      icon: <ClipboardCopyIcon size={16} />,
+      icon: <CopyIcon size={16} />,
     },
     {
       label: t("tables-revoke-token", "Revoke token"),

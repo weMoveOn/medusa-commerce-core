@@ -3,7 +3,7 @@ import IconProps from "../types/icon-type"
 
 const GearIcon: React.FC<IconProps> = ({
   size = "24",
-  color = "currentColor",
+  color = "black",
   ...attributes
 }) => {
   return (

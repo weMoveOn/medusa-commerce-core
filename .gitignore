@@ -17,6 +17,7 @@ www/**/.yarn/*
 
 .eslintcache
 
+.vscode
 .idea
 .turbo
 build/**

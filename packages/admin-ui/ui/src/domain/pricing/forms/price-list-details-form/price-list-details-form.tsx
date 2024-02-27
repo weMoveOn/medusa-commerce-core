@@ -634,10 +634,10 @@ const PriceListCustomerGroups = ({
       </div>
       <Collapsible.Root open={open} onOpenChange={setOpen}>
         <Collapsible.Content>
-          <div className="pt-6">
+          <div className="">
             <Container className="overflow-hidden p-0 ">
               <div
-                className={clx("flex px-8 pt-6 pb-4", {
+                className={clx("flex px-8 pb-4 pt-6", {
                   "items-center justify-between": layout === "focus",
                   "flex-col gap-y-4": layout === "drawer",
                 })}
