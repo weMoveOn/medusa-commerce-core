@@ -9,7 +9,7 @@ import { useWidgets } from "../../../providers/widget-provider"
 import Button from "../../../components/fundamentals/button"
 // import ItemSearch2 from "../../../components/molecules/item-search-2"
 import BackButton from "../../../components/atoms/back-button"
-import SelectRegionScreen from "../new/components/select-region"
+import SelectRegionScreen from "../new/components/ms-select-region"
 import NewOrderFormProvider, { useNewOrderForm } from "../new/form"
 import Select from "../../../components/molecules/select"
 import { Option } from "../../../types/shared"
@@ -20,8 +20,7 @@ import {
   useAdminOrder,
 } from "medusa-react"
 import Medusa from "../../../services/api"
-import SummaryCard from "../details/detail-cards/summary"
-import Timeline from "../../../components/organisms/timeline"
+import MsNote from "../../../components/organisms/ms-note"
 import SelectShippingMethod from "../new/components/select-shipping"
 import qs from "qs"
 import AddCustomProductModal from "./add-custom-product-modal"
@@ -32,6 +31,7 @@ import { Pencil } from "@medusajs/icons"
 import { Customer } from "@medusajs/medusa"
 import AddressDetailsCard from "./address-details-card"
 import Modal from "../../../components/molecules/modal"
+import SummaryCard from "../ms-details/detail-cards/summary"
 // import ItemSearch2 from "../../../components/molecules/item-search/item-search-2"
 
 const VIEWS = ["Products"]
@@ -197,16 +197,16 @@ const OrderCrateIndex = () => {
               title={"Shipping method"}
               className="my-4 h-fit"
             >
-              <SelectShippingMethod />,
+              <SelectShippingMethod />
             </BodyCard>
           </div>
         </div>
         <div className="medium:col-span-1  col-span-3">
           <BodyCard
             compact={true}
-            title={"Customer"}
+            title={"Customer Information"}
             actionables={[]}
-            className="h-fit rounded-b-none"
+            className="h-fit rounded-b-none pb-4"
           >
             <SelectRegionScreen />
           </BodyCard>
@@ -215,7 +215,7 @@ const OrderCrateIndex = () => {
             compact={true}
             title={selectedCustomer ? "Added Customer" : "Add Customer"}
             customActionable={addCustomerActions}
-            className="h-fit rounded-t-none"
+            className="h-fit rounded-t-none pb-4"
           >
             {!selectedCustomer ? (
               <Controller
@@ -224,8 +224,6 @@ const OrderCrateIndex = () => {
                 render={({ field: { value, onChange, onBlur, ref, name } }) => {
                   return (
                     <NextSelect
-                      // className="hidden"
-                      // ref={ref}
                       placeholder={t(
                         "create-order-find-existing-customer",
                         "Find Existing Customer..."
@@ -235,9 +233,6 @@ const OrderCrateIndex = () => {
                       value={value}
                       onChange={onChange}
                       onBlur={onBlur}
-                      // isClearable
-                      // errors={errors}
-
                       components={{
                         Option: CustomerOption,
                       }}
@@ -281,7 +276,7 @@ const OrderCrateIndex = () => {
 
           {order && <SummaryCard order={order} reservations={[]} />}
 
-          {order && <Timeline orderId={order.id} />}
+          {order && <MsNote orderId={order.id} />}
         </div>
       </div>
       {getWidgets("draft_order.list.after").map((Widget, i) => {

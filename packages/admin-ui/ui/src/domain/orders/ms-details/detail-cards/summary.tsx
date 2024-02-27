@@ -177,38 +177,12 @@ const SummaryCard: React.FC<SummaryCardProps> = ({ order, reservations }) => {
   return (
     <BodyCard
       className={"my-4 h-auto min-h-0 w-full"}
-      title="Summary"
-      status={
-        isFeatureEnabled("inventoryService") &&
-        Array.isArray(reservations) && (
-          <StatusIndicator
-            onClick={
-              allItemsReserved || !isAllocatable
-                ? undefined
-                : showReservationModal
-            }
-            variant={allItemsReserved || !isAllocatable ? "success" : "danger"}
-            title={
-              allItemsReserved || !isAllocatable
-                ? t("detail-cards-allocated", "Allocated")
-                : t("detail-cards-not-fully-allocated", "Not fully allocated")
-            }
-            className="rounded-rounded border px-3 py-1.5"
-          />
-        )
-      }
-      actionables={actionables}
+      title="Payment Details"
+     
+        
+      // actionables={actionables}
     >
       <div className="mt-6">
-        {order.items?.map((item, i) => (
-          <OrderLine
-            key={i}
-            item={item}
-            currencyCode={order.currency_code}
-            reservations={reservationItemsMap[item.id]}
-            isAllocatable={isAllocatable}
-          />
-        ))}
         <DisplayTotal
           currency={order.currency_code}
           totalAmount={order.subtotal}
@@ -225,28 +199,6 @@ const SummaryCard: React.FC<SummaryCardProps> = ({ order, reservations }) => {
                 <Badge className="ml-3" variant="default">
                   {discount.code}
                 </Badge>
-              </div>
-            }
-          />
-        ))}
-        {order?.gift_card_transactions?.map((gcTransaction, index) => (
-          <DisplayTotal
-            key={index}
-            currency={order.currency_code}
-            totalAmount={-1 * gcTransaction.amount}
-            totalTitle={
-              <div className="inter-small-regular text-grey-90 flex items-center">
-                Gift card:
-                <Badge className="ml-3" variant="default">
-                  {gcTransaction.gift_card.code}
-                </Badge>
-                <div className="ml-2">
-                  <CopyToClipboard
-                    value={gcTransaction.gift_card.code}
-                    showValue={false}
-                    iconSize={16}
-                  />
-                </div>
               </div>
             }
           />
