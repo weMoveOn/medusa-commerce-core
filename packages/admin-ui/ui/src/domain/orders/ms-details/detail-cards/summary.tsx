@@ -9,7 +9,7 @@ import { useTranslation } from "react-i18next"
 
 import { ActionType } from "../../../../components/molecules/actionables"
 import Badge from "../../../../components/fundamentals/badge"
-import BodyCard from "../../../../components/organisms/ms-body-card"
+import BodyCard from "../../../../components/organisms/body-card"
 import CopyToClipboard from "../../../../components/atoms/copy-to-clipboard"
 import { OrderEditContext } from "../../edit/context"
 import OrderLine from "../order-line"
@@ -176,39 +176,13 @@ const SummaryCard: React.FC<SummaryCardProps> = ({ order, reservations }) => {
 
   return (
     <BodyCard
-      className={"h-auto min-h-0 w-full"}
-      title="Summary"
-      status={
-        isFeatureEnabled("inventoryService") &&
-        Array.isArray(reservations) && (
-          <StatusIndicator
-            onClick={
-              allItemsReserved || !isAllocatable
-                ? undefined
-                : showReservationModal
-            }
-            variant={allItemsReserved || !isAllocatable ? "success" : "danger"}
-            title={
-              allItemsReserved || !isAllocatable
-                ? t("detail-cards-allocated", "Allocated")
-                : t("detail-cards-not-fully-allocated", "Not fully allocated")
-            }
-            className="rounded-rounded border px-3 py-1.5"
-          />
-        )
-      }
-      actionables={actionables}
+      className={"my-4 h-auto min-h-0 w-full"}
+      title="Payment Details"
+     
+        
+      // actionables={actionables}
     >
       <div className="mt-6">
-        {order.items?.map((item, i) => (
-          <OrderLine
-            key={i}
-            item={item}
-            currencyCode={order.currency_code}
-            reservations={reservationItemsMap[item.id]}
-            isAllocatable={isAllocatable}
-          />
-        ))}
         <DisplayTotal
           currency={order.currency_code}
           totalAmount={order.subtotal}
@@ -229,28 +203,6 @@ const SummaryCard: React.FC<SummaryCardProps> = ({ order, reservations }) => {
             }
           />
         ))}
-        {order?.gift_card_transactions?.map((gcTransaction, index) => (
-          <DisplayTotal
-            key={index}
-            currency={order.currency_code}
-            totalAmount={-1 * gcTransaction.amount}
-            totalTitle={
-              <div className="inter-small-regular text-grey-90 flex items-center">
-                Gift card:
-                <Badge className="ml-3" variant="default">
-                  {gcTransaction.gift_card.code}
-                </Badge>
-                <div className="ml-2">
-                  <CopyToClipboard
-                    value={gcTransaction.gift_card.code}
-                    showValue={false}
-                    iconSize={16}
-                  />
-                </div>
-              </div>
-            }
-          />
-        ))}
         <DisplayTotal
           currency={order.currency_code}
           totalAmount={order.shipping_total}
@@ -264,10 +216,10 @@ const SummaryCard: React.FC<SummaryCardProps> = ({ order, reservations }) => {
 
         {!showDiscountField ? (
           <div className="flex justify-between">
-            <div className="flex items-center justify-center">
+            <div className="flex justify-center">
               <PlusIcon size={10} />
               <p
-                className="cursor-pointer text-[10px] font-bold underline"
+                className="cursor-pointer font-bold underline text-[10px]"
                 onClick={() => setShowDiscountField(true)}
               >
                 {" "}
@@ -287,13 +239,13 @@ const SummaryCard: React.FC<SummaryCardProps> = ({ order, reservations }) => {
                 }
               />
               <CrossIcon
-                size={20}
+                size={10}
                 onClick={() => setShowDiscountField(false)}
               />
             </div>
 
             {showDiscountField && (
-              <div className="mt-4 hidden max-w-xs overflow-hidden rounded-lg border border-gray-300 shadow-lg">
+              <div className="mt-4 max-w-xs overflow-hidden rounded-lg border border-gray-300 shadow-lg hidden">
                 <div className="bg-[#D9D9D9] px-4 py-2 ">
                   <h2 className="text-xl font-bold">Special Offer!</h2>
                   <p>-20%</p>

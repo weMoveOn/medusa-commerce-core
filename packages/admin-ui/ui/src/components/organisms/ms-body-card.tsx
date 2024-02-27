@@ -43,7 +43,7 @@ const BodyCard: React.FC<BodyCardProps> = ({
     <div
       className={clsx(
         "flex h-full w-full flex-col   ",
-        // { "min-h-[350px]": !compact },
+        { "min-h-[350px]": !compact },
         className
       )}
       {...rest}
@@ -60,9 +60,8 @@ const BodyCard: React.FC<BodyCardProps> = ({
         onScroll={scrollListener}
       >
         {/* medium:px-xlarge medium:py-large */}
-        {/* pt-6 */}
         <div
-          className={clsx("", {
+          className={clsx("pt-6", {
             "border-grey-20 border-b border-solid": setBorders,
           })}
         >
