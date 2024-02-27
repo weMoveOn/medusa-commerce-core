@@ -11,7 +11,7 @@ import {
   DisplayTotalAmount,
   FulfillmentStatusComponent,
   PaymentStatusComponent,
-} from "../../../domain/orders/details/templates"
+} from "../../../domain/ms-orders/details/templates"
 import { useDebounce } from "../../../hooks/use-debounce"
 import useNotification from "../../../hooks/use-notification"
 import { Option } from "../../../types/shared"

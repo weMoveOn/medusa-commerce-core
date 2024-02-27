@@ -4,7 +4,7 @@ import React from "react"
 import { OrderEditEvent } from "../../../../hooks/use-build-timeline"
 import XCircleIcon from "../../../fundamentals/icons/x-circle-icon"
 import EventContainer from "../event-container"
-import { isDeclinedByUser } from "../../../../domain/orders/edit/utils/user"
+import { isDeclinedByUser } from "../../../../domain/ms-orders/edit/utils/user"
 import { ByLine } from "."
 
 type EditDeclinedProps = {

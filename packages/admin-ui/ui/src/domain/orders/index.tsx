@@ -1,4 +1,3 @@
-/* eslint-disable react/jsx-key */
 import { useMemo, useState } from "react"
 import { Route, Routes, useNavigate } from "react-router-dom"
 import { useTranslation } from "react-i18next"
@@ -21,9 +20,6 @@ import { useWidgets } from "../../providers/widget-provider"
 import { getErrorMessage } from "../../utils/error-messages"
 import Details from "./details"
 import { transformFiltersAsExportContext } from "./utils"
-import EditIcon from "../../components/fundamentals/icons/edit-icon"
-import OrderCrate from "./create"
-import NewOrderFormProvider from "./new/form"
 
 const VIEWS = ["orders", "drafts"]
 
@@ -49,26 +45,15 @@ const OrderIndex = () => {
 
   const actions = useMemo(() => {
     return [
-      <div className="flex space-x-2">
-        <Button
-          key="export"
-          variant="secondary"
-          size="small"
-          onClick={() => openExportModal()}
-        >
-          <ExportIcon size={20} />
-          Export Orders
-        </Button>
-        <Button
-          key="order_create"
-          variant="secondary"
-          size="small"
-          onClick={() => navigate(`/a/order/create`)}
-        >
-          <EditIcon size={20} />
-          Create order
-        </Button>
-      </div>,
+      <Button
+        key="export"
+        variant="secondary"
+        size="small"
+        onClick={() => openExportModal()}
+      >
+        <ExportIcon size={20} />
+        Export Orders
+      </Button>,
     ]
   }, [view])
 
@@ -165,14 +150,7 @@ const Orders = () => {
   return (
     <Routes>
       <Route index element={<OrderIndex />} />
-      <Route
-        path="/:id"
-        element={
-          <NewOrderFormProvider>
-            <Details />
-          </NewOrderFormProvider>
-        }
-      />
+      <Route path="/:id" element={<Details />} />
       {nestedRoutes.map((r, i) => {
         return (
           <Route

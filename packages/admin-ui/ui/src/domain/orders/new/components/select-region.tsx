@@ -40,10 +40,8 @@ const SelectRegionScreen = () => {
     }
   }, [reg])
 
-  // min-h-[705px]
-
   return (
-    <div className="flex  flex-col">
+    <div className="flex min-h-[705px] flex-col">
       <span className="inter-base-semibold mb-4">
         {t("components-choose-region", "Choose region")}
       </span>

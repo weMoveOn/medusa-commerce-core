@@ -39,7 +39,7 @@ import WidgetContainer from "../../../components/extensions/widget-container"
 import Button from "../../../components/fundamentals/button"
 import DetailsIcon from "../../../components/fundamentals/details-icon"
 import CancelIcon from "../../../components/fundamentals/icons/cancel-icon"
-import CopyIcon from "../../../components/fundamentals/icons/copy-icon"
+import ClipboardCopyIcon from "../../../components/fundamentals/icons/clipboard-copy-icon"
 import CornerDownRightIcon from "../../../components/fundamentals/icons/corner-down-right-icon"
 import DollarSignIcon from "../../../components/fundamentals/icons/dollar-sign-icon"
 import MailIcon from "../../../components/fundamentals/icons/mail-icon"
@@ -317,11 +317,11 @@ const OrderDetails = () => {
   )
 
   return (
-    <div className="m-6">
+    <div>
       <OrderEditProvider orderId={id!}>
         <BackButton
           path="/a/orders"
-          label={`Orders#${order?.display_id}`}
+          label={t("details-back-to-orders", "Back to Orders")}
           className="mb-xsmall"
         />
         {isLoading || !order ? (
@@ -342,20 +342,23 @@ const OrderDetails = () => {
                 )
               })}
             </div>
-            <div className="flex  space-x-4">
+            <div className="flex space-x-4">
               <div className="gap-y-base flex h-full w-7/12 flex-col">
                 <BodyCard
-                  className={" w-full rounded-lg  bg-white p-5 shadow"}
+                  className={"min-h-[200px] w-full"}
                   customHeader={
-                    <>
+                    <Tooltip side="top" content={"Copy ID"}>
                       <button
-                        className="inter-xlarge-semibold text-grey-90 active:text-violet-90 pointer-events-none flex cursor-pointer items-center gap-x-2"
+                        className="inter-xlarge-semibold text-grey-90 active:text-violet-90 flex cursor-pointer items-center gap-x-2"
                         onClick={handleCopy}
                       >
-                        #{order.display_id}
+                        #{order.display_id} <ClipboardCopyIcon size={16} />
                       </button>
-                    </>
+                    </Tooltip>
                   }
+                  subtitle={moment(order.created_at).format(
+                    "D MMMM YYYY hh:mm a"
+                  )}
                   status={<OrderStatusComponent status={order.status} />}
                   forceDropdown={true}
                   actionables={[
@@ -366,7 +369,38 @@ const OrderDetails = () => {
                       onClick: () => handleDeleteOrder(),
                     },
                   ]}
-                ></BodyCard>
+                >
+                  <div className="mt-6 flex space-x-6 divide-x">
+                    <div className="flex flex-col">
+                      <div className="inter-smaller-regular text-grey-50 mb-1">
+                        {t("details-email", "Email")}
+                      </div>
+                      <button
+                        className="text-grey-90 active:text-violet-90 flex cursor-pointer items-center gap-x-1"
+                        onClick={handleCopyEmail}
+                      >
+                        {order.email}
+                        <ClipboardCopyIcon size={12} />
+                      </button>
+                    </div>
+                    <div className="flex flex-col pl-6">
+                      <div className="inter-smaller-regular text-grey-50 mb-1">
+                        {t("details-phone", "Phone")}
+                      </div>
+                      <div>{order.shipping_address?.phone || "N/A"}</div>
+                    </div>
+                    <div className="flex flex-col pl-6">
+                      <div className="inter-smaller-regular text-grey-50 mb-1">
+                        {t("details-payment", "Payment")}
+                      </div>
+                      <div>
+                        {order.payments
+                          ?.map((p) => capitalize(p.provider_id))
+                          .join(", ")}
+                      </div>
+                    </div>
+                  </div>
+                </BodyCard>
 
                 <SummaryCard order={order} reservations={reservations || []} />
 
@@ -555,7 +589,7 @@ const OrderDetails = () => {
                 />
                 <Spacer />
               </div>
-              {/* <Timeline orderId={order.id} /> */}
+              <Timeline orderId={order.id} />
             </div>
 
             <AddressModal
