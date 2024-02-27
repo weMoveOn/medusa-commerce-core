@@ -9,18 +9,19 @@ import {
 } from "medusa-react"
 import clsx from "clsx"
 import { useTranslation } from "react-i18next"
-import Modal from "../../../../components/molecules/modal"
-import VariantsTable from "../../edit/variants-table"
-import Button from "../../../../components/fundamentals/button"
-import { formatAmountWithSymbol } from "../../../../utils/prices"
+import Modal from "../../../../../components/molecules/modal"
+import VariantsTable from "../../../edit/variants-table"
+import Button from "../../../../../components/fundamentals/button"
+import { formatAmountWithSymbol } from "../../../../../utils/prices"
+
+import useNotification from "../../../../../hooks/use-notification"
+import SearchIcon from "../../../../../components/fundamentals/icons/search-icon"
+import OrderEditLine from "../../order-line/edit"
+import InputField from "../../../../../components/molecules/input"
+import { OrderEditContext } from "../../../edit/context"
 import LayeredModal, {
   LayeredModalContext,
-} from "../../../../components/molecules/modal/layered-modal"
-import useNotification from "../../../../hooks/use-notification"
-import SearchIcon from "../../../../components/fundamentals/icons/search-icon"
-import OrderEditLine from "../order-line/edit"
-import InputField from "../../../../components/molecules/input"
-import { OrderEditContext } from "../../edit/context"
+} from "../../../../../components/molecules/ms-modal/layered-modal"
 
 type TotalsSectionProps = {
   amountPaid: number
@@ -156,7 +157,7 @@ type OrderEditModalProps = {
 /**
  * Displays layered modal for order editing.
  */
-function OrderEditModal(props: OrderEditModalProps) {
+export function OrderEditModal(props: OrderEditModalProps) {
   const {
     close,
     currentSubtotal,
@@ -288,19 +289,9 @@ function OrderEditModal(props: OrderEditModalProps) {
   }
 
   return (
-    <LayeredModal
-      open
-      isLargeModal
-      handleClose={onCancel}
-      context={layeredModalContext}
-    >
-      <Modal.Body>
-        <Modal.Header handleClose={onCancel}>
-          <h1 className="inter-xlarge-semibold">
-            {t("edit-edit-order", "Edit Order")}
-          </h1>
-        </Modal.Header>
-        <Modal.Content>
+    <>
+      <div>
+        <div>
           <div className="mb-4 flex items-center justify-between">
             <span className="text-large font-semibold text-gray-900">
               {t("edit-items", "Items")}
@@ -310,9 +301,7 @@ function OrderEditModal(props: OrderEditModalProps) {
                 size="small"
                 variant="ghost"
                 className="border-grey-20 mr-2 h-[32px] flex-shrink-0 border text-gray-900"
-                onClick={() =>
-                  layeredModalContext.push(addProductVariantScreen)
-                }
+                onClick={() => {}}
               >
                 {t("edit-add-items", "Add items")}
               </Button>
@@ -386,8 +375,8 @@ function OrderEditModal(props: OrderEditModalProps) {
               />
             </div>
           )}
-        </Modal.Content>
-        <Modal.Footer>
+        </div>
+        <div>
           <div className="flex w-full items-center justify-end gap-2">
             <Button
               variant="secondary"
@@ -408,19 +397,19 @@ function OrderEditModal(props: OrderEditModalProps) {
               {t("edit-save-and-close", "Save and close")}
             </Button>
           </div>
-        </Modal.Footer>
-      </Modal.Body>
-    </LayeredModal>
+        </div>
+      </div>
+    </>
   )
 }
 
-type OrderEditModalContainerProps = {
+type OrderEditContainerProps = {
   order: Order
 }
 
 let isRequestRunningFlag = false
 
-function OrderEditModalContainer(props: OrderEditModalContainerProps) {
+function OrderEditContainer(props: OrderEditContainerProps) {
   const { order } = props
   const notification = useNotification()
 
@@ -453,25 +442,27 @@ function OrderEditModalContainer(props: OrderEditModalContainerProps) {
 
   const onClose = () => {
     // setActiveOrderEdit(undefined) -> context will unset active edit after flag toggle
-    hideModal()
+    // hideModal()
   }
 
   if (!orderEdit) {
-    return null
+    return <div>order edit does not match</div>
   }
 
   return (
-    <OrderEditModal
-      close={onClose}
-      orderEdit={orderEdit}
-      currentSubtotal={order.subtotal}
-      regionId={order.region_id}
-      customerId={order.customer_id}
-      currencyCode={order.currency_code}
-      paidTotal={order.paid_total}
-      refundedTotal={order.refunded_total}
-    />
+    <>
+      <OrderEditModal
+        close={onClose}
+        orderEdit={orderEdit}
+        currentSubtotal={order.subtotal}
+        regionId={order.region_id}
+        customerId={order.customer_id}
+        currencyCode={order.currency_code}
+        paidTotal={order.paid_total}
+        refundedTotal={order.refunded_total}
+      />
+    </>
   )
 }
 
-export default OrderEditModalContainer
+export default OrderEditContainer

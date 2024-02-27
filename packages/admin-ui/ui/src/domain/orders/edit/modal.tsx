@@ -83,7 +83,7 @@ function TotalsSection(props: TotalsSectionProps) {
         </span>
       </div>
 
-      <div className="bg-grey-20 mt-8 mb-6 h-px w-full" />
+      <div className="bg-grey-20 mb-6 mt-8 h-px w-full" />
     </>
   )
 }
@@ -431,7 +431,7 @@ function OrderEditModalContainer(props: OrderEditModalContainerProps) {
   const { mutateAsync: createOrderEdit } = useAdminCreateOrderEdit()
 
   const orderEdit = orderEdits?.find((oe) => oe.id === activeOrderEditId)
-
+  console.log("orderEdit :>> ", orderEdit)
   useEffect(() => {
     if (activeOrderEditId || isRequestRunningFlag) {
       return

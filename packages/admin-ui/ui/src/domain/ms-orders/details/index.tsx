@@ -69,6 +69,7 @@ import SummaryCard from "./detail-cards/summary"
 import EmailModal from "./email-modal"
 import MarkShippedModal from "./mark-shipped"
 import CreateRefundModal from "./refund"
+import MsSummaryCard from "./detail-cards/msSummary"
 
 type OrderDetailFulfillment = {
   title: string
@@ -367,7 +368,10 @@ const OrderDetails = () => {
                     },
                   ]}
                 ></BodyCard>
-
+                <MsSummaryCard
+                  order={order}
+                  reservations={reservations || []}
+                />
                 <SummaryCard order={order} reservations={reservations || []} />
 
                 <BodyCard

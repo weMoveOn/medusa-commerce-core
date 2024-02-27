@@ -83,7 +83,7 @@ function TotalsSection(props: TotalsSectionProps) {
         </span>
       </div>
 
-      <div className="bg-grey-20 mt-8 mb-6 h-px w-full" />
+      <div className="bg-grey-20 mb-6 mt-8 h-px w-full" />
     </>
   )
 }
@@ -423,6 +423,7 @@ let isRequestRunningFlag = false
 
 function OrderEditModalContainer(props: OrderEditModalContainerProps) {
   const { order } = props
+  console.log("props :>> ", props)
   const notification = useNotification()
 
   const { hideModal, orderEdits, activeOrderEditId, setActiveOrderEdit } =
