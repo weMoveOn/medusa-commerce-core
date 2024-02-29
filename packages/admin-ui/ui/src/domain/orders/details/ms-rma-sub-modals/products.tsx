@@ -10,9 +10,9 @@ import StatusIndicator from "../../../../components/fundamentals/status-indicato
 import IndeterminateCheckbox from "../../../../components/molecules/indeterminate-checkbox"
 import Modal from "../../../../components/molecules/modal"
 import { LayeredModalContext } from "../../../../components/molecules/modal/layered-modal"
-import Table from "../../../../components/molecules/table"
 import TableContainer from "../../../../components/organisms/table-container"
 import { useDebounce } from "../../../../hooks/use-debounce"
+import MsTable from "../../../../components/molecules/ms-table"
 
 const getProductStatusVariant = (status) => {
   switch (status) {
@@ -33,7 +33,7 @@ type RMASelectProductSubModalProps = {
   selectedItems?: any
 }
 
-const RMASelectProductSubModal: React.FC<RMASelectProductSubModalProps> = ({
+const MsRMASelectProductSubModal: React.FC<RMASelectProductSubModalProps> = ({
   onSubmit,
   selectedItems,
 }) => {
@@ -44,6 +44,7 @@ const RMASelectProductSubModal: React.FC<RMASelectProductSubModalProps> = ({
   const [offset, setOffset] = useState(0)
   const [numPages, setNumPages] = useState(0)
   const [currentPage, setCurrentPage] = useState(0)
+  const [showTable, setShowTable] = useState(false)
 
   const [selectedVariants, setSelectedVariants] = useState<any[]>([])
 
@@ -216,87 +217,67 @@ const RMASelectProductSubModal: React.FC<RMASelectProductSubModalProps> = ({
 
   return (
     <>
-      <Modal.Content>
-        <TableContainer
-          isLoading={isLoading}
-          numberOfRows={PAGE_SIZE}
-          hasPagination
-          pagingState={{
-            count: count!,
-            offset: offset,
-            pageSize: offset + rows.length,
-            title: t("rma-sub-modals-products", "Products"),
-            currentPage: pageIndex + 1,
-            pageCount: pageCount,
-            nextPage: handleNext,
-            prevPage: handlePrev,
-            hasNext: canNextPage,
-            hasPrev: canPreviousPage,
-          }}
+      <TableContainer
+        isLoading={isLoading}
+        numberOfRows={PAGE_SIZE}
+        hasPagination
+        pagingState={{
+          count: count!,
+          offset: offset,
+          pageSize: offset + rows.length,
+          title: t("rma-sub-modals-products", "Products"),
+          currentPage: pageIndex + 1,
+          pageCount: pageCount,
+          nextPage: handleNext,
+          prevPage: handlePrev,
+          hasNext: canNextPage,
+          hasPrev: canPreviousPage,
+        }}
+      >
+        <MsTable
+          immediateSearchFocus
+          enableSearch
+          searchPlaceholder={t(
+            "rma-sub-modals-search-products",
+            "Search Products.."
+          )}
+          searchValue={query}
+          searchClassName="w-full !flex-none"
+          handleSearch={handleSearch}
+          {...getTableProps()}
+          onClick={() => setShowTable(false)}
         >
-          <Table
-            immediateSearchFocus
-            enableSearch
-            searchPlaceholder={t(
-              "rma-sub-modals-search-products",
-              "Search Products.."
+          <MsTable.Body {...getTableBodyProps()}>
+            {isLoading ? (
+              <MsTable.Row>
+                <MsTable.Cell
+                  colSpan={columns.length}
+                  className="flex items-center justify-center"
+                >
+                  <Spinner size="large" variant="secondary" />
+                </MsTable.Cell>
+              </MsTable.Row>
+            ) : (
+              rows.map((row, i) => {
+                prepareRow(row)
+                return (
+                  <MsTable.Row {...row.getRowProps()}>
+                    {row.cells.map((cell) => {
+                      return (
+                        <MsTable.Cell {...cell.getCellProps()}>
+                          {cell.render("Cell")}
+                        </MsTable.Cell>
+                      )
+                    })}
+                  </MsTable.Row>
+                )
+              })
             )}
-            searchValue={query}
-            handleSearch={handleSearch}
-            {...getTableProps()}
-          >
-            <Table.Body {...getTableBodyProps()}>
-              {isLoading ? (
-                <Table.Row>
-                  <Table.Cell
-                    colSpan={columns.length}
-                    className="flex items-center justify-center"
-                  >
-                    <Spinner size="large" variant="secondary" />
-                  </Table.Cell>
-                </Table.Row>
-              ) : (
-                rows.map((row, i) => {
-                  prepareRow(row)
-                  return (
-                    <Table.Row {...row.getRowProps()}>
-                      {row.cells.map((cell) => {
-                        return (
-                          <Table.Cell {...cell.getCellProps()}>
-                            {cell.render("Cell")}
-                          </Table.Cell>
-                        )
-                      })}
-                    </Table.Row>
-                  )
-                })
-              )}
-            </Table.Body>
-          </Table>
-        </TableContainer>
-      </Modal.Content>
-      <Modal.Footer>
-        <div className="gap-x-xsmall flex w-full justify-end">
-          <Button
-            variant="ghost"
-            size="small"
-            className="w-[112px]"
-            onClick={() => pop()}
-          >
-            {t("rma-sub-modals-back", "Back")}
-          </Button>
-          <Button
-            variant="primary"
-            className="w-[112px]"
-            size="small"
-            onClick={handleSubmit}
-          >
-            {t("rma-sub-modals-add", "Add")}
-          </Button>
-        </div>
-      </Modal.Footer>
+          </MsTable.Body>
+        </MsTable>
+      </TableContainer>
     </>
   )
 }
 
-export default RMASelectProductSubModal
+export default MsRMASelectProductSubModal

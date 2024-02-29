@@ -25,14 +25,12 @@ import SelectShippingMethod from "../new/components/select-shipping"
 import qs from "qs"
 import AddCustomProductModal from "./add-custom-product-modal"
 import CreateNewCustomerModal from "./create-new-customer-modal"
-import ItemSearch2 from "../../../components/molecules/item-search/item-search-2"
 import { NextSelect } from "../../../components/molecules/select/next-select"
 import { Pencil } from "@medusajs/icons"
 import { Customer } from "@medusajs/medusa"
 import AddressDetailsCard from "./address-details-card"
-import Modal from "../../../components/molecules/modal"
 import SummaryCard from "../ms-details/detail-cards/summary"
-// import ItemSearch2 from "../../../components/molecules/item-search/item-search-2"
+import MsItemSearch from "../../../components/molecules/ms-item-search"
 
 const VIEWS = ["Products"]
 
@@ -190,7 +188,7 @@ const OrderCrateIndex = () => {
               customActionable={addProductAction}
               className="h-fit"
             >
-              <ItemSearch2 onItemSelect={() => {}} />
+              <MsItemSearch onItemSelect={() => {}} />
             </BodyCard>
             <BodyCard
               compact={true}

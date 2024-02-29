@@ -8,11 +8,11 @@ import Button from "../../../../components/fundamentals/button"
 import ImagePlaceholder from "../../../../components/fundamentals/image-placeholder"
 import StatusIndicator from "../../../../components/fundamentals/status-indicator"
 import IndeterminateCheckbox from "../../../../components/molecules/indeterminate-checkbox"
-import Modal from "../../../../components/molecules/modal"
 import { LayeredModalContext } from "../../../../components/molecules/modal/layered-modal"
 import TableContainer from "../../../../components/organisms/table-container"
 import { useDebounce } from "../../../../hooks/use-debounce"
-import Table2 from "../../../../components/molecules/table/table-2"
+import MsModal from "../../../../components/molecules/ms-modal"
+import MsTable from "../../../../components/molecules/ms-table"
 
 const getProductStatusVariant = (status) => {
   switch (status) {
@@ -33,7 +33,7 @@ type RMASelectProductSubModalProps = {
   selectedItems?: any
 }
 
-const RMASelectProductSubModal2: React.FC<RMASelectProductSubModalProps> = ({
+const MsRMASelectProductSubModal: React.FC<RMASelectProductSubModalProps> = ({
   onSubmit,
   selectedItems,
 }) => {
@@ -44,7 +44,6 @@ const RMASelectProductSubModal2: React.FC<RMASelectProductSubModalProps> = ({
   const [offset, setOffset] = useState(0)
   const [numPages, setNumPages] = useState(0)
   const [currentPage, setCurrentPage] = useState(0)
-  const [showTable, setShowTable] = useState(false)
 
   const [selectedVariants, setSelectedVariants] = useState<any[]>([])
 
@@ -55,7 +54,6 @@ const RMASelectProductSubModal2: React.FC<RMASelectProductSubModalProps> = ({
     limit: PAGE_SIZE,
     offset,
   })
-
 
   useEffect(() => {
     if (typeof count !== "undefined") {
@@ -218,6 +216,7 @@ const RMASelectProductSubModal2: React.FC<RMASelectProductSubModalProps> = ({
 
   return (
     <>
+      <MsModal.Content>
         <TableContainer
           isLoading={isLoading}
           numberOfRows={PAGE_SIZE}
@@ -235,7 +234,7 @@ const RMASelectProductSubModal2: React.FC<RMASelectProductSubModalProps> = ({
             hasPrev: canPreviousPage,
           }}
         >
-          <Table2
+          <MsTable
             immediateSearchFocus
             enableSearch
             searchPlaceholder={t(
@@ -243,42 +242,61 @@ const RMASelectProductSubModal2: React.FC<RMASelectProductSubModalProps> = ({
               "Search Products.."
             )}
             searchValue={query}
-            searchClassName="w-full !flex-none"
             handleSearch={handleSearch}
             {...getTableProps()}
-            onClick={()=> setShowTable(false)}
           >
-            <Table2.Body {...getTableBodyProps()}>
+            <MsTable.Body {...getTableBodyProps()}>
               {isLoading ? (
-                <Table2.Row>
-                  <Table2.Cell
+                <MsTable.Row>
+                  <MsTable.Cell
                     colSpan={columns.length}
                     className="flex items-center justify-center"
                   >
                     <Spinner size="large" variant="secondary" />
-                  </Table2.Cell>
-                </Table2.Row>
+                  </MsTable.Cell>
+                </MsTable.Row>
               ) : (
                 rows.map((row, i) => {
                   prepareRow(row)
                   return (
-                    <Table2.Row {...row.getRowProps()}>
+                    <MsTable.Row {...row.getRowProps()}>
                       {row.cells.map((cell) => {
                         return (
-                          <Table2.Cell {...cell.getCellProps()}>
+                          <MsTable.Cell {...cell.getCellProps()}>
                             {cell.render("Cell")}
-                          </Table2.Cell>
+                          </MsTable.Cell>
                         )
                       })}
-                    </Table2.Row>
+                    </MsTable.Row>
                   )
                 })
               )}
-            </Table2.Body>
-          </Table2>
+            </MsTable.Body>
+          </MsTable>
         </TableContainer>
+      </MsModal.Content>
+      <MsModal.Footer>
+        <div className="gap-x-xsmall flex w-full justify-end">
+          <Button
+            variant="ghost"
+            size="small"
+            className="w-[112px]"
+            onClick={() => pop()}
+          >
+            {t("rma-sub-modals-back", "Back")}
+          </Button>
+          <Button
+            variant="primary"
+            className="w-[112px]"
+            size="small"
+            onClick={handleSubmit}
+          >
+            {t("rma-sub-modals-add", "Add")}
+          </Button>
+        </div>
+      </MsModal.Footer>
     </>
   )
 }
 
-export default RMASelectProductSubModal2
+export default MsRMASelectProductSubModal

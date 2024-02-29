@@ -28,6 +28,7 @@ import EventActionables from "./event-actionables"
 import EventContainer, { EventIconColor } from "./event-container"
 import EventItemContainer from "./event-item-container"
 import StarUserIcon from "../../fundamentals/icons/ms-star-user-icon"
+import IconBuildingTax from "../../fundamentals/icons/building-tax-icon"
 
 type ExchangeProps = {
   event: ExchangeEvent
@@ -39,20 +40,40 @@ type ExchangeStatusProps = {
 }
 
 const ExchangeStatus: React.FC<ExchangeStatusProps> = ({ event }) => {
-  
   return (
     <div className="inter-small-regular flex items-center gap-28">
-      <div className="gap-y-2xsmall flex flex-col">
-        <span className="text-grey-50 font-semibold">Payment:</span>
-        <p className="text-xs font-bold capitalize">{event.paymentStatus}</p>
+      <div className="flex items-center gap-2">
+        <div>
+          <IconBuildingTax size={20} />
+        </div>
+        <div className="gap-y-2xsmall flex flex-col">
+          <span className=" font-bold">Payment:</span>
+          <p className="text-grey-50 text-xs capitalize">
+            {event.paymentStatus}
+          </p>
+        </div>
       </div>
-      <div className="gap-y-2xsmall flex flex-col">
-        <span className="text-grey-50 font-semibold">Return:</span>
-        <p className="text-xs font-bold capitalize">{event.returnStatus}</p>
+      <div className="flex items-center gap-2">
+        <div>
+          <IconBuildingTax size={20} />
+        </div>
+        <div className="gap-y-2xsmall flex flex-col">
+          <span className=" font-bold">Return:</span>
+          <p className="text-grey-50 text-xs capitalize">
+            {event.returnStatus}
+          </p>
+        </div>
       </div>
-      <div className="gap-y-2xsmall flex flex-col">
-        <span className="text-grey-50 font-semibold">Fulfillment:</span>
-        <p className="text-xs font-bold capitalize">{event.fulfillmentStatus}</p>
+      <div className="flex items-center gap-2">
+        <div>
+          <IconBuildingTax size={20} />
+        </div>
+        <div className="gap-y-2xsmall flex flex-col">
+          <span className="font-bold">Fulfillment:</span>
+          <p className="text-grey-50 text-xs capitalize">
+            {event.fulfillmentStatus}
+          </p>
+        </div>
       </div>
     </div>
   )
@@ -274,7 +295,6 @@ function getNewItems(event: ExchangeEvent) {
     </div>
   )
 }
-
 
 function getReturnItems(event: ExchangeEvent) {
   return (

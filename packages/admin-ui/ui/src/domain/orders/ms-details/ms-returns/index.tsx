@@ -23,9 +23,7 @@ import CheckIcon from "../../../../components/fundamentals/icons/check-icon"
 import CurrencyInput from "../../../../components/organisms/currency-input"
 import EditIcon from "../../../../components/fundamentals/icons/edit-icon"
 import IconTooltip from "../../../../components/molecules/icon-tooltip"
-import Modal from "../../../../components/molecules/modal"
 import { Option } from "../../../../types/shared"
-import RMASelectProductTable from "../../../../components/organisms/rma-select-product-table"
 import RMAShippingPrice from "../../../../components/molecules/rma-select-shipping"
 import Select from "../../../../components/molecules/select/next-select/select"
 import Spinner from "../../../../components/atoms/spinner"
@@ -36,6 +34,10 @@ import { getErrorMessage } from "../../../../utils/error-messages"
 import { removeFalsy } from "../../../../utils/remove-nullish"
 import { useFeatureFlag } from "../../../../providers/feature-flag-provider"
 import useNotification from "../../../../hooks/use-notification"
+import MsRMASelectProductTable from "../../../../components/organisms/ms-rma-select-product-table"
+import MsModal from "../../../../components/molecules/ms-modal"
+import { DropdownIndicator } from "../../../../components/molecules/select/next-select/components/control"
+import TriangleDown from "../../../../components/fundamentals/icons/triangle-down"
 
 type ReturnMenuProps = {
   order: Order
@@ -44,7 +46,7 @@ type ReturnMenuProps = {
 
 type LineItem = Omit<RawLineItem, "beforeInsert">
 
-const ReturnMenu: React.FC<ReturnMenuProps> = ({ order, onDismiss }) => {
+const MsReturnMenu: React.FC<ReturnMenuProps> = ({ order, onDismiss }) => {
   const { client } = useMedusa()
   const { t } = useTranslation()
   const layeredModalContext = useContext(LayeredModalContext)
@@ -267,20 +269,32 @@ const ReturnMenu: React.FC<ReturnMenuProps> = ({ order, onDismiss }) => {
     }
   }
 
+  const CustomDropdownIndicator = (props: any) => {
+    return (
+      <DropdownIndicator {...props}>
+        <TriangleDown />
+      </DropdownIndicator>
+    )
+  }
+
   return (
-    <LayeredModal context={layeredModalContext} handleClose={onDismiss}>
-      <Modal.Body>
-        <Modal.Header handleClose={onDismiss}>
+    <LayeredModal
+      handleSkip={() => {}}
+      context={layeredModalContext}
+      handleClose={onDismiss}
+    >
+      <MsModal.Body>
+        <MsModal.Header handleClose={onDismiss}>
           <h2 className="inter-xlarge-semibold">
             {t("returns-request-return", "Request Return")}
           </h2>
-        </Modal.Header>
-        <Modal.Content>
+        </MsModal.Header>
+        <MsModal.Content>
           <div className="mb-7">
-            <h3 className="inter-base-semibold">
+            <h3 className="inter-base-semibold mb-4 text-lg font-bold">
               {t("returns-items-to-return", "Items to return")}
             </h3>
-            <RMASelectProductTable
+            <MsRMASelectProductTable
               order={order}
               allItems={allItems}
               toReturn={toReturn}
@@ -345,15 +359,18 @@ const ReturnMenu: React.FC<ReturnMenuProps> = ({ order, onDismiss }) => {
               </div>
             ) : (
               <Select
+                label={t("return-shipping-method", "Shipping Method")}
                 className="mt-2"
-                placeholder="Add a shipping method"
+                placeholder={t(
+                  "return-add-a-shipping-method",
+                  "Add a shipping method"
+                )}
                 value={shippingMethod}
                 onChange={handleShippingSelected}
                 options={
                   shippingOptions?.map((o) => ({
                     label: o.name,
                     value: o.id,
-                    tax_rates: o.tax_rates,
                   })) || []
                 }
               />
@@ -418,8 +435,8 @@ const ReturnMenu: React.FC<ReturnMenuProps> = ({ order, onDismiss }) => {
               )}
             </div>
           )}
-        </Modal.Content>
-        <Modal.Footer>
+        </MsModal.Content>
+        <MsModal.Footer>
           <div className="flex w-full justify-between">
             <div
               className="flex h-full cursor-pointer items-center"
@@ -475,10 +492,10 @@ const ReturnMenu: React.FC<ReturnMenuProps> = ({ order, onDismiss }) => {
               </Button>
             </div>
           </div>
-        </Modal.Footer>
-      </Modal.Body>
+        </MsModal.Footer>
+      </MsModal.Body>
     </LayeredModal>
   )
 }
 
-export default ReturnMenu
+export default MsReturnMenu

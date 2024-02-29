@@ -44,7 +44,7 @@ const getInfo = (edit: OrderEdit): { type: string; user_id: string } => {
 }
 
 const MsEditCreated: React.FC<EditCreatedProps> = ({ event }) => {
-  console.log("event from MsEditCreated------>", event)
+ 
   const { isModalVisible, showModal, setActiveOrderEdit } =
     useContext(OrderEditContext)
 
@@ -163,7 +163,7 @@ const MsEditCreated: React.FC<EditCreatedProps> = ({ event }) => {
               </>
             ) : (
               <>
-                <div className="grid gap-2">
+                <div className="grid gap-2 w-[50%]">
                   <div>
                     <Button
                       className="border-grey-20 w-full border bg-grey-10"

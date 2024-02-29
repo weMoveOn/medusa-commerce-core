@@ -51,8 +51,8 @@ const EventContainer: React.FC<EventContainerProps> = ({
     <div className="mb-base border-b pb-2">
       <div className="flex items-center justify-between">
         <div className="gap-x-xsmall flex items-center">
-          <div className={clsx("h-5 w-5 mr-3", iconColor)}>{icon}</div>
-          <div className="font-bold text-[1rem]">{title}</div>
+          <div className={clsx("mr-3 h-5 w-5", iconColor)}>{icon}</div>
+          <div className="text-[1rem] font-bold">{title}</div>
           <div className="inter-small-regular text-grey-50"></div>
         </div>
         <div className="gap-x-xsmall flex items-center">
@@ -73,7 +73,7 @@ const EventContainer: React.FC<EventContainerProps> = ({
           )}
         </div>
       </div>
-      <div className="gap-x-xsmall flex !ml-3">
+      <div className="gap-x-xsmall !ml-3 flex">
         <div className="pt-base flex w-5 justify-center">
           {!isFirst && <div className=" w-px" />}
         </div>
@@ -82,6 +82,13 @@ const EventContainer: React.FC<EventContainerProps> = ({
             <Tooltip content={new Date(time).toUTCString()}>
               <div className="inter-small-regular text-grey-50">
                 {moment(time).fromNow()}
+              </div>
+              <div className="my-2">
+                <span className="font-semibold text-grey-50">Requested On </span>
+                <span className="font-bold">
+                  {moment(time).format("MMM D, YYYY")} at{" "}
+                  {moment(time).format("h:mm A")}
+                </span>
               </div>
             </Tooltip>
             {midNode && (

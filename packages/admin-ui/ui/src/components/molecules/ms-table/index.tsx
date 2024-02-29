@@ -1,4 +1,4 @@
-import Actionables, { ActionType } from "../../molecules/actionables"
+import Actionables, { ActionType } from "../actionables"
 import FilteringOptions, { FilteringOptionProps } from "./filtering-option"
 
 import React from "react"
@@ -50,7 +50,7 @@ type TableType = {
   Cell: TableElement<TableCellProps>
 } & TableElement<TableProps>
 
-const Table2 = React.forwardRef<HTMLTableElement, TableProps>(
+const MsTable = React.forwardRef<HTMLTableElement, TableProps>(
   (
     {
       className,
@@ -75,7 +75,7 @@ const Table2 = React.forwardRef<HTMLTableElement, TableProps>(
     return (
       <div className={`flex flex-col ${containerClassName}`}>
         <div className="mb-2 flex w-full justify-between">
-          {filteringOptions ? (
+          {filteringOptions && (
             <div className="mb-2 flex self-end">
               {Array.isArray(filteringOptions)
                 ? filteringOptions.map((fo, idx) => (
@@ -83,10 +83,8 @@ const Table2 = React.forwardRef<HTMLTableElement, TableProps>(
                   ))
                 : filteringOptions}
             </div>
-          ) : (
-            <span aria-hidden />
-          )}
-          <div className="gap-x-xsmall flex items-center">
+          ) } 
+          <div className="gap-x-xsmall flex items-center w-full">
             {tableActions && <div>{tableActions}</div>}
             {enableSearch && (
               <TableSearch
@@ -94,7 +92,7 @@ const Table2 = React.forwardRef<HTMLTableElement, TableProps>(
                 placeholder={searchPlaceholder}
                 searchValue={searchValue}
                 onSearch={handleSearch!}
-                className={`${searchClassName} !w-[800px]`}
+                className={`${searchClassName} !w-full`}
               />
             )}
           </div>
@@ -113,7 +111,7 @@ const Table2 = React.forwardRef<HTMLTableElement, TableProps>(
   }
 ) as TableType
 
-Table2.Head = React.forwardRef<
+MsTable.Head = React.forwardRef<
   HTMLTableSectionElement,
   React.HTMLAttributes<HTMLTableSectionElement>
 >(({ className, children, ...props }, ref) => (
@@ -129,7 +127,7 @@ Table2.Head = React.forwardRef<
   </thead>
 ))
 
-Table2.HeadRow = React.forwardRef<
+MsTable.HeadRow = React.forwardRef<
   HTMLTableRowElement,
   React.HTMLAttributes<HTMLTableRowElement>
 >(({ className, children, ...props }, ref) => (
@@ -138,7 +136,7 @@ Table2.HeadRow = React.forwardRef<
   </tr>
 ))
 
-Table2.HeadCell = React.forwardRef<
+MsTable.HeadCell = React.forwardRef<
   HTMLTableCellElement,
   React.HTMLAttributes<HTMLTableCellElement>
 >(({ className, children, ...props }, ref) => (
@@ -147,7 +145,7 @@ Table2.HeadCell = React.forwardRef<
   </th>
 ))
 
-Table2.SortingHeadCell = React.forwardRef<
+MsTable.SortingHeadCell = React.forwardRef<
   HTMLTableCellElement,
   SortingHeadCellProps
 >(
@@ -192,7 +190,7 @@ Table2.SortingHeadCell = React.forwardRef<
   }
 )
 
-Table2.Body = React.forwardRef<
+MsTable.Body = React.forwardRef<
   HTMLTableSectionElement,
   React.HTMLAttributes<HTMLTableSectionElement>
 >(({ className, children, ...props }, ref) => (
@@ -201,7 +199,7 @@ Table2.Body = React.forwardRef<
   </tbody>
 ))
 
-Table2.Cell = React.forwardRef<HTMLTableCellElement, TableCellProps>(
+MsTable.Cell = React.forwardRef<HTMLTableCellElement, TableCellProps>(
   ({ className, linkTo, children, ...props }, ref) => {
     const navigate = useNavigate()
     return (
@@ -222,7 +220,7 @@ Table2.Cell = React.forwardRef<HTMLTableCellElement, TableCellProps>(
   }
 )
 
-Table2.Row = React.forwardRef<HTMLTableRowElement, TableRowProps>(
+MsTable.Row = React.forwardRef<HTMLTableRowElement, TableRowProps>(
   (
     {
       className,
@@ -255,13 +253,16 @@ Table2.Row = React.forwardRef<HTMLTableRowElement, TableRowProps>(
       >
         {children}
         {actions && (
-          <Table2.Cell onClick={(e) => e.stopPropagation()} className="w-[32px]">
+          <MsTable.Cell
+            onClick={(e) => e.stopPropagation()}
+            className="w-[32px]"
+          >
             <Actionables forceDropdown={forceDropdown} actions={actions} />
-          </Table2.Cell>
+          </MsTable.Cell>
         )}
       </tr>
     )
   }
 )
 
-export default Table2
+export default MsTable

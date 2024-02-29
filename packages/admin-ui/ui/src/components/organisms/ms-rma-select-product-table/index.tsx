@@ -2,7 +2,6 @@ import { LineItem, Order } from "@medusajs/medusa"
 import clsx from "clsx"
 import React, { Fragment, useContext } from "react"
 import { useTranslation } from "react-i18next"
-import RMAReturnReasonSubModal from "../../../domain/orders/details/rma-sub-modals/return-reasons"
 import Medusa from "../../../services/api"
 import { isLineItemCanceled } from "../../../utils/is-line-item"
 import { formatAmountWithSymbol } from "../../../utils/prices"
@@ -12,8 +11,8 @@ import CheckIcon from "../../fundamentals/icons/check-icon"
 import MinusIcon from "../../fundamentals/icons/minus-icon"
 import PlusIcon from "../../fundamentals/icons/plus-icon"
 import { LayeredModalContext } from "../../molecules/modal/layered-modal"
-import Table from "../../molecules/table"
 import MsRMAReturnReasonSubModal from "../../../domain/orders/details/ms-rma-sub-modals/return-reasons"
+import MsTable from "../../molecules/ms-table"
 
 type RMASelectProductTableProps = {
   order: Omit<Order, "beforeInsert">
@@ -23,6 +22,7 @@ type RMASelectProductTableProps = {
   customReturnOptions?: any[]
   imagesOnReturns?: any
   isSwapOrClaim?: boolean
+  className?: string
 }
 
 const MsRMASelectProductTable: React.FC<RMASelectProductTableProps> = ({
@@ -33,9 +33,12 @@ const MsRMASelectProductTable: React.FC<RMASelectProductTableProps> = ({
   imagesOnReturns = false,
   setToReturn,
   isSwapOrClaim = false,
+  className = "",
 }) => {
   const { t } = useTranslation()
   const { push, pop } = useContext(LayeredModalContext)
+
+  console.log("allItems from Ms-->", allItems)
 
   const handleQuantity = (change, item) => {
     if (
@@ -112,22 +115,25 @@ const MsRMASelectProductTable: React.FC<RMASelectProductTableProps> = ({
   }
 
   return (
-    <Table className="border">
-      <Table.Head className="">
-        <Table.HeadRow className="text-grey-50 inter-small-semibold bg-grey-100">
-          <Table.HeadCell colSpan={2}>
-            {t("rma-select-product-table-product-details", "Product Details")}
-          </Table.HeadCell>
-          <Table.HeadCell className="pr-8 text-right">
+    <MsTable className="border">
+      <MsTable.Head className="">
+        <MsTable.HeadRow className="text-grey-50 inter-small-semibold bg-grey-100">
+          <MsTable.HeadCell colSpan={2} className="pl-3 font-bold">
+            {t("rma-select-product-table-item-name", "Item Name")}
+          </MsTable.HeadCell>
+          <MsTable.HeadCell className=" text-right">
+            {t("rma-select-product-table-item-price", "Item Price")}
+          </MsTable.HeadCell>
+          <MsTable.HeadCell className="text-right">
             {t("rma-select-product-table-quantity", "Quantity")}
-          </Table.HeadCell>
-          <Table.HeadCell className="text-right">
+          </MsTable.HeadCell>
+          <MsTable.HeadCell className="text-right pr-3">
             {t("rma-select-product-table-refundable", "Refundable")}
-          </Table.HeadCell>
-          <Table.HeadCell></Table.HeadCell>
-        </Table.HeadRow>
-      </Table.Head>
-      <Table.Body className="">
+          </MsTable.HeadCell>
+          {/* <MsTable.HeadCell></MsTable.HeadCell> */}
+        </MsTable.HeadRow>
+      </MsTable.Head>
+      <MsTable.Body className="">
         {allItems.map((item) => {
           // Only show items that have not been returned,
           // and aren't canceled
@@ -140,12 +146,12 @@ const MsRMASelectProductTable: React.FC<RMASelectProductTableProps> = ({
           const checked = item.id in toReturn
           return (
             <Fragment key={item.id}>
-              <Table.Row className={clsx("border-b-grey-0 hover:bg-grey-0")}>
-                <Table.Cell>
-                  <div className="ml-1 flex h-full items-center">
+              <MsTable.Row className={clsx("border-b-grey-0 hover:bg-grey-0")}>
+                <MsTable.Cell>
+                  <div className="ml-3 flex h-full items-center">
                     <div
                       onClick={() => handleReturnToggle(item)}
-                      className={`text-grey-0 border-grey-30 rounded-base mr-4 flex h-5 w-5 cursor-pointer justify-center border ${
+                      className={`text-grey-0 border-grey-30 rounded-base flex h-5 w-5 cursor-pointer justify-center border ${
                         checked && "bg-violet-60"
                       }`}
                     >
@@ -162,8 +168,8 @@ const MsRMASelectProductTable: React.FC<RMASelectProductTableProps> = ({
                       type="checkbox"
                     />
                   </div>
-                </Table.Cell>
-                <Table.Cell>
+                </MsTable.Cell>
+                <MsTable.Cell>
                   <div className="flex min-w-[240px] py-2">
                     <div className="h-[40px] w-[30px] ">
                       <img
@@ -188,8 +194,12 @@ const MsRMASelectProductTable: React.FC<RMASelectProductTableProps> = ({
                       </div>
                     </div>
                   </div>
-                </Table.Cell>
-                <Table.Cell className="w-32 pr-8 text-right">
+                </MsTable.Cell>
+                <MsTable.Cell className="ml-4 flex gap-2 text-right items-center mt-2">
+                  <p>{order.currency_code.toUpperCase()}</p>
+                  <p>{item.unit_price}</p>
+                </MsTable.Cell>
+                <MsTable.Cell className="w-32 pr-8 text-right">
                   {item.id in toReturn ? (
                     <div className="text-grey-50 flex w-full justify-end text-right ">
                       <span
@@ -213,21 +223,17 @@ const MsRMASelectProductTable: React.FC<RMASelectProductTableProps> = ({
                       {item.quantity - item.returned_quantity}
                     </span>
                   )}
-                </Table.Cell>
-                <Table.Cell className="text-right">
-                  {formatAmountWithSymbol({
-                    currency: order.currency_code,
-                    amount: item.refundable || 0,
-                  })}
-                </Table.Cell>
-                <Table.Cell className="text-grey-40 pr-1 text-right">
-                  {order.currency_code.toUpperCase()}
-                </Table.Cell>
-              </Table.Row>
+                </MsTable.Cell>
+
+                <MsTable.Cell className="ml-4 flex gap-2 text-right items-center mt-2">
+                  <p>{order.currency_code.toUpperCase()}</p>
+                  <p>{item.refundable || 0}</p>
+                </MsTable.Cell>
+              </MsTable.Row>
               {checked && !isSwapOrClaim && (
-                <Table.Row className="hover:bg-grey-0 last:border-b-0">
-                  <Table.Cell></Table.Cell>
-                  <Table.Cell colSpan={2}>
+                <MsTable.Row className="hover:bg-grey-0 last:border-b-0">
+                  <MsTable.Cell></MsTable.Cell>
+                  <MsTable.Cell colSpan={2}>
                     <div className="max-w-[470px] truncate">
                       {toReturn[item.id]?.reason && (
                         <span className="inter-small-regular text-grey-40">
@@ -253,8 +259,8 @@ const MsRMASelectProductTable: React.FC<RMASelectProductTableProps> = ({
                         </span>
                       )}
                     </div>
-                  </Table.Cell>
-                  <Table.Cell colSpan={2}>
+                  </MsTable.Cell>
+                  <MsTable.Cell colSpan={2}>
                     <div className="mb-small flex w-full justify-end">
                       <Button
                         onClick={() =>
@@ -280,14 +286,14 @@ const MsRMASelectProductTable: React.FC<RMASelectProductTableProps> = ({
                         )}
                       </Button>
                     </div>
-                  </Table.Cell>
-                </Table.Row>
+                  </MsTable.Cell>
+                </MsTable.Row>
               )}
             </Fragment>
           )
         })}
-      </Table.Body>
-    </Table>
+      </MsTable.Body>
+    </MsTable>
   )
 }
 

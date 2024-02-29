@@ -15,13 +15,8 @@ import {
 } from "medusa-react"
 import { useDebounce } from "../../../hooks/use-debounce"
 import { useEffect, useState } from "react"
-import Table from "../table"
-import TableContainer from "../../organisms/table-container"
-import RMASelectProductSubModal from "../../../domain/orders/details/rma-sub-modals/products"
-import Items2 from "../../../domain/orders/new/components/items2"
-import RMASelectProductSubModal2 from "../../../domain/orders/details/rma-sub-modals/products2"
-import Table2 from "../table/table-2"
-// import TableContainer from "../../../../components/organisms/table-container"
+import MsRMASelectProductSubModal from "../../../domain/orders/details/ms-rma-sub-modals/products"
+
 
 
 type Props = {
@@ -37,7 +32,7 @@ type ItemOption = {
   inventoryItem: DecoratedInventoryItemDTO
 }
 
-const ItemSearch2 = ({
+const MsItemSearch = ({
   onItemSelect,
   clearOnSelect,
   filters = {},
@@ -51,7 +46,7 @@ const ItemSearch2 = ({
 
   // const { isLoading, products } = useAdminProducts()
 
-  const { isLoading,variants } = useAdminVariants()
+  const { isLoading, variants } = useAdminVariants()
   // console.log("variants ->", variants)
 
   // console.log("products ->", )
@@ -61,7 +56,7 @@ const ItemSearch2 = ({
       onItemSelect(item.inventoryItem)
     }
   }
-  useEffect(()=>{},[variants])
+  useEffect(() => {}, [variants])
 
   const options = variants?.map((variant) => ({
     label: variant.product?.title,
@@ -90,9 +85,9 @@ const ItemSearch2 = ({
         isLoading={queryEnabled && isLoading}
         // TODO: Remove this when we can q for inventory item titles
       /> */}
-      <RMASelectProductSubModal2
+      <MsRMASelectProductSubModal
         selectedItems={variants || []}
-        onSubmit={()=> {}}
+        onSubmit={() => {}}
       />
     </div>
   )
@@ -125,9 +120,8 @@ const ProductOption = ({ innerProps, data }: OptionProps<ItemOption>) => {
           data.inventoryItem.reserved_quantity
         } available`}</p>
       </div>
-
     </div>
   )
 }
 
-export default ItemSearch2
+export default MsItemSearch

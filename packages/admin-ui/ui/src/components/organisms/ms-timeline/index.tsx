@@ -4,8 +4,6 @@ import React, { useState } from "react"
 import { useTranslation } from "react-i18next"
 
 import RegisterClaimMenu from "../../../domain/orders/details/claim/register-claim-menu"
-import ReturnMenu from "../../../domain/orders/details/returns"
-import SwapMenu from "../../../domain/orders/details/swap/create"
 import useOrdersExpandParam from "../../../domain/orders/details/utils/use-admin-expand-paramter"
 import {
   ClaimEvent,
@@ -45,12 +43,13 @@ import EditRequested from "../../molecules/timeline-events/order-edit/requested"
 import OrderPlaced from "../../molecules/timeline-events/order-placed"
 import Refund from "../../molecules/timeline-events/refund"
 import NoteInput from "../../molecules/note-input"
-import MsReturnMenu from "../../../domain/orders/details/ms-returns"
 import MsReturn from "../../molecules/ms-timeline-events/return"
 import MsExchange from "../../molecules/ms-timeline-events/exchange"
 import MsItemsFulfilled from "../../molecules/ms-timeline-events/items-fulfilled"
 import MsEditConfirmed from "../../molecules/ms-timeline-events/order-edit/confirmed"
 import MsEditCreated from "../../molecules/ms-timeline-events/order-edit/created"
+import MsSwapMenu from "../../../domain/orders/ms-details/ms-swap/create"
+import MsReturnMenu from "../../../domain/orders/ms-details/ms-returns"
 
 type TimelineProps = {
   orderId: string
@@ -166,7 +165,7 @@ const MsTimeline: React.FC<TimelineProps> = ({ orderId }) => {
         />
       )}
       {showCreateSwap && order && (
-        <SwapMenu order={order} onDismiss={() => setshowCreateSwap(false)} />
+        <MsSwapMenu order={order} onDismiss={() => setshowCreateSwap(false)} />
       )}
       {showRegisterClaim && order && (
         <RegisterClaimMenu order={order} onClose={closeRegisterClaim} />

@@ -24,8 +24,6 @@ import LayeredModal, {
 } from "../../../../components/molecules/modal/layered-modal"
 import RMAShippingPrice from "../../../../components/molecules/rma-select-shipping"
 import Select from "../../../../components/molecules/select"
-import RMAReturnProductsTable from "../../../../components/organisms/rma-return-product-table"
-import RMASelectProductTable from "../../../../components/organisms/rma-select-product-table"
 import useNotification from "../../../../hooks/use-notification"
 import { useFeatureFlag } from "../../../../providers/feature-flag-provider"
 import { Option } from "../../../../types/shared"
@@ -33,6 +31,10 @@ import { getErrorMessage } from "../../../../utils/error-messages"
 import { formatAmountWithSymbol } from "../../../../utils/prices"
 import RMASelectProductSubModal from "../rma-sub-modals/products"
 import { getAllReturnableItems } from "../utils/create-filtering"
+import MsModal from "../../../../components/molecules/ms-modal"
+import MsRMASelectProductTable from "../../../../components/organisms/ms-rma-select-product-table"
+import MsRMAReturnProductsTable from "../../../../components/organisms/ms-rma-return-product-table"
+import MsRMASelectProductSubModal from "../ms-rma-sub-modals/products"
 
 type SwapMenuProps = {
   order: Omit<Order, "beforeInsert">
@@ -54,7 +56,7 @@ type ReturnRecord = Record<
 
 type SelectProduct = Omit<ProductVariant & { quantity: number }, "beforeInsert">
 
-const SwapMenu: React.FC<SwapMenuProps> = ({ order, onDismiss }) => {
+const MsSwapMenu: React.FC<SwapMenuProps> = ({ order, onDismiss }) => {
   const { t } = useTranslation()
   const { refetch } = useAdminOrder(order.id)
   const { mutate, isLoading } = useAdminCreateSwap(order.id)
@@ -259,18 +261,18 @@ const SwapMenu: React.FC<SwapMenuProps> = ({ order, onDismiss }) => {
 
   return (
     <LayeredModal context={layeredModalContext} handleClose={onDismiss}>
-      <Modal.Body>
-        <Modal.Header handleClose={onDismiss}>
+      <MsModal.Body>
+        <MsModal.Header handleClose={onDismiss}>
           <h2 className="inter-xlarge-semibold">
             {t("swap-register-exchange", "Register Exchange")}
           </h2>
-        </Modal.Header>
-        <Modal.Content>
+        </MsModal.Header>
+        <MsModal.Content>
           <div className="mb-7">
             <h3 className="inter-base-semibold">
               {t("swap-items-to-return", "Items to return")}
             </h3>
-            <RMASelectProductTable
+            <MsRMASelectProductTable
               order={order}
               allItems={allItems}
               toReturn={toReturn}
@@ -280,7 +282,7 @@ const SwapMenu: React.FC<SwapMenuProps> = ({ order, onDismiss }) => {
 
           <div>
             <h3 className="inter-base-semibold ">
-              {t("swap-shipping", "Shipping")}
+              {t("swap-shipping", "Shipping Method")}
             </h3>
             {shippingLoading ? (
               <div className="flex justify-center">
@@ -288,11 +290,14 @@ const SwapMenu: React.FC<SwapMenuProps> = ({ order, onDismiss }) => {
               </div>
             ) : (
               <Select
-                label={t("swap-shipping-method", "Shipping Method")}
+                label={t(
+                  "swap-shipping-method",
+                  "Choose which shipping method you want to use for this return."
+                )}
                 className="mt-2"
                 placeholder={t(
                   "swap-add-a-shipping-method",
-                  "Add a shipping method"
+                  "Select from other shipping method"
                 )}
                 value={shippingMethod}
                 onChange={handleShippingSelected}
@@ -353,55 +358,32 @@ const SwapMenu: React.FC<SwapMenuProps> = ({ order, onDismiss }) => {
             <h3 className="inter-base-semibold ">
               {t("swap-items-to-send", "Items to send")}
             </h3>
-            {itemsToAdd.length === 0 ? (
-              <Button
-                variant="ghost"
-                className="border-grey-20 border"
-                size="small"
-                onClick={() => {
-                  layeredModalContext.push(
-                    SelectProductsScreen(
-                      layeredModalContext.pop,
-                      itemsToAdd,
-                      handleProductSelect
-                    )
+            <Button
+              variant="ghost"
+              className="border-grey-20 border"
+              size="small"
+              onClick={() => {
+                layeredModalContext.push(
+                  SelectProductsScreen(
+                    layeredModalContext.pop,
+                    itemsToAdd,
+                    handleProductSelect
                   )
-                }}
-              >
-                {t("swap-add-product", "Add Product")}
-              </Button>
-            ) : (
-              <></>
-            )}
+                )
+              }}
+            >
+              {t("swap-add-product", "Add Product")}
+            </Button>
           </div>
           {itemsToAdd.length > 0 && (
             <>
-              <RMAReturnProductsTable
+              <MsRMAReturnProductsTable
                 isAdditionalItems
                 order={order}
                 itemsToAdd={itemsToAdd}
                 handleRemoveItem={handleRemoveItem}
                 handleToAddQuantity={handleToAddQuantity}
               />
-
-              <div className="flex w-full justify-end">
-                <Button
-                  variant="ghost"
-                  className="border-grey-20 border"
-                  size="small"
-                  onClick={() => {
-                    layeredModalContext.push(
-                      SelectProductsScreen(
-                        layeredModalContext.pop,
-                        itemsToAdd,
-                        handleProductSelect
-                      )
-                    )
-                  }}
-                >
-                  {t("swap-add-product", "Add Product")}
-                </Button>
-              </div>
             </>
           )}
           <div className="text-grey-90 inter-small-regular mt-8 flex items-center justify-between">
@@ -443,8 +425,8 @@ const SwapMenu: React.FC<SwapMenuProps> = ({ order, onDismiss }) => {
               })}
             </span>
           </div>
-        </Modal.Content>
-        <Modal.Footer>
+        </MsModal.Content>
+        <MsModal.Footer>
           <div className="flex w-full justify-between">
             <div
               className="flex h-full cursor-pointer items-center"
@@ -489,8 +471,8 @@ const SwapMenu: React.FC<SwapMenuProps> = ({ order, onDismiss }) => {
               {t("swap-complete", "Complete")}
             </Button>
           </div>
-        </Modal.Footer>
-      </Modal.Body>
+        </MsModal.Footer>
+      </MsModal.Body>
     </LayeredModal>
   )
 }
@@ -500,7 +482,7 @@ const SelectProductsScreen = (pop, itemsToAdd, setSelectedItems) => {
     title: "Add Products",
     onBack: () => pop(),
     view: (
-      <RMASelectProductSubModal
+      <MsRMASelectProductSubModal
         selectedItems={itemsToAdd || []}
         onSubmit={setSelectedItems}
       />
@@ -508,4 +490,4 @@ const SelectProductsScreen = (pop, itemsToAdd, setSelectedItems) => {
   }
 }
 
-export default SwapMenu
+export default MsSwapMenu
