@@ -69,6 +69,7 @@ import SummaryCard from "./detail-cards/summary"
 import EmailModal from "./email-modal"
 import MarkShippedModal from "./mark-shipped"
 import CreateRefundModal from "./refund"
+import MsTimeline from "../../../components/organisms/ms-timeline"
 
 type OrderDetailFulfillment = {
   title: string
@@ -317,7 +318,7 @@ const OrderDetails = () => {
   )
 
   return (
-    <div>
+    <div className="">
       <OrderEditProvider orderId={id!}>
         <BackButton
           path="/a/orders"
@@ -342,7 +343,7 @@ const OrderDetails = () => {
                 )
               })}
             </div>
-            <div className="flex space-x-4">
+            <div className="mb-12 flex justify-center space-x-4">
               <div className="gap-y-base flex h-full w-7/12 flex-col">
                 <BodyCard
                   className={"min-h-[200px] w-full"}
@@ -403,76 +404,6 @@ const OrderDetails = () => {
                 </BodyCard>
 
                 <SummaryCard order={order} reservations={reservations || []} />
-
-                <BodyCard
-                  className={"h-auto min-h-0 w-full"}
-                  title={t("details-payment", "Payment")}
-                  status={
-                    <PaymentStatusComponent status={order.payment_status} />
-                  }
-                  customActionable={
-                    <PaymentActionables
-                      order={order}
-                      capturePayment={capturePayment}
-                      showRefundMenu={() => setShowRefund(true)}
-                    />
-                  }
-                >
-                  <div className="mt-6">
-                    {order.payments.map((payment) => (
-                      <div className="flex flex-col" key={payment.id}>
-                        <DisplayTotal
-                          currency={order.currency_code}
-                          totalAmount={payment.amount}
-                          totalTitle={payment.id}
-                          subtitle={`${moment(payment.created_at).format(
-                            "DD MMM YYYY hh:mm"
-                          )}`}
-                        />
-                        {!!payment.amount_refunded && (
-                          <div className="mt-4 flex justify-between">
-                            <div className="flex">
-                              <div className="text-grey-40 mr-2">
-                                <CornerDownRightIcon />
-                              </div>
-                              <div className="inter-small-regular text-grey-90">
-                                {t("details-refunded", "Refunded")}
-                              </div>
-                            </div>
-                            <div className="flex">
-                              <div className="inter-small-regular text-grey-90 mr-3">
-                                -
-                                {formatAmountWithSymbol({
-                                  amount: payment.amount_refunded,
-                                  currency: order.currency_code,
-                                })}
-                              </div>
-                              <div className="inter-small-regular text-grey-50">
-                                {order.currency_code.toUpperCase()}
-                              </div>
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    ))}
-                    <div className="mt-4 flex justify-between">
-                      <div className="inter-small-semibold text-grey-90">
-                        {t("details-total-paid", "Total Paid")}
-                      </div>
-                      <div className="flex">
-                        <div className="inter-small-semibold text-grey-90 mr-3">
-                          {formatAmountWithSymbol({
-                            amount: order.paid_total - order.refunded_total,
-                            currency: order.currency_code,
-                          })}
-                        </div>
-                        <div className="inter-small-regular text-grey-50">
-                          {order.currency_code.toUpperCase()}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </BodyCard>
                 <BodyCard
                   className={"h-auto min-h-0 w-full"}
                   title={t("details-fulfillment", "Fulfillment")}
@@ -520,57 +451,8 @@ const OrderDetails = () => {
                     </div>
                   </div>
                 </BodyCard>
-                <BodyCard
-                  className={"h-auto min-h-0 w-full"}
-                  title={t("details-customer", "Customer")}
-                  actionables={customerActionables}
-                >
-                  <div className="mt-6">
-                    <div className="flex w-full items-center space-x-4">
-                      <div className="flex h-[40px] w-[40px] ">
-                        <Avatar
-                          user={order.customer}
-                          font="inter-large-semibold"
-                          color="bg-fuschia-40"
-                        />
-                      </div>
-                      <div>
-                        <h1 className="inter-large-semibold text-grey-90">
-                          {extractCustomerName(order)}
-                        </h1>
-                        {order.shipping_address && (
-                          <span className="inter-small-regular text-grey-50">
-                            {order.shipping_address.city},{" "}
-                            {
-                              isoAlpha2Countries[
-                                order.shipping_address.country_code?.toUpperCase()
-                              ]
-                            }
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                    <div className="mt-6 flex space-x-6 divide-x">
-                      <div className="flex flex-col">
-                        <div className="inter-small-regular text-grey-50 mb-1">
-                          {t("details-contact", "Contact")}
-                        </div>
-                        <div className="inter-small-regular flex flex-col">
-                          <span>{order.email}</span>
-                          <span>{order.shipping_address?.phone || ""}</span>
-                        </div>
-                      </div>
-                      <FormattedAddress
-                        title={t("details-shipping", "Shipping")}
-                        addr={order.shipping_address}
-                      />
-                      <FormattedAddress
-                        title={t("details-billing", "Billing")}
-                        addr={order.billing_address}
-                      />
-                    </div>
-                  </div>
-                </BodyCard>
+                <MsTimeline orderId={order.id} />
+
                 <div>
                   {getWidgets("order.details.after").map((widget, i) => {
                     return (
@@ -583,13 +465,9 @@ const OrderDetails = () => {
                     )
                   })}
                 </div>
-                <Timeline orderId={order.id} />
-                <RawJSON
-                  data={order}
-                  title={t("details-raw-order", "Raw order")}
-                />
                 <Spacer />
               </div>
+              <Timeline orderId={order.id} />
             </div>
 
             <AddressModal

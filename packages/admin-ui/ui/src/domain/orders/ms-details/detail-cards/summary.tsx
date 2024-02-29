@@ -177,10 +177,8 @@ const SummaryCard: React.FC<SummaryCardProps> = ({ order, reservations }) => {
   return (
     <BodyCard
       className={"my-4 h-auto min-h-0 w-full"}
-      title="Payment Details"
-     
-        
-      // actionables={actionables}
+      title="Payment Details" 
+      actionables={actionables}
     >
       <div className="mt-6">
         <DisplayTotal
