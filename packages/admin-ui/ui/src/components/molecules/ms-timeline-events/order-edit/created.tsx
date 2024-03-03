@@ -131,7 +131,7 @@ const MsEditCreated: React.FC<EditCreatedProps> = ({ event }) => {
         icon={<EditIcon size={20} />}
         time={event.time}
         isFirst={event.first}
-        midNode={<ByLine user={user} />}
+        // midNode={<ByLine user={user} />}
       >
         {orderEdit.internal_note && (
           <div className="px-base py-small mt-base mb-large rounded-large bg-grey-10 inter-base-regular text-grey-90">

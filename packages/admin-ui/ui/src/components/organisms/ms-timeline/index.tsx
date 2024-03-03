@@ -39,7 +39,6 @@ import EditCanceled from "../../molecules/timeline-events/order-edit/canceled"
 import EditDeclined from "../../molecules/timeline-events/order-edit/declined"
 import PaymentRequired from "../../molecules/timeline-events/order-edit/payment-required"
 import RefundRequired from "../../molecules/timeline-events/order-edit/refund-required"
-import EditRequested from "../../molecules/timeline-events/order-edit/requested"
 import OrderPlaced from "../../molecules/timeline-events/order-placed"
 import Refund from "../../molecules/timeline-events/refund"
 import NoteInput from "../../molecules/note-input"
@@ -50,6 +49,7 @@ import MsEditConfirmed from "../../molecules/ms-timeline-events/order-edit/confi
 import MsEditCreated from "../../molecules/ms-timeline-events/order-edit/created"
 import MsSwapMenu from "../../../domain/orders/ms-details/ms-swap/create"
 import MsReturnMenu from "../../../domain/orders/ms-details/ms-returns"
+import MsEditRequested from "../../molecules/ms-timeline-events/order-edit/requested"
 
 type TimelineProps = {
   orderId: string
@@ -211,7 +211,7 @@ function switchOnType(event: TimelineEvent, refetch: () => void) {
     case "edit-confirmed":
       return <MsEditConfirmed event={event as OrderEditEvent} />
     case "edit-requested":
-      return <EditRequested event={event as OrderEditRequestedEvent} />
+      return <MsEditRequested event={event as OrderEditRequestedEvent} />
     case "refund-required":
       return <RefundRequired event={event as RefundRequiredEvent} />
     case "payment-required":

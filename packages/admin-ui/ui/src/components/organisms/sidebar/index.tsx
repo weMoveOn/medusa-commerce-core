@@ -50,7 +50,7 @@ const Sidebar: React.FC = () => {
 
   return (
     // min-w-sidebar max-w-sidebar  medium:block bg-gray-0 border-grey-20 py-base px-base hidden h-screen min-w-[232px]
-    <div className=" h-screen overflow-y-auto border p-6">
+    <div className=" h-screen overflow-y-auto border p-6 bg-grey-0">
       <div className="">
         <div className="">
           <div className="medium:gap-5 flex flex-col gap-3 ">

@@ -11,7 +11,7 @@ type RequestedProps = {
   event: OrderEditRequestedEvent
 }
 
-const EditRequested: React.FC<RequestedProps> = ({ event }) => {
+const MsEditRequested: React.FC<RequestedProps> = ({ event }) => {
   const [showResend, setShowResend] = useState(false)
 
   const { notifications } = useAdminNotifications({
@@ -33,11 +33,6 @@ const EditRequested: React.FC<RequestedProps> = ({ event }) => {
         icon={<MailIcon size={20} />}
         time={event.time}
         isFirst={event.first}
-        midNode={
-          <span className="inter-small-regular text-grey-50">
-            {event.email}
-          </span>
-        }
       >
         <Button
           className="border-grey-20 mb-5 w-full border"
@@ -59,4 +54,4 @@ const EditRequested: React.FC<RequestedProps> = ({ event }) => {
   )
 }
 
-export default EditRequested
+export default MsEditRequested

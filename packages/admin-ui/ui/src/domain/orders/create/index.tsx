@@ -31,6 +31,7 @@ import { Customer } from "@medusajs/medusa"
 import AddressDetailsCard from "./address-details-card"
 import SummaryCard from "../ms-details/detail-cards/summary"
 import MsItemSearch from "../../../components/molecules/ms-item-search"
+import AddressDetails from "./address-details"
 
 const VIEWS = ["Products"]
 
@@ -44,7 +45,6 @@ const OrderCrateIndex = () => {
   const [openCreateCustomerModal, setOpenCreateCustomerModal] = useState(false)
   const [showAddedCustomerDetailsModal, setShowAddedCustomerDetailsModal] =
     useState(false)
-  console.log("showAddedCustomerDetailsModal ->", showAddedCustomerDetailsModal)
   const [openAddCustomProductModal, setOpenAddCustomProductModal] =
     useState(false)
   const { customers } = useAdminCustomers()
@@ -239,40 +239,11 @@ const OrderCrateIndex = () => {
                 }}
               />
             ) : (
-              <>
-                <AddressDetailsCard
-                  title="Contact Details"
-                  content={[
-                    { label: "Name", value: "Mohibullah Shafi" },
-                    { label: "Company", value: "MoveOn" },
-                    { label: "Email", value: "ceo@moveon.com.bd" },
-                    { label: "Phone", value: "451448528855" },
-                  ]}
-                />
-                <AddressDetailsCard
-                  title="Shipping Details"
-                  content={[
-                    { label: "Address", value: "Mirpur DOHS" },
-                    { label: "City", value: "Dhaka" },
-                    { label: "Postal", value: "1234" },
-                    { label: "Country", value: "Bangladesh" },
-                  ]}
-                />
-
-                <AddressDetailsCard
-                  title="Billing Details"
-                  content={[
-                    { label: "Address", value: "Mirpur DOHS" },
-                    { label: "City", value: "Dhaka" },
-                    { label: "Postal", value: "1234" },
-                    { label: "Country", value: "Bangladesh" },
-                  ]}
-                />
-              </>
+              <AddressDetails/>
             )}
           </BodyCard>
 
-          {order && <SummaryCard order={order} reservations={[]} />}
+          {order && <SummaryCard order={order} reservations={[]} editable={false} />}
 
           {order && <MsNote orderId={order.id} />}
         </div>

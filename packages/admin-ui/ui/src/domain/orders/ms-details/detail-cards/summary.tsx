@@ -30,9 +30,10 @@ import Button from "../../../../components/fundamentals/button"
 type SummaryCardProps = {
   order: Order
   reservations: ReservationItemDTO[]
+  editable?: boolean
 }
 
-const SummaryCard: React.FC<SummaryCardProps> = ({ order, reservations }) => {
+const SummaryCard: React.FC<SummaryCardProps> = ({ order, reservations, editable=true }) => {
   const { t } = useTranslation()
   const {
     state: reservationModalIsOpen,
@@ -44,7 +45,7 @@ const SummaryCard: React.FC<SummaryCardProps> = ({ order, reservations }) => {
   const { client } = useMedusa()
   const { isFeatureEnabled } = useFeatureFlag()
   const inventoryEnabled = isFeatureEnabled("inventoryService")
-  const [showDiscountField, setShowDiscountField] = useState(true)
+  const [showDiscountField, setShowDiscountField] = useState(false)
 
   const [variantInventoryMap, setVariantInventoryMap] = React.useState<
     Map<string, VariantInventory>
@@ -176,9 +177,9 @@ const SummaryCard: React.FC<SummaryCardProps> = ({ order, reservations }) => {
 
   return (
     <BodyCard
-      className={"my-4 h-auto min-h-0 w-full"}
+      className={"my-4 h-auto min-h-0 w-full pb-4"}
       title="Payment Details" 
-      actionables={actionables}
+      actionables={editable ? actionables : []}
     >
       <div className="mt-6">
         <DisplayTotal
@@ -214,7 +215,7 @@ const SummaryCard: React.FC<SummaryCardProps> = ({ order, reservations }) => {
 
         {!showDiscountField ? (
           <div className="flex justify-between">
-            <div className="flex justify-center">
+            <div className="flex justify-center items-center">
               <PlusIcon size={10} />
               <p
                 className="cursor-pointer font-bold underline text-[10px]"

@@ -70,6 +70,9 @@ import EmailModal from "./email-modal"
 import MarkShippedModal from "./mark-shipped"
 import CreateRefundModal from "./refund"
 import MsTimeline from "../../../components/organisms/ms-timeline"
+import AddressDetailsCard from "../create/address-details-card"
+import AddressDetails from "../create/address-details"
+import SelectRegionScreen from "../new/components/ms-select-region"
 
 type OrderDetailFulfillment = {
   title: string
@@ -343,10 +346,10 @@ const OrderDetails = () => {
                 )
               })}
             </div>
-            <div className="mb-12 flex justify-center space-x-4">
-              <div className="gap-y-base flex h-full w-7/12 flex-col">
+            <div className="grid grid-cols-12 gap-4">
+              <div className="gap-y-base col-span-8">
                 <BodyCard
-                  className={"min-h-[200px] w-full"}
+                  className={"min-h-[200px] w-full h-fit"}
                   customHeader={
                     <Tooltip side="top" content={"Copy ID"}>
                       <button
@@ -467,7 +470,13 @@ const OrderDetails = () => {
                 </div>
                 <Spacer />
               </div>
-              <Timeline orderId={order.id} />
+              {/* <Timeline orderId={order.id} /> */}
+              <div className="rounded-rounded h-fit col-span-4 ">
+                <div className="border-grey-20 bg-grey-0 rounded-rounded py-large px-xlarge border-b">
+                  <AddressDetails />
+                </div>
+                <SummaryCard order={order} reservations={reservations || []} editable={false} />
+              </div>
             </div>
 
             <AddressModal
@@ -498,6 +507,7 @@ const OrderDetails = () => {
               <CreateRefundModal
                 order={order}
                 onDismiss={() => setShowRefund(false)}
+                initialReason="other"
               />
             )}
             {showTransferOrderModal && (

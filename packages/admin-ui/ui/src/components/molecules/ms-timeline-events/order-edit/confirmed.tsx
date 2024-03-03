@@ -5,7 +5,6 @@ import { OrderEditEvent } from "../../../../hooks/use-build-timeline"
 import FastDeliveryIcon from "../../../fundamentals/icons/fast-delivery-icon"
 import EventContainer from "../event-container"
 import { isConfirmedByUser } from "../../../../domain/orders/edit/utils/user"
-import { ByLine } from "."
 
 type ConfirmedProps = {
   event: OrderEditEvent
@@ -32,7 +31,6 @@ const MsEditConfirmed: React.FC<ConfirmedProps> = ({ event }) => {
       time={event.time}
       isFirst={event.first}
       icon={<FastDeliveryIcon size={20} />}
-      midNode={<ByLine user={user || customer} />}
     />
   )
 }
