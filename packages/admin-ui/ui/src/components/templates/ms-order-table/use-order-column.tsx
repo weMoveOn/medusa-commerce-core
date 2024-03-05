@@ -48,14 +48,14 @@ const useOrderTableColums = () => {
   const columns = useMemo(
     () => [
       {
-        Header: <div className="pl-2">{t("order-table-order", "Order")}</div>,
+        Header: <div className="pl-2">{t("order-table-order-id", "Order id")}</div>,
         accessor: "display_id",
         Cell: ({ cell: { value } }) => (
           <p className="text-grey-90 group-hover:text-violet-60 min-w-[100px] pl-2">{`#${value}`}</p>
         ),
       },
       {
-        Header: t("order-table-date-added", "Date added"),
+        Header: t("order-table-date", "Date"),
         accessor: "created_at",
         Cell: ({ cell: { value } }) => (
           <div>
@@ -100,51 +100,10 @@ const useOrderTableColums = () => {
         Cell: ({ cell: { value } }) => value?.name ?? "N/A",
       },
       {
-        Header: () => (
-          <div className="text-right">{t("order-table-total", "Total")}</div>
-        ),
+        Header: t("order-table-total", "Total"),
         accessor: "total",
-        Cell: ({ row, cell: { value } }) => (
-          <div className="text-right">
-            {formatAmountWithSymbol({
-              amount: value,
-              currency: row.original.currency_code,
-              digits: 2,
-            })}
-          </div>
-        ),
-      },
-      {
-        Header: "",
-        accessor: "currency_code",
-        Cell: ({ cell: { value } }) => (
-          <div className="text-grey-40 text-right">{value.toUpperCase()}</div>
-        ),
-      },
-      {
-        Header: "",
-        accessor: "country_code",
-        Cell: ({ row }) => (
-          <div className="pr-2">
-            <div className="rounded-rounded flex w-full justify-end">
-              <Tooltip
-                content={
-                  isoAlpha2Countries[
-                    row.original.shipping_address?.country_code?.toUpperCase()
-                  ] ||
-                  row.original.shipping_address?.country_code?.toUpperCase()
-                }
-              >
-                <ReactCountryFlag
-                  className={"rounded"}
-                  svg
-                  countryCode={row.original.shipping_address?.country_code}
-                />
-              </Tooltip>
-            </div>
-          </div>
-        ),
-      },
+        Cell: ({ row, cell: { value } }) => value + " " + row.original.currency_code.toUpperCase(),
+      }
     ],
     []
   )

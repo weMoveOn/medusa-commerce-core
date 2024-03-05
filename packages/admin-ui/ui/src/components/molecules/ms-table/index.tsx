@@ -74,7 +74,7 @@ const MsTable = React.forwardRef<HTMLTableElement, TableProps>(
 
     return (
       <div className={`flex flex-col ${containerClassName}`}>
-        <div className="mb-2 flex w-full justify-between">
+        <div className="flex w-full justify-between px-4 my-3 relative">
           {filteringOptions && (
             <div className="mb-2 flex self-end">
               {Array.isArray(filteringOptions)
@@ -84,7 +84,7 @@ const MsTable = React.forwardRef<HTMLTableElement, TableProps>(
                 : filteringOptions}
             </div>
           ) } 
-          <div className="gap-x-xsmall flex items-center w-full">
+          <div className="gap-x-xsmall flex place-content-end w-full">
             {tableActions && <div>{tableActions}</div>}
             {enableSearch && (
               <TableSearch
@@ -92,7 +92,7 @@ const MsTable = React.forwardRef<HTMLTableElement, TableProps>(
                 placeholder={searchPlaceholder}
                 searchValue={searchValue}
                 onSearch={handleSearch!}
-                className={`${searchClassName} !w-full`}
+                className={`${searchClassName}`}
               />
             )}
           </div>
@@ -238,7 +238,7 @@ MsTable.Row = React.forwardRef<HTMLTableRowElement, TableRowProps>(
       <tr
         ref={ref}
         className={clsx(
-          "inter-small-regular border-grey-20 text-grey-90 border-b border-t",
+          "inter-small-regular border-grey-20 text-grey-90 border-b border-t h-[64px]",
           className,
           {
             "hover:bg-grey-5 cursor-pointer": linkTo !== undefined || clickable,

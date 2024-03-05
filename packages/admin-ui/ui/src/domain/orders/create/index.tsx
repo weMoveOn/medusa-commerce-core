@@ -179,8 +179,8 @@ const OrderCrateIndex = () => {
           />
         )
       })}
-      <div className="grid grid-cols-3  gap-4">
-        <div className="medium:col-span-2 col-span-3">
+      <div className="grid grid-cols-12  gap-4">
+        <div className="col-span-8">
           <div className="h-full w-full">
             <BodyCard
               compact={true}
@@ -199,7 +199,7 @@ const OrderCrateIndex = () => {
             </BodyCard>
           </div>
         </div>
-        <div className="medium:col-span-1  col-span-3">
+        <div className="col-span-4">
           <BodyCard
             compact={true}
             title={"Customer Information"}

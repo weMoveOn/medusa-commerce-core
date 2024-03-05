@@ -24,9 +24,9 @@ const MsTableContainer = <T extends boolean>({
   const minHeight = (numberOfRows + 1) * ROW_HEIGHT
 
   return (
-    <div>
+    <div className="border-grey-20 rounded-rounded border bg-white  shadow-sm">
       <div
-        className="relative"
+        className="rounded-t-rounded relative overflow-hidden border bg-white pt-2"
         style={{
           minHeight,
         }}
@@ -39,7 +39,7 @@ const MsTableContainer = <T extends boolean>({
         {children}
       </div>
       {hasPagination && pagingState && (
-        <div className="mt-14">
+        <div className="border-r-grey-20 border-b-grey-20 border-l-grey-20 flex h-[64px] items-center justify-center py-4">
           <TablePagination pagingState={pagingState} isLoading={isLoading} />
         </div>
       )}
