@@ -299,7 +299,10 @@ export default async (req, res) => {
   )
 
   if (shouldSetPricing) {
-    products = await pricingService.setAdminProductPricing(rawProducts)
+    products = await pricingService.setAdminProductPricing(
+      req.filterableFields.store_id,
+      rawProducts
+    )
   }
 
   // We only set availability if variants are requested

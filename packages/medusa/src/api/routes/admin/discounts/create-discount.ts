@@ -146,17 +146,19 @@ import { FindParams } from "../../../../types/common"
  *     $ref: "#/components/responses/500_error"
  */
 
-export default async (req: Request, res: Response) => {
+export default async (req, res) => {
   const discountService: DiscountService = req.scope.resolve("discountService")
-
+  const validateBody = req.validatedBody as AdminPostDiscountsReq
+  
   const manager: EntityManager = req.scope.resolve("manager")
   const created = await manager.transaction(async (transactionManager) => {
     return await discountService
       .withTransaction(transactionManager)
-      .create(req.validatedBody as AdminPostDiscountsReq)
+      .create({ ...validateBody })
   })
 
   const discount = await discountService.retrieve(
+    validateBody.store_id,
     created.id,
     req.retrieveConfig
   )
@@ -278,6 +280,10 @@ export default async (req: Request, res: Response) => {
 export class AdminPostDiscountsReq {
   @IsString()
   @IsNotEmpty()
+  store_id: string
+
+  @IsString()
+  @IsNotEmpty()
   code: string
 
   @IsNotEmpty()
@@ -379,4 +385,7 @@ export class AdminCreateCondition extends AdminUpsertConditionsReq {
 /**
  * {@inheritDoc FindParams}
  */
-export class AdminPostDiscountsParams extends FindParams {}
+export class AdminPostDiscountsParams extends FindParams {
+  @IsString()
+  store_id: string
+}

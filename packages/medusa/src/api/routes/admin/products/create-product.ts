@@ -162,9 +162,18 @@ import { FeatureFlagDecorators } from "../../../../utils/feature-flag-decorators
  *   "500":
  *     $ref: "#/components/responses/500_error"
  */
+// store_id is required filed that extract from req.query
 export default async (req, res) => {
-  const validated = await validator(AdminPostProductsReq, req.body)
-
+  const store_id = req.query.store_id as string
+  req.body.store_id = store_id
+  if(req.body?.variants) {
+    req.body.variants.forEach((variant) => {
+      variant.store_id = store_id
+    })
+  }
+  const validated = await validator(AdminPostProductsReq, {
+    ...req.body,
+  })
   const logger: Logger = req.scope.resolve("logger")
   const productService: ProductService = req.scope.resolve("productService")
   const pricingService: PricingService = req.scope.resolve("pricingService")
@@ -198,6 +207,7 @@ export default async (req, res) => {
   let product
 
   if (isMedusaV2Enabled && !!productModuleService) {
+    console.log("from blog 1")
     const createProductWorkflow = createProducts(req.scope)
 
     const input = {
@@ -214,6 +224,7 @@ export default async (req, res) => {
     })
     product = result[0]
   } else {
+    console.log("from blog 2")
     product = await entityManager.transaction(async (manager) => {
       const { variants } = validated
       delete validated.variants
@@ -314,13 +325,13 @@ export default async (req, res) => {
       defaultAdminProductRemoteQueryObject
     )
   } else {
-    rawProduct = await productService.retrieve(product.id, {
+    rawProduct = await productService.retrieve(product.id, store_id, {
       select: defaultAdminProductFields,
       relations: defaultAdminProductRelations,
     })
   }
 
-  const [pricedProduct] = await pricingService.setAdminProductPricing([
+  const [pricedProduct] = await pricingService.setAdminProductPricing(store_id, [
     rawProduct,
   ])
 
@@ -338,6 +349,9 @@ class ProductOptionReq {
 }
 
 class ProductVariantReq {
+  @IsString()
+  store_id?: string
+
   @IsString()
   title: string
 
@@ -660,6 +674,9 @@ class ProductVariantReq {
 export class AdminPostProductsReq {
   @IsString()
   title: string
+
+  @IsString()
+  store_id: string
 
   @IsString()
   @IsOptional()

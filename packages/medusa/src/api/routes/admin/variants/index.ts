@@ -7,11 +7,12 @@ import { PricedVariant } from "../../../../types/pricing"
 import { ProductVariant } from "../../../../models/product-variant"
 import { Router } from "express"
 import { checkRegisteredModules } from "../../../middlewares/check-registered-modules"
+import {processIdentifierMiddleware} from "../../../middlewares/validators/identifier-existence";
 
 const route = Router()
 
 export default (app) => {
-  app.use("/variants", route)
+  app.use("/variants", processIdentifierMiddleware, route)
 
   route.get(
     "/",

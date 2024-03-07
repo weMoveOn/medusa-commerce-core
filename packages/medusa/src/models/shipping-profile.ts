@@ -2,8 +2,10 @@ import {
   BeforeInsert,
   Column,
   Entity,
+  JoinColumn,
   JoinTable,
   ManyToMany,
+  ManyToOne,
   OneToMany,
 } from "typeorm"
 
@@ -11,10 +13,11 @@ import { DbAwareColumn, generateEntityId } from "../utils"
 import { Product } from "./product"
 import { ShippingOption } from "./shipping-option"
 import { SoftDeletableEntity } from "../interfaces"
+import { Store } from "./store"
 
 /**
  * @enum
- * 
+ *
  * The shipping profile's type.
  */
 export enum ShippingProfileType {
@@ -34,6 +37,15 @@ export enum ShippingProfileType {
 
 @Entity()
 export class ShippingProfile extends SoftDeletableEntity {
+  // new added filed
+
+  @Column({ type: "text", nullable: true })
+  store_id: string | null
+
+  @ManyToOne(() => Store, { onDelete: "CASCADE" })
+  @JoinColumn({ name: "store_id" })
+  store: Store
+
   @Column()
   name: string
 

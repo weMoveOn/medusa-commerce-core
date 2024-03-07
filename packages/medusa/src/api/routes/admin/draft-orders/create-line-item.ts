@@ -117,6 +117,7 @@ import { validator } from "../../../../utils/validator"
 
 export default async (req, res) => {
   const { id } = req.params
+  const { store_id } = req.query.store_id
 
   const validated = await validator(
     AdminPostDraftOrdersDraftOrderLineItemsReq,
@@ -148,6 +149,7 @@ export default async (req, res) => {
       const line = await lineItemService
         .withTransaction(manager)
         .generate(
+          store_id,
           validated.variant_id,
           draftOrder.cart.region_id,
           validated.quantity,
@@ -159,7 +161,7 @@ export default async (req, res) => {
 
       await cartService
         .withTransaction(manager)
-        .addOrUpdateLineItems(draftOrder.cart_id, line, {
+        .addOrUpdateLineItems(store_id, draftOrder.cart_id, line, {
           validateSalesChannels: false,
         })
     } else {
@@ -177,7 +179,7 @@ export default async (req, res) => {
 
     draftOrder.cart = await cartService
       .withTransaction(manager)
-      .retrieveWithTotals(draftOrder.cart_id, {
+      .retrieveWithTotals( store_id,draftOrder.cart_id,{
         relations: defaultAdminDraftOrdersCartRelations,
         select: defaultAdminDraftOrdersCartFields,
       })

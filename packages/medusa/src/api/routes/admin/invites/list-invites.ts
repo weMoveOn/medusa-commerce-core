@@ -1,4 +1,6 @@
+import { IsString } from "class-validator"
 import InviteService from "../../../../services/invite"
+import { validator } from "../../../../utils/validator"
 
 /**
  * @oas [get] /admin/invites
@@ -51,8 +53,15 @@ import InviteService from "../../../../services/invite"
  *     $ref: "#/components/responses/500_error"
  */
 export default async (req, res) => {
+  const query = await validator(AdminListInvitesQuery, req.query)
+
   const inviteService: InviteService = req.scope.resolve("inviteService")
-  const invites = await inviteService.list({})
+  const invites = await inviteService.list({ store_id: query.store_id })
 
   res.status(200).json({ invites })
+}
+
+export class AdminListInvitesQuery {
+  @IsString()
+  store_id: string
 }

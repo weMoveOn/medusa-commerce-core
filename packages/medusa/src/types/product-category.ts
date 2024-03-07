@@ -22,10 +22,12 @@ type ProductCategoryInput = {
 
 export type CreateProductCategoryInput = ProductCategoryInput & {
   name: string
+  store_id: string
 }
 
 export type UpdateProductCategoryInput = ProductCategoryInput & {
   name?: string
+  store_id?: string
 }
 
 export class AdminProductCategoriesReqBase {

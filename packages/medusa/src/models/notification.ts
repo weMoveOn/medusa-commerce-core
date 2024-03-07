@@ -13,9 +13,20 @@ import { Customer } from "./customer"
 import { DbAwareColumn } from "../utils/db-aware-column"
 import { NotificationProvider } from "./notification-provider"
 import { generateEntityId } from "../utils/generate-entity-id"
+import { Store } from "./store"
 
 @Entity()
 export class Notification extends BaseEntity {
+  // new added filed
+
+  @Column({ type: "text", nullable: true })
+  store_id: string | null
+
+  @ManyToOne(() => Store, { onDelete: "CASCADE" })
+  @JoinColumn({ name: "store_id" })
+  store: Store
+  // new added filed end
+
   @Column({ nullable: true })
   event_name: string
 

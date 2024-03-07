@@ -91,6 +91,8 @@ import { IsOptional, IsString } from "class-validator"
  *     $ref: "#/components/responses/500_error"
  */
 export default async (req: Request, res: Response) => {
+  const { store_id } = req.query as { store_id: string }
+
   const orderEditService: OrderEditService =
     req.scope.resolve("orderEditService")
 
@@ -103,7 +105,7 @@ export default async (req: Request, res: Response) => {
   )
 
   for (let orderEdit of orderEdits) {
-    orderEdit = await orderEditService.decorateTotals(orderEdit)
+    orderEdit = await orderEditService.decorateTotals(store_id,orderEdit)
   }
 
   return res.json({

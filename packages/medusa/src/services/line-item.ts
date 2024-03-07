@@ -195,11 +195,12 @@ class LineItemService extends TransactionBaseService {
   async generate<
     T = string | GenerateInputData | GenerateInputData[],
     TResult = T extends string
-      ? LineItem
-      : T extends LineItem
-      ? LineItem
-      : LineItem[]
+    ? LineItem
+    : T extends LineItem
+    ? LineItem
+    : LineItem[]
   >(
+    storeId: string,
     variantIdOrData: T,
     regionIdOrContext: T extends string ? string : GenerateLineItemContext,
     quantity?: number,
@@ -216,9 +217,9 @@ class LineItemService extends TransactionBaseService {
         // Resolve data
         const data = isString(variantIdOrData)
           ? {
-              variantId: variantIdOrData,
-              quantity: quantity as number,
-            }
+            variantId: variantIdOrData,
+            quantity: quantity as number,
+          }
           : variantIdOrData
 
         const resolvedContext = isString(variantIdOrData)
@@ -292,7 +293,7 @@ class LineItemService extends TransactionBaseService {
         if (variantsToCalculatePricingFor.length) {
           variantsPricing = await this.pricingService_
             .withTransaction(transactionManager)
-            .getProductVariantsPricing(variantsToCalculatePricingFor, {
+            .getProductVariantsPricing(storeId, variantsToCalculatePricingFor, {
               region_id: regionId,
               customer_id: context?.customer_id,
               include_discount_prices: true,
@@ -322,7 +323,7 @@ class LineItemService extends TransactionBaseService {
           if (resolvedContext.cart) {
             const adjustments = await this.lineItemAdjustmentService_
               .withTransaction(transactionManager)
-              .generateAdjustments(resolvedContext.cart, lineItem, { variant })
+              .generateAdjustments(storeId, resolvedContext.cart, lineItem, { variant })
             lineItem.adjustments =
               adjustments as unknown as LineItemAdjustment[]
           }
@@ -369,8 +370,7 @@ class LineItemService extends TransactionBaseService {
     if (unit_price == null) {
       throw new MedusaError(
         MedusaError.Types.INVALID_DATA,
-        `Cannot generate line item for variant "${
-          variant.title ?? variant.product.title ?? variant.id
+        `Cannot generate line item for variant "${variant.title ?? variant.product.title ?? variant.id
         }" without a price`
       )
     }
@@ -619,10 +619,10 @@ class LineItemService extends TransactionBaseService {
   protected validateGenerateArguments<
     T = string | GenerateInputData | GenerateInputData[],
     TResult = T extends string
-      ? LineItem
-      : T extends LineItem
-      ? LineItem
-      : LineItem[]
+    ? LineItem
+    : T extends LineItem
+    ? LineItem
+    : LineItem[]
   >(
     variantIdOrData: string | T,
     regionIdOrContext: T extends string ? string : GenerateLineItemContext,

@@ -1,4 +1,4 @@
-import { IsArray, IsOptional } from "class-validator"
+import { IsArray, IsOptional, IsString } from "class-validator"
 import { getRetrieveConfig, pickByConfig } from "./utils/get-query-config"
 
 import { EntityManager } from "typeorm"
@@ -141,7 +141,7 @@ export default async (req, res) => {
     query.fields as (keyof TaxRate)[],
     query.expand
   )
-  const rate = await rateService.retrieve(req.params.id, config)
+  const rate = await rateService.retrieve(query.store_id, req.params.id, config)
   const data = pickByConfig(rate, config)
 
   res.json({ tax_rate: data })
@@ -169,6 +169,8 @@ export class AdminDeleteTaxRatesTaxRateProductsReq {
  * {@inheritDoc FindParams}
  */
 export class AdminDeleteTaxRatesTaxRateProductsParams {
+  @IsString()
+  store_id: string
   /**
    * {@inheritDoc FindParams.expand}
    */

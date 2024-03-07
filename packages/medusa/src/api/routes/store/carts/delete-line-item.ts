@@ -81,6 +81,7 @@ import { cleanResponseData } from "../../../../utils/clean-response-data"
  *     $ref: "#/components/responses/500_error"
  */
 export default async (req, res) => {
+  const { store_id } = req.query
   const { id, line_id } = req.params
 
   const manager: EntityManager = req.scope.resolve("manager")
@@ -93,19 +94,19 @@ export default async (req, res) => {
     const cartServiceTx = cartService.withTransaction(m)
 
     // Remove the line item
-    await cartServiceTx.removeLineItem(id, line_id)
+    await cartServiceTx.removeLineItem(store_id, id, line_id)
 
     // If the cart has payment sessions update these
-    const updated = await cartServiceTx.retrieve(id, {
+    const updated = await cartServiceTx.retrieve( store_id,id,{
       relations: ["payment_sessions"],
     })
 
     if (updated.payment_sessions?.length) {
-      await cartServiceTx.setPaymentSessions(id)
+      await cartServiceTx.setPaymentSessions(store_id,id)
     }
   })
 
-  const data = await cartService.retrieveWithTotals(id, {
+  const data = await cartService.retrieveWithTotals( store_id,id,{
     select: defaultStoreCartFields,
     relations: defaultStoreCartRelations,
   })

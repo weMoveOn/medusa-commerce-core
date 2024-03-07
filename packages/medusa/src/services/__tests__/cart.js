@@ -1928,12 +1928,8 @@ describe("CartService", () => {
         extra: "yes",
       }
 
-      await cartService.addShippingMethod(
-        IdMap.getId("cart"),
-        IdMap.getId("option"),
-        data
-      )
-      expect(shippingOptionService.createShippingMethod).toHaveBeenCalledWith(
+      await cartService.addShippingMethod(IdMap.getId("cart"), IdMap.getId("option"), data)
+        expect(shippingOptionService.createShippingMethod).toHaveBeenCalledWith(
         IdMap.getId("option"),
         data,
         { cart: cart1 }
@@ -1944,12 +1940,8 @@ describe("CartService", () => {
       const data = {
         id: "testshipperid",
       }
-      await cartService.addShippingMethod(
-        IdMap.getId("existing"),
-        IdMap.getId("profile1"),
-        data
-      )
-      expect(shippingOptionService.createShippingMethod).toHaveBeenCalledWith(
+      await cartService.addShippingMethod(IdMap.getId("existing"), IdMap.getId("profile1"), data)
+        expect(shippingOptionService.createShippingMethod).toHaveBeenCalledWith(
         IdMap.getId("profile1"),
         data,
         { cart: cart2 }
@@ -1967,13 +1959,9 @@ describe("CartService", () => {
         id: "additional_shipper_id",
       }
 
-      await cartService.addShippingMethod(
-        IdMap.getId("existing"),
-        IdMap.getId("additional"),
-        data
-      )
+      await cartService.addShippingMethod(IdMap.getId("existing"), IdMap.getId("additional"), data)
 
-      expect(shippingOptionService.deleteShippingMethods).toHaveBeenCalledTimes(
+        expect(shippingOptionService.deleteShippingMethods).toHaveBeenCalledTimes(
         0
       )
       expect(shippingOptionService.createShippingMethod).toHaveBeenCalledTimes(
@@ -1991,13 +1979,9 @@ describe("CartService", () => {
         id: "shipper",
       }
 
-      await cartService.addShippingMethod(
-        IdMap.getId("lines"),
-        IdMap.getId("profile1"),
-        data
-      )
+      await cartService.addShippingMethod(IdMap.getId("lines"), IdMap.getId("profile1"), data)
 
-      expect(shippingOptionService.deleteShippingMethods).toHaveBeenCalledTimes(
+        expect(shippingOptionService.deleteShippingMethods).toHaveBeenCalledTimes(
         0
       )
       expect(shippingOptionService.createShippingMethod).toHaveBeenCalledTimes(
@@ -2029,12 +2013,8 @@ describe("CartService", () => {
           }
         })
 
-      await cartService.addShippingMethod(
-        IdMap.getId("cart-with-custom-so"),
-        IdMap.getId("test-so"),
-        data
-      )
-      expect(shippingOptionService.createShippingMethod).toHaveBeenCalledWith(
+      await cartService.addShippingMethod(IdMap.getId("cart-with-custom-so"), IdMap.getId("test-so"), data)
+        expect(shippingOptionService.createShippingMethod).toHaveBeenCalledWith(
         IdMap.getId("test-so"),
         data,
         {

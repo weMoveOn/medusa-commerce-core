@@ -78,6 +78,7 @@ import { Cart } from "../../../../models"
  *     $ref: "#/components/responses/500_error"
  */
 export default async (req, res) => {
+  const { store_id } = req.query
   const { id } = req.params
 
   const idempotencyKeyService: IdempotencyKeyService = req.scope.resolve(
@@ -95,10 +96,12 @@ export default async (req, res) => {
         .withTransaction(transactionManager)
         .initializeRequest(headerKey, req.method, req.params, req.path)
     })
+    console.log("idempotencyKey",idempotencyKey)
   } catch (error) {
     res.status(409).send("Failed to create idempotency key")
     return
   }
+  console.log("id4",id)
 
   res.setHeader("Access-Control-Expose-Headers", "Idempotency-Key")
   res.setHeader("Idempotency-Key", idempotencyKey.idempotency_key)
@@ -115,6 +118,7 @@ export default async (req, res) => {
             return await cartService
               .withTransaction(manager)
               .retrieveWithTotals(
+                store_id,
                 id,
                 {
                   select: defaultStoreCartFields,
@@ -134,6 +138,7 @@ export default async (req, res) => {
             const txCartService =
               cartService.withTransaction(transactionManager)
             await txCartService.setPaymentSessions(
+              store_id,
               cart as WithRequiredProperty<Cart, "total">
             )
           })
@@ -166,6 +171,7 @@ export default async (req, res) => {
 
       default:
         await manager.transaction(async (transactionManager) => {
+          console.log("id8",id)
           idempotencyKey = await idempotencyKeyService
             .withTransaction(transactionManager)
             .update(idempotencyKey.idempotency_key, {
@@ -173,6 +179,7 @@ export default async (req, res) => {
               response_code: 500,
               response_body: { message: "Unknown recovery point" },
             })
+          console.log("id9",id)
         })
         break
     }

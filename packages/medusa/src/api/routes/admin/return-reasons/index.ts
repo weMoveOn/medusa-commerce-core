@@ -2,12 +2,12 @@ import { Router } from "express"
 import { ReturnReason } from "../../../.."
 import { DeleteResponse } from "../../../../types/common"
 import middlewares from "../../../middlewares"
+import { processIdentifierMiddleware } from "../../../middlewares/validators/identifier-existence"
 
 const route = Router()
 
 export default (app) => {
-  app.use("/return-reasons", route)
-
+  app.use("/return-reasons", processIdentifierMiddleware, route)
   /**
    * List reasons
    */

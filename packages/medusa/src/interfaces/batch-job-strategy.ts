@@ -16,12 +16,12 @@ export interface IBatchJobStrategy extends TransactionBaseService {
   /**
    * Method for pre-processing a batch job
    */
-  preProcessBatchJob(batchJobId: string): Promise<void>
+  preProcessBatchJob(storeId: string, batchJobId: string): Promise<void>
 
   /**
    *  Method does the actual processing of the job. Should report back on the progress of the operation.
    */
-  processJob(batchJobId: string): Promise<void>
+  processJob(storeId: string, batchJobId: string): Promise<void>
 
   /**
    * Builds and returns a template file that can be downloaded and filled in
@@ -52,11 +52,14 @@ export abstract class AbstractBatchJobStrategy
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  public async preProcessBatchJob(batchJobId: string): Promise<void> {
+  public async preProcessBatchJob(
+    storeId: string,
+    batchJobId: string
+  ): Promise<void> {
     return
   }
 
-  public abstract processJob(batchJobId: string): Promise<void>
+  public abstract processJob(storeId: string, batchJobId: string): Promise<void>
 
   public abstract buildTemplate(): Promise<string>
 

@@ -139,6 +139,7 @@ import { cleanResponseData } from "../../../../utils/clean-response-data"
 
 export default async (req, res) => {
   const { id } = req.params
+  const { store_id } = req.query
 
   const value = req.validatedBody
 
@@ -179,8 +180,9 @@ export default async (req, res) => {
               .workStage(idempotencyKey.idempotency_key, async (manager) => {
                 const order = await orderService
                   .withTransaction(manager)
-                  .retrieve(id, {
+                  .retrieve(store_id,id, {
                     relations: [
+                        "store",
                       "customer",
                       "shipping_address",
                       "region",
@@ -196,8 +198,8 @@ export default async (req, res) => {
                       "swaps.additional_items.tax_lines",
                     ],
                   })
-
-                await claimService.withTransaction(manager).create({
+                console.log('order from line 165',order)
+                await claimService.withTransaction(manager).create(store_id,{
                   idempotency_key: idempotencyKey.idempotency_key,
                   order,
                   ...value,
@@ -455,6 +457,10 @@ export default async (req, res) => {
  *        url: "https://docs.medusajs.com/development/entities/overview#metadata-attribute"
  */
 export class AdminPostOrdersOrderClaimsReq {
+  @IsString()
+  @IsNotEmpty()
+  store_id: string
+
   @IsEnum(ClaimType)
   @IsNotEmpty()
   type: ClaimTypeValue
@@ -580,4 +586,8 @@ class AdditionalItem {
   quantity: number
 }
 
-export class AdminPostOrdersOrderClaimsParams extends FindParams {}
+export class AdminPostOrdersOrderClaimsParams extends FindParams {
+    @IsString()
+    @IsNotEmpty()
+    store_id: string
+}

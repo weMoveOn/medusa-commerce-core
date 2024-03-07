@@ -102,6 +102,11 @@ export default async (req, res) => {
     req.body
   )
 
+  const { store_id } = await validator(
+    AdminPostNotificationsNotificationResendQuery,
+    req.query
+  )
+
   const notificationService: NotificationService = req.scope.resolve(
     "notificationService"
   )
@@ -116,10 +121,10 @@ export default async (req, res) => {
   await manager.transaction(async (transactionManager) => {
     return await notificationService
       .withTransaction(transactionManager)
-      .resend(id, config)
+      .resend(store_id, id, config)
   })
 
-  const notification = await notificationService.retrieve(id, {
+  const notification = await notificationService.retrieve(store_id, id, {
     select: defaultAdminNotificationsFields as (keyof Notification)[],
     relations: defaultAdminNotificationsRelations,
   })
@@ -141,4 +146,9 @@ export class AdminPostNotificationsNotificationResendReq {
   @IsOptional()
   @IsString()
   to?: string
+}
+
+export class AdminPostNotificationsNotificationResendQuery {
+  @IsString()
+  store_id: string
 }

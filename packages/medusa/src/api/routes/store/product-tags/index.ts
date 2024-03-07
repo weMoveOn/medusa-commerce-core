@@ -28,6 +28,7 @@ export const defaultStoreProductTagFields = [
   "value",
   "created_at",
   "updated_at",
+  "store_id"
 ]
 
 export const allowedStoreProductTagFields = [...defaultStoreProductTagFields]

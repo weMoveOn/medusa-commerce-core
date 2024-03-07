@@ -89,12 +89,13 @@ class CustomShippingOptionService extends TransactionBaseService {
     const data_ = (
       Array.isArray(data) ? data : [data]
     ) as DeepPartial<CustomShippingOption>[]
-
+    console.log('from create custom shipping1',data)
     const customShippingOptions = customShippingOptionRepo.create(data_)
+    console.log('from create custom shipping2',customShippingOptions)
     const shippingOptions = await customShippingOptionRepo.save(
       customShippingOptions
     )
-
+    console.log('from create custom shipping3',shippingOptions)
     return (Array.isArray(data)
       ? shippingOptions
       : shippingOptions[0]) as unknown as TResult

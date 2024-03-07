@@ -2,11 +2,12 @@ import { Router } from "express"
 import { PaymentProvider, Store, TaxProvider } from "./../../../../"
 import middlewares from "../../../middlewares"
 import { ExtendedStoreDTO } from "../../../../types/store"
+import {processIdentifierMiddleware} from "../../../middlewares/validators/identifier-existence";
 
 const route = Router()
 
 export default (app) => {
-  app.use("/store", route)
+  app.use("/store", processIdentifierMiddleware, route)
 
   route.get("/", middlewares.wrap(require("./get-store").default))
   route.get(

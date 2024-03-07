@@ -94,6 +94,7 @@ import PriceListService from "../../../../services/price-list"
  */
 export default async (req, res) => {
   const { id, product_id } = req.params
+  const { store_id } = req.query
 
   const priceListService: PriceListService =
     req.scope.resolve("priceListService")
@@ -130,7 +131,7 @@ export default async (req, res) => {
       async (transactionManager) => {
         return await priceListService
           .withTransaction(transactionManager)
-          .deleteProductPrices(id, [product_id])
+          .deleteProductPrices(store_id, id, [product_id])
       }
     )
     deletedPriceIds = deletedIds

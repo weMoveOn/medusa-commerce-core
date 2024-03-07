@@ -20,11 +20,12 @@ import returnRoutes from "./returns"
 import shippingOptionRoutes from "./shipping-options"
 import swapRoutes from "./swaps"
 import variantRoutes from "./variants"
+import { processIdentifierMiddleware } from "../../middlewares/validators/identifier-existence"
 
 const route = Router()
 
 export default (app, container, config) => {
-  app.use("/store", route)
+  app.use("/store", processIdentifierMiddleware, route)
 
   const featureFlagRouter = container.resolve("featureFlagRouter")
   const storeCors = config.store_cors || ""

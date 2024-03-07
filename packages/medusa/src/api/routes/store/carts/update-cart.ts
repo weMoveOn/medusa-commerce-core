@@ -105,6 +105,7 @@ import { IsType } from "../../../../utils/validators/is-type"
  */
 export default async (req, res) => {
   const { id } = req.params
+  const { store_id } = req.query
   const validated = req.validatedBody as StorePostCartsCartReq
 
   const cartService: CartService = req.scope.resolve("cartService")
@@ -126,22 +127,22 @@ export default async (req, res) => {
   await manager.transaction(async (transactionManager) => {
     await cartService
       .withTransaction(transactionManager)
-      .update(cart ?? id, validated)
+      .update(store_id, cart ?? id, validated)
 
     const updated = await cartService
       .withTransaction(transactionManager)
-      .retrieve(id, {
+      .retrieve(store_id,id, {
         relations: ["payment_sessions", "shipping_methods"],
       })
 
     if (updated.payment_sessions?.length && !validated.region_id) {
       await cartService
         .withTransaction(transactionManager)
-        .setPaymentSessions(id)
+        .setPaymentSessions(store_id,id)
     }
   })
 
-  const data = await cartService.retrieveWithTotals(id, {
+  const data = await cartService.retrieveWithTotals( store_id,id,{
     select: defaultStoreCartFields,
     relations: defaultStoreCartRelations,
   })
@@ -285,6 +286,11 @@ class Discount {
  *       user_agent: "Chrome"
  */
 export class StorePostCartsCartReq {
+
+  @IsString()
+  @IsOptional()
+  store_id?: string
+
   @IsOptional()
   @IsString()
   region_id?: string

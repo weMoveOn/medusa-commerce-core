@@ -88,6 +88,7 @@ import { cleanResponseData } from "../../../../utils/clean-response-data"
  */
 export default async (req, res) => {
   const { id } = req.params
+  const { store_id } = req.query
 
   const orderService: OrderService = req.scope.resolve("orderService")
 
@@ -95,10 +96,10 @@ export default async (req, res) => {
   await manager.transaction(async (transactionManager) => {
     return await orderService
       .withTransaction(transactionManager)
-      .completeOrder(id)
+      .completeOrder(store_id,id)
   })
 
-  const order = await orderService.retrieveWithTotals(id, req.retrieveConfig, {
+  const order = await orderService.retrieveWithTotals(store_id,id, req.retrieveConfig, {
     includes: req.includes,
   })
 

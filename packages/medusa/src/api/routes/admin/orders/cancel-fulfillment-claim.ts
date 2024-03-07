@@ -8,7 +8,8 @@ import { EntityManager } from "typeorm"
 import { MedusaError } from "medusa-core-utils"
 import { FindParams } from "../../../../types/common"
 import { cleanResponseData } from "../../../../utils/clean-response-data"
-
+import { IsString } from "class-validator"
+import { validator } from "../../../../utils/validator"
 /**
  * @oas [post] /admin/orders/{id}/claims/{claim_id}/fulfillments/{fulfillment_id}/cancel
  * operationId: "PostOrdersClaimFulfillmentsCancel"
@@ -100,13 +101,17 @@ import { cleanResponseData } from "../../../../utils/clean-response-data"
  */
 export default async (req, res) => {
   const { id, claim_id, fulfillment_id } = req.params
+  const { store_id } = await validator(AdminCancelFulfillClaimQuery, req.query)
 
   const fulfillmentService: FulfillmentService =
     req.scope.resolve("fulfillmentService")
   const claimService: ClaimService = req.scope.resolve("claimService")
   const orderService: OrderService = req.scope.resolve("orderService")
 
-  const fulfillment = await fulfillmentService.retrieve(fulfillment_id)
+  const fulfillment = await fulfillmentService.retrieve(
+    store_id,
+    fulfillment_id
+  )
 
   if (fulfillment.claim_order_id !== claim_id) {
     throw new MedusaError(
@@ -115,7 +120,7 @@ export default async (req, res) => {
     )
   }
 
-  const claim = await claimService.retrieve(claim_id)
+  const claim = await claimService.retrieve(store_id,claim_id)
 
   if (claim.order_id !== id) {
     throw new MedusaError(
@@ -128,10 +133,10 @@ export default async (req, res) => {
   await manager.transaction(async (transactionManager) => {
     return await claimService
       .withTransaction(transactionManager)
-      .cancelFulfillment(fulfillment_id)
+      .cancelFulfillment(store_id, fulfillment_id)
   })
 
-  const order = await orderService.retrieveWithTotals(id, req.retrieveConfig, {
+  const order = await orderService.retrieveWithTotals(store_id,id, req.retrieveConfig, {
     includes: req.includes,
   })
 
@@ -139,3 +144,8 @@ export default async (req, res) => {
 }
 
 export class AdminPostOrdersClaimFulfillmentsCancelParams extends FindParams {}
+
+export class AdminCancelFulfillClaimQuery {
+  @IsString()
+  store_id: string
+}

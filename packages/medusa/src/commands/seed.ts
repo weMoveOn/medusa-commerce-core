@@ -147,10 +147,17 @@ const seed = async function ({ directory, migrate, seedFile }: SeedOptions) {
     const defaultProfile = await shippingProfileService.retrieveDefault()
 
     if (seededStore) {
-      await storeService.withTransaction(tx).update(seededStore)
+      await storeService.withTransaction(tx).update(seededStore.id,seededStore)
     }
 
     const store = await storeService.retrieve()
+
+    if (seededStore.sales_channel) {
+      await salesChannelService.create({
+        ...seededStore.sales_channel,
+        store_id: store.id,
+      })
+    }
 
     for (const u of users) {
       const pass = u.password
@@ -186,7 +193,7 @@ const seed = async function ({ directory, migrate, seedFile }: SeedOptions) {
         delete so.is_giftcard
       }
 
-      await shippingOptionService.withTransaction(tx).create(so)
+      await shippingOptionService.withTransaction(tx).create({ ...so, store_id: store.id })
     }
 
     const createProductCategory = async (
@@ -213,7 +220,7 @@ const seed = async function ({ directory, migrate, seedFile }: SeedOptions) {
     }
 
     for (const c of categories) {
-      await createProductCategory(c)
+      await createProductCategory({ ...c, store_id: store.id })
     }
 
     for (const pc of product_collections) {

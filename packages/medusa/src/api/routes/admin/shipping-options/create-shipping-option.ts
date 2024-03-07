@@ -17,10 +17,11 @@ import { RequirementType, ShippingOptionPriceType } from "../../../../models"
 import { Type } from "class-transformer"
 import { EntityManager } from "typeorm"
 import TaxInclusivePricingFeatureFlag from "../../../../loaders/feature-flags/tax-inclusive-pricing"
-import { ShippingOptionService } from "../../../../services"
 import { CreateShippingOptionInput } from "../../../../types/shipping-options"
 import { FeatureFlagDecorators } from "../../../../utils/feature-flag-decorators"
 import { validator } from "../../../../utils/validator"
+import { ShippingOptionService, ShippingProfileService } from "../../../../services"
+import { ShippingProfile } from "../../../../models"
 
 /**
  * @oas [post] /admin/shipping-options
@@ -132,16 +133,15 @@ import { validator } from "../../../../utils/validator"
  *     $ref: "#/components/responses/500_error"
  */
 export default async (req, res) => {
-  const validated = await validator(AdminPostShippingOptionsReq, req.body)
+  const validated = await validator(AdminPostShippingOptionsReq, req.body) as CreateShippingOptionInput
+  const { store_id } = await validator(AdminCreateShippingOptionQuery, req.query)
 
-  const optionService: ShippingOptionService = req.scope.resolve(
-    "shippingOptionService"
-  )
-  const shippingProfileService = req.scope.resolve("shippingProfileService")
+  const optionService: ShippingOptionService = req.scope.resolve("shippingOptionService")
+  const shippingProfileService: ShippingProfileService = req.scope.resolve("shippingProfileService")
 
   // Add to default shipping profile
   if (!validated.profile_id) {
-    const { id } = await shippingProfileService.retrieveDefault()
+    const { id } = await shippingProfileService.retrieveDefault() as ShippingProfile
     validated.profile_id = id
   }
 
@@ -149,7 +149,7 @@ export default async (req, res) => {
   const result = await manager.transaction(async (transactionManager) => {
     return await optionService
       .withTransaction(transactionManager)
-      .create(validated as CreateShippingOptionInput)
+      .create({ ...validated, store_id })
   })
 
   const data = await optionService.retrieve(result.id, {
@@ -169,6 +169,13 @@ class OptionRequirement {
   @IsNumber()
   amount: number
 }
+
+
+class AdminCreateShippingOptionQuery {
+  @IsString()
+  store_id: string
+}
+
 
 /**
  * @schema AdminPostShippingOptionsReq

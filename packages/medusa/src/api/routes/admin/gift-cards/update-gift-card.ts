@@ -101,6 +101,7 @@ import { validator } from "../../../../utils/validator"
  */
 export default async (req, res) => {
   const { id } = req.params
+  const { store_id } = req.query
 
   const validated = await validator(AdminPostGiftCardsGiftCardReq, req.body)
 
@@ -110,10 +111,10 @@ export default async (req, res) => {
   await manager.transaction(async (transactionManager) => {
     return await giftCardService
       .withTransaction(transactionManager)
-      .update(id, validated)
+      .update(store_id, id, validated)
   })
 
-  const giftCard = await giftCardService.retrieve(id, {
+  const giftCard = await giftCardService.retrieve(store_id,id, {
     select: defaultAdminGiftCardFields,
     relations: defaultAdminGiftCardRelations,
   })

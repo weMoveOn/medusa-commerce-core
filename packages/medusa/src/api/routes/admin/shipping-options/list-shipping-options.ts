@@ -119,7 +119,8 @@ import { optionalBooleanMapper } from "../../../../utils/validators/is-boolean"
  *     label: JS Client
  *     source: |
  *       import Medusa from "@medusajs/medusa-js"
- *       const medusa = new Medusa({ baseUrl: MEDUSA_BACKEND_URL, maxRetries: 3 })
+ *       import { store } from '../../../../services/__mocks__/store';
+const medusa = new Medusa({ baseUrl: MEDUSA_BACKEND_URL, maxRetries: 3 })
  *       // must be previously logged in or use api token
  *       medusa.admin.shippingOptions.list()
  *       .then(({ shipping_options, count }) => {
@@ -194,13 +195,14 @@ export default async (req: Request, res: Response) => {
 
   const listConfig = req.listConfig
   const filterableFields = req.filterableFields
+  const { store_id } = req.filterableFields as { store_id: string }
 
   const [data, count] = await optionService.listAndCount(
     filterableFields,
     listConfig
   )
 
-  const options = await pricingService.setShippingOptionPrices(data)
+  const options = await pricingService.setShippingOptionPrices(store_id, data)
 
   res.status(200).json({
     shipping_options: options,
@@ -213,10 +215,14 @@ export default async (req: Request, res: Response) => {
 /**
  * Parameters used to filter the retrieved shipping options.
  */
+
 export class AdminGetShippingOptionsParams extends extendedFindParamsMixin({
   limit: 50,
   offset: 0,
 }) {
+
+  @IsString()
+  store_id: string
   /**
    * IDs to filter shipping options by.
    */

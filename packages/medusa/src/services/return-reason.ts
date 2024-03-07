@@ -22,12 +22,12 @@ class ReturnReasonService extends TransactionBaseService {
     this.retReasonRepo_ = returnReasonRepository
   }
 
-  async create(data: CreateReturnReason): Promise<ReturnReason | never> {
+  async create(data: CreateReturnReason & { store_id: string }): Promise<ReturnReason | never> {
     return await this.atomicPhase_(async (manager) => {
       const rrRepo = manager.withRepository(this.retReasonRepo_)
 
       if (data.parent_return_reason_id && data.parent_return_reason_id !== "") {
-        const parentReason = await this.retrieve(data.parent_return_reason_id)
+        const parentReason = await this.retrieve(data.store_id, data.parent_return_reason_id)
 
         if (parentReason.parent_return_reason_id) {
           throw new MedusaError(
@@ -43,10 +43,10 @@ class ReturnReasonService extends TransactionBaseService {
     })
   }
 
-  async update(id: string, data: UpdateReturnReason): Promise<ReturnReason> {
+  async update(storeId: string, id: string, data: UpdateReturnReason): Promise<ReturnReason> {
     return await this.atomicPhase_(async (manager) => {
       const rrRepo = manager.withRepository(this.retReasonRepo_)
-      const reason = await this.retrieve(id)
+      const reason = await this.retrieve(storeId, id)
 
       for (const key of Object.keys(data).filter(
         (k) => typeof data[k] !== `undefined`
@@ -85,6 +85,7 @@ class ReturnReasonService extends TransactionBaseService {
    * @return {Promise<Order>} the order document
    */
   async retrieve(
+    storeId: string,
     returnReasonId: string,
     config: FindConfig<ReturnReason> = {}
   ): Promise<ReturnReason | never> {
@@ -97,7 +98,7 @@ class ReturnReasonService extends TransactionBaseService {
 
     const rrRepo = this.activeManager_.withRepository(this.retReasonRepo_)
 
-    const query = buildQuery({ id: returnReasonId }, config)
+    const query = buildQuery({ id: returnReasonId, store_id: storeId }, config)
     const item = await rrRepo.findOne(query)
 
     if (!item) {
@@ -110,12 +111,12 @@ class ReturnReasonService extends TransactionBaseService {
     return item
   }
 
-  async delete(returnReasonId: string): Promise<void> {
+  async delete(storeId: string, returnReasonId: string): Promise<void> {
     return this.atomicPhase_(async (manager) => {
       const rrRepo = manager.withRepository(this.retReasonRepo_)
 
       // We include the relation 'return_reason_children' to enable cascading deletes of return reasons if a parent is removed
-      const reason = await this.retrieve(returnReasonId, {
+      const reason = await this.retrieve(storeId, returnReasonId, {
         relations: ["return_reason_children"],
       })
 

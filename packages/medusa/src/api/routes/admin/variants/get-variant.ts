@@ -83,6 +83,7 @@ import { FindParams } from "../../../../types/common"
  */
 export default async (req, res) => {
   const { id } = req.params
+  const { store_id } = req.query
 
   const productVariantService: ProductVariantService = req.scope.resolve(
     "productVariantService"
@@ -94,7 +95,9 @@ export default async (req, res) => {
     req.retrieveConfig
   )
 
-  const [variant] = await pricingService.setAdminVariantPricing([rawVariant])
+  const [variant] = await pricingService.setAdminVariantPricing(store_id, [
+    rawVariant,
+  ])
 
   res.status(200).json({ variant })
 }

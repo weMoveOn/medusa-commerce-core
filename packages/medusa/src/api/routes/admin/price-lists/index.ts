@@ -18,11 +18,12 @@ import TaxInclusivePricingFeatureFlag from "../../../../loaders/feature-flags/ta
 import { AdminPostPriceListsPriceListReq } from "./create-price-list"
 import { AdminGetPriceListsPriceListProductsParams } from "./list-price-list-products"
 import { AdminGetPriceListPaginationParams } from "./list-price-lists"
+import { processIdentifierMiddleware } from "../../../middlewares/validators/identifier-existence"
 
 const route = Router()
 
 export default (app, featureFlagRouter: FlagRouter) => {
-  app.use("/price-lists", route)
+  app.use("/price-lists", processIdentifierMiddleware, route)
 
   if (featureFlagRouter.isFeatureEnabled(TaxInclusivePricingFeatureFlag.key)) {
     defaultAdminPriceListFields.push("includes_tax")

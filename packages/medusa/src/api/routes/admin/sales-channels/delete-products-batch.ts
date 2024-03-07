@@ -1,4 +1,4 @@
-import { IsArray, ValidateNested } from "class-validator"
+import { IsArray, ValidateNested,IsString } from "class-validator"
 import { Request, Response } from "express"
 
 import { EntityManager } from "typeorm"
@@ -118,6 +118,7 @@ export default async (req: Request, res: Response) => {
   const validatedBody =
     req.validatedBody as AdminDeleteSalesChannelsChannelProductsBatchReq
   const { id } = req.params
+  const { store_id } = req.query as { store_id: string }
 
   const salesChannelService: SalesChannelService = req.scope.resolve(
     "salesChannelService"
@@ -128,6 +129,7 @@ export default async (req: Request, res: Response) => {
     return await salesChannelService
       .withTransaction(transactionManager)
       .removeProducts(
+        store_id,
         id,
         validatedBody.product_ids.map((p) => p.id)
       )
@@ -156,6 +158,9 @@ export default async (req: Request, res: Response) => {
  *           type: string
  */
 export class AdminDeleteSalesChannelsChannelProductsBatchReq {
+  @IsString()
+  store_id: string
+
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => ProductBatchSalesChannel)

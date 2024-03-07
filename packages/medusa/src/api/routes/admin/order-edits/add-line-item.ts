@@ -108,6 +108,7 @@ export default async (req: Request, res: Response) => {
   ) as OrderEditService
 
   const { id } = req.params
+  const { store_id } = req.query as { store_id: string }
 
   const manager = req.scope.resolve("manager") as EntityManager
 
@@ -116,7 +117,7 @@ export default async (req: Request, res: Response) => {
   await manager.transaction(async (transactionManager) => {
     await orderEditService
       .withTransaction(transactionManager)
-      .addLineItem(id, data)
+      .addLineItem(store_id, id, data)
   })
 
   let orderEdit = await orderEditService.retrieve(id, {
@@ -124,7 +125,7 @@ export default async (req: Request, res: Response) => {
     relations: defaultOrderEditRelations,
   })
 
-  orderEdit = await orderEditService.decorateTotals(orderEdit)
+  orderEdit = await orderEditService.decorateTotals(store_id,orderEdit)
 
   res.status(200).send({
     order_edit: orderEdit,

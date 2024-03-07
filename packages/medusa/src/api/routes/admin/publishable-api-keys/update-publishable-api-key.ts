@@ -101,6 +101,7 @@ import PublishableApiKeyService from "../../../../services/publishable-api-key"
  */
 export default async (req: Request, res: Response) => {
   const { id } = req.params
+  const store_id = req.query.store_id as string
   const { validatedBody } = req as {
     validatedBody: AdminPostPublishableApiKeysPublishableApiKeyReq
   }
@@ -114,7 +115,7 @@ export default async (req: Request, res: Response) => {
   const updatedKey = await manager.transaction(async (transactionManager) => {
     return await publishableApiKeysService
       .withTransaction(transactionManager)
-      .update(id, validatedBody)
+      .update(store_id,id, validatedBody)
   })
 
   res.status(200).json({ publishable_api_key: updatedKey })

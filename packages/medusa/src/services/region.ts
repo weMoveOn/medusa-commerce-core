@@ -60,6 +60,7 @@ class RegionService extends TransactionBaseService {
   // eslint-disable-next-line max-len
   protected readonly fulfillmentProviderRepository_: typeof FulfillmentProviderRepository
   protected readonly taxProviderRepository_: typeof TaxProviderRepository
+  protected storeId: string
 
   constructor({
     regionRepository,
@@ -97,7 +98,10 @@ class RegionService extends TransactionBaseService {
    * @param data - the unvalidated region
    * @return the newly created region
    */
-  async create(data: CreateRegionInput): Promise<Region> {
+  async create(
+    data: CreateRegionInput & { store_id: string }
+  ): Promise<Region> {
+    this.storeId = data.store_id
     return await this.atomicPhase_(async (manager) => {
       const regionRepository = manager.withRepository(this.regionRepository_)
       const currencyRepository = manager.withRepository(
@@ -105,7 +109,8 @@ class RegionService extends TransactionBaseService {
       )
 
       const regionObject = { ...data } as DeepPartial<Region>
-      const { metadata, currency_code, includes_tax, ...toValidate } = data
+      const { store_id, metadata, currency_code, includes_tax, ...toValidate } =
+        data
 
       const validated = await this.validateFields(toValidate)
 
@@ -118,10 +123,11 @@ class RegionService extends TransactionBaseService {
           regionObject.includes_tax = includes_tax
         }
       }
-
+      console.log("validated",validated)
+      console.log("data",data)
       if (currency_code) {
         // will throw if currency is not added to store currencies
-        await this.validateCurrency(currency_code)
+        await this.validateCurrency(data.store_id, currency_code)
         const currency = await currencyRepository.findOne({
           where: { code: currency_code.toLowerCase() },
         })
@@ -168,14 +174,18 @@ class RegionService extends TransactionBaseService {
    * @param update - the data to update the region with
    * @return the result of the update operation
    */
-  async update(regionId: string, update: UpdateRegionInput): Promise<Region> {
+  async update(
+    storeId: string,
+    regionId: string,
+    update: UpdateRegionInput
+  ): Promise<Region> {
     return await this.atomicPhase_(async (manager) => {
       const regionRepository = manager.withRepository(this.regionRepository_)
       const currencyRepository = manager.withRepository(
         this.currencyRepository_
       )
 
-      const region = await this.retrieve(regionId)
+      const region = await this.retrieve(storeId, regionId)
 
       const { metadata, currency_code, includes_tax, ...toValidate } = update
 
@@ -193,7 +203,7 @@ class RegionService extends TransactionBaseService {
 
       if (currency_code) {
         // will throw if currency is not added to store currencies
-        await this.validateCurrency(currency_code)
+        await this.validateCurrency(storeId, currency_code)
         const currency = await currencyRepository.findOne({
           where: { code: currency_code.toLowerCase() },
         })
@@ -262,7 +272,7 @@ class RegionService extends TransactionBaseService {
     if (regionData.countries) {
       region.countries = await promiseAll(
         regionData.countries!.map(async (countryCode) =>
-          this.validateCountry(countryCode, id!)
+          this.validateCountry(countryCode)
         )
       ).catch((err) => {
         throw err
@@ -335,16 +345,18 @@ class RegionService extends TransactionBaseService {
   /**
    * Validates a currency code. Will throw if the currency code doesn't exist.
    *
+   * @param storeId - the id of the store to check against
    * @param currencyCode - an ISO currency code
    * @throws if the provided currency code is invalid
    * @return void
    */
   protected async validateCurrency(
+    storeId: string,
     currencyCode: Currency["code"]
   ): Promise<void | never> {
     const store = await this.storeService_
       .withTransaction(this.transactionManager_)
-      .retrieve({ relations: ["currencies"] })
+      .retrieve({ store_id: storeId, relations: ["currencies"] })
 
     const storeCurrencies = store.currencies.map((curr) => curr.code)
 
@@ -361,18 +373,17 @@ class RegionService extends TransactionBaseService {
    * existence.
    *
    * @param code - a 2 digit alphanumeric ISO country code
-   * @param regionId - the id of the current region to check against
    * @return the validated Country
    */
   protected async validateCountry(
-    code: Country["iso_2"],
-    regionId: string
+    code: Country["iso_2"]
   ): Promise<Country | never> {
     const countryRepository = this.activeManager_.withRepository(
       this.countryRepository_
     )
 
     const countryCode = code.toUpperCase()
+
     const isCountryExists = countries.some(
       (country) => country.alpha2 === countryCode
     )
@@ -396,12 +407,12 @@ class RegionService extends TransactionBaseService {
       )
     }
 
-    if (country.region_id && country.region_id !== regionId) {
-      throw new MedusaError(
-        MedusaError.Types.DUPLICATE_ERROR,
-        `${country.display_name} already exists in region ${country.region_id}`
-      )
-    }
+    // if (country.region_id && country.region_id !== regionId) {
+    //   throw new MedusaError(
+    //     MedusaError.Types.DUPLICATE_ERROR,
+    //     `${country.display_name} already exists in region ${country.region_id}`
+    //   )
+    // }
 
     return country
   }
@@ -413,33 +424,37 @@ class RegionService extends TransactionBaseService {
    * @param config - region find config
    * @return a Region with country code
    */
-  async retrieveByCountryCode(
-    code: Country["iso_2"],
-    config: FindConfig<Region> = {}
-  ): Promise<Region | never> {
-    const countryRepository = this.activeManager_.withRepository(
-      this.countryRepository_
-    )
 
-    const query = buildQuery({ iso_2: code.toLowerCase() }, {})
-    const country = await countryRepository.findOne(query)
+  // for new relationship country with region this method is deprecated
 
-    if (!country) {
-      throw new MedusaError(
-        MedusaError.Types.INVALID_DATA,
-        `Country with code ${code} not found`
-      )
-    }
+  // async retrieveByCountryCode(
+  //   storeId: string,
+  //   code: Country["iso_2"],
+  //   config: FindConfig<Region> = {}
+  // ): Promise<Region | never> {
+  //   const countryRepository = this.activeManager_.withRepository(
+  //     this.countryRepository_
+  //   )
 
-    if (!country.region_id) {
-      throw new MedusaError(
-        MedusaError.Types.INVALID_DATA,
-        `Country does not belong to a region`
-      )
-    }
+  //   const query = buildQuery({ iso_2: code.toLowerCase() }, {})
+  //   const country = await countryRepository.findOne(query)
 
-    return await this.retrieve(country.region_id, config)
-  }
+  //   if (!country) {
+  //     throw new MedusaError(
+  //       MedusaError.Types.INVALID_DATA,
+  //       `Country with code ${code} not found`
+  //     )
+  //   }
+
+  //   // if (!country.region_id) {
+  //   //   throw new MedusaError(
+  //   //     MedusaError.Types.INVALID_DATA,
+  //   //     `Country does not belong to a region`
+  //   //   )
+  //   // }
+
+  //   return await this.retrieve(storeId, "country.region_id", config)
+  // }
 
   /**
    * Retrieves a region by name.
@@ -468,6 +483,7 @@ class RegionService extends TransactionBaseService {
    * @return the region
    */
   async retrieve(
+    storeId: string,
     regionId: string,
     config: FindConfig<Region> = {}
   ): Promise<Region | never> {
@@ -482,7 +498,7 @@ class RegionService extends TransactionBaseService {
       this.regionRepository_
     )
 
-    const query = buildQuery({ id: regionId }, config)
+    const query = buildQuery({ id: regionId, store_id: storeId }, config)
     const region = await regionRepository.findOne(query)
 
     if (!region) {
@@ -564,19 +580,21 @@ class RegionService extends TransactionBaseService {
    * @param regionId - the region to delete
    * @return the result of the delete operation
    */
-  async delete(regionId: string): Promise<void> {
+  async delete(storeId: string, regionId: string): Promise<void> {
     return await this.atomicPhase_(async (manager) => {
       const regionRepo = manager.withRepository(this.regionRepository_)
       const countryRepo = manager.withRepository(this.countryRepository_)
 
-      const region = await this.retrieve(regionId, { relations: ["countries"] })
+      const region = await this.retrieve(storeId, regionId, {
+        relations: ["countries"],
+      })
 
       if (!region) {
         return Promise.resolve()
       }
 
       await regionRepo.softRemove(region)
-      await countryRepo.update({ region_id: region.id }, { region_id: null })
+      // await countryRepo.update({ region_id: "A" }, { region_id: null })
 
       await this.eventBus_
         .withTransaction(manager)
@@ -591,17 +609,24 @@ class RegionService extends TransactionBaseService {
   /**
    * Adds a country to the region.
    *
+   * @param storeId
    * @param regionId - the region to add a country to
    * @param code - a 2 digit alphanumeric ISO country code.
    * @return the updated Region
    */
-  async addCountry(regionId: string, code: Country["iso_2"]): Promise<Region> {
+  async addCountry(
+    storeId: string,
+    regionId: string,
+    code: Country["iso_2"]
+  ): Promise<Region> {
     return await this.atomicPhase_(async (manager) => {
       const regionRepo = manager.withRepository(this.regionRepository_)
 
-      const country = await this.validateCountry(code, regionId)
+      const country = await this.validateCountry(code)
 
-      const region = await this.retrieve(regionId, { relations: ["countries"] })
+      const region = await this.retrieve(storeId, regionId, {
+        relations: ["countries"],
+      })
 
       // Check if region already has country
       if (
@@ -634,13 +659,16 @@ class RegionService extends TransactionBaseService {
    * @return the updated Region
    */
   async removeCountry(
+    storeId: string,
     regionId: string,
     code: Country["iso_2"]
   ): Promise<Region> {
     return await this.atomicPhase_(async (manager) => {
       const regionRepo = manager.withRepository(this.regionRepository_)
 
-      const region = await this.retrieve(regionId, { relations: ["countries"] })
+      const region = await this.retrieve(storeId, regionId, {
+        relations: ["countries"],
+      })
 
       // Check if region contains country. If not, we simpy resolve
       if (
@@ -675,6 +703,7 @@ class RegionService extends TransactionBaseService {
    * @return the updated Region
    */
   async addPaymentProvider(
+    storeId: string,
     regionId: string,
     providerId: string
   ): Promise<Region | never> {
@@ -682,7 +711,7 @@ class RegionService extends TransactionBaseService {
       const regionRepo = manager.withRepository(this.regionRepository_)
       const ppRepo = manager.withRepository(this.paymentProviderRepository_)
 
-      const region = await this.retrieve(regionId, {
+      const region = await this.retrieve(storeId, regionId, {
         relations: ["payment_providers"],
       })
 
@@ -724,6 +753,7 @@ class RegionService extends TransactionBaseService {
    * @return the updated Region
    */
   async addFulfillmentProvider(
+    storeId: string,
     regionId: string,
     providerId: string
   ): Promise<Region | never> {
@@ -731,7 +761,7 @@ class RegionService extends TransactionBaseService {
       const regionRepo = manager.withRepository(this.regionRepository_)
       const fpRepo = manager.withRepository(this.fulfillmentProviderRepository_)
 
-      const region = await this.retrieve(regionId, {
+      const region = await this.retrieve(storeId, regionId, {
         relations: ["fulfillment_providers"],
       })
 
@@ -771,13 +801,14 @@ class RegionService extends TransactionBaseService {
    * @return the updated Region
    */
   async removePaymentProvider(
+    storeId: string,
     regionId: string,
     providerId: string
   ): Promise<Region | never> {
     return await this.atomicPhase_(async (manager) => {
       const regionRepo = manager.withRepository(this.regionRepository_)
 
-      const region = await this.retrieve(regionId, {
+      const region = await this.retrieve(storeId, regionId, {
         relations: ["payment_providers"],
       })
 
@@ -810,13 +841,14 @@ class RegionService extends TransactionBaseService {
    * @return the updated Region
    */
   async removeFulfillmentProvider(
+    storeId: string,
     regionId: string,
     providerId: string
   ): Promise<Region | never> {
     return await this.atomicPhase_(async (manager) => {
       const regionRepo = manager.withRepository(this.regionRepository_)
 
-      const region = await this.retrieve(regionId, {
+      const region = await this.retrieve(storeId, regionId, {
         relations: ["fulfillment_providers"],
       })
 

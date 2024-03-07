@@ -99,7 +99,8 @@ import { TokenEvents } from "../../../../types/token"
  *     $ref: "#/components/responses/500_error"
  */
 export default async (req, res) => {
-  const { order_ids } = req.validatedBody
+    const { store_id } = req.query
+    const { order_ids } = req.validatedBody
 
   const eventBusService: EventBusService = req.scope.resolve("eventBusService")
   const orderService: OrderService = req.scope.resolve("orderService")
@@ -109,7 +110,7 @@ export default async (req, res) => {
   )
 
   const customerId: string = req.user?.customer_id
-  const customer = await customerService.retrieve(customerId)
+  const customer = await customerService.retrieve(store_id,customerId)
 
   if (!customer.has_account) {
     throw new MedusaError(
@@ -119,6 +120,7 @@ export default async (req, res) => {
   }
 
   const orders = await orderService.list(
+      store_id,
     { id: order_ids },
     { select: ["id", "email"] }
   )

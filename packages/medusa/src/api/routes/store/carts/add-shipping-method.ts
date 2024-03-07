@@ -93,6 +93,7 @@ import { cleanResponseData } from "../../../../utils/clean-response-data"
  */
 export default async (req, res) => {
   const { id } = req.params
+  const {store_id} = req.query
 
   const validated = req.validatedBody
 
@@ -104,23 +105,19 @@ export default async (req, res) => {
   await manager.transaction(async (m) => {
     const txCartService = cartService.withTransaction(m)
 
-    await txCartService.addShippingMethod(
-      id,
-      validated.option_id,
-      validated.data
-    )
+    await txCartService.addShippingMethod(id, validated.option_id, validated.data)
 
-    const updated = await txCartService.retrieve(id, {
+      const updated = await txCartService.retrieve(store_id,id,{
       select: ["id"],
       relations: ["payment_sessions"],
     })
 
     if (updated.payment_sessions?.length) {
-      await txCartService.setPaymentSessions(id)
+      await txCartService.setPaymentSessions(store_id,id)
     }
   })
 
-  const data = await cartService.retrieveWithTotals(id, {
+  const data = await cartService.retrieveWithTotals( store_id,id,{
     select: defaultStoreCartFields,
     relations: defaultStoreCartRelations,
   })

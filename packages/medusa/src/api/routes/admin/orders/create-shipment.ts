@@ -11,7 +11,7 @@ import { OrderService } from "../../../../services"
 import { TrackingLink } from "../../../../models"
 import { FindParams } from "../../../../types/common"
 import { cleanResponseData } from "../../../../utils/clean-response-data"
-
+import { validator } from "../../../../utils/validator"
 /**
  * @oas [post] /admin/orders/{id}/shipment
  * operationId: "PostOrdersOrderShipment"
@@ -118,6 +118,7 @@ export default async (req, res) => {
   const { id } = req.params
 
   const validated = req.validatedBody
+  const { store_id } = await validator(AdminCreateShipmentQuery, req.query)
 
   const orderService: OrderService = req.scope.resolve("orderService")
 
@@ -126,6 +127,7 @@ export default async (req, res) => {
     return await orderService
       .withTransaction(transactionManager)
       .createShipment(
+        store_id,
         id,
         validated.fulfillment_id,
         validated.tracking_numbers?.map((n) => ({
@@ -138,7 +140,7 @@ export default async (req, res) => {
       )
   })
 
-  const order = await orderService.retrieveWithTotals(id, req.retrieveConfig, {
+  const order = await orderService.retrieveWithTotals(store_id,id, req.retrieveConfig, {
     includes: req.includes,
   })
 
@@ -180,3 +182,7 @@ export class AdminPostOrdersOrderShipmentReq {
 }
 
 export class AdminPostOrdersOrderShipmentParams extends FindParams {}
+export class AdminCreateShipmentQuery {
+  @IsString()
+  store_id: string
+}

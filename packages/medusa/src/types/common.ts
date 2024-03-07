@@ -49,6 +49,7 @@ export interface FindConfig<Entity> {
   take?: number
   relations?: string[]
   order?: { [K: string]: "ASC" | "DESC" }
+  store_id?: string
 }
 
 export type ExtendedFindConfig<TEntity> = (
@@ -61,6 +62,7 @@ export type ExtendedFindConfig<TEntity> = (
   order?: FindOptionsOrder<TEntity>
   skip?: number
   take?: number
+  store_id?: string
 }
 
 export type QuerySelector<TEntity> = Selector<TEntity> & { q?: string }
@@ -138,6 +140,7 @@ export type RequestQueryFields = {
    * The field to sort the data by. By default, the sort order is ascending. To change the order to descending, prefix the field name with `-`.
    */
   order?: string
+  store_id?: string
 }
 
 /**
@@ -468,6 +471,9 @@ export class AddressPayload {
  */
 export class AddressCreatePayload {
   @IsString()
+  store_id: string
+
+  @IsString()
   first_name: string
 
   @IsString()
@@ -509,6 +515,9 @@ export class AddressCreatePayload {
  * Parameters that can be used to configure how data is retrieved.
  */
 export class FindParams {
+  @IsString()
+  @IsOptional()
+  store_id?: string
   /**
    * Comma-separated relations that should be expanded in the returned data.
    */

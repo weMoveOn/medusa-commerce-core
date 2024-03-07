@@ -3,13 +3,14 @@ import { Router } from "express"
 import TaxInclusivePricingFeatureFlag from "../../../../loaders/feature-flags/tax-inclusive-pricing"
 import { ShippingOption } from "../../../../models"
 import { DeleteResponse, PaginatedResponse } from "../../../../types/common"
+import { processIdentifierMiddleware } from "../../../middlewares/validators/identifier-existence"
 import middlewares, { transformQuery } from "../../../middlewares"
 import { AdminGetShippingOptionsParams } from "./list-shipping-options"
 
 const route = Router()
 
 export default (app, featureFlagRouter: FlagRouter) => {
-  app.use("/shipping-options", route)
+  app.use("/shipping-options", processIdentifierMiddleware, route)
 
   if (featureFlagRouter.isFeatureEnabled(TaxInclusivePricingFeatureFlag.key)) {
     shippingOptionsDefaultFields.push("includes_tax")
@@ -57,6 +58,7 @@ export const shippingOptionsDefaultFields: (keyof ShippingOption)[] = [
   "updated_at",
   "deleted_at",
   "metadata",
+  "store_id"
 ]
 
 export const shippingOptionsDefaultRelations = [
@@ -64,6 +66,7 @@ export const shippingOptionsDefaultRelations = [
   "profile",
   "requirements",
 ]
+
 
 /**
  * @schema AdminShippingOptionsListRes

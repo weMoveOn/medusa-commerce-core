@@ -90,6 +90,7 @@ import { defaultAdminProductRemoteQueryObject } from "./index"
  */
 export default async (req, res) => {
   const { id } = req.params
+  const { store_id } = req.query
 
   const productService: ProductService = req.scope.resolve("productService")
   const pricingService: PricingService = req.scope.resolve("pricingService")
@@ -107,7 +108,7 @@ export default async (req, res) => {
       defaultAdminProductRemoteQueryObject
     )
   } else {
-    rawProduct = await productService.retrieve(id, req.retrieveConfig)
+    rawProduct = await productService.retrieve(id,store_id, req.retrieveConfig)
   }
 
   // We only set prices if variants.prices are requested
@@ -119,7 +120,9 @@ export default async (req, res) => {
 
   const decoratePromises: Promise<any>[] = []
   if (shouldSetPricing) {
-    decoratePromises.push(pricingService.setAdminProductPricing([product]))
+    decoratePromises.push(
+      pricingService.setAdminProductPricing(store_id, [product])
+    )
   }
 
   const shouldSetAvailability =

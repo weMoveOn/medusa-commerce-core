@@ -2,8 +2,8 @@ import { IsInt, IsOptional, IsString } from "class-validator"
 import { EntityManager } from "typeorm"
 import { validator } from "../../../../../utils/validator"
 import {
-  addOrUpdateLineItem,
   CreateLineItemSteps,
+  addOrUpdateLineItem,
   setPaymentSessions,
   setVariantAvailability,
 } from "./utils/handler-steps"
@@ -104,6 +104,7 @@ import { CartService } from "../../../../../services"
  */
 export default async (req, res) => {
   const { id } = req.params
+  const { store_id } = req.query
 
   const customerId: string | undefined = req.user?.customer_id
   const validated = await validator(StorePostCartsCartLineItemsReq, req.body)
@@ -138,6 +139,7 @@ export default async (req, res) => {
           }
 
           await addOrUpdateLineItem({
+            storeId: store_id,
             cartId,
             container: req.scope,
             manager,
@@ -163,7 +165,7 @@ export default async (req, res) => {
           const getCart = async () => {
             return await cartService
               .withTransaction(manager)
-              .retrieveWithTotals(id, {
+              .retrieveWithTotals(store_id,id, {
                 select: defaultStoreCartFields,
                 relations: [
                   ...defaultStoreCartRelations,
@@ -177,6 +179,7 @@ export default async (req, res) => {
 
           await manager.transaction(async (transactionManager) => {
             await setPaymentSessions({
+              storeId: store_id,
               cart,
               container: req.scope,
               manager: transactionManager,

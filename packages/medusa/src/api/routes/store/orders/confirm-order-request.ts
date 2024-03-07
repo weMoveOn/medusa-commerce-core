@@ -98,6 +98,7 @@ import { promiseAll } from "@medusajs/utils"
  */
 export default async (req, res) => {
   const { token } = req.validatedBody
+  const { store_id } = req.query
 
   const orderSerivce: OrderService = req.scope.resolve("orderService")
   const customerService: CustomerService = req.scope.resolve("customerService")
@@ -121,15 +122,15 @@ export default async (req, res) => {
 
     const customer = await customerService
       .withTransaction(transactionManager)
-      .retrieve(claimingCustomerId)
+      .retrieve(store_id,claimingCustomerId)
 
-    const orders = await orderService.list({ id: orderIds })
+    const orders = await orderService.list(store_id,{ id: orderIds })
 
     await promiseAll(
       orders.map(async (order) => {
         await orderSerivce
           .withTransaction(transactionManager)
-          .update(order.id, {
+          .update(store_id, order.id, {
             customer_id: claimingCustomerId,
             email: customer.email,
           })

@@ -4,11 +4,12 @@ import { PaginatedResponse } from "../../../../types/common"
 import middlewares, { transformQuery } from "../../../middlewares"
 import "reflect-metadata"
 import { AdminGetProductTypesParams } from "./list-product-types"
+import { processIdentifierMiddleware } from "../../../middlewares/validators/identifier-existence"
 
 const route = Router()
 
 export default (app) => {
-  app.use("/product-types", route)
+  app.use("/product-types", processIdentifierMiddleware, route)
 
   route.get(
     "/",
@@ -28,6 +29,7 @@ export const defaultAdminProductTypeFields = [
   "value",
   "created_at",
   "updated_at",
+  "store_id",
 ]
 export const defaultAdminProductTypeRelations = []
 

@@ -95,6 +95,7 @@ import { validator } from "../../../../utils/validator"
  */
 
 export default async (req, res) => {
+  const store_id = req.query.store_id as string
   const draftOrderService: DraftOrderService =
     req.scope.resolve("draftOrderService")
 
@@ -131,6 +132,9 @@ export default async (req, res) => {
  * Parameters used to filter and configure the pagination of the retrieved draft orders.
  */
 export class AdminGetDraftOrdersParams {
+  @IsString()
+  store_id: string
+
   /**
    * Search term to search draft orders by their display IDs and emails.
    */

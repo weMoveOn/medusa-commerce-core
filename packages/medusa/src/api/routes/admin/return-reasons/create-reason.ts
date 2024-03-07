@@ -101,6 +101,7 @@ import { EntityManager } from "typeorm"
  */
 export default async (req, res) => {
   const validated = await validator(AdminPostReturnReasonsReq, req.body)
+  const { store_id } = await validator(AdminReturnReasonQuery, req.query)
 
   const returnReasonService: ReturnReasonService = req.scope.resolve(
     "returnReasonService"
@@ -109,10 +110,10 @@ export default async (req, res) => {
   const result = await manager.transaction(async (transactionManager) => {
     return await returnReasonService
       .withTransaction(transactionManager)
-      .create(validated)
+      .create({ ...validated, store_id })
   })
 
-  const reason = await returnReasonService.retrieve(result.id, {
+  const reason = await returnReasonService.retrieve(store_id, result.id, {
     select: defaultAdminReturnReasonsFields,
     relations: defaultAdminReturnReasonsRelations,
   })
@@ -164,4 +165,10 @@ export class AdminPostReturnReasonsReq {
 
   @IsOptional()
   metadata?: Record<string, unknown>
+}
+
+class AdminReturnReasonQuery {
+
+  @IsString()
+  store_id: string
 }

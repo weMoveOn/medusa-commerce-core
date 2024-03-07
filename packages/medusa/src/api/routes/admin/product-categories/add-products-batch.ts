@@ -121,6 +121,7 @@ import { FindParams } from "../../../../types/common"
  *     $ref: "#/components/responses/500_error"
  */
 export default async (req: Request, res: Response): Promise<void> => {
+  const store_id = req.query.store_id as string
   const validatedBody =
     req.validatedBody as AdminPostProductCategoriesCategoryProductsBatchReq
 
@@ -141,6 +142,7 @@ export default async (req: Request, res: Response): Promise<void> => {
   })
 
   const productCategory = await productCategoryService.retrieve(
+    store_id,
     id,
     req.retrieveConfig
   )

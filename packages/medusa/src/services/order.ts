@@ -191,9 +191,11 @@ class OrderService extends TransactionBaseService {
   /**
    * @param selector the query object for find
    * @param config the config to be used for find
+   * @param storeId the store id to filter orders by
    * @return the result of the find operation
    */
   async list(
+        storeId: string,
     selector: Selector<Order>,
     config: FindConfig<Order> = {
       skip: 0,
@@ -201,16 +203,18 @@ class OrderService extends TransactionBaseService {
       order: { created_at: "DESC" },
     }
   ): Promise<Order[]> {
-    const [orders] = await this.listAndCount(selector, config)
+    const [orders] = await this.listAndCount(storeId,selector, config)
     return orders
   }
 
   /**
    * @param {Object} selector - the query object for find
    * @param {Object} config - the config to be used for find
+   * @param {storeId} storeId - the store id to filter orders by
    * @return {Promise} the result of the find operation
    */
   async listAndCount(
+      storeId: string,
     selector: QuerySelector<Order>,
     config: FindConfig<Order> = {
       skip: 0,
@@ -388,11 +392,15 @@ class OrderService extends TransactionBaseService {
 
   /**
    * Gets an order by id.
-   * @param orderId - id or selector of order to retrieve
-   * @param config - config of order to retrieve
    * @return the order document
+   * @param storeId
+   * @param orderId
+   * @param config
+   * @param orderId
+   * @param config
    */
   async retrieve(
+      storeId: string,
     orderId: string,
     config: FindConfig<Order> = {}
   ): Promise<Order> {
@@ -408,10 +416,12 @@ class OrderService extends TransactionBaseService {
     if (totalsToSelect?.length) {
       return await this.retrieveLegacy(orderId, config)
     }
-
+    console.log("retrieve order3", totalsToSelect)
     const orderRepo = this.activeManager_.withRepository(this.orderRepository_)
 
-    const query = buildQuery({ id: orderId }, config)
+    const query = buildQuery({ id: orderId, store_id:storeId }, config)
+
+    console.log("retrieve order4", query)
 
     if (!(config.select || []).length) {
       query.select = undefined
@@ -428,7 +438,7 @@ class OrderService extends TransactionBaseService {
         `Order with id ${orderId} was not found`
       )
     }
-
+    console.log("retrieve order6", raw)
     return raw
   }
 
@@ -471,12 +481,13 @@ class OrderService extends TransactionBaseService {
   }
 
   async retrieveWithTotals(
+      storeId: string,
     orderId: string,
     options: FindConfig<Order> = {},
     context: TotalsContext = {}
   ): Promise<Order> {
     const relations = this.getTotalsRelations(options)
-    const order = await this.retrieve(orderId, { ...options, relations })
+    const order = await this.retrieve(storeId,orderId, { ...options, relations })
 
     return await this.decorateTotals(order, context)
   }
@@ -577,12 +588,13 @@ class OrderService extends TransactionBaseService {
   }
 
   /**
+   * @param storeId
    * @param orderId - id of the order to complete
    * @return the result of the find operation
    */
-  async completeOrder(orderId: string): Promise<Order> {
+  async completeOrder(storeId:string,orderId: string): Promise<Order> {
     return await this.atomicPhase_(async (manager) => {
-      const order = await this.retrieve(orderId)
+      const order = await this.retrieve(storeId,orderId)
 
       if (order.status === "canceled") {
         throw new MedusaError(
@@ -608,9 +620,13 @@ class OrderService extends TransactionBaseService {
   /**
    * Creates an order from a cart
    * @return resolves to the creation result.
+   * @param storeId
    * @param cartOrId
    */
-  async createFromCart(cartOrId: string | Cart): Promise<Order | never> {
+  async createFromCart(
+    storeId: string,
+    cartOrId: string | Cart
+  ): Promise<Order | never> {
     return await this.atomicPhase_(async (manager) => {
       const cartServiceTx = this.cartService_.withTransaction(manager)
 
@@ -629,7 +645,7 @@ class OrderService extends TransactionBaseService {
       }
 
       const cart = isString(cartOrId)
-        ? await cartServiceTx.retrieveWithTotals(cartOrId, {
+        ? await cartServiceTx.retrieveWithTotals( storeId,cartOrId,{
             relations: ["region", "payment", "items"],
           })
         : cartOrId
@@ -678,7 +694,8 @@ class OrderService extends TransactionBaseService {
       // Is the cascade insert really used? Also, is it really necessary to pass the entire entities when creating or updating?
       // We normally should only pass what is needed?
       const shippingMethods = cart.shipping_methods.map((method) => {
-        ;(method.tax_lines as any) = undefined
+        // @ts-ignore
+        method.tax_lines = undefined
         return method
       })
 
@@ -766,7 +783,7 @@ class OrderService extends TransactionBaseService {
         )
         const giftCardBalanceUsed = giftCard.balance - newGiftCardBalance
 
-        await giftCardService.update(giftCard.id, {
+        await giftCardService.update(storeId, giftCard.id, {
           balance: newGiftCardBalance,
           is_disabled: newGiftCardBalance === 0,
         })
@@ -800,7 +817,12 @@ class OrderService extends TransactionBaseService {
 
             if (lineItem.is_giftcard) {
               toReturn.push(
-                ...this.createGiftCardsFromLineItem_(order, lineItem, manager)
+                ...this.createGiftCardsFromLineItem_(
+                  storeId,
+                  order,
+                  lineItem,
+                  manager
+                )
               )
             }
 
@@ -810,7 +832,8 @@ class OrderService extends TransactionBaseService {
             // TODO: Due to cascade insert we have to remove the tax_lines that have been added by the cart decorate totals.
             // Is the cascade insert really used? Also, is it really necessary to pass the entire entities when creating or updating?
             // We normally should only pass what is needed?
-            ;(method.tax_lines as any) = undefined
+            // @ts-ignore
+            method.tax_lines = undefined
             return shippingOptionServiceTx.updateShippingMethod(method.id, {
               order_id: order.id,
             })
@@ -825,13 +848,14 @@ class OrderService extends TransactionBaseService {
           no_notification: order.no_notification,
         })
 
-      await cartServiceTx.update(cart.id, { completed_at: new Date() })
+      await cartServiceTx.update(storeId, cart.id, { completed_at: new Date() })
 
       return order
     })
   }
 
   protected createGiftCardsFromLineItem_(
+    storeId: string,
     order: Order,
     lineItem: LineItem,
     manager: EntityManager
@@ -859,7 +883,7 @@ class OrderService extends TransactionBaseService {
     const giftCardTxnService = this.giftCardService_.withTransaction(manager)
 
     for (let qty = 0; qty < lineItem.quantity; qty++) {
-      const createGiftCardPromise = giftCardTxnService.create({
+      const createGiftCardPromise = giftCardTxnService.create(storeId, {
         region_id: order.region_id,
         order_id: order.id,
         value: taxExclusivePrice,
@@ -885,6 +909,7 @@ class OrderService extends TransactionBaseService {
    * @return the resulting order following the update.
    */
   async createShipment(
+    storeId: string,
     orderId: string,
     fulfillmentId: string,
     trackingLinks?: TrackingLink[],
@@ -899,10 +924,10 @@ class OrderService extends TransactionBaseService {
     const { metadata, no_notification } = config
 
     return await this.atomicPhase_(async (manager) => {
-      const order = await this.retrieve(orderId, { relations: ["items"] })
+      const order = await this.retrieve(storeId,orderId, { relations: ["items"] })
       const shipment = await this.fulfillmentService_
         .withTransaction(manager)
-        .retrieve(fulfillmentId)
+        .retrieve(storeId, fulfillmentId)
 
       if (order.status === "canceled") {
         throw new MedusaError(
@@ -925,7 +950,7 @@ class OrderService extends TransactionBaseService {
 
       const shipmentRes = await this.fulfillmentService_
         .withTransaction(manager)
-        .createShipment(fulfillmentId, trackingLinks, {
+        .createShipment(storeId, fulfillmentId, trackingLinks, {
           metadata,
           no_notification: evaluatedNoNotification,
         })
@@ -973,6 +998,7 @@ class OrderService extends TransactionBaseService {
    * @return the result of the update operation
    */
   protected async updateBillingAddress(
+    storeId: string,
     order: Order,
     address: Address
   ): Promise<void> {
@@ -981,7 +1007,7 @@ class OrderService extends TransactionBaseService {
 
     const region = await this.regionService_
       .withTransaction(this.activeManager_)
-      .retrieve(order.region_id, {
+      .retrieve(storeId, order.region_id, {
         relations: ["countries"],
       })
 
@@ -1020,6 +1046,7 @@ class OrderService extends TransactionBaseService {
    * @return the result of the update operation
    */
   protected async updateShippingAddress(
+    storeId: string,
     order: Order,
     address: Address
   ): Promise<void> {
@@ -1028,7 +1055,7 @@ class OrderService extends TransactionBaseService {
 
     const region = await this.regionService_
       .withTransaction(this.activeManager_)
-      .retrieve(order.region_id, {
+      .retrieve(storeId, order.region_id, {
         relations: ["countries"],
       })
 
@@ -1051,13 +1078,14 @@ class OrderService extends TransactionBaseService {
   }
 
   async addShippingMethod(
+      storeId: string,
     orderId: string,
     optionId: string,
     data?: Record<string, unknown>,
     config: CreateShippingMethodDto = {}
   ): Promise<Order> {
     return await this.atomicPhase_(async (manager) => {
-      const order = await this.retrieveWithTotals(orderId, {
+      const order = await this.retrieveWithTotals(storeId,orderId, {
         relations: [
           "shipping_methods",
           "shipping_methods.shipping_option",
@@ -1094,7 +1122,7 @@ class OrderService extends TransactionBaseService {
         }
       }
 
-      const result = await this.retrieve(orderId)
+      const result = await this.retrieve(storeId,orderId)
       await this.eventBus_
         .withTransaction(manager)
         .emit(OrderService.Events.UPDATED, { id: result.id })
@@ -1106,14 +1134,19 @@ class OrderService extends TransactionBaseService {
    * Updates an order. Metadata updates should
    * use dedicated method, e.g. `setMetadata` etc. The function
    * will throw errors if metadata updates are attempted.
+   * @param storeId
    * @param orderId - the id of the order. Must be a string that
    *   can be casted to an ObjectId
    * @param update - an object with the update values.
    * @return resolves to the update result.
    */
-  async update(orderId: string, update: UpdateOrderInput): Promise<Order> {
+  async update(
+    storeId: string,
+    orderId: string,
+    update: UpdateOrderInput
+  ): Promise<Order> {
     return await this.atomicPhase_(async (manager) => {
-      const order = await this.retrieve(orderId)
+      const order = await this.retrieve(storeId,orderId)
 
       if (order.status === "canceled") {
         throw new MedusaError(
@@ -1155,11 +1188,19 @@ class OrderService extends TransactionBaseService {
       }
 
       if (update.shipping_address) {
-        await this.updateShippingAddress(order, shipping_address as Address)
+        await this.updateShippingAddress(
+          storeId,
+          order,
+          shipping_address as Address
+        )
       }
 
       if (update.billing_address) {
-        await this.updateBillingAddress(order, billing_address as Address)
+        await this.updateBillingAddress(
+          storeId,
+          order,
+          billing_address as Address
+        )
       }
 
       if (update.no_notification) {
@@ -1200,9 +1241,9 @@ class OrderService extends TransactionBaseService {
    * @param orderId - id of order to cancel.
    * @return result of the update operation.
    */
-  async cancel(orderId: string): Promise<Order> {
+  async cancel(storeId:string,orderId: string): Promise<Order> {
     return await this.atomicPhase_(async (manager) => {
-      const order = await this.retrieve(orderId, {
+      const order = await this.retrieve(storeId,orderId, {
         relations: [
           "refunds",
           "fulfillments",
@@ -1289,10 +1330,10 @@ class OrderService extends TransactionBaseService {
    * @param orderId - id of order to capture payment for.
    * @return result of the update operation.
    */
-  async capturePayment(orderId: string): Promise<Order> {
+  async capturePayment(storeId:string,orderId: string): Promise<Order> {
     return await this.atomicPhase_(async (manager) => {
       const orderRepo = manager.withRepository(this.orderRepository_)
-      const order = await this.retrieve(orderId, { relations: ["payments"] })
+      const order = await this.retrieve(storeId,orderId, { relations: ["payments"] })
 
       if (order.status === "canceled") {
         throw new MedusaError(
@@ -1395,6 +1436,7 @@ class OrderService extends TransactionBaseService {
    * @return result of the update operation.
    */
   async createFulfillment(
+    storeId: string,
     orderId: string,
     itemsToFulfill: FulFillmentItemType[],
     config: {
@@ -1410,7 +1452,7 @@ class OrderService extends TransactionBaseService {
       // will add to what is fetched from the database. We want this to happen
       // so that we get all order details. These will thereafter be forwarded
       // to the fulfillment provider.
-      const order = await this.retrieve(orderId, {
+      const order = await this.retrieve(storeId,orderId, {
         select: [
           "subtotal",
           "shipping_total",
@@ -1451,6 +1493,7 @@ class OrderService extends TransactionBaseService {
       const fulfillments = await this.fulfillmentService_
         .withTransaction(manager)
         .createFulfillment(
+          storeId,
           order as unknown as CreateFulfillmentOrder,
           itemsToFulfill,
           {
@@ -1516,14 +1559,18 @@ class OrderService extends TransactionBaseService {
 
   /**
    * Cancels a fulfillment (if related to an order)
+   * @param storeId
    * @param fulfillmentId - the ID of the fulfillment to cancel
    * @return updated order
    */
-  async cancelFulfillment(fulfillmentId: string): Promise<Order> {
+  async cancelFulfillment(
+    storeId: string,
+    fulfillmentId: string
+  ): Promise<Order> {
     return await this.atomicPhase_(async (manager) => {
       const canceled = await this.fulfillmentService_
         .withTransaction(manager)
-        .cancelFulfillment(fulfillmentId)
+        .cancelFulfillment(storeId, fulfillmentId)
 
       if (!canceled.order_id) {
         throw new MedusaError(
@@ -1532,7 +1579,7 @@ class OrderService extends TransactionBaseService {
         )
       }
 
-      const order = await this.retrieve(canceled.order_id)
+      const order = await this.retrieve(storeId,canceled.order_id)
 
       order.fulfillment_status = FulfillmentStatus.CANCELED
 
@@ -1579,12 +1626,13 @@ class OrderService extends TransactionBaseService {
   /**
    * Archives an order. It only alloved, if the order has been fulfilled
    * and payment has been captured.
+   * @param storeId
    * @param orderId - the order to archive
    * @return the result of the update operation
    */
-  async archive(orderId: string): Promise<Order> {
+  async archive(storeId:string,orderId: string): Promise<Order> {
     return await this.atomicPhase_(async (manager) => {
-      const order = await this.retrieve(orderId)
+      const order = await this.retrieve(storeId,orderId)
 
       if (order.status !== ("completed" || "refunded")) {
         throw new MedusaError(
@@ -1609,6 +1657,7 @@ class OrderService extends TransactionBaseService {
    * @return the result of the refund operation.
    */
   async createRefund(
+      storeId: string,
     orderId: string,
     refundAmount: number,
     reason: string,
@@ -1622,7 +1671,7 @@ class OrderService extends TransactionBaseService {
     return await this.atomicPhase_(async (manager) => {
       const orderRepo = manager.withRepository(this.orderRepository_)
 
-      const order = await this.retrieve(orderId, {
+      const order = await this.retrieve(storeId,orderId, {
         select: ["refundable_amount", "total", "refunded_total"],
         relations: ["payments"],
       })
@@ -1645,7 +1694,7 @@ class OrderService extends TransactionBaseService {
         .withTransaction(manager)
         .refundPayment(order.payments, refundAmount, reason, note)
 
-      let result = await this.retrieveWithTotals(orderId, {
+      let result = await this.retrieveWithTotals(storeId,orderId, {
         relations: ["payments"],
       })
 
@@ -2001,18 +2050,20 @@ class OrderService extends TransactionBaseService {
    * returned items are not matching the requested items. Setting the
    * allowMismatch argument to true, will process the return, ignoring any
    * mismatches.
+   * @param storeId
    * @param orderId - the order to return.
    * @param receivedReturn - the received return
    * @param customRefundAmount - the custom refund amount return
    * @return the result of the update operation
    */
   async registerReturnReceived(
+      storeId: string,
     orderId: string,
     receivedReturn: Return,
     customRefundAmount?: number
   ): Promise<Order> {
     return await this.atomicPhase_(async (manager) => {
-      const order = await this.retrieve(orderId, {
+      const order = await this.retrieve(storeId,orderId, {
         select: ["total", "refunded_total", "refundable_amount"],
         relations: ["items", "returns", "payments"],
       })

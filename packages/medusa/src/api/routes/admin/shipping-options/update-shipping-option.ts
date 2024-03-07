@@ -143,6 +143,12 @@ export default async (req, res) => {
     req.body
   )) as UpdateShippingOptionInput
 
+
+  const { store_id } = await validator(
+    AdminUpdateShippingOptionsOptionQuery,
+    req.query
+  )
+
   const optionService: ShippingOptionService = req.scope.resolve(
     "shippingOptionService"
   )
@@ -151,10 +157,10 @@ export default async (req, res) => {
   await manager.transaction(async (transactionManager) => {
     return await optionService
       .withTransaction(transactionManager)
-      .update(option_id, validated)
+      .update(store_id, option_id, validated)
   })
 
-  const data = await optionService.retrieve(option_id, {
+  const data = await optionService.retrieve(store_id,option_id, {
     select: shippingOptionsDefaultFields,
     relations: shippingOptionsDefaultRelations,
   })
@@ -172,6 +178,11 @@ class OptionRequirement {
 
   @IsNumber()
   amount: number
+}
+
+class AdminUpdateShippingOptionsOptionQuery {
+  @IsString()
+  store_id: string
 }
 
 /**

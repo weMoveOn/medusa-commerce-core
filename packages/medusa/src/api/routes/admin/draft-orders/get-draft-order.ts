@@ -90,6 +90,7 @@ import { cleanResponseData } from "../../../../utils/clean-response-data"
 
 export default async (req, res) => {
   const { id } = req.params
+  const { store_id } = req.query
 
   const draftOrderService: DraftOrderService =
     req.scope.resolve("draftOrderService")
@@ -100,7 +101,7 @@ export default async (req, res) => {
     relations: defaultAdminDraftOrdersRelations,
   })
 
-  draftOrder.cart = await cartService.retrieveWithTotals(draftOrder.cart_id, {
+  draftOrder.cart = await cartService.retrieveWithTotals(store_id,draftOrder.cart_id,{
     relations: defaultAdminDraftOrdersCartRelations,
     select: defaultAdminDraftOrdersCartFields,
   })

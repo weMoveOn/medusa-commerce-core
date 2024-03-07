@@ -1,4 +1,5 @@
-import { IsEmail, IsNotEmpty } from "class-validator"
+import jwt from "jsonwebtoken"
+import { IsEmail, IsNotEmpty,IsString } from "class-validator"
 import { EntityManager } from "typeorm"
 import { defaultRelations } from "."
 import AuthService from "../../../../services/auth"
@@ -63,14 +64,15 @@ import { validator } from "../../../../utils/validator"
  *    $ref: "#/components/responses/500_error"
  */
 export default async (req, res) => {
+  const { store_id } = req.query
+  req.body.store_id = store_id
   const validated = await validator(StorePostAuthReq, req.body)
-
   const authService: AuthService = req.scope.resolve("authService")
   const manager: EntityManager = req.scope.resolve("manager")
   const result = await manager.transaction(async (transactionManager) => {
     return await authService
       .withTransaction(transactionManager)
-      .authenticateCustomer(validated.email, validated.password)
+      .authenticateCustomer(store_id,validated.email, validated.password)
   })
 
   if (!result.success) {
@@ -82,7 +84,7 @@ export default async (req, res) => {
   req.session.customer_id = result.customer?.id
 
   const customerService: CustomerService = req.scope.resolve("customerService")
-  const customer = await customerService.retrieve(result.customer?.id || "", {
+  const customer = await customerService.retrieve(store_id,result.customer?.id || "", {
     relations: defaultRelations,
   })
 
@@ -109,4 +111,8 @@ export class StorePostAuthReq {
 
   @IsNotEmpty()
   password: string
+
+  @IsString()
+  store_id: string
+
 }

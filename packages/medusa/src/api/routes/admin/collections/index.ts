@@ -11,6 +11,7 @@ import { AdminPostCollectionsReq } from "./create-collection"
 import { AdminPostCollectionsCollectionReq } from "./update-collection"
 import { AdminPostProductsToCollectionReq } from "./add-products"
 import { AdminDeleteProductsFromCollectionReq } from "./remove-products"
+import {processIdentifierMiddleware} from "../../../middlewares/validators/identifier-existence";
 
 export default (app) => {
   const route = Router()
@@ -18,11 +19,13 @@ export default (app) => {
 
   route.post(
     "/",
+      processIdentifierMiddleware,
     transformBody(AdminPostCollectionsReq),
     middlewares.wrap(require("./create-collection").default)
   )
   route.get(
     "/",
+      processIdentifierMiddleware,
     transformQuery(AdminGetCollectionsParams, {
       defaultRelations: defaultAdminCollectionsRelations,
       defaultFields: defaultAdminCollectionsFields,
@@ -32,7 +35,7 @@ export default (app) => {
   )
 
   const collectionRouter = Router({ mergeParams: true })
-  route.use("/:id", collectionRouter)
+  route.use("/:id", processIdentifierMiddleware, collectionRouter)
   collectionRouter.post(
     "/",
     transformBody(AdminPostCollectionsCollectionReq),

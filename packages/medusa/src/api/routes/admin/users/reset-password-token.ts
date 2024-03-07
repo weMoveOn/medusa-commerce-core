@@ -2,6 +2,8 @@ import { IsEmail } from "class-validator"
 import UserService from "../../../../services/user"
 import { validator } from "../../../../utils/validator"
 import { EntityManager } from "typeorm"
+import { MedusaError } from "medusa-core-utils"
+
 
 /**
  * @oas [post] /admin/users/password-token
@@ -94,12 +96,20 @@ import { EntityManager } from "typeorm"
  *     $ref: "#/components/responses/500_error"
  */
 export default async (req, res) => {
+  const { store_id } = req.query
   const validated = await validator(AdminResetPasswordTokenRequest, req.body)
 
   const userService: UserService = req.scope.resolve("userService")
   const user = await userService
-    .retrieveByEmail(validated.email)
+    .retrieveByEmail(store_id,validated.email)
     .catch(() => undefined)
+
+  if(!user) {
+    throw new MedusaError(
+      MedusaError.Types.INVALID_DATA,
+      "No user found with this email"
+    )
+  }
 
   if (user) {
     // Should call a email service provider that sends the token to the user
@@ -107,7 +117,7 @@ export default async (req, res) => {
     await manager.transaction(async (transactionManager) => {
       return await userService
         .withTransaction(transactionManager)
-        .generateResetPasswordToken(user.id)
+        .generateResetPasswordToken(store_id,user.id)
     })
   }
 

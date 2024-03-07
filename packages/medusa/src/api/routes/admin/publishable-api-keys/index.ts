@@ -7,6 +7,8 @@ import middlewares, {
   transformQuery,
 } from "../../../middlewares"
 import { AdminPostPublishableApiKeySalesChannelsBatchReq } from "./add-channels-batch"
+import { GetPublishableApiKeySalesChannelsParams } from "./list-publishable-api-key-sales-channels"
+import {processIdentifierMiddleware} from "../../../middlewares/validators/identifier-existence";
 import { AdminPostPublishableApiKeysReq } from "./create-publishable-api-key"
 import { AdminDeletePublishableApiKeySalesChannelsBatchReq } from "./delete-channels-batch"
 import { GetPublishableApiKeysParams } from "./list-publishable-api-keys"
@@ -15,7 +17,7 @@ import { AdminPostPublishableApiKeysPublishableApiKeyReq } from "./update-publis
 const route = Router()
 
 export default (app) => {
-  app.use("/publishable-api-keys", route)
+  app.use("/publishable-api-keys", processIdentifierMiddleware, route)
 
   route.post(
     "/",

@@ -1,3 +1,4 @@
+import { defaultAdminRegionFields, defaultAdminRegionRelations } from "."
 import RegionService from "../../../../services/region"
 import { FindParams } from "../../../../types/common"
 
@@ -81,9 +82,12 @@ import { FindParams } from "../../../../types/common"
  */
 export default async (req, res) => {
   const { region_id } = req.params
+  const { store_id } = req.query
   const regionService: RegionService = req.scope.resolve("regionService")
-
-  const region = await regionService.retrieve(region_id, req.retrieveConfig)
+  const region = await regionService.retrieve(store_id, region_id, {
+    select: defaultAdminRegionFields,
+    relations: defaultAdminRegionRelations,
+  })
 
   res.status(200).json({ region })
 }

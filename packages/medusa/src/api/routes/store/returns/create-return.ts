@@ -125,6 +125,7 @@ import { Logger } from "@medusajs/types"
  *     $ref: "#/components/responses/500_error"
  */
 export default async (req, res) => {
+  const { store_id } = req.query
   const returnDto = await validator(StorePostReturnsReq, req.body)
 
   const idempotencyKeyService: IdempotencyKeyService = req.scope.resolve(
@@ -176,12 +177,12 @@ export default async (req, res) => {
 
                   const createdReturn = await returnService
                     .withTransaction(manager)
-                    .create(returnObj)
+                    .create(store_id, returnObj)
 
                   if (returnDto.return_shipping) {
                     await returnService
                       .withTransaction(manager)
-                      .fulfill(createdReturn.id)
+                      .fulfill(store_id, createdReturn.id)
                   }
 
                   await eventBus

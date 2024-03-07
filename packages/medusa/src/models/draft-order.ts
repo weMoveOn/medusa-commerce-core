@@ -6,6 +6,7 @@ import {
   Index,
   JoinColumn,
   OneToOne,
+  ManyToOne,
 } from "typeorm"
 import {
   DbAwareColumn,
@@ -17,6 +18,7 @@ import { generateEntityId } from "../utils/generate-entity-id"
 import { manualAutoIncrement } from "../utils/manual-auto-increment"
 import { Cart } from "./cart"
 import { Order } from "./order"
+import {Store} from "./store";
 
 /**
  * @enum
@@ -36,6 +38,12 @@ export enum DraftOrderStatus {
 
 @Entity()
 export class DraftOrder extends BaseEntity {
+  @Index()
+  @Column()
+  store_id: string
+  @ManyToOne(()=> Store)
+  @JoinColumn({name:"store_id", referencedColumnName:"id"})
+
   @DbAwareColumn({ type: "enum", enum: DraftOrderStatus, default: "open" })
   status: DraftOrderStatus
 

@@ -44,7 +44,7 @@ import { validator } from "../../../../utils/validator"
  *     label: JS Client
  *     source: |
  *       import Medusa from "@medusajs/medusa-js"
- *       const medusa = new Medusa({ baseUrl: MEDUSA_BACKEND_URL, maxRetries: 3 })
+ *       const medusa = new Med usa({ baseUrl: MEDUSA_BACKEND_URL, maxRetries: 3 })
  *       medusa.swaps.create({
  *         order_id,
  *         return_items: [
@@ -149,6 +149,7 @@ import { validator } from "../../../../utils/validator"
  *     $ref: "#/components/responses/500_error"
  */
 export default async (req, res) => {
+  const { store_id } = req.query as { store_id: string }
   const swapDto = await validator(StorePostSwapsReq, req.body)
 
   const idempotencyKeyService: IdempotencyKeyService = req.scope.resolve(
@@ -190,7 +191,7 @@ export default async (req, res) => {
               .workStage(idempotencyKey.idempotency_key, async (manager) => {
                 const order = await orderService
                   .withTransaction(manager)
-                  .retrieve(swapDto.order_id, {
+                  .retrieve(store_id, swapDto.order_id, {
                     select: ["refunded_total", "total"],
                     relations: [
                       "items.variant",
@@ -210,6 +211,7 @@ export default async (req, res) => {
                 const swap = await swapService
                   .withTransaction(manager)
                   .create(
+                    store_id,
                     order,
                     swapDto.return_items,
                     swapDto.additional_items,
@@ -220,14 +222,16 @@ export default async (req, res) => {
                     }
                   )
 
-                await swapService.withTransaction(manager).createCart(swap.id)
+                await swapService
+                  .withTransaction(manager)
+                  .createCart(store_id, swap.id)
                 const returnOrder = await returnService
                   .withTransaction(manager)
                   .retrieveBySwap(swap.id)
 
                 await returnService
                   .withTransaction(manager)
-                  .fulfill(returnOrder.id)
+                  .fulfill(store_id, returnOrder.id)
 
                 return {
                   recovery_point: "swap_created",
@@ -262,7 +266,7 @@ export default async (req, res) => {
 
                 const swap = await swapService
                   .withTransaction(transactionManager)
-                  .retrieve(swaps[0].id, {
+                  .retrieve(store_id, swaps[0].id, {
                     select: defaultStoreSwapFields,
                     relations: defaultStoreSwapRelations,
                   })
