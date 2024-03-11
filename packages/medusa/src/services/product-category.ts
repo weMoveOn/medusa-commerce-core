@@ -18,11 +18,13 @@ import {
 } from "../types/product-category"
 import { buildQuery, nullableValue, setMetadata } from "../utils"
 import {selectorConstraintsToString} from "@medusajs/utils";
+import { ICacheService } from "@medusajs/types"
 
 type InjectedDependencies = {
   manager: EntityManager
   eventBusService: EventBusService
   productCategoryRepository: typeof ProductCategoryRepository
+  cacheService: ICacheService;
 }
 
 /**
@@ -31,6 +33,7 @@ type InjectedDependencies = {
 class ProductCategoryService extends TransactionBaseService {
   protected readonly productCategoryRepo_: typeof ProductCategoryRepository
   protected readonly eventBusService_: EventBusService
+  protected readonly cacheService_: ICacheService;
 
   static Events = {
     CREATED: "product-category.created",
@@ -41,12 +44,14 @@ class ProductCategoryService extends TransactionBaseService {
   constructor({
     productCategoryRepository,
     eventBusService,
+    cacheService,
   }: InjectedDependencies) {
     // eslint-disable-next-line prefer-rest-params
     super(arguments[0])
 
     this.eventBusService_ = eventBusService
     this.productCategoryRepo_ = productCategoryRepository
+    this.cacheService_ = cacheService;
   }
 
   /**
@@ -150,8 +155,16 @@ class ProductCategoryService extends TransactionBaseService {
       )
     }
 
-    const selectors = Object.assign({ id: productCategoryId, store_id:storeId }, selector)
-    return this.retrieve_(config, selectors, treeSelector)
+    const cacheKey = `product_category:${storeId}:${productCategoryId}`;
+    let cachedCategory = await this.cacheService_.get<ProductCategory>(cacheKey);
+    if (!cachedCategory) {
+      const selectors = Object.assign({ id: productCategoryId, store_id: storeId }, selector);
+      cachedCategory = await this.retrieve_(config, selectors, treeSelector);
+
+      await this.cacheService_.set(cacheKey, cachedCategory);
+    }
+
+    return cachedCategory;
   }
 
   /**
@@ -251,6 +264,8 @@ class ProductCategoryService extends TransactionBaseService {
       }
 
       productCategory = await productCategoryRepo.save(productCategory)
+      const cacheKey = `product_category:${storeId}:${productCategoryId}`;
+      await this.cacheService_.invalidate(cacheKey);
 
       await this.performReordering(productCategoryRepo, conditions)
       await this.eventBusService_
@@ -301,6 +316,9 @@ class ProductCategoryService extends TransactionBaseService {
 
       await productCategoryRepository.delete(productCategory.id)
       await this.performReordering(productCategoryRepository, conditions)
+
+      const cacheKey = `product_category:${storeId}:${productCategoryId}`;
+      await this.cacheService_.invalidate(cacheKey);
 
       await this.eventBusService_
         .withTransaction(manager)

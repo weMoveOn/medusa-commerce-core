@@ -19,6 +19,7 @@ import EventBusService from "./event-bus"
 import FulfillmentProviderService from "./fulfillment-provider"
 import { PaymentProviderService } from "./index"
 import StoreService from "./store"
+import { ICacheService } from "@medusajs/types"
 
 type InjectedDependencies = {
   manager: EntityManager
@@ -27,6 +28,7 @@ type InjectedDependencies = {
   paymentProviderService: PaymentProviderService
   fulfillmentProviderService: FulfillmentProviderService
   featureFlagRouter: FlagRouter
+  cacheService: ICacheService;
 
   regionRepository: typeof RegionRepository
   countryRepository: typeof CountryRepository
@@ -61,6 +63,7 @@ class RegionService extends TransactionBaseService {
   protected readonly fulfillmentProviderRepository_: typeof FulfillmentProviderRepository
   protected readonly taxProviderRepository_: typeof TaxProviderRepository
   protected storeId: string
+  protected readonly cacheService_: ICacheService;
 
   constructor({
     regionRepository,
@@ -74,6 +77,7 @@ class RegionService extends TransactionBaseService {
     paymentProviderService,
     fulfillmentProviderService,
     featureFlagRouter,
+    cacheService,
   }: InjectedDependencies) {
     // eslint-disable-next-line prefer-rest-params
     super(arguments[0])
@@ -88,6 +92,7 @@ class RegionService extends TransactionBaseService {
     this.paymentProviderService_ = paymentProviderService
     this.taxProviderRepository_ = taxProviderRepository
     this.fulfillmentProviderService_ = fulfillmentProviderService
+    this.cacheService_ = cacheService;
 
     this.featureFlagRouter_ = featureFlagRouter
   }
@@ -478,6 +483,7 @@ class RegionService extends TransactionBaseService {
   /**
    * Retrieves a region by its id.
    *
+   * @param storeId - store id
    * @param regionId - the id of the region to retrieve
    * @param config - configuration settings
    * @return the region
