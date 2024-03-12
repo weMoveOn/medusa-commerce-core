@@ -50,6 +50,8 @@ import NewOrder from "../new/new-order"
 import MsNewOrder from "../new/ms-new-order"
 import { SteppedContext } from "../../../components/molecules/modal/stepped-modal"
 import MsSummaryCard from "../ms-details/detail-cards/ms-summary"
+import MsItems from "../new/components/ms-items"
+import SearchProductModal from "./search-product-modal"
 
 type ProductVariant = {
   quantity: number
@@ -317,9 +319,14 @@ const OrderCrateIndex = () => {
       })}
       <Spacer />
       {showProductSearchModal && (
-        <MsNewOrder
-          onDismiss={() => setShowProductSearchModal(false)}
-          setItems={setItems}
+        // <MsNewOrder
+        //   onDismiss={() => setShowProductSearchModal(false)}
+        //   setItems={setItems}
+        // />
+        <SearchProductModal
+          openSearchProductModal={showProductSearchModal}
+          setOpenSearchProductModal={setShowProductSearchModal}
+          title="Search Product"
         />
       )}
       {openCreateCustomerModal && (

@@ -17,13 +17,14 @@ import Summary from "./components/summary"
 import { useNewOrderForm } from "./form"
 import MsItems from "./components/ms-items"
 import Modal, { ModalContext } from "../../../components/molecules/modal"
+import RMASelectProductSubModal from "../details/rma-sub-modals/products"
 
 type NewOrderProps = {
   onDismiss: () => void
   setItems: (items: any) => void
 }
 
-const MsNewOrder = ({ onDismiss,setItems }: NewOrderProps) => {
+const MsNewOrder = ({ onDismiss, setItems }: NewOrderProps) => {
   const steppedContext = React.useContext(SteppedContext)
   const layeredContext = React.useContext(LayeredModalContext)
 
