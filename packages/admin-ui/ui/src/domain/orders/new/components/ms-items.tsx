@@ -11,18 +11,17 @@ import ImagePlaceholder from "../../../../components/fundamentals/image-placehol
 import InputField from "../../../../components/molecules/input"
 import { LayeredModalContext } from "../../../../components/molecules/modal/layered-modal"
 import { SteppedContext } from "../../../../components/molecules/modal/stepped-modal"
+import Table from "../../../../components/molecules/table"
 import {
   displayAmount,
   extractUnitPrice,
   getNativeSymbol,
   persistedPrice,
 } from "../../../../utils/prices"
+import RMASelectProductSubModal from "../../details/rma-sub-modals/products"
 import { useNewOrderForm } from "../form"
 import CustomItemSubModal from "./custom-item-sub-modal"
 import { useMedusa } from "medusa-react"
-import MsRMASelectProductSubModal from "../../details/ms-rma-sub-modals/products"
-import MsTable from "../../../../components/molecules/ms-table"
-
 
 const MsItems = () => {
   const { t } = useTranslation()
@@ -52,7 +51,7 @@ const MsItems = () => {
 
     const { variants: newVariants } = await client.admin.variants.list({
       id: variantIds,
-      region_id: region?.id,
+      region_id: "reg_01HNF6G6NF7DG4V5QHN2CV5HA4",
     })
 
     append(
@@ -123,29 +122,29 @@ const MsItems = () => {
         {t("components-items-for-the-order", "Items for the order")}
       </span>
       {fields.length > 0 && region && (
-        <MsTable>
-          <MsTable.Head>
-            <MsTable.HeadRow className="text-grey-50 inter-small-semibold border-t">
-              <MsTable.HeadCell>
+        <Table>
+          <Table.Head>
+            <Table.HeadRow className="text-grey-50 inter-small-semibold border-t">
+              <Table.HeadCell>
                 {t("components-details", "Details")}
-              </MsTable.HeadCell>
-              <MsTable.HeadCell className="pr-8 text-right">
+              </Table.HeadCell>
+              <Table.HeadCell className="pr-8 text-right">
                 {t("components-quantity", "Quantity")}
-              </MsTable.HeadCell>
-              <MsTable.HeadCell className="text-right">
+              </Table.HeadCell>
+              <Table.HeadCell className="text-right">
                 {t("components-price-excl-taxes", "Price (excl. Taxes)")}
-              </MsTable.HeadCell>
-              <MsTable.HeadCell></MsTable.HeadCell>
-            </MsTable.HeadRow>
-          </MsTable.Head>
-          <MsTable.Body>
+              </Table.HeadCell>
+              <Table.HeadCell></Table.HeadCell>
+            </Table.HeadRow>
+          </Table.Head>
+          <Table.Body>
             {fields.map((item, index) => {
               return (
-                <MsTable.Row
+                <Table.Row
                   key={item.id}
                   className={clsx("border-b-grey-0 hover:bg-grey-0")}
                 >
-                  <MsTable.Cell>
+                  <Table.Cell>
                     <div className="flex min-w-[240px] items-center py-2">
                       <div className="h-[40px] w-[30px] ">
                         {item.thumbnail ? (
@@ -166,8 +165,8 @@ const MsItems = () => {
                         <span>{item.title}</span>
                       </div>
                     </div>
-                  </MsTable.Cell>
-                  <MsTable.Cell className="w-32 pr-8 text-right">
+                  </Table.Cell>
+                  <Table.Cell className="w-32 pr-8 text-right">
                     {editQuantity === index ? (
                       <InputField
                         type="number"
@@ -208,8 +207,8 @@ const MsItems = () => {
                         </span>
                       </div>
                     )}
-                  </MsTable.Cell>
-                  <MsTable.Cell className="text-right">
+                  </Table.Cell>
+                  <Table.Cell className="text-right">
                     {editPrice === index ? (
                       <Controller
                         control={control}
@@ -252,11 +251,11 @@ const MsItems = () => {
                         }}
                       />
                     )}
-                  </MsTable.Cell>
-                  <MsTable.Cell className="text-grey-40 pr-1 text-right">
+                  </Table.Cell>
+                  <Table.Cell className="text-grey-40 pr-1 text-right">
                     {region!.currency_code.toUpperCase()}
-                  </MsTable.Cell>
-                  <MsTable.Cell>
+                  </Table.Cell>
+                  <Table.Cell>
                     <Button
                       variant="ghost"
                       size="small"
@@ -264,12 +263,12 @@ const MsItems = () => {
                     >
                       <TrashIcon size={20} className="text-grey-50" />
                     </Button>
-                  </MsTable.Cell>
-                </MsTable.Row>
+                  </Table.Cell>
+                </Table.Row>
               )
             })}
-          </MsTable.Body>
-        </MsTable>
+          </Table.Body>
+        </Table>
       )}
       <div className="gap-x-xsmall mt-3 flex w-full justify-end">
         <Button
@@ -318,7 +317,7 @@ const SelectProductsScreen = (pop, itemsToAdd, setSelectedItems, t) => {
     title: t("components-add-products", "Add Products"),
     onBack: () => pop(),
     view: (
-      <MsRMASelectProductSubModal
+      <RMASelectProductSubModal
         selectedItems={itemsToAdd || []}
         onSubmit={setSelectedItems}
       />

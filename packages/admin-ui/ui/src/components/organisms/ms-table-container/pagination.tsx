@@ -32,58 +32,8 @@ export const TablePagination = ({
 
   return (
     <SkeletonProvider isLoading={isLoading}>
-      {/* <div
-        className={
-          "inter-small-regular text-grey-50 flex w-full justify-between"
-        }
-      >
-        <Skeleton>
-          <div>
-            {t(
-              "table-container-soothed-offset",
-              "{{soothedOffset}} - {{pageSize}} of {{count}} {{title}}",
-              {
-                soothedOffset,
-                pageSize,
-                count,
-                title,
-              }
-            )}
-          </div>
-        </Skeleton>
-        <div className="flex space-x-4">
-          <Skeleton>
-            <div>
-              {t(
-                "table-container-current-page",
-                "{{currentPage}} of {{soothedPageCount}}",
-                {
-                  currentPage,
-                  soothedPageCount,
-                }
-              )}
-            </div>
-          </Skeleton>
-          <div className="flex items-center space-x-4">
-            <button
-              className="disabled:text-grey-30 cursor-pointer disabled:cursor-default"
-              disabled={!hasPrev || isLoading}
-              onClick={() => prevPage()}
-            >
-              <ArrowLeftIcon />
-            </button>
-            <button
-              className="disabled:text-grey-30 cursor-pointer disabled:cursor-default"
-              disabled={!hasNext || isLoading}
-              onClick={() => nextPage()}
-            >
-              <ArrowRightIcon />
-            </button>
-          </div>
-        </div>
-      </div> */}
-      <div className="grid grid-cols-12 gap-16">
-        <div className="col-span-2">
+      <div className="grid grid-cols-12 gap-16 w-full">
+        <div className="col-span-2 place-self-start pl-4">
           <Button
             title="Previous"
             // disabled={!hasPrev || isLoading}
@@ -111,7 +61,7 @@ export const TablePagination = ({
             </div>
           </Skeleton>
         </div>
-        <div className="col-span-2">
+        <div className="col-span-2 place-self-end pr-4">
           <Button
             title="Next"
             // disabled={!hasNext || isLoading}

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react"
+import { useContext, useEffect, useMemo, useState } from "react"
 import { Route, Routes, useNavigate } from "react-router-dom"
 import { useTranslation } from "react-i18next"
 import Spacer from "../../../components/atoms/spacer"
@@ -25,13 +25,40 @@ import SelectShippingMethod from "../new/components/select-shipping"
 import qs from "qs"
 import AddCustomProductModal from "./add-custom-product-modal"
 import CreateNewCustomerModal from "./create-new-customer-modal"
-import { NextSelect } from "../../../components/molecules/select/next-select"
+import {
+  NextCreateableSelect,
+  NextSelect,
+} from "../../../components/molecules/select/next-select"
 import { Pencil } from "@medusajs/icons"
 import { Customer } from "@medusajs/medusa"
 import AddressDetailsCard from "./address-details-card"
-import SummaryCard from "../ms-details/detail-cards/summary"
+import SummaryCard from "../ms-details/detail-cards/ms-summary"
 import MsItemSearch from "../../../components/molecules/ms-item-search"
 import AddressDetails from "./address-details"
+import Items from "../new/components/items"
+import Table from "../../../components/molecules/table"
+import ImagePlaceholder from "../../../components/fundamentals/image-placeholder"
+import InputField from "../../../components/molecules/input"
+import MinusIcon from "../../../components/fundamentals/icons/minus-icon"
+import clsx from "clsx"
+import TrashIcon from "../../../components/fundamentals/icons/trash-icon"
+import MsItemsInformationTable from "./ms-items-information-table"
+import SelectProductScreen from "../new/components/ms-select-product"
+import Input from "../../../components/molecules/select/next-select/components/input"
+import Modal from "../../../components/molecules/modal"
+import NewOrder from "../new/new-order"
+import MsNewOrder from "../new/ms-new-order"
+import { SteppedContext } from "../../../components/molecules/modal/stepped-modal"
+import MsSummaryCard from "../ms-details/detail-cards/ms-summary"
+
+type ProductVariant = {
+  quantity: number
+  variant_id: string
+  title: string
+  unit_price: number
+  product_title: string
+  thumbnail: string
+}[]
 
 const VIEWS = ["Products"]
 
@@ -39,6 +66,10 @@ const OrderCrateIndex = () => {
   const navigate = useNavigate()
   const { t } = useTranslation()
   const view = "Products"
+
+  const [items, setItems] = useState<ProductVariant>([])
+
+  // console.log("items :>> ", items)
 
   const [showNewOrder, setShowNewOrder] = useState(false)
   const { order, isLoading } = useAdminOrder("order_01HPXVZTVWSWY43WM4SGD4XXXW")
@@ -51,12 +82,17 @@ const OrderCrateIndex = () => {
   const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(
     null
   )
+  const [showProductSearchModal, setShowProductSearchModal] = useState(false)
 
   const { getWidgets } = useWidgets()
   const {
     context: { validCountries },
     form,
   } = useNewOrderForm()
+
+  // const {context} = useNewOrderForm()
+  // console.log("form :>> ", form)
+  // console.log("context :>> ", context)
 
   const debouncedFetch = async (filter: string): Promise<Option[]> => {
     const prepared = qs.stringify(
@@ -188,7 +224,26 @@ const OrderCrateIndex = () => {
               customActionable={addProductAction}
               className="h-fit"
             >
-              <MsItemSearch onItemSelect={() => {}} />
+              <div className="flex w-full items-center justify-between gap-4">
+                <div
+                  className="w-5/6"
+                  onClick={() => setShowProductSearchModal(true)}
+                >
+                  <InputField
+                    className=""
+                    placeholder="Find products from inventory..."
+                  />
+                </div>
+                <div>
+                  <Button
+                    variant="primary"
+                    onClick={() => setShowProductSearchModal(true)}
+                  >
+                    Find Products
+                  </Button>
+                </div>
+              </div>
+              <MsItemsInformationTable items={items} />
             </BodyCard>
             <BodyCard
               compact={true}
@@ -239,11 +294,13 @@ const OrderCrateIndex = () => {
                 }}
               />
             ) : (
-              <AddressDetails/>
+              <AddressDetails />
             )}
           </BodyCard>
 
-          {order && <SummaryCard order={order} reservations={[]} editable={false} />}
+          {order && (
+            <MsSummaryCard order={order} reservations={[]} editable={false} />
+          )}
 
           {order && <MsNote orderId={order.id} />}
         </div>
@@ -259,6 +316,12 @@ const OrderCrateIndex = () => {
         )
       })}
       <Spacer />
+      {showProductSearchModal && (
+        <MsNewOrder
+          onDismiss={() => setShowProductSearchModal(false)}
+          setItems={setItems}
+        />
+      )}
       {openCreateCustomerModal && (
         <CreateNewCustomerModal
           title="Create New Customer"

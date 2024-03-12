@@ -65,10 +65,6 @@ const MsOrderFilters = ({
   const [tempState, setTempState] = useState(filters)
   const [name, setName] = useState("")
 
-  console.log("Tabs--->", tabs)
-  console.log("Active Tab--->", activeTab)
-  console.log("filters--->", filters)
-
   const { isFeatureEnabled } = useFeatureFlag()
   const isSalesChannelsEnabled = isFeatureEnabled("sales_channels")
 

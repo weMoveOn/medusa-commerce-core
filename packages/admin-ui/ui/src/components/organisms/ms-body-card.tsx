@@ -64,7 +64,7 @@ const BodyCard: React.FC<BodyCardProps> = ({
         <div
           className={clsx("px-xlarge py-large", {
             "border-grey-20 border-b border-solid": setBorders,
-          },{"!px-small pt-1": !insidePadding})}
+          },{"!px-small pt-4": !insidePadding})}
         >
           <div className="flex items-start justify-between">
             <div>

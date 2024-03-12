@@ -35,7 +35,7 @@ const NewOrder = ({ onDismiss }: NewOrderProps) => {
   } = useNewOrderForm()
 
   const onSubmit = handleSubmit((data) => {
-    // console.log("data SteppedModal:>> ", data)
+    console.log("data new-order:>> ", data)
     mutate(
       {
         email: data.email,
@@ -133,7 +133,7 @@ const NewOrder = ({ onDismiss }: NewOrderProps) => {
         <Summary />,
       ]}
       lastScreenIsSummary={true}
-      title={t("new-create-draft-order", "Create  asda Draft Order")}
+      title={t("new-create-draft-order", "Create Draft Order")}
       handleClose={onDismiss}
     />
   )

@@ -33,7 +33,7 @@ type SummaryCardProps = {
   editable?: boolean
 }
 
-const SummaryCard: React.FC<SummaryCardProps> = ({ order, reservations, editable=true }) => {
+const MsSummaryCard: React.FC<SummaryCardProps> = ({ order, reservations, editable=true }) => {
   const { t } = useTranslation()
   const {
     state: reservationModalIsOpen,
@@ -295,4 +295,4 @@ const SummaryCard: React.FC<SummaryCardProps> = ({ order, reservations, editable
   )
 }
 
-export default SummaryCard
+export default MsSummaryCard

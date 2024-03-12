@@ -8,6 +8,7 @@ import { formatAmountWithSymbol } from "../../../utils/prices"
 import Tooltip from "../../atoms/tooltip"
 import StatusDot from "../../fundamentals/status-indicator"
 import CustomerAvatarItem from "../../molecules/customer-avatar-item"
+import CheckIcon from "../../fundamentals/icons/check-icon"
 
 const useOrderTableColums = () => {
   const { t } = useTranslation()
@@ -15,7 +16,10 @@ const useOrderTableColums = () => {
     switch (status) {
       case "captured":
         return (
-          <StatusDot variant="success" title={t("order-table-paid", "Paid")} />
+          <div className="flex items-center justify-center text-green-800 py-1 rounded-[40px] w-fit bg-green-100 px-2">
+            <CheckIcon className="text-green-800" size={12} />
+            <span>Paid</span>
+          </div>
         )
       case "awaiting":
         return (
