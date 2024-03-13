@@ -40,7 +40,7 @@ const MsSelectRegionScreen = () => {
       <Controller
         control={control}
         name="region"
-        defaultValue={{ value: regionID, label: "Default" }}
+        // defaultValue={{ value: , label: "Default" }}
         render={({ field: { onChange, value } }) => {
           return (
             <NextSelect

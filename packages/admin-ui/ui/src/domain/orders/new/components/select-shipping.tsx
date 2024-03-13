@@ -10,6 +10,7 @@ import Select from "../../../../components/molecules/select"
 import CurrencyInput from "../../../../components/organisms/currency-input"
 import { extractOptionPrice } from "../../../../utils/prices"
 import { useNewOrderForm } from "../form"
+import TruckIcon from "../../../../components/fundamentals/icons/truck-icon"
 
 const SelectShippingMethod = () => {
   const { t } = useTranslation()
@@ -52,28 +53,23 @@ const SelectShippingMethod = () => {
     }
   }, [selectedShippingOption])
 
-
   return (
-    <div className="">
-      {/*<span className="inter-base-semibold">*/}
-      {/*  Shipping method{" "}*/}
-      {/*  <span className="inter-base-regular text-grey-50">*/}
-      {/*    {t("select-shipping-to-name", "(To {{name}})", {*/}
-      {/*      name: region?.name,*/}
-      {/*    })}*/}
-      {/*  </span>*/}
-      {/*</span>*/}
-
+    <div className="pb-8">
       {region ? (
-        !shippingOptions?.length ? (
-          <div className="inter-small-regular bg-orange-5 rounded-rounded mt-6 flex p-4 text-orange-50">
-            <div className="mr-3 h-full">
-              <AlertIcon size={20} />
+        shippingOptions?.length ? (
+          <div className="flex flex-col items-center justify-center">
+            <div className="bg-grey-100 mb-4 flex h-[90px] w-[90px] items-center justify-center rounded-[50%]">
+              <TruckIcon size={54} />
             </div>
-            <div className="flex flex-col">
-              <span className="inter-small-semibold">
-                {t("components-attention", "Attention!")}
-              </span>
+            <div className="flex flex-col items-center justify-center text-center">
+              <h3>
+                Add your Shipping MethodAdd your Shipping MethodAdd your
+                Shippingyour Shipping MethodAdd your Shipping MethodAdd your
+                Shipping Method
+              </h3>
+              <Button className="mt-6" variant="primary">
+                Add Shipping Method
+              </Button>
             </div>
           </div>
         ) : (
@@ -96,7 +92,7 @@ const SelectShippingMethod = () => {
                         label: `${so.name} - ${extractOptionPrice(
                           so.amount,
                           region
-                        )}`
+                        )}`,
                       })) || []
                     }
                   />
@@ -147,7 +143,7 @@ const SelectShippingMethod = () => {
                     variant="ghost"
                     size="small"
                     onClick={removeCustomPrice}
-                    className="text-grey-40 ml-8 h-8 w-8 mt-7"
+                    className="text-grey-40 ml-8 mt-7 h-8 w-8"
                   >
                     <TrashIcon size={20} />
                   </Button>

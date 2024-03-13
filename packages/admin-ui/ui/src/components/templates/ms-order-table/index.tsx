@@ -15,6 +15,11 @@ import MsOrderFilters from "../ms-order-filter-dropdown"
 import useOrderActions from "./use-order-action"
 import { useRowSelect } from "react-table"
 import IndeterminateCheckbox from "../../molecules/indeterminate-checkbox"
+import { clx } from "../../../utils/clx"
+// import image from asset/icon/orders
+import Button from "../../fundamentals/button"
+import { Link } from "react-router-dom"
+import TableEmptyState from "./table-empty-state"
 
 const DEFAULT_PAGE_SIZE = 15
 
@@ -63,6 +68,7 @@ const MsOrderTable = ({ setContextFilters }: OrderTableProps) => {
 
   const [query, setQuery] = useState(filtersOnLoad?.query)
   const [numPages, setNumPages] = useState(0)
+  const [closeFilter, setCloseFilter] = useState(false)
 
   const { orders, isLoading, count } = useAdminOrders(queryObject, {
     keepPreviousData: true,
@@ -172,7 +178,7 @@ const MsOrderTable = ({ setContextFilters }: OrderTableProps) => {
     <div>
       <MsTableContainer
         isLoading={isLoading}
-        hasPagination
+        hasPagination={orders?.length ? true : false}
         numberOfRows={lim}
         pagingState={{
           count: count!,
@@ -198,6 +204,7 @@ const MsOrderTable = ({ setContextFilters }: OrderTableProps) => {
               activeTab={activeFilterTab}
               onRemoveTab={removeTab}
               onSaveTab={saveTab}
+
             />
           }
           enableSearch
@@ -208,9 +215,7 @@ const MsOrderTable = ({ setContextFilters }: OrderTableProps) => {
           {...getTableProps()}
           className={clsx({ ["relative"]: isLoading })}
         >
-          <MsTable.Head
-          className="h-[64px]"
-          >
+          <MsTable.Head className="h-[64px]">
             {headerGroups?.map((headerGroup) => (
               <MsTable.HeadRow
                 {...headerGroup.getHeaderGroupProps()}
@@ -224,28 +229,32 @@ const MsOrderTable = ({ setContextFilters }: OrderTableProps) => {
               </MsTable.HeadRow>
             ))}
           </MsTable.Head>
-          <MsTable.Body {...getTableBodyProps()}>
-            {rows.map((row) => {
-              prepareRow(row)
-              return (
-                <MsTable.Row
-                  color={"inherit"}
-                  // linkTo={row.original.id}
-                  {...row.getRowProps()}
-                  className="group"
-                  actions={getActions(row.original.id)}
-                  clickable={true}
-                >
-                  {row.cells.map((cell) => {
-                    return (
-                      <MsTable.Cell {...cell.getCellProps()}>
-                        {cell.render("Cell")}
-                      </MsTable.Cell>
-                    )
-                  })}
-                </MsTable.Row>
-              )
-            })}
+          <MsTable.Body {...getTableBodyProps()} className="shadow-none">
+            {!orders ? (
+              <TableEmptyState />
+            ) : (
+              rows.map((row) => {
+                prepareRow(row)
+                return (
+                  <MsTable.Row
+                    color={"inherit"}
+                    // linkTo={row.original.id}
+                    {...row.getRowProps()}
+                    className="group"
+                    actions={getActions(row.original.id)}
+                    clickable={true}
+                  >
+                    {row.cells.map((cell) => {
+                      return (
+                        <MsTable.Cell {...cell.getCellProps()}>
+                          {cell.render("Cell")}
+                        </MsTable.Cell>
+                      )
+                    })}
+                  </MsTable.Row>
+                )
+              })
+            )}
           </MsTable.Body>
         </MsTable>
       </MsTableContainer>

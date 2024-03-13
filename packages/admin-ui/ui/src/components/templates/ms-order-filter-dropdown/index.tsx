@@ -3,7 +3,7 @@ import { useAdminRegions, useAdminSalesChannels } from "medusa-react"
 import { useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
 import FilterDropdownContainer from "../../molecules/filter-dropdown/container"
-import FilterDropdownItem from "../../molecules/filter-dropdown/item"
+import FilterDropdownItem from "../../molecules/filter-dropdown/ms-item"
 import SaveFilterItem from "../../molecules/filter-dropdown/save-field"
 import TabFilter from "../../molecules/filter-tab"
 import PlusIcon from "../../fundamentals/icons/plus-icon"
@@ -11,6 +11,8 @@ import { useFeatureFlag } from "../../../providers/feature-flag-provider"
 import MsFilterTab from "../../molecules/ms-filter-tab"
 import Button from "../../fundamentals/button"
 import SortingIcon from "../../fundamentals/icons/sorting-icon"
+import MsFilterDropdownContainer from "../../molecules/filter-dropdown/ms-container"
+import CrossIcon from "../../fundamentals/icons/cross-icon"
 
 const REGION_PAGE_SIZE = 10
 const CHANNEL_PAGE_SIZE = 10
@@ -148,19 +150,24 @@ const MsOrderFilters = ({
 
   return (
     <div className="flex">
-      <FilterDropdownContainer
+      <MsFilterDropdownContainer
         submitFilters={onSubmit}
         clearFilters={onClear}
         triggerElement={
-          <Button
-            variant="primary"
-            className="absolute right-4 top-0 h-[44px]"
-          >
-            <SortingIcon size={20}/>
+          <Button variant="primary" className="absolute right-4 top-0 h-[44px]">
+            <SortingIcon size={20} />
             {t("order-filter-dropdown-filters", "Filters")}
           </Button>
         }
       >
+        <div className="flex h-[60px] items-center justify-between border-b border-[#EAEAEA] pl-6">
+          <h2 className="text-base font-bold">Filters</h2>
+          <button className="pr-7" onClick={() => {}}>
+            <span>
+              <CrossIcon size={20} />
+            </span>
+          </button>
+        </div>
         <FilterDropdownItem
           filterTitle={t("order-filter-dropdown-status", "Status")}
           options={statusFilters}
@@ -232,12 +239,12 @@ const MsOrderFilters = ({
           open={tempState.date.open}
           setFilter={(val) => setSingleFilter("date", val)}
         />
-        <SaveFilterItem
+        {/* <SaveFilterItem
           saveFilter={handleSaveTab}
           name={name}
           setName={setName}
-        />
-      </FilterDropdownContainer>
+        /> */}
+      </MsFilterDropdownContainer>
       <div className="flex h-[40px] items-center">
         {tabs &&
           tabs.map((t, i) => (
