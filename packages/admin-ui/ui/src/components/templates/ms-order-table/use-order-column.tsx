@@ -9,9 +9,14 @@ import Tooltip from "../../atoms/tooltip"
 import StatusDot from "../../fundamentals/status-indicator"
 import CustomerAvatarItem from "../../molecules/customer-avatar-item"
 import CheckIcon from "../../fundamentals/icons/check-icon"
+import { Order } from "@medusajs/medusa"
+import { createColumnHelper } from "@tanstack/react-table"
+import { Checkbox } from "@medusajs/ui"
 
 const useOrderTableColums = () => {
   const { t } = useTranslation()
+  const columnHelper = createColumnHelper<Order>()
+
   const decideStatus = (status) => {
     switch (status) {
       case "captured":
@@ -51,8 +56,54 @@ const useOrderTableColums = () => {
 
   const columns = useMemo(
     () => [
+      columnHelper.display({
+        id: "select",
+        header: ({ table }) => {
+          return (
+            <Checkbox
+              checked={
+                table.getIsSomePageRowsSelected()
+                  ? "indeterminate"
+                  : table.getIsAllPageRowsSelected()
+              }
+              onCheckedChange={(value) =>
+                table.toggleAllPageRowsSelected(!!value)
+              }
+              aria-label={
+                t(
+                  "price-list-products-form-select-all",
+                  "Select all products on the current page"
+                ) ?? undefined
+              }
+            />
+          )
+        },
+        cell: ({ table, row }) => {
+          const { productIds } = table.options.meta as {
+            productIds: string[]
+          }
+
+          const isSelected = row.getIsSelected() || productIds.includes(row.id)
+
+          return (
+            <Checkbox
+              checked={isSelected}
+              disabled={productIds.includes(row.id)}
+              onCheckedChange={(value) => {
+                row.toggleSelected(!!value)
+              }}
+              aria-label={
+                t("price-list-products-form-select-row", "Select row") ??
+                undefined
+              }
+            />
+          )
+        },
+      }),
       {
-        Header: <div className="pl-2">{t("order-table-order-id", "Order id")}</div>,
+        Header: (
+          <div className="pl-2">{t("order-table-order-id", "Order id")}</div>
+        ),
         accessor: "display_id",
         Cell: ({ cell: { value } }) => (
           <p className="text-grey-90 group-hover:text-violet-60 min-w-[100px] pl-2">{`#${value}`}</p>
@@ -106,8 +157,9 @@ const useOrderTableColums = () => {
       {
         Header: t("order-table-total", "Total"),
         accessor: "total",
-        Cell: ({ row, cell: { value } }) => value + " " + row.original.currency_code.toUpperCase(),
-      }
+        Cell: ({ row, cell: { value } }) =>
+          value + " " + row.original.currency_code.toUpperCase(),
+      },
     ],
     []
   )
