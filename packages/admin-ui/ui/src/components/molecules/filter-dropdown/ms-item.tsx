@@ -50,8 +50,6 @@ const FilterDropdownItem = ({
 
   const [checked, setChecked] = useState(prefilled)
 
-  console.log("checked", checked)
-
   const handlePrev = () => {
     if (onShowPrev) {
       onShowPrev()

@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react"
+import { useCallback, useContext, useEffect, useRef, useState } from "react"
 import { Controller, useWatch } from "react-hook-form"
 import { useTranslation } from "react-i18next"
 import Spinner from "../../../../components/atoms/spinner"
@@ -10,8 +10,12 @@ import CurrencyInput from "../../../../components/organisms/currency-input"
 import { extractOptionPrice } from "../../../../utils/prices"
 import { useNewOrderForm } from "../form"
 import TruckIcon from "../../../../components/fundamentals/icons/truck-icon"
+import RadioGroup from "../../../../components/organisms/radio-group"
+import { useAdminRegions } from "medusa-react"
+import { useNavigate, useParams } from "react-router-dom"
+import { Region } from "@medusajs/medusa"
 
-const SelectShippingMethod = () => {
+const MsSelectShippingMethod = () => {
   const { t } = useTranslation()
   const { disableNextPage, enableNextPage } = useContext(SteppedContext)
   const [showCustomPrice, setShowCustomPrice] = useState(false)
@@ -52,6 +56,92 @@ const SelectShippingMethod = () => {
     }
   }, [selectedShippingOption])
 
+  
+  /* Start: Regions-> will be removed from here */
+const params = useParams()
+  const regId: string | undefined = params["*"]
+
+  const [offset, setOffset] = useState(0)
+  const observerRef = useRef<HTMLDivElement>(null)
+
+  const navigate = useNavigate()
+
+  const [regionOpts, setRegionOpts] = useState<Region[]>([])
+
+  const { regions, count, isLoading } = useAdminRegions({
+    offset,
+    limit: 3,
+  })
+
+  useEffect(() => {
+    if (regions && !isLoading) {
+      setRegionOpts((prev) => {
+        const exisitngIds = prev.map((r) => r.id)
+        const newOpts = regions.filter((r) => !exisitngIds.includes(r.id))
+
+        return [...prev, ...newOpts]
+      })
+    }
+  }, [regions, isLoading])
+
+  useEffect(() => {
+    const current = observerRef.current
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        // If the ref is in view and there's more data to fetch
+        if (
+          entries[0].isIntersecting &&
+          regionOpts &&
+          regionOpts.length < (count || 0)
+        ) {
+          setOffset(regionOpts.length)
+        }
+      },
+      {
+        root: null, // relative to the viewport
+        threshold: 1.0, // trigger when 100% of the ref is visible
+      }
+    )
+
+    if (current) {
+      observer.observe(current)
+    }
+
+    // Clean up the observer on component unmount
+    return () => {
+      if (current) {
+        observer.unobserve(current)
+      }
+    }
+  }, [count, regionOpts])
+
+  const [selectedRegion, setSelectedRegion] = useState<string | undefined>(
+    regId
+  )
+
+  const handleChange = useCallback(
+    (id: string) => {
+      if (id !== selectedRegion) {
+        setSelectedRegion(id)
+      }
+    },
+    [navigate, selectedRegion]
+  )
+
+  useEffect(() => {
+    if (regId) {
+      handleChange(regId)
+    }
+
+    if (!regId && regions && regions.length > 0) {
+      handleChange(regions[0].id)
+    }
+  }, [handleChange, regId, regions])
+
+  /* End: Regions-> will be removed from here */
+
+
   return (
     <div className="pb-8">
       {region ? (
@@ -73,16 +163,46 @@ const SelectShippingMethod = () => {
           </div>
         ) : (
           <div className="mt-4">
+              <div>
+                <RadioGroup.Root
+                  value={selectedRegion}
+                  onValueChange={handleChange}
+                  className="grid grid-cols-3 gap-6"
+                >
+                  {regionOpts.map((r, index) => {
+                    return (
+                      <div
+                        key={r.id}
+                        ref={
+                          index === regionOpts.length - 1
+                            ? observerRef
+                            : undefined
+                        }
+                      >
+                        <RadioGroup.Item
+                          label={r.name}
+                          description={
+                            r.countries.length
+                              ? `${r.countries
+                                  .map((c) => c.display_name)
+                                  .join(", ")}`
+                              : undefined
+                          }
+                          value={r.id}
+                          key={r.id}
+                        />
+                      </div>
+                    )
+                  })}
+                </RadioGroup.Root>
+              </div>
             <Controller
               control={control}
               name="shipping_option"
               render={({ field: { value, onChange } }) => {
                 return (
                   <Select
-                    label={t(
-                      "components-choose-a-shipping-method",
-                      "Choose a shipping method"
-                    )}
+                    placeholder="Pathao Currier"
                     onChange={onChange}
                     value={value}
                     options={
@@ -160,4 +280,4 @@ const SelectShippingMethod = () => {
   )
 }
 
-export default SelectShippingMethod
+export default MsSelectShippingMethod

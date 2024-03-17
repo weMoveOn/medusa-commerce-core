@@ -1,4 +1,4 @@
-import { useContext, useEffect, useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { Route, Routes, useNavigate } from "react-router-dom"
 import { useTranslation } from "react-i18next"
 import Spacer from "../../../components/atoms/spacer"
@@ -7,7 +7,6 @@ import PlusIcon from "../../../components/fundamentals/icons/plus-icon"
 import BodyCard from "../../../components/organisms/body-card"
 import { useWidgets } from "../../../providers/widget-provider"
 import Button from "../../../components/fundamentals/button"
-// import ItemSearch2 from "../../../components/molecules/item-search-2"
 import BackButton from "../../../components/atoms/back-button"
 import SelectRegionScreen from "../new/components/ms-select-region"
 import NewOrderFormProvider, { useNewOrderForm } from "../new/form"
@@ -20,38 +19,18 @@ import {
   useAdminOrder,
 } from "medusa-react"
 import Medusa from "../../../services/api"
-import MsNote from "../../../components/organisms/ms-note"
-import SelectShippingMethod from "../new/components/select-shipping"
 import qs from "qs"
 import AddCustomProductModal from "./add-custom-product-modal"
 import CreateNewCustomerModal from "./create-new-customer-modal"
-import {
-  NextCreateableSelect,
-  NextSelect,
-} from "../../../components/molecules/select/next-select"
 import { Pencil } from "@medusajs/icons"
 import { Customer } from "@medusajs/medusa"
-import AddressDetailsCard from "./address-details-card"
-import SummaryCard from "../ms-details/detail-cards/ms-summary"
-import MsItemSearch from "../../../components/molecules/ms-item-search"
 import AddressDetails from "./address-details"
-import Items from "../new/components/items"
-import Table from "../../../components/molecules/table"
-import ImagePlaceholder from "../../../components/fundamentals/image-placeholder"
 import InputField from "../../../components/molecules/input"
-import MinusIcon from "../../../components/fundamentals/icons/minus-icon"
-import clsx from "clsx"
-import TrashIcon from "../../../components/fundamentals/icons/trash-icon"
 import MsItemsInformationTable from "./ms-items-information-table"
-import SelectProductScreen from "../new/components/ms-select-product"
-import Input from "../../../components/molecules/select/next-select/components/input"
-import Modal from "../../../components/molecules/modal"
-import NewOrder from "../new/new-order"
-import MsNewOrder from "../new/ms-new-order"
-import { SteppedContext } from "../../../components/molecules/modal/stepped-modal"
 import MsSummaryCard from "../ms-details/detail-cards/ms-summary"
-import MsItems from "../new/components/ms-items"
 import SearchProductModal from "./search-product-modal"
+import useNotification from "../../../hooks/use-notification"
+import MsSelectShippingMethod from "../new/components/ms-select-shipping"
 
 type ProductVariant = {
   quantity: number
@@ -62,7 +41,6 @@ type ProductVariant = {
   thumbnail: string
 }[]
 
-const VIEWS = ["Products"]
 
 const OrderCrateIndex = () => {
   const navigate = useNavigate()
@@ -71,10 +49,7 @@ const OrderCrateIndex = () => {
 
   const [items, setItems] = useState<ProductVariant>([])
 
-  // console.log("items :>> ", items)
-
-  const [showNewOrder, setShowNewOrder] = useState(false)
-  const { order, isLoading } = useAdminOrder("order_01HPXVZTVWSWY43WM4SGD4XXXW")
+  // const { order, isLoading } = useAdminOrder("order_01HPXVZTVWSWY43WM4SGD4XXXW")
   const [openCreateCustomerModal, setOpenCreateCustomerModal] = useState(false)
   const [showAddedCustomerDetailsModal, setShowAddedCustomerDetailsModal] =
     useState(false)
@@ -84,6 +59,7 @@ const OrderCrateIndex = () => {
   const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(
     null
   )
+  const notification = useNotification()
   const [showProductSearchModal, setShowProductSearchModal] = useState(false)
 
   const { getWidgets } = useWidgets()
@@ -92,9 +68,21 @@ const OrderCrateIndex = () => {
     form,
   } = useNewOrderForm()
 
-  // const {context} = useNewOrderForm()
-  // console.log("form :>> ", form)
-  // console.log("context :>> ", context)
+  const { context } = useNewOrderForm()
+  const { fields: selectedProducts } = context.items
+
+  console.log("context from create:>> ", context)
+
+  const {
+    form: { handleSubmit, reset },
+    context: { region },
+  } = useNewOrderForm()
+
+  const onSubmit = handleSubmit((data) => {
+    if (!data.email) {
+      return notification("error", "Email is required", "error")
+    }
+  })
 
   const debouncedFetch = async (filter: string): Promise<Option[]> => {
     const prepared = qs.stringify(
@@ -121,7 +109,15 @@ const OrderCrateIndex = () => {
     control: form.control,
     name: "customer_id",
   })
-  const { customer } = useAdminCustomer("cus_01HPXQWGB4GP7AZNRR8963WW5M")
+
+  const customerId = useWatch({
+    control: form.control,
+    name: "customer_id",
+  })
+
+  const { customer } = useAdminCustomer(customerId?.value!, {
+    enabled: !!customerId?.value,
+  })
 
   useEffect(() => {
     if (selectedCustomerRowData && customers) {
@@ -190,8 +186,6 @@ const OrderCrateIndex = () => {
     )
   }, [selectedCustomer])
 
-  const onItemSelect = () => {}
-
   const options =
     customers &&
     customers.map((customer) => ({
@@ -202,11 +196,16 @@ const OrderCrateIndex = () => {
 
   return (
     <div className="gap-y-xsmall flex h-full grow flex-col">
-      <BackButton
-        path="/a/orders"
-        label="Create Manual Order"
-        className="mb-xsmall text-large"
-      />
+      <div className="flex items-center justify-between">
+        <BackButton
+          path="/a/orders"
+          label="Create Manual Order"
+          className="mb-xsmall text-large"
+        />
+        <Button type="submit" variant="primary" onClick={onSubmit}>
+          Create Order
+        </Button>
+      </div>
       {getWidgets("draft_order.list.before").map((Widget, i) => {
         return (
           <WidgetContainer
@@ -245,14 +244,14 @@ const OrderCrateIndex = () => {
                   </Button>
                 </div>
               </div>
-              <MsItemsInformationTable items={items} />
+              <MsItemsInformationTable items={selectedProducts || []} />
             </BodyCard>
             <BodyCard
               compact={true}
               title={"Shipping method"}
               className="my-4 h-fit"
             >
-              <SelectShippingMethod />
+              <MsSelectShippingMethod />
             </BodyCard>
           </div>
         </div>
@@ -268,29 +267,31 @@ const OrderCrateIndex = () => {
 
           <BodyCard
             compact={true}
-            title={selectedCustomer ? "Added Customer" : "Add Customer"}
+            title={customer ? "Added Customer" : "Add Customer"}
             customActionable={addCustomerActions}
             className="h-fit rounded-t-none pb-4"
           >
-            {!selectedCustomer ? (
+            {!customer ? (
               <Controller
                 control={form.control}
                 name="customer_id"
-                render={({ field: { value, onChange, onBlur, ref, name } }) => {
+                render={({ field: { value, onChange } }) => {
                   return (
-                    <NextSelect
-                      placeholder={t(
-                        "create-order-find-existing-customer",
-                        "Find Existing Customer..."
+                    <Select
+                      className="mt-4"
+                      label={t(
+                        "components-find-existing-customer",
+                        "Find existing customer"
                       )}
-                      name={name}
-                      options={options}
-                      value={value}
-                      onChange={onChange}
-                      onBlur={onBlur}
-                      components={{
-                        Option: CustomerOption,
+                      options={[]}
+                      enableSearch
+                      value={value || null}
+                      onChange={(val) => {
+                        onCustomerSelect(val)
+                        onChange(val)
                       }}
+                      filterOptions={debouncedFetch as any}
+                      clearSelected
                     />
                   )
                 }}
@@ -300,11 +301,10 @@ const OrderCrateIndex = () => {
             )}
           </BodyCard>
 
-          {order && (
-            <MsSummaryCard order={order} reservations={[]} editable={false} />
-          )}
+       
+            <MsSummaryCard />
 
-          {order && <MsNote orderId={order.id} />}
+          {/* {order && <MsNote orderId={order.id} />} */}
         </div>
       </div>
       {getWidgets("draft_order.list.after").map((Widget, i) => {
@@ -319,15 +319,14 @@ const OrderCrateIndex = () => {
       })}
       <Spacer />
       {showProductSearchModal && (
-        // <MsNewOrder
-        //   onDismiss={() => setShowProductSearchModal(false)}
-        //   setItems={setItems}
-        // />
-        <SearchProductModal
-          openSearchProductModal={showProductSearchModal}
-          setOpenSearchProductModal={setShowProductSearchModal}
-          title="Search Product"
-        />
+        <>
+          <SearchProductModal
+            openSearchProductModal={showProductSearchModal}
+            setOpenSearchProductModal={setShowProductSearchModal}
+            title="Search Product"
+            setItems={setItems}
+          />
+        </>
       )}
       {openCreateCustomerModal && (
         <CreateNewCustomerModal
@@ -363,26 +362,11 @@ const CreateOrder = () => {
         index
         element={
           <NewOrderFormProvider>
-            {" "}
-            <OrderCrateIndex />{" "}
+            <OrderCrateIndex />
           </NewOrderFormProvider>
         }
       />
     </Routes>
-  )
-}
-
-const CustomerOption = ({ innerProps, data }) => {
-  return (
-    <div {...innerProps}>
-      <div className="flex cursor-pointer items-center gap-2 space-x-2 p-2">
-        <div className="h-8 w-8 flex-shrink-0 rounded-full bg-gray-200"></div>
-        <div>
-          <div className="text-sm font-medium text-gray-900">{data.label}</div>
-          <div className="text-sm text-gray-500">{data.value}</div>
-        </div>
-      </div>
-    </div>
   )
 }
 

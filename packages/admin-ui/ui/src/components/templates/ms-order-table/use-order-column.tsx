@@ -21,7 +21,7 @@ const useOrderTableColums = () => {
     switch (status) {
       case "captured":
         return (
-          <div className="flex items-center justify-center text-green-800 py-1 rounded-[40px] w-fit bg-green-100 px-2">
+          <div className="flex w-fit items-center justify-center rounded-[40px] bg-green-100 px-2 py-1 text-green-800">
             <CheckIcon className="text-green-800" size={12} />
             <span>Paid</span>
           </div>

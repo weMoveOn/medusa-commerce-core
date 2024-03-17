@@ -33,6 +33,7 @@ export type TableProps = {
   immediateSearchFocus?: boolean
   searchPlaceholder?: string
   searchValue?: string
+  tableHeight?: string
   containerClassName?: string
   handleSearch?: (searchTerm: string) => void
 } & React.HTMLAttributes<HTMLTableElement>
@@ -64,6 +65,7 @@ const MsTable = React.forwardRef<HTMLTableElement, TableProps>(
       handleSearch,
       filteringOptions,
       containerClassName,
+      tableHeight,
       ...props
     },
     ref
@@ -74,7 +76,7 @@ const MsTable = React.forwardRef<HTMLTableElement, TableProps>(
 
     return (
       <div className={`flex flex-col ${containerClassName}`}>
-        <div className="flex w-full justify-between px-4 my-3 relative">
+        <div className="relative my-3 flex w-full justify-between px-4">
           {filteringOptions && (
             <div className="mb-2 flex self-end">
               {Array.isArray(filteringOptions)
@@ -83,8 +85,8 @@ const MsTable = React.forwardRef<HTMLTableElement, TableProps>(
                   ))
                 : filteringOptions}
             </div>
-          ) } 
-          <div className="gap-x-xsmall flex place-content-end w-full">
+          )}
+          <div className="gap-x-xsmall flex w-full place-content-end">
             {tableActions && <div>{tableActions}</div>}
             {enableSearch && (
               <TableSearch
@@ -97,7 +99,7 @@ const MsTable = React.forwardRef<HTMLTableElement, TableProps>(
             )}
           </div>
         </div>
-        <div className="relative">
+        <div className={clsx("relative", tableHeight)}>
           <table
             ref={ref}
             className={clsx("w-full table-auto", className)}

@@ -20,12 +20,19 @@ type ProductVariant = {
 }
 
 type MsItemsInformationTableProps = {
-  items: ProductVariant[]
+  items: any[]
 }
 
-const MsItemsInformationTable = ({ items }: MsItemsInformationTableProps) => {
+const MsItemsInformationTable = ({ items:addedItems }: MsItemsInformationTableProps) => {
   const { t } = useTranslation()
-  const {register} = useForm()
+  // const {register} = useForm()
+
+    const {
+      context: { region, items },
+      form: { control, register, setValue },
+    } = useNewOrderForm()
+
+    const { fields, append, remove, update } = items
   
   return (
     <>
@@ -46,7 +53,7 @@ const MsItemsInformationTable = ({ items }: MsItemsInformationTableProps) => {
           </Table.HeadRow>
         </Table.Head>
         <Table.Body>
-          {items.map((item, index) => {
+          {addedItems.map((item, index) => {
             return (
               <Table.Row
                 key={index}
@@ -80,15 +87,6 @@ const MsItemsInformationTable = ({ items }: MsItemsInformationTableProps) => {
                   </div>
                 </Table.Cell>
                 <Table.Cell className="w-32 pr-8 text-right">
-                  {true ? (
-                    <InputField
-                      type="number"
-                      {...register(`items.${index}.quantity`, {
-                        valueAsNumber: true,
-                      })}
-                      // onBlur={() => setEditQuantity(-1)}
-                    />
-                  ) : (
                     <div className="text-grey-50 flex w-full justify-end text-right ">
                       <span
                         // onClick={() => handleEditQuantity(index, -1)}
@@ -119,7 +117,6 @@ const MsItemsInformationTable = ({ items }: MsItemsInformationTableProps) => {
                         <PlusIcon size={16} />
                       </span>
                     </div>
-                  )}
                 </Table.Cell>
                 <Table.Cell className="pr-2 text-right">500 BDT</Table.Cell>
                 {/* <Table.Cell className="text-grey-40 pr-1 text-right">
@@ -130,7 +127,7 @@ const MsItemsInformationTable = ({ items }: MsItemsInformationTableProps) => {
                     variant="ghost"
                     size="small"
                     className="mt-6"
-                    // onClick={() => removeItem(index)}
+                    onClick={() => remove(item.id)}
                   >
                     <TrashIcon size={20} className="text-grey-50" />
                   </Button>

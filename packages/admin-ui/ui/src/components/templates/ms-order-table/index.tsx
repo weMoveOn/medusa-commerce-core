@@ -6,7 +6,6 @@ import React, { useEffect, useState } from "react"
 import { useLocation } from "react-router-dom"
 import { usePagination, useTable } from "react-table"
 import { useAnalytics } from "../../../providers/analytics-provider"
-import { useFeatureFlag } from "../../../providers/feature-flag-provider"
 import useOrderTableColums from "./use-order-column"
 import { useOrderFilters } from "./use-order-filters"
 import MsTableContainer from "../../organisms/ms-table-container"
@@ -15,10 +14,6 @@ import MsOrderFilters from "../ms-order-filter-dropdown"
 import useOrderActions from "./use-order-action"
 import { useRowSelect } from "react-table"
 import IndeterminateCheckbox from "../../molecules/indeterminate-checkbox"
-import { clx } from "../../../utils/clx"
-// import image from asset/icon/orders
-import Button from "../../fundamentals/button"
-import { Link } from "react-router-dom"
 import TableEmptyState from "./table-empty-state"
 
 const DEFAULT_PAGE_SIZE = 15
@@ -36,16 +31,7 @@ type OrderTableProps = {
 const MsOrderTable = ({ setContextFilters }: OrderTableProps) => {
   const location = useLocation()
 
-  const { isFeatureEnabled } = useFeatureFlag()
   const { trackNumberOfOrders } = useAnalytics()
-
-  let hiddenColumns = ["sales_channel"]
-  if (isFeatureEnabled("sales_channels")) {
-    if (!defaultQueryProps.expand.includes("sales_channel")) {
-      defaultQueryProps.expand = defaultQueryProps.expand + ",sales_channel"
-    }
-    hiddenColumns = []
-  }
 
   const {
     removeTab,
