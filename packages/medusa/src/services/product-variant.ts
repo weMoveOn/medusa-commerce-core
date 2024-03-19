@@ -53,6 +53,7 @@ import { ProductRepository } from "../repositories/product"
 import { QueryDeepPartialEntity } from "typeorm/query-builder/QueryPartialEntity"
 import RegionService from "./region"
 import { buildRelations, promiseAll } from "@medusajs/utils"
+import {ICacheService} from "@medusajs/types";
 
 class ProductVariantService extends TransactionBaseService {
   static Events = {
@@ -70,6 +71,7 @@ class ProductVariantService extends TransactionBaseService {
   // eslint-disable-next-line max-len
   protected readonly productOptionValueRepository_: typeof ProductOptionValueRepository
   protected readonly cartRepository_: typeof CartRepository
+  protected readonly cacheService_: ICacheService;
 
   constructor({
     productVariantRepository,
@@ -80,7 +82,8 @@ class ProductVariantService extends TransactionBaseService {
     productOptionValueRepository,
     cartRepository,
     priceSelectionStrategy,
-  }) {
+    cacheService,
+              }) {
     // eslint-disable-next-line prefer-rest-params
     super(arguments[0])
 
@@ -92,6 +95,7 @@ class ProductVariantService extends TransactionBaseService {
     this.productOptionValueRepository_ = productOptionValueRepository
     this.cartRepository_ = cartRepository
     this.priceSelectionStrategy_ = priceSelectionStrategy
+    this.cacheService_ = cacheService
   }
 
   /**
@@ -106,6 +110,14 @@ class ProductVariantService extends TransactionBaseService {
       include_discount_prices: false,
     }
   ): Promise<ProductVariant> {
+    const cacheKey = `variant:${variantId}`;
+    const cachedVariant = await this.cacheService_.get(cacheKey) as ProductVariant;
+
+    if (cachedVariant) {
+      console.log("cache data")
+      return cachedVariant;
+    }
+
     const variantRepo = this.activeManager_.withRepository(
       this.productVariantRepository_
     )
@@ -118,7 +130,8 @@ class ProductVariantService extends TransactionBaseService {
         `Variant with id: ${variantId} was not found`
       )
     }
-
+    await this.cacheService_.set(cacheKey, variant);
+console.log("not cache data")
     return variant
   }
 
@@ -905,6 +918,13 @@ class ProductVariantService extends TransactionBaseService {
       include_discount_prices: false,
     }
   ): Promise<[ProductVariant[], number]> {
+    const cacheKey = `productVariantList:${JSON.stringify(selector)}:${JSON.stringify(config)}`;
+    const cachedData = await this.cacheService_.get(cacheKey) as [ProductVariant[], number];
+
+    if (cachedData) {
+      console.log("cached data")
+      return cachedData;
+    }
     const variantRepo = this.activeManager_.withRepository(
       this.productVariantRepository_
     )
@@ -949,7 +969,10 @@ class ProductVariantService extends TransactionBaseService {
       ]
     }
 
-    return await variantRepo.findAndCount(query)
+    const result = await variantRepo.findAndCount(query);
+    await this.cacheService_.set(cacheKey, result);
+
+    return result;
   }
 
   /**
@@ -965,6 +988,13 @@ class ProductVariantService extends TransactionBaseService {
       take: 20,
     }
   ): Promise<ProductVariant[]> {
+    const cacheKey = `productVariant:${JSON.stringify(selector)}:${JSON.stringify(config)}`;
+    const cachedData = await this.cacheService_.get(cacheKey) as ProductVariant[];
+
+    if (cachedData) {
+      console.log("cached data")
+      return cachedData;
+    }
     const productVariantRepo = this.activeManager_.withRepository(
       this.productVariantRepository_
     )
@@ -1001,7 +1031,9 @@ class ProductVariantService extends TransactionBaseService {
       }
     }
 
-    return await productVariantRepo.find(query)
+    const result = await productVariantRepo.find(query);
+    await this.cacheService_.set(cacheKey, result);
+    return result;
   }
 
   /**
@@ -1025,6 +1057,8 @@ class ProductVariantService extends TransactionBaseService {
       if (!variants.length) {
         return Promise.resolve()
       }
+      const cacheKey = `productVariant:*}`;
+      await this.cacheService_.invalidate(cacheKey);
 
       await variantRepo.softRemove(variants)
 

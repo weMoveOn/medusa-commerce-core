@@ -21,6 +21,7 @@ import {
 } from "../types/payment-collection"
 import EventBusService from "./event-bus"
 import { promiseAll } from "@medusajs/utils"
+import {ICacheService} from "@medusajs/types";
 
 type InjectedDependencies = {
   manager: EntityManager
@@ -28,6 +29,7 @@ type InjectedDependencies = {
   paymentProviderService: PaymentProviderService
   eventBusService: EventBusService
   customerService: CustomerService
+  cacheService: ICacheService
 }
 
 export default class PaymentCollectionService extends TransactionBaseService {
@@ -43,12 +45,14 @@ export default class PaymentCollectionService extends TransactionBaseService {
   protected readonly customerService_: CustomerService
   // eslint-disable-next-line max-len
   protected readonly paymentCollectionRepository_: typeof PaymentCollectionRepository
+  protected readonly cacheService_: ICacheService;
 
   constructor({
     paymentCollectionRepository,
     paymentProviderService,
     customerService,
     eventBusService,
+    cacheService,
   }: InjectedDependencies) {
     // eslint-disable-next-line prefer-rest-params
     super(arguments[0])
@@ -57,6 +61,7 @@ export default class PaymentCollectionService extends TransactionBaseService {
     this.paymentProviderService_ = paymentProviderService
     this.eventBusService_ = eventBusService
     this.customerService_ = customerService
+    this.cacheService_ = cacheService
   }
 
   /**
@@ -74,6 +79,12 @@ export default class PaymentCollectionService extends TransactionBaseService {
         MedusaError.Types.NOT_FOUND,
         `"paymentCollectionId" must be defined`
       )
+    }
+    const cacheKey = `paymentCollection:${paymentCollectionId}`;
+
+    const cachedPaymentCollection = await this.cacheService_.get(cacheKey) as PaymentCollection;
+    if (cachedPaymentCollection) {
+      return cachedPaymentCollection;
     }
 
     const paymentCollectionRepository = this.activeManager_.withRepository(
@@ -93,7 +104,11 @@ export default class PaymentCollectionService extends TransactionBaseService {
       )
     }
 
-    return paymentCollection[0]
+    const paymentCollectionData = paymentCollection[0];
+
+    await this.cacheService_.set(cacheKey, paymentCollectionData);
+
+    return paymentCollectionData;
   }
 
   /**
@@ -154,6 +169,8 @@ export default class PaymentCollectionService extends TransactionBaseService {
           paymentCollection[key] = data[key]
         }
       }
+      const cacheKey = `paymentCollection:${paymentCollectionId}`;
+      await this.cacheService_.invalidate(cacheKey);
 
       const result = await paymentCollectionRepo.save(paymentCollection)
 
@@ -197,6 +214,8 @@ export default class PaymentCollectionService extends TransactionBaseService {
           `Cannot delete payment collection with status ${paymentCollection.status}`
         )
       }
+      const cacheKey = `paymentCollection:${paymentCollectionId}`;
+      await this.cacheService_.invalidate(cacheKey);
 
       await paymentCollectionRepo.remove(paymentCollection)
 

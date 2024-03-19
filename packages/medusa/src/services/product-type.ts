@@ -5,15 +5,18 @@ import { ProductTypeRepository } from "../repositories/product-type"
 import { ExtendedFindConfig, FindConfig, Selector } from "../types/common"
 import { TransactionBaseService } from "../interfaces"
 import { buildQuery, isString } from "../utils"
+import { ICacheService } from "@medusajs/types"
 
 class ProductTypeService extends TransactionBaseService {
   protected readonly typeRepository_: typeof ProductTypeRepository
+  protected readonly cacheService_: ICacheService;
 
-  constructor({ productTypeRepository }) {
+  constructor({ productTypeRepository, cacheService}) {
     // eslint-disable-next-line prefer-rest-params
     super(arguments[0])
 
     this.typeRepository_ = productTypeRepository
+    this.cacheService_ = cacheService;
   }
 
   /**
@@ -74,6 +77,13 @@ class ProductTypeService extends TransactionBaseService {
     } = {},
     config: FindConfig<ProductType> = { skip: 0, take: 20 }
   ): Promise<[ProductType[], number]> {
+    const cacheKey = `productTypes:${JSON.stringify(selector)}:${JSON.stringify(config)}`;
+
+    let cachedResult = await this.cacheService_.get<[ProductType[], number]>(cacheKey);
+    if (cachedResult) {
+      return cachedResult;
+    }
+
     const typeRepo = this.activeManager_.withRepository(this.typeRepository_)
 
     let q
@@ -100,16 +110,16 @@ class ProductTypeService extends TransactionBaseService {
       query.where.value = ILike(`%${q}%`)
     }
 
-    if (query.where.discount_condition_id) {
-      const discountConditionId = query.where.discount_condition_id as string
-      delete query.where.discount_condition_id
-      return await typeRepo.findAndCountByDiscountConditionId(
-        discountConditionId,
-        query
-      )
+    let result: [ProductType[], number];
+    if (selector.discount_condition_id) {
+      result = await typeRepo.findAndCountByDiscountConditionId(selector.discount_condition_id, query);
+    } else {
+      result = await typeRepo.findAndCount(query);
     }
 
-    return await typeRepo.findAndCount(query)
+    await this.cacheService_.set(cacheKey, result); // TTL of 1 hour
+
+    return result;
   }
 }
 

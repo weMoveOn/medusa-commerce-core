@@ -1,5 +1,5 @@
 import {
-  CalculatedPriceSet,
+  CalculatedPriceSet, ICacheService,
   IPricingModuleService,
   PriceSetMoneyAmountDTO,
   RemoteQueryFunction,
@@ -53,6 +53,7 @@ type InjectedDependencies = {
   featureFlagRouter: FlagRouter
   remoteQuery: RemoteQueryFunction
   pricingModuleService: IPricingModuleService
+  cacheService: ICacheService
 }
 
 /**
@@ -65,6 +66,7 @@ class PricingService extends TransactionBaseService {
   protected readonly priceSelectionStrategy: IPriceSelectionStrategy
   protected readonly productVariantService: ProductVariantService
   protected readonly featureFlagRouter: FlagRouter
+  protected readonly cacheService_: ICacheService;
 
   protected get pricingModuleService(): IPricingModuleService {
     return this.__container__.pricingModuleService
@@ -81,7 +83,8 @@ class PricingService extends TransactionBaseService {
     priceSelectionStrategy,
     featureFlagRouter,
     customerService,
-  }: InjectedDependencies) {
+    cacheService,
+              }: InjectedDependencies) {
     // eslint-disable-next-line prefer-rest-params
     super(arguments[0])
 
@@ -91,6 +94,7 @@ class PricingService extends TransactionBaseService {
     this.productVariantService = productVariantService
     this.customerService_ = customerService
     this.featureFlagRouter = featureFlagRouter
+    this.cacheService_ = cacheService
   }
 
   /**
@@ -933,6 +937,12 @@ class PricingService extends TransactionBaseService {
     shippingOptions: ShippingOption[],
     context: Omit<PriceSelectionContext, "region_id"> = {}
   ): Promise<PricedShippingOption[]> {
+    const cacheKey = `pricedShippingOption:${storeId}:${JSON.stringify(shippingOptions)}`;
+
+    const cachedPricedShippingOptions = await this.cacheService_.get(cacheKey) as PricedShippingOption[];
+    if (cachedPricedShippingOptions) {
+      return cachedPricedShippingOptions;
+    }
     const regions = new Set<string>()
 
     for (const shippingOption of shippingOptions) {
@@ -974,7 +984,10 @@ class PricingService extends TransactionBaseService {
       )
     })
 
-    return await promiseAll(shippingOptionPricingPromises)
+    const pricedShippingOptions = await Promise.all(shippingOptionPricingPromises);
+    await this.cacheService_.set(cacheKey, pricedShippingOptions);
+
+    return pricedShippingOptions;
   }
 }
 

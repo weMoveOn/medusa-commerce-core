@@ -76,7 +76,6 @@ export default async (req, res) => {
     )
   }
   const validated = await validator(StorePostAuthReq, req.body)
-
   const authService: AuthService = req.scope.resolve("authService")
   const manager: EntityManager = req.scope.resolve("manager")
   const result = await manager.transaction(async (transactionManager) => {

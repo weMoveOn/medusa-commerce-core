@@ -1,4 +1,4 @@
-import { IInventoryService } from "@medusajs/types"
+import {ICacheService, IInventoryService} from "@medusajs/types"
 import {
   buildRelations,
   buildSelects,
@@ -93,6 +93,7 @@ type InjectedDependencies = {
   featureFlagRouter: FlagRouter
   productVariantInventoryService: ProductVariantInventoryService
   remoteLink: RemoteLink
+  cacheService: ICacheService
 }
 
 class OrderService extends TransactionBaseService {
@@ -136,6 +137,7 @@ class OrderService extends TransactionBaseService {
   protected readonly eventBus_: EventBusService
   protected readonly featureFlagRouter_: FlagRouter
   protected remoteLink_: RemoteLink
+  protected readonly cacheService_: ICacheService;
   // eslint-disable-next-line max-len
   protected readonly productVariantInventoryService_: ProductVariantInventoryService
 
@@ -161,7 +163,8 @@ class OrderService extends TransactionBaseService {
     eventBusService,
     featureFlagRouter,
     productVariantInventoryService,
-  }: InjectedDependencies) {
+    cacheService,
+    }: InjectedDependencies) {
     // eslint-disable-next-line prefer-rest-params
     super(arguments[0])
 
@@ -186,6 +189,7 @@ class OrderService extends TransactionBaseService {
     this.featureFlagRouter_ = featureFlagRouter
     this.productVariantInventoryService_ = productVariantInventoryService
     this.remoteLink_ = remoteLink
+    this.cacheService_ = cacheService
   }
 
   /**
@@ -222,6 +226,12 @@ class OrderService extends TransactionBaseService {
       order: { created_at: "DESC" },
     }
   ): Promise<[Order[], number]> {
+    const cacheKey = `listAndCount_order:${storeId}:${JSON.stringify(selector)}:${JSON.stringify(config)}`;
+
+    const cachedData = await this.cacheService_.get(cacheKey) as [Order[], number] | null;
+    if (cachedData) {
+      return cachedData;
+    }
     const orderRepo = this.activeManager_.withRepository(this.orderRepository_)
 
     let q
@@ -316,6 +326,7 @@ class OrderService extends TransactionBaseService {
     const orders = await promiseAll(
       raw.map(async (r) => await this.decorateTotals(r, totalsToSelect))
     )
+    await this.cacheService_.set(cacheKey, [orders, count]);
 
     return [orders, count]
   }
@@ -404,6 +415,13 @@ class OrderService extends TransactionBaseService {
     orderId: string,
     config: FindConfig<Order> = {}
   ): Promise<Order> {
+    const cacheKey = `retrieve_order:${storeId}:${orderId}`;
+
+    const cachedOrder = await this.cacheService_.get(cacheKey) as Order;
+    if (cachedOrder) {
+      return cachedOrder;
+    }
+
     if (!isDefined(orderId)) {
       throw new MedusaError(
         MedusaError.Types.NOT_FOUND,
@@ -439,6 +457,8 @@ class OrderService extends TransactionBaseService {
       )
     }
     console.log("retrieve order6", raw)
+    await this.cacheService_.set(cacheKey, raw);
+
     return raw
   }
 
@@ -502,6 +522,13 @@ class OrderService extends TransactionBaseService {
     cartId: string,
     config: FindConfig<Order> = {}
   ): Promise<Order> {
+    const cacheKey = `retrieveByCartId:${cartId}`;
+
+    const cachedOrder = await this.cacheService_.get(cacheKey) as Order;
+    if (cachedOrder) {
+      return cachedOrder;
+    }
+
     if (!isDefined(cartId)) {
       throw new MedusaError(
         MedusaError.Types.NOT_FOUND,
@@ -528,6 +555,7 @@ class OrderService extends TransactionBaseService {
         `Order with cart id ${cartId} was not found`
       )
     }
+    await this.cacheService_.set(cacheKey, raw);
 
     return raw
   }

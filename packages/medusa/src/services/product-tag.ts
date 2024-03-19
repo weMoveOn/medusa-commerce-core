@@ -5,20 +5,23 @@ import { ProductTagRepository } from "../repositories/product-tag"
 import { FindConfig, Selector } from "../types/common"
 import { TransactionBaseService } from "../interfaces"
 import { buildQuery, isString } from "../utils"
+import { ICacheService } from "@medusajs/types"
 
 type ProductTagConstructorProps = {
   manager: EntityManager
   productTagRepository: typeof ProductTagRepository
+  cacheService: ICacheService;
 }
 
 class ProductTagService extends TransactionBaseService {
   protected readonly tagRepo_: typeof ProductTagRepository
-
-  constructor({ productTagRepository }: ProductTagConstructorProps) {
+  protected readonly cacheService_: ICacheService;
+  constructor({ productTagRepository, cacheService }: ProductTagConstructorProps) {
     // eslint-disable-next-line prefer-rest-params
     super(arguments[0])
 
     this.tagRepo_ = productTagRepository
+    this.cacheService_ = cacheService;
   }
 
   /**
@@ -90,6 +93,11 @@ class ProductTagService extends TransactionBaseService {
     } = {},
     config: FindConfig<ProductTag> = { skip: 0, take: 20 }
   ): Promise<[ProductTag[], number]> {
+    const cacheKey = `productTags:${JSON.stringify(selector)}:${JSON.stringify(config)}`;
+    let cachedResult = await this.cacheService_.get<[ProductTag[], number]>(cacheKey);
+    if (cachedResult) {
+      return cachedResult;
+    }
     const tagRepo = this.activeManager_.withRepository(this.tagRepo_)
 
     let q: string | undefined
@@ -117,15 +125,17 @@ class ProductTagService extends TransactionBaseService {
       query.where.value = ILike(`%${q}%`)
     }
 
+    let result: [ProductTag[], number];
     if (discount_condition_id) {
-      const discountConditionId = discount_condition_id as string
-      return await tagRepo.findAndCountByDiscountConditionId(
-        discountConditionId,
-        query
-      )
+      result = await tagRepo.findAndCountByDiscountConditionId(discount_condition_id, query);
+    } else {
+      result = await tagRepo.findAndCount(query);
     }
+    console.log("not cached data")
 
-    return await tagRepo.findAndCount(query)
+    await this.cacheService_.set(cacheKey, result);
+
+    return result;
   }
 }
 

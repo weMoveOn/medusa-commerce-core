@@ -16,12 +16,14 @@ import {
 } from "../types/product-collection"
 import { buildQuery, isString, setMetadata } from "../utils"
 import EventBusService from "./event-bus"
+import { ICacheService } from "@medusajs/types"
 
 type InjectedDependencies = {
   manager: EntityManager
   eventBusService: EventBusService
   productRepository: typeof ProductRepository
   productCollectionRepository: typeof ProductCollectionRepository
+  cacheService: ICacheService;
 }
 
 type ListAndCountSelector = Selector<ProductCollection> & {
@@ -37,6 +39,7 @@ class ProductCollectionService extends TransactionBaseService {
   // eslint-disable-next-line max-len
   protected readonly productCollectionRepository_: typeof ProductCollectionRepository
   protected readonly productRepository_: typeof ProductRepository
+  protected readonly cacheService_: ICacheService;
 
   static readonly Events = {
     CREATED: "product-collection.created",
@@ -50,6 +53,7 @@ class ProductCollectionService extends TransactionBaseService {
     productCollectionRepository,
     productRepository,
     eventBusService,
+    cacheService,
   }: InjectedDependencies) {
     // eslint-disable-next-line prefer-rest-params
     super(arguments[0])
@@ -57,6 +61,7 @@ class ProductCollectionService extends TransactionBaseService {
     this.productCollectionRepository_ = productCollectionRepository
     this.productRepository_ = productRepository
     this.eventBus_ = eventBusService
+    this.cacheService_ = cacheService;
   }
 
   /**
@@ -81,6 +86,11 @@ class ProductCollectionService extends TransactionBaseService {
     const collectionRepo = this.activeManager_.withRepository(
       this.productCollectionRepository_
     )
+    const cacheKey = `productCollection:${storeId}:${collectionId}`;
+    const cachedCollection = await this.cacheService_.get<ProductCollection>(cacheKey);
+    if (cachedCollection) {
+      return cachedCollection;
+    }
 
     const query = buildQuery({ id: collectionId, store_id: storeId }, config)
     const collection = await collectionRepo.findOne(query)
@@ -91,6 +101,7 @@ class ProductCollectionService extends TransactionBaseService {
         `Product collection with id: ${collectionId} was not found`
       )
     }
+    await this.cacheService_.set(cacheKey, collection);
 
     return collection
   }
@@ -176,6 +187,8 @@ class ProductCollectionService extends TransactionBaseService {
       }
 
       productCollection = await collectionRepo.save(productCollection)
+      const cacheKey = `productCollection:${storeId}:${collectionId}`;
+      await this.cacheService_.invalidate(cacheKey);
 
       await this.eventBus_
         .withTransaction(manager)
@@ -206,6 +219,8 @@ class ProductCollectionService extends TransactionBaseService {
       }
 
       await productCollectionRepo.softRemove(productCollection)
+      const cacheKey = `productCollection:${storeId}:${collectionId}`;
+      await this.cacheService_.invalidate(cacheKey);
 
       await this.eventBus_
         .withTransaction(manager)

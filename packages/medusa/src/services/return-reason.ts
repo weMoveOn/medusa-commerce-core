@@ -6,23 +6,28 @@ import { ReturnReasonRepository } from "../repositories/return-reason"
 import { FindConfig, Selector } from "../types/common"
 import { CreateReturnReason, UpdateReturnReason } from "../types/return-reason"
 import { buildQuery } from "../utils"
+import { ICacheService } from "@medusajs/types"
 
 type InjectedDependencies = {
   manager: EntityManager
   returnReasonRepository: typeof ReturnReasonRepository
+  cacheService: ICacheService;
 }
 
 class ReturnReasonService extends TransactionBaseService {
   protected readonly retReasonRepo_: typeof ReturnReasonRepository
+  protected readonly cacheService_: ICacheService;
 
-  constructor({ returnReasonRepository }: InjectedDependencies) {
+  constructor({ returnReasonRepository, cacheService }: InjectedDependencies) {
     // eslint-disable-next-line prefer-rest-params
     super(arguments[0])
 
     this.retReasonRepo_ = returnReasonRepository
+    this.cacheService_ = cacheService;
   }
 
   async create(data: CreateReturnReason & { store_id: string }): Promise<ReturnReason | never> {
+    console.log(data,"data")
     return await this.atomicPhase_(async (manager) => {
       const rrRepo = manager.withRepository(this.retReasonRepo_)
 
@@ -38,8 +43,12 @@ class ReturnReasonService extends TransactionBaseService {
       }
 
       const created = rrRepo.create(data)
+      const savedReason = await rrRepo.save(created);
+      const cacheKey = `return_reason:${savedReason.id}:${data.store_id}`;
 
-      return await rrRepo.save(created)
+      await this.cacheService_.set(cacheKey, savedReason);
+
+      return savedReason;
     })
   }
 
@@ -95,6 +104,12 @@ class ReturnReasonService extends TransactionBaseService {
         `"returnReasonId" must be defined`
       )
     }
+    const cacheKey = `return_reason:${returnReasonId}:${storeId}`;
+
+    let cachedReason = await this.cacheService_.get<ReturnReason>(cacheKey);
+    if (cachedReason) {
+      return cachedReason;
+    }
 
     const rrRepo = this.activeManager_.withRepository(this.retReasonRepo_)
 
@@ -107,6 +122,7 @@ class ReturnReasonService extends TransactionBaseService {
         `Return Reason with id: ${returnReasonId} was not found.`
       )
     }
+    await this.cacheService_.set(cacheKey, item)
 
     return item
   }
@@ -123,6 +139,8 @@ class ReturnReasonService extends TransactionBaseService {
       if (!reason) {
         return Promise.resolve()
       }
+      const cacheKey = `return_reason:${returnReasonId}:${storeId}`;
+      await this.cacheService_.invalidate(cacheKey);
 
       await rrRepo.softRemove(reason)
 

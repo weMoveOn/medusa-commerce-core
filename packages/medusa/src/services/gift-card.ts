@@ -15,6 +15,7 @@ import { buildQuery, setMetadata } from "../utils"
 import EventBusService from "./event-bus"
 import RegionService from "./region"
 import {selectorConstraintsToString} from "@medusajs/utils";
+import {ICacheService} from "@medusajs/types";
 
 type InjectedDependencies = {
   manager: EntityManager
@@ -22,6 +23,7 @@ type InjectedDependencies = {
   giftCardTransactionRepository: typeof GiftCardTransactionRepository
   regionService: RegionService
   eventBusService: EventBusService
+  cacheService: ICacheService
 }
 /**
  * Provides layer to manipulate gift cards.
@@ -32,6 +34,7 @@ class GiftCardService extends TransactionBaseService {
   protected readonly giftCardTransactionRepo_: typeof GiftCardTransactionRepository
   protected readonly regionService_: RegionService
   protected readonly eventBus_: EventBusService
+  protected readonly cacheService_: ICacheService;
 
   static Events = {
     CREATED: "gift_card.created",
@@ -42,6 +45,7 @@ class GiftCardService extends TransactionBaseService {
     giftCardTransactionRepository,
     regionService,
     eventBusService,
+    cacheService,
   }: InjectedDependencies) {
     // eslint-disable-next-line prefer-rest-params
     super(arguments[0])
@@ -50,6 +54,7 @@ class GiftCardService extends TransactionBaseService {
     this.giftCardTransactionRepo_ = giftCardTransactionRepository
     this.regionService_ = regionService
     this.eventBus_ = eventBusService
+    this.cacheService_ = cacheService
   }
 
   /**
@@ -193,6 +198,14 @@ class GiftCardService extends TransactionBaseService {
     selector: Selector<GiftCard>,
     config: FindConfig<GiftCard> = {}
   ): Promise<GiftCard> {
+    const cacheKey = `giftCard:${JSON.stringify(selector)}:${JSON.stringify(config)}`;
+    const cachedGiftCard = await this.cacheService_.get(cacheKey) as GiftCard;
+
+    if (cachedGiftCard) {
+      console.log("cached data")
+      return cachedGiftCard;
+    }
+
     const giftCardRepo = this.activeManager_.withRepository(
       this.giftCardRepository_
     )
@@ -210,6 +223,8 @@ class GiftCardService extends TransactionBaseService {
         `Gift card with ${selectorConstraints} was not found`
       )
     }
+    await this.cacheService_.set(cacheKey, giftCard);
+    console.log("not Cached")
 
     return giftCard
   }
@@ -315,6 +330,8 @@ class GiftCardService extends TransactionBaseService {
     if (!giftCard) {
       return
     }
+    const cacheKey = `giftCard:${JSON.stringify({ id: giftCardId })}`;
+    await this.cacheService_.invalidate(cacheKey);
 
     return await giftCardRepo.softRemove(giftCard)
   }

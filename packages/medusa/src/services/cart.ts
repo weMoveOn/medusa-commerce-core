@@ -68,7 +68,7 @@ import { PaymentSessionRepository } from "../repositories/payment-session"
 import { ShippingMethodRepository } from "../repositories/shipping-method"
 import { PaymentSessionInput } from "../types/payment"
 import { validateEmail } from "../utils/is-email"
-import { RemoteQueryFunction } from "@medusajs/types"
+import {ICacheService, RemoteQueryFunction} from "@medusajs/types"
 import { RemoteLink } from "@medusajs/modules-sdk"
 
 type InjectedDependencies = {
@@ -102,6 +102,7 @@ type InjectedDependencies = {
   pricingService: PricingService
   remoteQuery: RemoteQueryFunction
   remoteLink: RemoteLink
+  cacheService: ICacheService
 }
 
 type TotalsConfig = {
@@ -148,6 +149,7 @@ class CartService extends TransactionBaseService {
   // eslint-disable-next-line max-len
   protected readonly productVariantInventoryService_: ProductVariantInventoryService
   protected readonly pricingService_: PricingService
+  protected readonly cacheService_: ICacheService;
 
   constructor({
     cartRepository,
@@ -179,7 +181,8 @@ class CartService extends TransactionBaseService {
     remoteLink,
     productVariantInventoryService,
     pricingService,
-  }: InjectedDependencies) {
+    cacheService,
+    }: InjectedDependencies) {
     // eslint-disable-next-line prefer-rest-params
     super(arguments[0])
 
@@ -212,6 +215,7 @@ class CartService extends TransactionBaseService {
     this.pricingService_ = pricingService
     this.remoteQuery_ = remoteQuery
     this.remoteLink_ = remoteLink
+    this.cacheService_ = cacheService
   }
 
   /**
@@ -257,6 +261,12 @@ class CartService extends TransactionBaseService {
         `"storeId" must be defined`
       )
     }
+    const cacheKey = `cart:${storeId}:${cartId}`;
+
+    const cachedCart = await this.cacheService_.get(cacheKey) as Cart;
+    if (cachedCart) {
+      return cachedCart;
+    }
 
     if (this.featureFlagRouter_.isFeatureEnabled(MedusaV2Flag.key)) {
       if (Array.isArray(options.relations)) {
@@ -292,6 +302,7 @@ class CartService extends TransactionBaseService {
         `Cart with ${cartId} was not found`
       )
     }
+    await this.cacheService_.set(cacheKey, raw);
     return raw
   }
 
@@ -428,8 +439,10 @@ class CartService extends TransactionBaseService {
             .retrieve(data.store_id, data.region_id!, {
               relations: ["countries"],
             })
+
         const regCountries = region.countries.map(({ iso_2 }) => iso_2)
 
+        console.log(data,"data")
         if (!data.shipping_address && !data.shipping_address_id) {
           if (region.countries.length === 1) {
             rawCart.shipping_address = addressRepo.create({
@@ -446,6 +459,7 @@ class CartService extends TransactionBaseService {
             }
             rawCart.shipping_address = data.shipping_address
           }
+          console.log(data.shipping_address_id,"data.shipping_address_id")
           if (data.shipping_address_id) {
             const addr = await addressRepo.findOne({
               where: { id: data.shipping_address_id },
@@ -501,6 +515,7 @@ class CartService extends TransactionBaseService {
         }
 
         const createdCart = cartRepo.create(rawCart)
+
         const cart = await cartRepo.save(createdCart)
 
         if (
@@ -2353,10 +2368,13 @@ class CartService extends TransactionBaseService {
             .withTransaction(transactionManager)
             .list({ cart_id: cart.id })
 
+
         const customShippingOption = this.findCustomShippingOption(
           cartCustomShippingOptions,
           optionId as string
         )
+        console.log(customShippingOption,"customShippingOption")
+
 
         const { shipping_methods } = cart
 

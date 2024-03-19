@@ -37,6 +37,7 @@ import { OrdersReturnItem } from "../types/orders"
 import { SwapRepository } from "../repositories/swap"
 import { TransactionBaseService } from "../interfaces"
 import { promiseAll } from "@medusajs/utils"
+import {ICacheService} from "@medusajs/types";
 
 type InjectedProps = {
   manager: EntityManager
@@ -55,6 +56,7 @@ type InjectedProps = {
   paymentProviderService: PaymentProviderService
   lineItemAdjustmentService: LineItemAdjustmentService
   customShippingOptionService: CustomShippingOptionService
+  cacheService: ICacheService
 }
 
 /**
@@ -88,6 +90,7 @@ class SwapService extends TransactionBaseService {
   protected readonly customShippingOptionService_: CustomShippingOptionService
   // eslint-disable-next-line max-len
   protected readonly productVariantInventoryService_: ProductVariantInventoryService
+  protected readonly cacheService_: ICacheService;
 
   constructor({
     swapRepository,
@@ -103,7 +106,8 @@ class SwapService extends TransactionBaseService {
     productVariantInventoryService,
     customShippingOptionService,
     lineItemAdjustmentService,
-  }: InjectedProps) {
+    cacheService,
+              }: InjectedProps) {
     // eslint-disable-next-line prefer-rest-params
     super(arguments[0])
 
@@ -120,6 +124,7 @@ class SwapService extends TransactionBaseService {
     this.eventBus_ = eventBusService
     this.customShippingOptionService_ = customShippingOptionService
     this.lineItemAdjustmentService_ = lineItemAdjustmentService
+    this.cacheService_ = cacheService
   }
 
   /**
@@ -249,6 +254,12 @@ class SwapService extends TransactionBaseService {
     cartId: string,
     relations: FindConfig<Swap>["relations"] = []
   ): Promise<Swap | never> {
+    const cacheKey = `swap:${cartId}`;
+
+    const cachedSwap = await this.cacheService_.get(cacheKey) as Swap;
+    if (cachedSwap) {
+      return cachedSwap;
+    }
     const swapRepo = this.activeManager_.withRepository(this.swapRepository_)
 
     const swap = await swapRepo.findOne({
@@ -261,6 +272,7 @@ class SwapService extends TransactionBaseService {
     if (!swap) {
       throw new MedusaError(MedusaError.Types.NOT_FOUND, "Swap was not found")
     }
+    await this.cacheService_.set(cacheKey, swap);
 
     return swap
   }
