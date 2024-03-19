@@ -117,7 +117,6 @@ function buildWhere<TWhereKeys extends object, TEntity>(
 
   for (const [key, value] of Object.entries(constraints)) {
 
-    console.log(constraints,'constraints')
     if (value === undefined) {
       continue
     }

@@ -31,7 +31,7 @@ import { isDefined, MedusaError } from "medusa-core-utils"
 import { buildQuery, isString } from "../utils"
 
 import EventBusService from "./event-bus"
-import { IInventoryService } from "@medusajs/types"
+import {ICacheService, IInventoryService} from "@medusajs/types"
 import { OrderEditRepository } from "../repositories/order-edit"
 import { TransactionBaseService } from "../interfaces"
 import { promiseAll } from "@medusajs/utils"
@@ -50,6 +50,7 @@ type InjectedDependencies = {
   orderEditItemChangeService: OrderEditItemChangeService
 
   inventoryService?: IInventoryService
+  cacheService: ICacheService
 }
 
 export default class OrderEditService extends TransactionBaseService {
@@ -72,6 +73,7 @@ export default class OrderEditService extends TransactionBaseService {
   protected readonly taxProviderService_: TaxProviderService
   protected readonly lineItemAdjustmentService_: LineItemAdjustmentService
   protected readonly orderEditItemChangeService_: OrderEditItemChangeService
+  protected readonly cacheService_: ICacheService;
 
   protected get inventoryService_(): IInventoryService | undefined {
     return this.__container__.inventoryService
@@ -87,6 +89,7 @@ export default class OrderEditService extends TransactionBaseService {
     orderEditItemChangeService,
     lineItemAdjustmentService,
     taxProviderService,
+    cacheService,
   }: InjectedDependencies) {
     // eslint-disable-next-line prefer-rest-params
     super(arguments[0])
@@ -100,6 +103,7 @@ export default class OrderEditService extends TransactionBaseService {
     this.orderEditItemChangeService_ = orderEditItemChangeService
     this.lineItemAdjustmentService_ = lineItemAdjustmentService
     this.taxProviderService_ = taxProviderService
+    this.cacheService_ = cacheService
   }
 
   async retrieve(
@@ -111,6 +115,12 @@ export default class OrderEditService extends TransactionBaseService {
         MedusaError.Types.NOT_FOUND,
         `"orderEditId" must be defined`
       )
+    }
+    const cacheKey = `orderEdit:${orderEditId}`;
+
+    const cachedOrderEdit = await this.cacheService_.get(cacheKey) as OrderEdit;
+    if (cachedOrderEdit) {
+      return cachedOrderEdit;
     }
 
     const orderEditRepository = this.activeManager_.withRepository(
@@ -126,6 +136,7 @@ export default class OrderEditService extends TransactionBaseService {
         `Order edit with id ${orderEditId} was not found`
       )
     }
+    await this.cacheService_.set(cacheKey, orderEdit);
 
     return orderEdit
   }
@@ -225,6 +236,8 @@ export default class OrderEditService extends TransactionBaseService {
           orderEdit[key] = data[key]
         }
       }
+      const cacheKey = `orderEdit:${orderEditId}`;
+      await this.cacheService_.invalidate(cacheKey);
 
       const result = await orderEditRepo.save(orderEdit)
 
@@ -254,6 +267,8 @@ export default class OrderEditService extends TransactionBaseService {
           `Cannot delete order edit with status ${edit.status}`
         )
       }
+      const cacheKey = `orderEdit:${id}`;
+      await this.cacheService_.invalidate(cacheKey);
 
       await this.deleteClonedItems(id)
       await orderEditRepo.remove(edit)

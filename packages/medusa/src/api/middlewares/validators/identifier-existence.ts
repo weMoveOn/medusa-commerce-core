@@ -6,7 +6,7 @@ export function processIdentifierMiddleware(
   res: Response,
   next: NextFunction
 ): void {
-  req.query.identifier='store_01HRC4WRAD4GVW41YVSEB00RNM'
+  req.query.identifier='store_01HRS5564M5980DR73HH8J06RS'
   const identifier = req.query.identifier as string
   // console.log("identifier", identifier)
   if (identifier) {

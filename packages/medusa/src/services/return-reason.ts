@@ -122,6 +122,7 @@ class ReturnReasonService extends TransactionBaseService {
         `Return Reason with id: ${returnReasonId} was not found.`
       )
     }
+    await this.cacheService_.set(cacheKey, item)
 
     return item
   }
@@ -138,6 +139,8 @@ class ReturnReasonService extends TransactionBaseService {
       if (!reason) {
         return Promise.resolve()
       }
+      const cacheKey = `return_reason:${returnReasonId}:${storeId}`;
+      await this.cacheService_.invalidate(cacheKey);
 
       await rrRepo.softRemove(reason)
 

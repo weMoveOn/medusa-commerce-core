@@ -1,4 +1,4 @@
-import { RemoteQueryFunction } from "@medusajs/types"
+import {ICacheService, RemoteQueryFunction} from "@medusajs/types"
 import {
   buildRelations,
   buildSelects,
@@ -63,6 +63,7 @@ type InjectedDependencies = {
   eventBusService: EventBusService
   featureFlagRouter: FlagRouter
   remoteQuery: RemoteQueryFunction
+  cacheService: ICacheService
 }
 
 class ProductService extends TransactionBaseService {
@@ -80,6 +81,7 @@ class ProductService extends TransactionBaseService {
   protected readonly eventBus_: EventBusService
   protected readonly featureFlagRouter_: FlagRouter
   protected remoteQuery_: RemoteQueryFunction
+  protected readonly cacheService_: ICacheService;
 
   static readonly IndexName = `products`
   static readonly Events = {
@@ -102,6 +104,7 @@ class ProductService extends TransactionBaseService {
     remoteQuery,
     salesChannelService,
     featureFlagRouter,
+    cacheService,
   }: InjectedDependencies) {
     // eslint-disable-next-line prefer-rest-params
     super(arguments[0])
@@ -119,6 +122,7 @@ class ProductService extends TransactionBaseService {
     this.salesChannelService_ = salesChannelService
     this.featureFlagRouter_ = featureFlagRouter
     this.remoteQuery_ = remoteQuery
+    this.cacheService_ = cacheService
   }
 
   /**
@@ -194,6 +198,16 @@ class ProductService extends TransactionBaseService {
     let count: number
     let products: Product[]
 
+    const cacheKey = `productList:${JSON.stringify(selector)}:${JSON.stringify(config)}`
+
+    let cachedProduct = await this.cacheService_.get(cacheKey+"product") as Product
+    let cachedCount = await this.cacheService_.get(cacheKey+"count") as number
+    // if (cachedProduct && cachedCount) {
+    //   console.log("cached data")
+    //   return [[cachedProduct], cachedCount]
+    // }
+
+
     if (q) {
       ;[products, count] = await productRepo.getFreeTextSearchResultsAndCount(
         q,
@@ -206,6 +220,9 @@ class ProductService extends TransactionBaseService {
         query
       )
     }
+    await this.cacheService_.set(cacheKey+"product", products)
+    await this.cacheService_.set(cacheKey+"count", count)
+    console.log(products,"products" ,typeof products)
 
     if (
       this.featureFlagRouter_.isFeatureEnabled(MedusaV2Flag.key) &&
@@ -213,6 +230,10 @@ class ProductService extends TransactionBaseService {
     ) {
       await this.decorateProductsWithSalesChannels(products)
     }
+      console.log(products,"products" ,typeof products)
+
+    console.log("not cached data")
+
 
     return [products, count]
   }
@@ -348,10 +369,16 @@ class ProductService extends TransactionBaseService {
     }
 
     return product*/
-
     /**
      * TODO: The below code is a temporary fix for the issue with the typeorm idle transaction in query strategy mode
      */
+    const cacheKey = `product:${JSON.stringify(selector)}:${JSON.stringify(config)}`
+
+    let cacheProduct= await this.cacheService_.get(cacheKey) as Product
+    if (cacheProduct) {
+      console.log("cached data")
+      return cacheProduct
+    }
 
     const manager = this.activeManager_
     const productRepo = manager.withRepository(this.productRepository_)
@@ -387,6 +414,7 @@ class ProductService extends TransactionBaseService {
     ) {
       await this.decorateProductsWithSalesChannels([product])
     }
+    await this.cacheService_.set(cacheKey, product)
 
     return product
   }

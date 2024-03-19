@@ -264,7 +264,10 @@ class DraftOrderService extends TransactionBaseService {
   ): Promise<DraftOrder> {
     return await this.atomicPhase_(
       async (transactionManager: EntityManager) => {
-        const draftOrderRepo = transactionManager.withRepository(
+          console.log(storeId,"store_id")
+          console.log(data,"data")
+
+          const draftOrderRepo = transactionManager.withRepository(
           this.draftOrderRepository_
         )
         console.log("1", storeId)
@@ -299,7 +302,7 @@ class DraftOrderService extends TransactionBaseService {
           ...rawCart,
           store_id: storeId,
         })
-        console.log("5", storeId)
+        console.log("5", createdCart)
         const draftOrder = draftOrderRepo.create({
           store_id: storeId,
           cart_id: createdCart.id,

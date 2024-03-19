@@ -149,6 +149,7 @@ import { cleanResponseData } from "../../../../utils/clean-response-data"
 export default async (req, res) => {
   const store_id = req.query.store_id
   const validated = await validator(AdminPostDraftOrdersReq, req.body)
+  console.log(validated,"validated")
 
   const { shipping_address, billing_address, ...rest } = validated
 
@@ -299,9 +300,6 @@ enum Status {
  *       url: "https://docs.medusajs.com/development/entities/overview#metadata-attribute"
  */
 export class AdminPostDraftOrdersReq {
-  @IsString()
-  @IsNotEmpty()
-  store_id:string
 
   @IsEnum(Status)
   @IsOptional()
