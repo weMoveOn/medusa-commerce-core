@@ -131,7 +131,7 @@ export const SetupProduct = () => {
   })
 
   const onSubmit = (data: any) => {
-    console.log("data :>> ", data)
+    
   }
 
   return (

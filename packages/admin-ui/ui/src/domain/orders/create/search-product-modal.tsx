@@ -1,24 +1,18 @@
 import { useEffect, useMemo, useState } from "react"
 import Spinner from "../../../components/atoms/spinner"
 import Button from "../../../components/fundamentals/button"
-import MinusIcon from "../../../components/fundamentals/icons/minus-icon"
-import TrashIcon from "../../../components/fundamentals/icons/trash-icon"
 import UsersIcon from "../../../components/fundamentals/icons/users-icon"
 import ImagePlaceholder from "../../../components/fundamentals/image-placeholder"
 import Modal from "../../../components/molecules/modal"
-import Table from "../../../components/molecules/table"
 import TableContainer from "../../../components/organisms/table-container"
 import { usePagination, useRowSelect, useTable } from "react-table"
 import IndeterminateCheckbox from "../../../components/molecules/indeterminate-checkbox"
-import StatusIndicator from "../../../components/fundamentals/status-indicator"
 import { useAdminProducts, useAdminVariants } from "medusa-react"
 import { useDebounce } from "../../../hooks/use-debounce"
-import { getProductStatusVariant } from "../../../utils/product-status-variant"
 import { Product, Region } from "@medusajs/medusa"
 import MsTable from "../../../components/molecules/ms-table"
 import { useNewOrderForm } from "../new/form"
 import { extractUnitPrice } from "../../../utils/prices"
-import { clx } from "../../../utils/clx"
 
 type SearchProductModalProps = {
   openSearchProductModal: boolean
@@ -46,15 +40,12 @@ const SearchProductModal = ({
     offset,
   })
 
-  // console.log("variants from search-product-modal", variants)
   const { products } = useAdminProducts()
 
   const {
     context: { region, items },
     form: { control, register, setValue },
   } = useNewOrderForm()
-
-  // console.log("region", region)
 
   const { fields, append, remove, update } = items
 
@@ -70,9 +61,7 @@ const SearchProductModal = ({
         Header: "Name",
         accessor: "title",
         Cell: ({ row: { original } }) => {
-          // console.log("original", original)
           const price = extractUnitPrice(original, region as Region, false)
-          // console.log("price", price, region)
           return (
             <div className="flex items-center">
               <div className="my-1.5 mr-4 flex h-[40px] w-[30px] items-center">
@@ -96,14 +85,16 @@ const SearchProductModal = ({
         Header: <div className="text-right">In Stock</div>,
         accessor: "inventory_quantity",
         Cell: ({ row: { original } }) => (
-          <div className="text-left">{original.inventory_quantity} Available</div>
+          <div className="text-left">
+            {original.inventory_quantity} Available
+          </div>
         ),
       },
       {
         Header: "Status",
         accessor: "status",
         Cell: ({ row: { original } }) => (
-          <div className="text-right pr-2">
+          <div className="pr-2 text-right">
             {/* {original.product.unit_price } */}
             500 BDT
           </div>
@@ -157,13 +148,11 @@ const SearchProductModal = ({
             }
             return (
               <div className="flex items-center justify-center pl-4">
-              {
-                shouldChecked ? (
-                  <IndeterminateCheckbox checked={true} className="bg-black"/>
+                {shouldChecked ? (
+                  <IndeterminateCheckbox checked={true} className="bg-black" />
                 ) : (
-                  <IndeterminateCheckbox {...rowProps}/>
-                )
-              }
+                  <IndeterminateCheckbox {...rowProps} />
+                )}
               </div>
             )
           },
@@ -208,7 +197,6 @@ const SearchProductModal = ({
     setOpenSearchProductModal(false)
   }
 
-
   return (
     <>
       <Modal
@@ -232,11 +220,11 @@ const SearchProductModal = ({
             <MsTable
               immediateSearchFocus
               enableSearch
-              searchPlaceholder={"Search Products From Your Inventory.."}
+              searchPlaceholder={"Find items from inventory"}
               searchValue={query}
               handleSearch={handleSearch}
               {...getTableProps()}
-              searchClassName="!w-full mb-2 !h-[44px]"
+              searchClassName="!w-full mb-2 !h-[44px] bg-[#F3F3F3]"
               tableHeight="h-[450px] overflow-auto"
             >
               <MsTable.Body {...getTableBodyProps()}>
@@ -265,37 +253,56 @@ const SearchProductModal = ({
                         (product) =>
                           product.id === row.cells[0].row.original.product_id
                       )
+                      let shouldChecked = false
+                      products.forEach((product) => {
+                        product.variants.forEach((variant) => {
+                          // if variant.id exists row.cells[0].row.original then shouldChecked = true
+                          // if (variant.id === row.cells[0].row.original.id) {
+                          //   shouldChecked = true
+                          // }
+                        })
+                      })
                       productNameRow = (
-                        <MsTable.Row
-                          key={i}
-                          className="bg-[#dadada]"
-                        >
-                          <MsTable.Cell
-                            colSpan={columns.length}
-                            className="pl-4 font-bold"
+                        <>
+                          <MsTable.Row
+                            key={i}
+                            className="border border-[#EFEFEF] bg-[#F4F4F4]"
                           >
-                            <div className="flex items-center gap-4">
-                              {product?.thumbnail ? (
-                                <img
-                                  src={product.thumbnail}
-                                  className="rounded-soft h-8 w-8 object-cover"
-                                />
-                              ) : (
-                                <ImagePlaceholder />
-                              )}
-                              <h2>
-                                {product ? product.title : "Unknown Product"}
-                              </h2>
-                            </div>
-                          </MsTable.Cell>
-                          <MsTable.Cell colSpan={columns.length}></MsTable.Cell>
-                        </MsTable.Row>
+                            <MsTable.Cell
+                              colSpan={columns.length}
+                              className="pl-4 font-bold"
+                            >
+                              <div className="flex items-center gap-4">
+                                {shouldChecked ? (
+                                  <IndeterminateCheckbox checked={true} />
+                                ) : (
+                                  <IndeterminateCheckbox />
+                                )}
+                                {product?.thumbnail ? (
+                                  <img
+                                    src={product.thumbnail}
+                                    className="rounded-soft h-8 w-8 object-cover"
+                                  />
+                                ) : (
+                                  <ImagePlaceholder />
+                                )}
+                                <h2>
+                                  {product ? product.title : "Unknown Product"}
+                                </h2>
+                              </div>
+                            </MsTable.Cell>
+                            <MsTable.Cell
+                              colSpan={columns.length}
+                            ></MsTable.Cell>
+                          </MsTable.Row>
+                        </>
                       )
                     }
 
-                    const isAdded = fields.findIndex(
-                      (item) => item.variant_id === row.original.id
-                    ) > -1
+                    const isAdded =
+                      fields.findIndex(
+                        (item) => item.variant_id === row.original.id
+                      ) > -1
                     return (
                       <>
                         {productNameRow}
@@ -322,8 +329,16 @@ const SearchProductModal = ({
         <Modal.Footer>
           <div className="gap-x-xsmall flex w-full justify-end">
             <Button
+              variant="secondary"
+              className="px-6 py-2"
+              size="small"
+              onClick={() => setOpenSearchProductModal(false)}
+            >
+              Cancel
+            </Button>
+            <Button
               variant="primary"
-              className="w-[112px]"
+              className="px-6 py-2"
               size="small"
               onClick={handleAddButtonClick}
             >

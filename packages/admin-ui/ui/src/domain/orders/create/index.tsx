@@ -41,7 +41,6 @@ type ProductVariant = {
   thumbnail: string
 }[]
 
-
 const OrderCrateIndex = () => {
   const navigate = useNavigate()
   const { t } = useTranslation()
@@ -49,7 +48,6 @@ const OrderCrateIndex = () => {
 
   const [items, setItems] = useState<ProductVariant>([])
 
-  // const { order, isLoading } = useAdminOrder("order_01HPXVZTVWSWY43WM4SGD4XXXW")
   const [openCreateCustomerModal, setOpenCreateCustomerModal] = useState(false)
   const [showAddedCustomerDetailsModal, setShowAddedCustomerDetailsModal] =
     useState(false)
@@ -71,17 +69,16 @@ const OrderCrateIndex = () => {
   const { context } = useNewOrderForm()
   const { fields: selectedProducts } = context.items
 
-  console.log("context from create:>> ", context)
-
   const {
     form: { handleSubmit, reset },
     context: { region },
   } = useNewOrderForm()
 
   const onSubmit = handleSubmit((data) => {
-    if (!data.email) {
-      return notification("error", "Email is required", "error")
-    }
+    console.log("data from create :>> ", data)
+    // if (!data.email) {
+    //   return notification("error", "Email is required", "error")
+    // }
   })
 
   const debouncedFetch = async (filter: string): Promise<Option[]> => {
@@ -118,6 +115,8 @@ const OrderCrateIndex = () => {
   const { customer } = useAdminCustomer(customerId?.value!, {
     enabled: !!customerId?.value,
   })
+
+  // console.log("customer :>> ", customer)
 
   useEffect(() => {
     if (selectedCustomerRowData && customers) {
@@ -161,7 +160,7 @@ const OrderCrateIndex = () => {
     let content = ""
     let icon = null
     let action = null
-    if (!selectedCustomer) {
+    if (!selectedCustomer && !customerId?.value) {
       content = "Add new customer"
       icon = <PlusIcon size={20} />
       action = () => setOpenCreateCustomerModal(true)
@@ -283,7 +282,7 @@ const OrderCrateIndex = () => {
                         "components-find-existing-customer",
                         "Find existing customer"
                       )}
-                      options={[]}
+                      options={options || []}
                       enableSearch
                       value={value || null}
                       onChange={(val) => {
@@ -297,14 +296,10 @@ const OrderCrateIndex = () => {
                 }}
               />
             ) : (
-              <AddressDetails />
+              <AddressDetails customer={customer} />
             )}
           </BodyCard>
-
-       
-            <MsSummaryCard />
-
-          {/* {order && <MsNote orderId={order.id} />} */}
+          <MsSummaryCard />
         </div>
       </div>
       {getWidgets("draft_order.list.after").map((Widget, i) => {

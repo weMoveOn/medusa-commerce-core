@@ -63,7 +63,7 @@ const SelectShippingMethod = () => {
             <div className="flex flex-col items-center justify-center text-center">
               <h3>
                 Add your Shipping MethodAdd your Shipping MethodAdd your
-                Shippingyour Shipping MethodAdd your Shipping MethodAdd your
+                Shipping your Shipping MethodAdd your Shipping MethodAdd your
                 Shipping Method
               </h3>
               <Button className="mt-6" variant="primary">

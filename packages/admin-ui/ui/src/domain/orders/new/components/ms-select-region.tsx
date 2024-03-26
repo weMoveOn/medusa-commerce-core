@@ -10,12 +10,17 @@ const MsSelectRegionScreen = () => {
   const [regionID, setRegionID] = React.useState<string>("")
 
   const {
-    form: { control },
+    form: { control, reset },
     context,
   } = useNewOrderForm()
 
   const { regions } = useAdminRegions()
-  const { region } = useAdminRegion(regionID)
+  const { region, isLoading } = useAdminRegion(regionID)
+
+  // console.log("regions: ", regions)
+  // console.log("selectedRegion: ", region)
+
+  // console.log("context: ", context)
 
   const regionOptions = useMemo(() => {
     if (!regions) {
@@ -33,7 +38,25 @@ const MsSelectRegionScreen = () => {
     const initialValue =
       regionOptions.length > 0 ? regionOptions[0].value : null
     setRegionID(initialValue!)
-  }, [regionID]) // Empty dependency array to run the effect only once after the initial render
+  }, []) // Empty dependency array to run the effect only once after the initial render
+
+  // Watch for changes in the region ID and reset the form when it changes
+  // useEffect(() => {
+  //   alert("regionID: ")
+  //   reset()
+  // }, [regionID, reset])
+
+  const handleRegionChange = (newValue) => {
+    reset()
+    setRegionID(newValue.value)
+    context.region = region
+  }
+
+  useEffect(() => {
+    if (region) {
+      context.region = region
+    }
+  }, [region])
 
   return (
     <div className="flex  flex-col">
@@ -45,7 +68,11 @@ const MsSelectRegionScreen = () => {
           return (
             <NextSelect
               label={t("components-region", "Region")}
-              onChange={onChange}
+              onChange={(newValue) => {
+                alert("If you change the region, the form will be reset")
+                handleRegionChange(newValue)
+                onChange(newValue)
+              }}
               value={value}
               options={regionOptions}
             />

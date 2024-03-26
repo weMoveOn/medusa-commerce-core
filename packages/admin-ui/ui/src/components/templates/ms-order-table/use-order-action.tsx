@@ -4,14 +4,12 @@ import DuplicateIcon from "../../fundamentals/icons/duplicate-icon"
 import EditIcon from "../../fundamentals/icons/edit-icon"
 import PublishIcon from "../../fundamentals/icons/publish-icon"
 import TrashIcon from "../../fundamentals/icons/trash-icon"
-import { useFeatureFlag } from "../../../providers/feature-flag-provider"
 import { useNavigate } from "react-router-dom"
 import { useTranslation } from "react-i18next"
 
 const useOrderActions = () => {
   const { t } = useTranslation()
   const navigate = useNavigate()
-  const { isFeatureEnabled } = useFeatureFlag()
 
   const getActions = (rowId:string): ActionType[] => [
     {

@@ -39,7 +39,6 @@ const MsNewOrder = ({ onDismiss, setItems }: NewOrderProps) => {
   } = useNewOrderForm()
 
   const onSubmit = handleSubmit((data) => {
-    console.log("data ms-new-order:>> ", data)
     setItems(data.items)
   })
 

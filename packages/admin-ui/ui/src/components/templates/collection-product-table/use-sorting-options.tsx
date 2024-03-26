@@ -56,7 +56,6 @@ const useSortingOptions = (products: SimpleProductType[]) => {
             title: t("collection-product-table-newest", "Newest"),
             onClick: () => {
               const sorted = products.sort(sortByNewest)
-              console.log(sorted)
               setSortedProducts(sorted)
             },
           },
@@ -64,7 +63,6 @@ const useSortingOptions = (products: SimpleProductType[]) => {
             title: t("collection-product-table-oldest", "Oldest"),
             onClick: () => {
               const sorted = products.sort(sortByOldest)
-              console.log(sorted)
               setSortedProducts(sorted)
             },
           },
@@ -72,7 +70,6 @@ const useSortingOptions = (products: SimpleProductType[]) => {
             title: t("collection-product-table-title", "Title"),
             onClick: () => {
               const sorted = products.sort(sortByTitle)
-              console.log(sorted)
               setSortedProducts(sorted)
             },
           },

@@ -25,7 +25,7 @@ const MsSummaryCard: React.FC = () => {
   }
 
   const grandTotal = totalPrice + (selectedShippingOption?.amount || 0)
-  // console.log("totalPrice :>>",totalPrice)
+
   const [showDiscountField, setShowDiscountField] = useState(false)
 
 

@@ -240,7 +240,7 @@ MsTable.Row = React.forwardRef<HTMLTableRowElement, TableRowProps>(
       <tr
         ref={ref}
         className={clsx(
-          "inter-small-regular border-grey-20 text-grey-90 border-b border-t h-[64px]",
+          "inter-small-regular border-grey-20 text-grey-90 h-[64px] border-b border-t",
           className,
           {
             "hover:bg-grey-5 cursor-pointer": linkTo !== undefined || clickable,

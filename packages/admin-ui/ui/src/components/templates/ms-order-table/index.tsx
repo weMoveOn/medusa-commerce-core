@@ -65,7 +65,6 @@ const MsOrderTable = ({ setContextFilters }: OrderTableProps) => {
     },
   })
 
-
   useEffect(() => {
     const controlledPageCount = Math.ceil(count! / queryObject.limit)
     setNumPages(controlledPageCount)
@@ -78,68 +77,68 @@ const MsOrderTable = ({ setContextFilters }: OrderTableProps) => {
   const [columns] = useOrderTableColums()
   const { getActions } = useOrderActions()
 
-    const {
-      getTableProps,
-      getTableBodyProps,
-      rows,
-      prepareRow,
-      canPreviousPage,
-      canNextPage,
-      headerGroups,
-      pageCount,
-      nextPage,
-      gotoPage,
-      previousPage,
-      // Get the state from the instance
-      state: { pageIndex, pageSize, selectedRowIds },
-    } = useTable(
-      {
-        columns,
-        data: orders || [],
-        manualPagination: true,
-        initialState: {
-          pageIndex: 1,
-          pageSize: 12,
-          // selectedRowIds: orders && orders.reduce((prev, { id }) => {
-          //   prev[id] = true
-          //   return prev
-          // }, {}),
-        },
-        pageCount: numPages,
-        autoResetSelectedRows: false,
-        autoResetPage: false,
-        getRowId: (row) => row.id,
+  const {
+    getTableProps,
+    getTableBodyProps,
+    rows,
+    prepareRow,
+    canPreviousPage,
+    canNextPage,
+    headerGroups,
+    pageCount,
+    nextPage,
+    gotoPage,
+    previousPage,
+    // Get the state from the instance
+    state: { pageIndex, pageSize, selectedRowIds },
+  } = useTable(
+    {
+      columns,
+      data: orders || [],
+      manualPagination: true,
+      initialState: {
+        pageIndex: 1,
+        pageSize: 12,
+        // selectedRowIds: orders && orders.reduce((prev, { id }) => {
+        //   prev[id] = true
+        //   return prev
+        // }, {}),
       },
-      usePagination,
-      useRowSelect,
-      (hooks) => {
-        hooks.visibleColumns.push((columns) => [
-          // Let's make a column for selection
-          {
-            id: "selection",
-            // The header can use the table's getToggleAllRowsSelectedProps method
-            // to render a checkbox
-            Header: ({ getToggleAllRowsSelectedProps }) => {
-              return (
-                <div className="pl-4">
-                  <IndeterminateCheckbox {...getToggleAllRowsSelectedProps()} />
-                </div>
-              )
-            },
-            // The cell can use the individual row's getToggleRowSelectedProps method
-            // to the render a checkbox
-            Cell: ({ row }) => {
-              return (
-                <div className="pl-4">
-                  <IndeterminateCheckbox {...row.getToggleRowSelectedProps()} />
-                </div>
-              )
-            },
+      pageCount: numPages,
+      autoResetSelectedRows: false,
+      autoResetPage: false,
+      getRowId: (row) => row.id,
+    },
+    usePagination,
+    useRowSelect,
+    (hooks) => {
+      hooks.visibleColumns.push((columns) => [
+        // Let's make a column for selection
+        {
+          id: "selection",
+          // The header can use the table's getToggleAllRowsSelectedProps method
+          // to render a checkbox
+          Header: ({ getToggleAllRowsSelectedProps }) => {
+            return (
+              <div className="pl-4">
+                <IndeterminateCheckbox {...getToggleAllRowsSelectedProps()} />
+              </div>
+            )
           },
-          ...columns,
-        ])
-      }
-    )
+          // The cell can use the individual row's getToggleRowSelectedProps method
+          // to the render a checkbox
+          Cell: ({ row }) => {
+            return (
+              <div className="pl-4">
+                <IndeterminateCheckbox {...row.getToggleRowSelectedProps()} />
+              </div>
+            )
+          },
+        },
+        ...columns,
+      ])
+    }
+  )
 
   // Debounced search
   useEffect(() => {
@@ -233,6 +232,7 @@ const MsOrderTable = ({ setContextFilters }: OrderTableProps) => {
           searchValue={query}
           {...getTableProps()}
           className={clsx({ ["relative"]: isLoading })}
+          tableHeight="h-[calc(100vh-400px)] overflow-y-auto"
         >
           <MsTable.Head className="h-[64px]">
             {headerGroups?.map((headerGroup) => (
@@ -245,6 +245,9 @@ const MsOrderTable = ({ setContextFilters }: OrderTableProps) => {
                     {col.render("Header")}
                   </MsTable.HeadCell>
                 ))}
+                <MsTable.HeadCell className="w-[80px]">
+                  <span className="sr-only">Actions</span>
+                </MsTable.HeadCell>
               </MsTable.HeadRow>
             ))}
           </MsTable.Head>

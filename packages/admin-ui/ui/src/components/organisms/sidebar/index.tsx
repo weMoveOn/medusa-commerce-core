@@ -88,7 +88,6 @@ const Sidebar: React.FC = () => {
               icon={<CollectionsIcon />}
               text={t("sidebar-collections", "Collections")}
               triggerHandler={() => {
-                console.log("collections")
               }}
               subItems={[{ pageLink: "/a/overview", text: "Overview" }]}
             />

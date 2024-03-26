@@ -38,8 +38,6 @@ const MsRMASelectProductTable: React.FC<RMASelectProductTableProps> = ({
   const { t } = useTranslation()
   const { push, pop } = useContext(LayeredModalContext)
 
-  console.log("allItems from Ms-->", allItems)
-
   const handleQuantity = (change, item) => {
     if (
       (item.quantity - item.returned_quantity === toReturn[item.id].quantity &&

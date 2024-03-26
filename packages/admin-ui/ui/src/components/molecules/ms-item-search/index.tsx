@@ -47,9 +47,6 @@ const MsItemSearch = ({
   // const { isLoading, products } = useAdminProducts()
 
   const { isLoading, variants } = useAdminVariants()
-  // console.log("variants ->", variants)
-
-  // console.log("products ->", )
 
   const onChange = (item: SingleValue<ItemOption>) => {
     if (item) {
@@ -103,7 +100,6 @@ const SearchControl = ({ children, ...props }: ControlProps<ItemOption>) => (
 )
 
 const ProductOption = ({ innerProps, data }: OptionProps<ItemOption>) => {
-  console.log("data ->", data)
   return (
     <div
       {...innerProps}

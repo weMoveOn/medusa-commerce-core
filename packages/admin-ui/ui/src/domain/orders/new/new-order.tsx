@@ -35,7 +35,7 @@ const NewOrder = ({ onDismiss }: NewOrderProps) => {
   } = useNewOrderForm()
 
   const onSubmit = handleSubmit((data) => {
-    console.log("data from new-order.tsx", data)
+    console.log("data from new-order.tsx: ", data)
     // mutate(
     //   {
     //     email: data.email,
