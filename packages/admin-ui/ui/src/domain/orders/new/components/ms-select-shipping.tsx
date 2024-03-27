@@ -37,8 +37,6 @@ const MsSelectShippingMethod = () => {
     name: "shipping_option",
   })
 
-  // console.log("selectedShippingOption", selectedShippingOption)
-
   const removeCustomPrice = () => {
     setShowCustomPrice(false)
     setValue("custom_shipping_price", undefined)

@@ -7,7 +7,7 @@ import Button from "../../../components/fundamentals/button"
 import TrashIcon from "../../../components/fundamentals/icons/trash-icon"
 import { useTranslation } from "react-i18next"
 import { useNewOrderForm } from "../new/form"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 
 type ProductVariant = {
   quantity: number
@@ -33,7 +33,11 @@ const MsItemsInformationTable = ({
     form: { control, register, setValue },
   } = useNewOrderForm()
 
+  // console.log("Added Items :>>", addedItems)s
+
   const { fields, append, remove, update } = items
+
+  // console.log("Fields :>>", fields)
 
   const [editQuantity, setEditQuantity] = useState(-1)
 
@@ -70,7 +74,7 @@ const MsItemsInformationTable = ({
           </Table.HeadRow>
         </Table.Head>
         <Table.Body>
-          {addedItems.map((item, index) => {
+          {fields.map((item, index) => {
             return (
               <Table.Row
                 key={index}
@@ -142,7 +146,7 @@ const MsItemsInformationTable = ({
                     variant="ghost"
                     size="small"
                     className="mt-6"
-                    onClick={() => remove(item.id)}
+                    // onClick={() => remove(item.id)}
                   >
                     <TrashIcon size={20} className="text-grey-50" />
                   </Button>
