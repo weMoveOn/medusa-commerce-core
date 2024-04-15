@@ -463,3 +463,32 @@
 .remove-number-spinner {
   -moz-appearance: textfield;
 }
+
+.animate-slide-down {
+  animation-name: slideDown;
+  animation-duration: 0.5s;
+}
+
+@keyframes slideDown {
+  from {
+    transform: translateY(-100%);
+  }
+  to {
+    transform: translateY(0%);
+  }
+}
+
+.animate-slide-right {
+  animation-name: slideRight;
+  animation-duration: 0.5s;
+}
+
+@keyframes slideRight {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0%);
+  }
+}
+

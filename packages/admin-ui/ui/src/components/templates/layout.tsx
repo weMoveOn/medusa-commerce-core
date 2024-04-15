@@ -25,15 +25,13 @@ const Layout: React.FC<React.PropsWithChildren> = ({ children }) => {
           <Navbar />
         </div>
 
-        <div className="  flex  w-full ">
+        <div className="flex w-full bg-[#F2F4F6]">
           <div className="medium:block hidden">
             <Sidebar />
           </div>
           <div className="flex h-screen flex-1 flex-col">
-            {/* min-h-content */}
-            <div className=" overflow-y-auto   bg-[#F2F4F6]">
-              {/*  medium:mx-4xlarge large:mx-auto large:max-w-7xl large:w-full h-full */}
-              <main className="h-full w-full">{children}</main>
+            <div className="overflow-y-auto">
+              <main className="h-full w-full p-6">{children}</main>
             </div>
           </div>
         </div>

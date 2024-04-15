@@ -25,7 +25,7 @@ const OnboardingIndex = () => {
     handleSubmit,
   } = onboardingForm
   const onSubmit = handleSubmit((data) => {
-    console.log("data :>> ", data)
+   
   })
 
   return (

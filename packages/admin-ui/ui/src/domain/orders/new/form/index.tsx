@@ -5,7 +5,14 @@ import {
   useAdminShippingOptions,
   useMedusa,
 } from "medusa-react"
-import { createContext, ReactNode, useContext, useEffect, useMemo } from "react"
+import {
+  createContext,
+  ReactNode,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+} from "react"
 import {
   FormProvider,
   useFieldArray,
@@ -82,6 +89,8 @@ const NewOrderFormProvider = ({ children }: { children?: ReactNode }) => {
     }
   )
 
+  const prevItems = useRef<any[]>([])
+
   useEffect(() => {
     if (selectedShippingOption) {
       form.resetField("shipping_option")
@@ -89,22 +98,26 @@ const NewOrderFormProvider = ({ children }: { children?: ReactNode }) => {
     }
   }, [selectedRegion])
 
-  const validCountries = useMemo(() => {
-    if (!region) {
-      return []
-    }
+    const validCountries = useMemo(() => {
+      if (!region) {
+        return []
+      }
 
-    return region.countries.map((country) => ({
-      label: country.display_name,
-      value: country.iso_2,
-    }))
-  }, [region])
+      return region.countries.map((country) => ({
+        label: country.display_name,
+        value: country.iso_2,
+      }))
+    }, [region])
 
-  const { client } = useMedusa()
+    const { client } = useMedusa()
 
   useEffect(() => {
     const updateItems = async () => {
-      if (items.fields.length) {
+      if (
+        region &&
+        items.fields.length &&
+        !arraysEqual(prevItems.current, items.fields)
+      ) {
         const itemsMap = items.fields.reduce((acc, next) => {
           if (next.variant_id) {
             acc[next.variant_id] = next
@@ -121,21 +134,21 @@ const NewOrderFormProvider = ({ children }: { children?: ReactNode }) => {
           region_id: region?.id,
         })
 
-        items.replace(
-          variants.map((variant) => ({
-            quantity: itemsMap[variant.id as string].quantity,
-            variant_id: variant.id,
-            title: variant.title as string,
-            unit_price: extractUnitPrice(variant, region as Region, false),
-            product_title: (variant.product as Product)?.title,
-            thumbnail: (variant.product as Product)?.thumbnail,
-          }))
-        )
+        const mappedVariants = variants.map((variant) => ({
+          quantity: itemsMap[variant.id as string].quantity,
+          variant_id: variant.id,
+          title: variant.title as string,
+          unit_price: extractUnitPrice(variant, region, false),
+          product_title: (variant.product as Product)?.title,
+          thumbnail: (variant.product as Product)?.thumbnail,
+        }))
+        items.replace(mappedVariants)
+        prevItems.current = items.fields
       }
     }
 
     updateItems()
-  }, [region])
+  }, [region, items.fields.length]) // Include both region and items.fields as dependencies
 
   const { shipping_options } = useAdminShippingOptions(
     {
@@ -190,6 +203,18 @@ const NewOrderFormProvider = ({ children }: { children?: ReactNode }) => {
       <FormProvider {...form}>{children}</FormProvider>
     </NewOrderContext.Provider>
   )
+}
+
+// Function to check if two arrays are equal
+function arraysEqual(a: any[], b: any[]) {
+  if (a === b) return true
+  if (a == null || b == null) return false
+  if (a.length !== b.length) return false
+
+  for (let i = 0; i < a.length; ++i) {
+    if (a[i] !== b[i]) return false
+  }
+  return true
 }
 
 export const useNewOrderForm = () => {

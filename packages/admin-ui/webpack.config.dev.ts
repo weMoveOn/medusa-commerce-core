@@ -30,6 +30,20 @@ const getDevServerConfig = () => {
     devConfig.plugins?.push(new DuplicateReporterPlugin())
   }
 
+  // Add a rule for handling image files using file-loader
+  devConfig.module.rules.push({
+    test: /\.(png|jpe?g|gif)$/i,
+    use: [
+      {
+        loader: "file-loader",
+        options: {
+          name: "[name].[ext]",
+          outputPath: "images", // Specify the output directory for images
+        },
+      },
+    ],
+  })
+
   return {
     ...devConfig,
     ...{

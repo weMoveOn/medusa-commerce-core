@@ -1,31 +1,28 @@
-import { useAdminRegions } from "medusa-react"
+import {
+  useAdminRegion,
+  useAdminRegions,
+  useAdminShippingOptions,
+} from "medusa-react"
 import React, { useEffect, useMemo } from "react"
 import { Controller, useWatch } from "react-hook-form"
 import { useTranslation } from "react-i18next"
-import { SteppedContext } from "../../../../components/molecules/modal/stepped-modal"
 import { NextSelect } from "../../../../components/molecules/select/next-select"
 import { useNewOrderForm } from "../form"
+import { ShippingOption } from "@medusajs/medusa"
 
-const SelectRegionScreen = () => {
+const MsSelectRegionScreen = () => {
   const { t } = useTranslation()
-  const { enableNextPage, disableNextPage } = React.useContext(SteppedContext)
-
+  const [regionID, setRegionID] = React.useState<string>("")
   const {
-    form: { control },
+    form: { control, setValue },
+    context,
   } = useNewOrderForm()
-
-  const reg = useWatch({
-    control,
-    name: "region",
-  })
-
   const { regions } = useAdminRegions()
-
+  const { region, isLoading } = useAdminRegion(regionID)
   const regionOptions = useMemo(() => {
     if (!regions) {
       return []
     }
-
     return regions.map((region) => ({
       label: region.name,
       value: region.id,
@@ -33,17 +30,27 @@ const SelectRegionScreen = () => {
   }, [regions])
 
   useEffect(() => {
-    if (!reg) {
-      disableNextPage()
-    } else {
-      enableNextPage()
-    }
-  }, [reg])
+    // Set the initial value to the first region option
+    const initialValue =
+      regionOptions.length > 0 ? regionOptions[0].value : null
+    setRegionID(initialValue!)
+  }, [regionOptions])
 
-  // min-h-[705px]
+  const handleRegionChange = (newValue) => {
+    // Reset the context state to defaultState when the region changes
+    setValue("items", [])
+    // setValue("region", newValue)
+    
+  }
+
+  useEffect(() => {
+    if (region) {
+      context.region = region
+    }
+  }, [region])
 
   return (
-    <div className="flex  flex-col">
+    <div className="flex flex-col">
       <Controller
         control={control}
         name="region"
@@ -51,7 +58,11 @@ const SelectRegionScreen = () => {
           return (
             <NextSelect
               label={t("components-region", "Region")}
-              onChange={onChange}
+              onChange={(newValue) => {
+                // alert("If you change the region, the form will be reset")
+                handleRegionChange(newValue)
+                onChange(newValue)
+              }}
               value={value}
               options={regionOptions}
             />
@@ -62,4 +73,4 @@ const SelectRegionScreen = () => {
   )
 }
 
-export default SelectRegionScreen
+export default MsSelectRegionScreen

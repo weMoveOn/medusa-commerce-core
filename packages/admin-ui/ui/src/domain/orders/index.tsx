@@ -8,8 +8,7 @@ import RouteContainer from "../../components/extensions/route-container"
 import WidgetContainer from "../../components/extensions/widget-container"
 import Button from "../../components/fundamentals/button"
 import ExportIcon from "../../components/fundamentals/icons/export-icon"
-import BodyCard from "../../components/organisms/body-card"
-import TableViewHeader from "../../components/organisms/custom-table-header"
+// import BodyCard from "../../components/organisms/body-card"
 import ExportModal from "../../components/organisms/export-modal"
 import useNotification from "../../hooks/use-notification"
 import useToggleState from "../../hooks/use-toggle-state"
@@ -19,10 +18,12 @@ import { useWidgets } from "../../providers/widget-provider"
 import { getErrorMessage } from "../../utils/error-messages"
 import Details from "./ms-details"
 import { transformFiltersAsExportContext } from "./utils"
-import EditIcon from "../../components/fundamentals/icons/edit-icon";
+import EditIcon from "../../components/fundamentals/icons/edit-icon"
 import MsOrderTable from "../../components/templates/ms-order-table"
+import MsTableViewHeader from "../../components/organisms/ms-custom-table-header"
+import BodyCard from "../../components/organisms/ms-body-card"
 
-const VIEWS = ["orders", "drafts"]
+const VIEWS = ["orders"]
 
 const OrderIndex = () => {
   const view = "orders"
@@ -46,26 +47,28 @@ const OrderIndex = () => {
 
   const actions = useMemo(() => {
     return [
-      <div className="flex space-x-2">
-      <Button
-        key="export"
-        variant="secondary"
-        size="small"
-        onClick={() => openExportModal()}
-      >
-        <ExportIcon size={20} />
-        Export Orders
-      </Button>
-      <Button
+      <div className="flex gap-4">
+        <Button
+          key="export"
+          variant="primary"
+          size="small"
+          onClick={() => openExportModal()}
+          className="h-[48px]"
+        >
+          <ExportIcon size={20} />
+          Export Orders
+        </Button>
+        <Button
           key="order_create"
-          variant="secondary"
+          variant="primary"
           size="small"
           onClick={() => navigate(`/a/order/create`)}
-      >
-        <EditIcon size={20} />
-        Create order
-      </Button>
-      </div>
+          className="h-[48px]"
+        >
+          <EditIcon size={20} />
+          Create Manual Order
+        </Button>
+      </div>,
     ]
   }, [view])
 
@@ -113,8 +116,9 @@ const OrderIndex = () => {
         })}
         <div className="flex w-full grow flex-col">
           <BodyCard
+           compact={true}
             customHeader={
-              <TableViewHeader
+              <MsTableViewHeader
                 views={VIEWS}
                 setActiveView={(v) => {
                   if (v === "drafts") {
@@ -122,13 +126,14 @@ const OrderIndex = () => {
                   }
                 }}
                 activeView={view}
+                textStyle="text-[32px] font-semibold text-grey-90"
               />
             }
-            className="h-fit"
+            className="h-fit bg-inherit border-none"
+            insidePadding={false}
             customActionable={actions}
-          >
+          />
             <MsOrderTable setContextFilters={setContextFilters} />
-          </BodyCard>
         </div>
         {getWidgets("order.list.after").map((w, i) => {
           return (

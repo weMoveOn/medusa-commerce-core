@@ -4,8 +4,6 @@ import React, { useState } from "react"
 import { useTranslation } from "react-i18next"
 
 import RegisterClaimMenu from "../../../domain/orders/details/claim/register-claim-menu"
-import ReturnMenu from "../../../domain/orders/details/returns"
-import SwapMenu from "../../../domain/orders/details/swap/create"
 import useOrdersExpandParam from "../../../domain/orders/details/utils/use-admin-expand-paramter"
 import {
   ClaimEvent,
@@ -32,30 +30,32 @@ import AlertIcon from "../../fundamentals/icons/alert-icon"
 import BackIcon from "../../fundamentals/icons/back-icon"
 import RefreshIcon from "../../fundamentals/icons/refresh-icon"
 import Actionables, { ActionType } from "../../molecules/actionables"
-import NoteInput from "../../molecules/ms-note-input"
 import Claim from "../../molecules/timeline-events/claim-event"
-import Exchange from "../../molecules/timeline-events/exchange"
-import ItemsFulfilled from "../../molecules/timeline-events/items-fulfilled"
 import ItemsShipped from "../../molecules/timeline-events/items-shipped"
 import Note from "../../molecules/timeline-events/note"
 import Notification from "../../molecules/timeline-events/notification"
 import OrderCanceled from "../../molecules/timeline-events/order-canceled"
 import EditCanceled from "../../molecules/timeline-events/order-edit/canceled"
-import EditConfirmed from "../../molecules/timeline-events/order-edit/confirmed"
-import EditCreated from "../../molecules/timeline-events/order-edit/created"
 import EditDeclined from "../../molecules/timeline-events/order-edit/declined"
 import PaymentRequired from "../../molecules/timeline-events/order-edit/payment-required"
 import RefundRequired from "../../molecules/timeline-events/order-edit/refund-required"
-import EditRequested from "../../molecules/timeline-events/order-edit/requested"
 import OrderPlaced from "../../molecules/timeline-events/order-placed"
 import Refund from "../../molecules/timeline-events/refund"
-import Return from "../../molecules/timeline-events/return"
+import NoteInput from "../../molecules/note-input"
+import MsReturn from "../../molecules/ms-timeline-events/return"
+import MsExchange from "../../molecules/ms-timeline-events/exchange"
+import MsItemsFulfilled from "../../molecules/ms-timeline-events/items-fulfilled"
+import MsEditConfirmed from "../../molecules/ms-timeline-events/order-edit/confirmed"
+import MsEditCreated from "../../molecules/ms-timeline-events/order-edit/created"
+import MsSwapMenu from "../../../domain/orders/ms-details/ms-swap/create"
+import MsReturnMenu from "../../../domain/orders/ms-details/ms-returns"
+import MsEditRequested from "../../molecules/ms-timeline-events/order-edit/requested"
 
 type TimelineProps = {
   orderId: string
 }
 
-const Timeline: React.FC<TimelineProps> = ({ orderId }) => {
+const MsTimeline: React.FC<TimelineProps> = ({ orderId }) => {
   const { t } = useTranslation()
   const { orderRelations } = useOrdersExpandParam()
 
@@ -159,13 +159,13 @@ const Timeline: React.FC<TimelineProps> = ({ orderId }) => {
         </div>
       </div>
       {showRequestReturn && order && (
-        <ReturnMenu
+        <MsReturnMenu
           order={order}
           onDismiss={() => setShowRequestReturn(false)}
         />
       )}
       {showCreateSwap && order && (
-        <SwapMenu order={order} onDismiss={() => setshowCreateSwap(false)} />
+        <MsSwapMenu order={order} onDismiss={() => setshowCreateSwap(false)} />
       )}
       {showRegisterClaim && order && (
         <RegisterClaimMenu order={order} onClose={closeRegisterClaim} />
@@ -179,7 +179,7 @@ function switchOnType(event: TimelineEvent, refetch: () => void) {
     case "placed":
       return <OrderPlaced event={event as OrderPlacedEvent} />
     case "fulfilled":
-      return <ItemsFulfilled event={event as ItemsFulfilledEvent} />
+      return <MsItemsFulfilled event={event as ItemsFulfilledEvent} />
     case "note":
       return <Note event={event as NoteEvent} />
     case "shipped":
@@ -187,10 +187,10 @@ function switchOnType(event: TimelineEvent, refetch: () => void) {
     case "canceled":
       return <OrderCanceled event={event as TimelineEvent} />
     case "return":
-      return <Return event={event as ReturnEvent} refetch={refetch} />
+      return <MsReturn event={event as ReturnEvent} refetch={refetch} />
     case "exchange":
       return (
-        <Exchange
+        <MsExchange
           key={event.id}
           event={event as ExchangeEvent}
           refetch={refetch}
@@ -203,15 +203,15 @@ function switchOnType(event: TimelineEvent, refetch: () => void) {
     case "refund":
       return <Refund event={event as RefundEvent} />
     case "edit-created":
-      return <EditCreated event={event as OrderEditEvent} />
+      return <MsEditCreated event={event as OrderEditEvent} />
     case "edit-canceled":
       return <EditCanceled event={event as OrderEditEvent} />
     case "edit-declined":
       return <EditDeclined event={event as OrderEditEvent} />
     case "edit-confirmed":
-      return <EditConfirmed event={event as OrderEditEvent} />
+      return <MsEditConfirmed event={event as OrderEditEvent} />
     case "edit-requested":
-      return <EditRequested event={event as OrderEditRequestedEvent} />
+      return <MsEditRequested event={event as OrderEditRequestedEvent} />
     case "refund-required":
       return <RefundRequired event={event as RefundRequiredEvent} />
     case "payment-required":
@@ -221,4 +221,4 @@ function switchOnType(event: TimelineEvent, refetch: () => void) {
   }
 }
 
-export default Timeline
+export default MsTimeline

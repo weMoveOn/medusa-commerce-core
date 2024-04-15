@@ -53,7 +53,6 @@ const Items = () => {
       id: variantIds,
       region_id: region?.id,
     })
-
     append(
       newVariants.map((item) => ({
         quantity: 1,

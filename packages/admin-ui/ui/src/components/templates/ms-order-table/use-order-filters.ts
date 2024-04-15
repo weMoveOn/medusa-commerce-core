@@ -71,6 +71,16 @@ const DefaultTabs = {
     fulfillment_status: ["shipped"],
     payment_status: ["captured"],
   },
+  pending: {
+    fulfillment_status: ["not_fulfilled"],
+    payment_status: ["awaiting"],
+  },
+  return: {
+    status: ["return"],
+  },
+  cancel: {
+    status: ["cancel"],
+  },
 }
 
 const formatDateFilter = (filter: OrderDateFilter) => {
@@ -374,6 +384,18 @@ export const useOrderFilters = (
       {
         label: t("order-table-filters-incomplete", "Incomplete"),
         value: "incomplete",
+      },
+      {
+        label: t("order-table-filters-on-hold", "OnHold"),
+        value: "pending",
+      },
+      {
+        label: t("order-table-filters-return", "Return"),
+        value: "return",
+      },
+      {
+        label: t("order-table-filters-cancel", "Cancel"),
+        value: "cancel",
       },
       ...tabs,
     ]

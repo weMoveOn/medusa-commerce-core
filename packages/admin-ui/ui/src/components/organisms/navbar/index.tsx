@@ -28,7 +28,6 @@ const Navbar: React.FC = () => {
   )
 
   const onSubmit = (data: any) => {
-    // console.log("data :>> ", data)
   }
 
   React.useEffect(() => {

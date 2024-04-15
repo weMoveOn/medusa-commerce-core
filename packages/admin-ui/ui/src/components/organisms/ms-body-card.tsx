@@ -20,6 +20,7 @@ type BodyCardProps = {
   compact?: boolean
   footerMinHeight?: number
   setBorders?: boolean
+  insidePadding?: boolean
 } & React.HTMLAttributes<HTMLDivElement>
 
 const BodyCard: React.FC<BodyCardProps> = ({
@@ -36,13 +37,14 @@ const BodyCard: React.FC<BodyCardProps> = ({
   compact = false,
   setBorders = false,
   footerMinHeight = 24,
+  insidePadding = true,
   ...rest
 }) => {
   const { isScrolled, scrollListener } = useScroll({ threshold: 16 })
   return (
     <div
       className={clsx(
-        "flex h-full w-full flex-col   ",
+        "rounded-rounded bg-grey-0 border-grey-20 flex h-full w-full flex-col overflow-hidden border",
         { "min-h-[350px]": !compact },
         className
       )}
@@ -50,7 +52,7 @@ const BodyCard: React.FC<BodyCardProps> = ({
     >
       <div className="relative">
         {isScrolled && (
-          <div className="rounded-t-rounded from-grey-0  absolute left-0 right-0 top-0 z-10 bg-gradient-to-b to-[rgba(255,255,255,0)]" />
+          <div className="rounded-t-rounded from-grey-0 h-xlarge absolute left-0 right-0 top-0 z-10 bg-gradient-to-b to-[rgba(255,255,255,0)]" />
         )}
       </div>
       <div
@@ -59,11 +61,10 @@ const BodyCard: React.FC<BodyCardProps> = ({
         })}
         onScroll={scrollListener}
       >
-        {/* medium:px-xlarge medium:py-large */}
         <div
-          className={clsx("pt-6", {
+          className={clsx("px-xlarge py-large", {
             "border-grey-20 border-b border-solid": setBorders,
-          })}
+          },{"!px-small pt-4": !insidePadding})}
         >
           <div className="flex items-start justify-between">
             <div>
@@ -93,7 +94,7 @@ const BodyCard: React.FC<BodyCardProps> = ({
           </div>
         </div>
 
-        <div className="  medium:px-large px-small">
+        <div className="px-xlarge">
           {children && (
             <div
               className={clsx("flex flex-col", {
@@ -106,7 +107,7 @@ const BodyCard: React.FC<BodyCardProps> = ({
         </div>
       </div>
       {events && events.length > 0 ? (
-        <div className="pb-large pt-base medium:px-xlarge  border-grey-20 border-t">
+        <div className="pb-large pt-base px-xlarge border-grey-20 border-t">
           <div className="flex flex-row-reverse items-center">
             {events.map((event, i: React.Key) => {
               return (

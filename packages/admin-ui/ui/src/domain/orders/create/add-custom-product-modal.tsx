@@ -1,7 +1,9 @@
+import { useForm } from "react-hook-form"
 import Button from "../../../components/fundamentals/button"
-import PlusIcon from "../../../components/fundamentals/icons/plus-icon"
+import ProductLoadingIcon from "../../../components/fundamentals/icons/product-loading"
 import InputField from "../../../components/molecules/input"
 import Modal from "../../../components/molecules/modal"
+import { useNewOrderForm } from "../new/form"
 
 type AddCustomProductModalProps = {
   openAddCustomProductModal: boolean
@@ -12,6 +14,27 @@ const AddCustomProductModal = ({
   openAddCustomProductModal,
   setOpenAddCustomProductModal,
 }: AddCustomProductModalProps) => {
+  const {
+    context: { region, items },
+  } = useNewOrderForm()
+
+  const { append } = items
+
+  const addCustomItem = (title: string, quantity: number, amount: number) => {
+    append({
+      title,
+      unit_price: amount,
+      quantity: quantity,
+    })
+  }
+
+  const { register, handleSubmit } = useForm()
+
+  const onSubmit = handleSubmit((data) => {
+    addCustomItem(data.title, data.quantity, data.unit_price)
+    setOpenAddCustomProductModal(false)
+  })
+
   return (
     <>
       <Modal
@@ -24,31 +47,37 @@ const AddCustomProductModal = ({
           handleClose={() => setOpenAddCustomProductModal(false)}
         >
           <div className="flex items-end justify-center gap-2 ">
-            <PlusIcon size={20} />
+            <ProductLoadingIcon size={20} />
             <p className="font-bold">Add custom product</p>
           </div>
         </Modal.Header>
-        <Modal.Body className="p-6">
-          <div className="mb-4 grid grid-cols-2 gap-6">
+        <Modal.Body className="max-w-[812px] p-6">
+          <div className="mb-4 grid gap-6">
             <InputField
-              placeholder="MoveOn Sweatshirt"
               title="Title/Product Name"
               label="Title/Product Name"
+              placeholder="MoveOn Sweatshirt"
+              required
+              {...register("title", { required: true })}
             />
-            <InputField placeholder="50" title="Quantity" label="Quantity" />
           </div>
 
           <div className="grid grid-cols-12 gap-6">
             <InputField
-              placeholder="BDT"
+              title="Unit Price (BDT)"
+              label="Unit Price (BDT)"
+              placeholder="50)"
               className="col-span-3"
-              label="Currency"
+              required
+              {...register("unit_price", { required: true })}
             />
             <InputField
+              title="Quantity"
+              label="Quantity"
               placeholder="50"
-              title="Amount"
               className="col-span-9"
-              label="Amount"
+              required
+              {...register("quantity", { required: true })}
             />
           </div>
         </Modal.Body>
@@ -64,7 +93,7 @@ const AddCustomProductModal = ({
             <Button
               className="h-[40px]"
               variant="primary"
-              onClick={() => setOpenAddCustomProductModal(false)}
+              onClick={onSubmit}
             >
               Add product
             </Button>

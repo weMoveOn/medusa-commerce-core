@@ -20,6 +20,7 @@ type BodyCardProps = {
   compact?: boolean
   footerMinHeight?: number
   setBorders?: boolean
+  insidePadding?: boolean
 } & React.HTMLAttributes<HTMLDivElement>
 
 const BodyCard: React.FC<BodyCardProps> = ({
@@ -36,6 +37,7 @@ const BodyCard: React.FC<BodyCardProps> = ({
   compact = false,
   setBorders = false,
   footerMinHeight = 24,
+  insidePadding = true,
   ...rest
 }) => {
   const { isScrolled, scrollListener } = useScroll({ threshold: 16 })
@@ -62,7 +64,7 @@ const BodyCard: React.FC<BodyCardProps> = ({
         <div
           className={clsx("px-xlarge py-large", {
             "border-grey-20 border-b border-solid": setBorders,
-          })}
+          },{"!px-small": !insidePadding})}
         >
           <div className="flex items-start justify-between">
             <div>

@@ -6,12 +6,15 @@ import React, { useEffect, useState } from "react"
 import { useLocation } from "react-router-dom"
 import { usePagination, useTable } from "react-table"
 import { useAnalytics } from "../../../providers/analytics-provider"
-import { useFeatureFlag } from "../../../providers/feature-flag-provider"
-import Table from "../../molecules/table"
-import TableContainer from "../../organisms/table-container"
-import OrderFilters from "../order-filter-dropdown"
 import useOrderTableColums from "./use-order-column"
 import { useOrderFilters } from "./use-order-filters"
+import MsTableContainer from "../../organisms/ms-table-container"
+import MsTable from "../../molecules/ms-table"
+import MsOrderFilters from "../ms-order-filter-dropdown"
+import useOrderActions from "./use-order-action"
+import { useRowSelect } from "react-table"
+import IndeterminateCheckbox from "../../molecules/indeterminate-checkbox"
+import TableEmptyState from "./table-empty-state"
 
 const DEFAULT_PAGE_SIZE = 15
 
@@ -25,19 +28,10 @@ type OrderTableProps = {
   setContextFilters: (filters: Record<string, { filter: string[] }>) => void
 }
 
-const OrderTable = ({ setContextFilters }: OrderTableProps) => {
+const MsOrderTable = ({ setContextFilters }: OrderTableProps) => {
   const location = useLocation()
 
-  const { isFeatureEnabled } = useFeatureFlag()
   const { trackNumberOfOrders } = useAnalytics()
-
-  let hiddenColumns = ["sales_channel"]
-  if (isFeatureEnabled("sales_channels")) {
-    if (!defaultQueryProps.expand.includes("sales_channel")) {
-      defaultQueryProps.expand = defaultQueryProps.expand + ",sales_channel"
-    }
-    hiddenColumns = []
-  }
 
   const {
     removeTab,
@@ -60,6 +54,7 @@ const OrderTable = ({ setContextFilters }: OrderTableProps) => {
 
   const [query, setQuery] = useState(filtersOnLoad?.query)
   const [numPages, setNumPages] = useState(0)
+  const [closeFilter, setCloseFilter] = useState(false)
 
   const { orders, isLoading, count } = useAdminOrders(queryObject, {
     keepPreviousData: true,
@@ -80,35 +75,69 @@ const OrderTable = ({ setContextFilters }: OrderTableProps) => {
   }, [filters])
 
   const [columns] = useOrderTableColums()
+  const { getActions } = useOrderActions()
 
   const {
     getTableProps,
     getTableBodyProps,
-    headerGroups,
     rows,
     prepareRow,
     canPreviousPage,
     canNextPage,
+    headerGroups,
     pageCount,
-    gotoPage,
     nextPage,
+    gotoPage,
     previousPage,
     // Get the state from the instance
-    state: { pageIndex },
+    state: { pageIndex, pageSize, selectedRowIds },
   } = useTable(
     {
       columns,
       data: orders || [],
       manualPagination: true,
       initialState: {
-        pageSize: lim,
-        pageIndex: offs / lim,
-        hiddenColumns,
+        pageIndex: 1,
+        pageSize: 12,
+        // selectedRowIds: orders && orders.reduce((prev, { id }) => {
+        //   prev[id] = true
+        //   return prev
+        // }, {}),
       },
       pageCount: numPages,
+      autoResetSelectedRows: false,
       autoResetPage: false,
+      getRowId: (row) => row.id,
     },
-    usePagination
+    usePagination,
+    useRowSelect,
+    (hooks) => {
+      hooks.visibleColumns.push((columns) => [
+        // Let's make a column for selection
+        {
+          id: "selection",
+          // The header can use the table's getToggleAllRowsSelectedProps method
+          // to render a checkbox
+          Header: ({ getToggleAllRowsSelectedProps }) => {
+            return (
+              <div className="pl-4">
+                <IndeterminateCheckbox {...getToggleAllRowsSelectedProps()} />
+              </div>
+            )
+          },
+          // The cell can use the individual row's getToggleRowSelectedProps method
+          // to the render a checkbox
+          Cell: ({ row }) => {
+            return (
+              <div className="pl-4">
+                <IndeterminateCheckbox {...row.getToggleRowSelectedProps()} />
+              </div>
+            )
+          },
+        },
+        ...columns,
+      ])
+    }
   )
 
   // Debounced search
@@ -166,9 +195,9 @@ const OrderTable = ({ setContextFilters }: OrderTableProps) => {
 
   return (
     <div>
-      <TableContainer
+      <MsTableContainer
         isLoading={isLoading}
-        hasPagination
+        hasPagination={orders?.length ? true : false}
         numberOfRows={lim}
         pagingState={{
           count: count!,
@@ -183,9 +212,9 @@ const OrderTable = ({ setContextFilters }: OrderTableProps) => {
           hasPrev: canPreviousPage,
         }}
       >
-        <Table
+        <MsTable
           filteringOptions={
-            <OrderFilters
+            <MsOrderFilters
               filters={filters}
               submitFilters={setFilters}
               clearFilters={clearFilters}
@@ -197,47 +226,62 @@ const OrderTable = ({ setContextFilters }: OrderTableProps) => {
             />
           }
           enableSearch
+          searchClassName="mr-32 w-[400px] mt-0 h-[44px]"
+          searchPlaceholder="Search by order id, email, or customer name"
           handleSearch={setQuery}
           searchValue={query}
           {...getTableProps()}
           className={clsx({ ["relative"]: isLoading })}
+          tableHeight="h-[calc(100vh-400px)] overflow-y-auto"
         >
-          <Table.Head>
+          <MsTable.Head className="h-[64px]">
             {headerGroups?.map((headerGroup) => (
-              <Table.HeadRow {...headerGroup.getHeaderGroupProps()}>
+              <MsTable.HeadRow
+                {...headerGroup.getHeaderGroupProps()}
+                className="bg-grey-100"
+              >
                 {headerGroup.headers.map((col) => (
-                  <Table.HeadCell {...col.getHeaderProps()}>
+                  <MsTable.HeadCell {...col.getHeaderProps()}>
                     {col.render("Header")}
-                  </Table.HeadCell>
+                  </MsTable.HeadCell>
                 ))}
-              </Table.HeadRow>
+                <MsTable.HeadCell className="w-[80px]">
+                  <span className="sr-only">Actions</span>
+                </MsTable.HeadCell>
+              </MsTable.HeadRow>
             ))}
-          </Table.Head>
-          <Table.Body {...getTableBodyProps()}>
-            {rows.map((row) => {
-              prepareRow(row)
-              return (
-                <Table.Row
-                  color={"inherit"}
-                  linkTo={row.original.id}
-                  {...row.getRowProps()}
-                  className="group"
-                >
-                  {row.cells.map((cell) => {
-                    return (
-                      <Table.Cell {...cell.getCellProps()}>
-                        {cell.render("Cell")}
-                      </Table.Cell>
-                    )
-                  })}
-                </Table.Row>
-              )
-            })}
-          </Table.Body>
-        </Table>
-      </TableContainer>
+          </MsTable.Head>
+          <MsTable.Body {...getTableBodyProps()} className="shadow-none">
+            {!orders ? (
+              <TableEmptyState />
+            ) : (
+              rows.map((row) => {
+                prepareRow(row)
+                return (
+                  <MsTable.Row
+                    color={"inherit"}
+                    // linkTo={row.original.id}
+                    {...row.getRowProps()}
+                    className="group"
+                    actions={getActions(row.original.id)}
+                    clickable={true}
+                  >
+                    {row.cells.map((cell) => {
+                      return (
+                        <MsTable.Cell {...cell.getCellProps()}>
+                          {cell.render("Cell")}
+                        </MsTable.Cell>
+                      )
+                    })}
+                  </MsTable.Row>
+                )
+              })
+            )}
+          </MsTable.Body>
+        </MsTable>
+      </MsTableContainer>
     </div>
   )
 }
 
-export default React.memo(OrderTable)
+export default React.memo(MsOrderTable)
