@@ -98,7 +98,7 @@ const MsRMAReturnProductsTable: React.FC<RMAReturnProductsTableProps> = ({
               {extractPrice(item.prices, order)}
             </Table.Cell>
             <Table.Cell className="text-grey-40 pr-1 text-right">
-              {order.currency_code.toUpperCase()}
+              {order?.currency_code?.toUpperCase()}
             </Table.Cell>
             <Table.Cell>
               <Button
