@@ -7,16 +7,8 @@ import Button from "../../../components/fundamentals/button"
 import TrashIcon from "../../../components/fundamentals/icons/trash-icon"
 import { useTranslation } from "react-i18next"
 import { useNewOrderForm } from "../new/form"
-import { useEffect, useState } from "react"
+import { useState } from "react"
 
-type ProductVariant = {
-  quantity: number
-  variant_id: string
-  title: string
-  unit_price: number
-  product_title: string
-  thumbnail: string
-}
 
 type MsItemsInformationTableProps = {
   items: any[]

@@ -46,6 +46,7 @@ export type NewOrderForm = {
   custom_shipping_price?: number
   discount_code?: string
   same_as_shipping?: boolean
+  is_new_customer_form_saved?: boolean
 }
 
 type NewOrderContextValue = {

@@ -194,7 +194,7 @@ const MsRMASelectProductTable: React.FC<RMASelectProductTableProps> = ({
                   </div>
                 </MsTable.Cell>
                 <MsTable.Cell className="ml-4 flex gap-2 text-right items-center mt-2">
-                  <p>{order.currency_code.toUpperCase()}</p>
+                  <p>{order?.currency_code?.toUpperCase()}</p>
                   <p>{item.unit_price}</p>
                 </MsTable.Cell>
                 <MsTable.Cell className="w-32 pr-8 text-right">

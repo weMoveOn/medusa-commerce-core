@@ -9,45 +9,45 @@ import CrossIcon from "../../../../components/fundamentals/icons/cross-icon"
 import Button from "../../../../components/fundamentals/button"
 import { useNewOrderForm } from "../../new/form"
 
-
 const MsSummaryCard: React.FC = () => {
   const { t } = useTranslation()
 
-  const {context} = useNewOrderForm()
-  const {items,selectedShippingOption} = context
+  const { context } = useNewOrderForm()
+  const { items, selectedShippingOption, region } = context
 
   let totalPrice = 0
 
-  if(items.fields.length > 0){
+  if (items.fields.length > 0) {
     totalPrice = items.fields.reduce((acc, item) => {
-      return acc + item.unit_price
+      return acc + item.unit_price * item.quantity
     }, 0)
   }
+
+  const currencyCode = region?.currency_code || "N/A"
 
   const grandTotal = totalPrice + (selectedShippingOption?.amount || 0)
 
   const [showDiscountField, setShowDiscountField] = useState(false)
 
-
   return (
     <BodyCard className={"my-4 h-auto min-h-0 w-full"} title="Payment Details">
       <div className="pb-4">
-        <div className="rounded-md flex h-12 justify-between items-center bg-[#F5F5F5] text-xl font-bold">
+        <div className="flex h-12 items-center justify-between rounded-md bg-[#F5F5F5] text-xl font-bold">
           <h2 className="pl-2">Info</h2>
           <h2 className="pr-2">Total Price</h2>
         </div>
         <DisplayTotal
-          currency={"BDT"}
+          currency={currencyCode}
           totalAmount={totalPrice}
           totalTitle={t("detail-cards-subtotal", "Subtotal")}
         />
         <DisplayTotal
-          currency={"BDT"}
+          currency={currencyCode}
           totalAmount={selectedShippingOption?.amount || 0}
           totalTitle={t("detail-cards-shipping", "Shipping")}
         />
         <DisplayTotal
-          currency={"BDT"}
+          currency={currencyCode}
           totalAmount={"0"}
           totalTitle={t("discount", "discount")}
         />
@@ -99,13 +99,13 @@ const MsSummaryCard: React.FC = () => {
         )}
 
         <DisplayTotal
-          currency={"BDT"}
+          currency={currencyCode}
           totalAmount={"0"}
           totalTitle={t("detail-cards-tax", "Tax")}
         />
         <DisplayTotal
           variant={"large"}
-          currency={"BDT"}
+          currency={currencyCode}
           totalAmount={grandTotal}
           totalTitle={
             false

@@ -16,21 +16,21 @@ import { Controller, useWatch } from "react-hook-form"
 import {
   useAdminCustomer,
   useAdminCustomers,
-  useAdminOrder,
 } from "medusa-react"
 import Medusa from "../../../services/api"
 import qs from "qs"
 import AddCustomProductModal from "./add-custom-product-modal"
 import CreateNewCustomerModal from "./create-new-customer-modal"
-import { Pencil } from "@medusajs/icons"
 import { Customer } from "@medusajs/medusa"
 import AddressDetails from "./address-details"
 import InputField from "../../../components/molecules/input"
-import MsItemsInformationTable from "./ms-items-information-table"
 import MsSummaryCard from "../ms-details/detail-cards/ms-summary"
 import SearchProductModal from "./search-product-modal"
 import useNotification from "../../../hooks/use-notification"
 import MsSelectShippingMethod from "../new/components/ms-select-shipping"
+import MsItemsInformationTable from "./dupli"
+import CrossIcon from "../../../components/fundamentals/icons/cross-icon"
+import isNullishObject from "../../../utils/is-nullish-object"
 
 type ProductVariant = {
   quantity: number
@@ -66,9 +66,10 @@ const OrderCrateIndex = () => {
     form,
   } = useNewOrderForm()
 
+  const { billing_address, shipping_address } = form.getValues()
+
   const { context } = useNewOrderForm()
   const { fields: selectedProducts } = context.items
-
   const {
     form: { handleSubmit, reset },
     context: { region },
@@ -112,11 +113,20 @@ const OrderCrateIndex = () => {
     name: "customer_id",
   })
 
+  const email = useWatch({
+    control: form.control,
+    name: "email",
+  })
+
+  const is_new_customer_form_saved = useWatch({
+    control: form.control,
+    defaultValue: false,
+    name: "is_new_customer_form_saved",
+  })
+
   const { customer } = useAdminCustomer(customerId?.value!, {
     enabled: !!customerId?.value,
   })
-
-  // console.log("customer :>> ", customer)
 
   useEffect(() => {
     if (selectedCustomerRowData && customers) {
@@ -137,6 +147,21 @@ const OrderCrateIndex = () => {
     } else {
       form.setValue("email", "")
     }
+  }
+
+  // reset the form when clicking on the cross icon
+  const resetForm = () => {
+    form.setValue("email", "")
+    form.setValue("customer_id", null)
+    form.setValue("shipping_address.first_name", "")
+    form.setValue("shipping_address.last_name", "")
+    form.setValue("shipping_address.phone", "")
+    form.setValue("shipping_address.address_1", "")
+    form.setValue("shipping_address.address_2", "")
+    form.setValue("shipping_address.city", "")
+    form.setValue("shipping_address.country_code", null)
+    form.setValue("shipping_address.province", "")
+    form.setValue("shipping_address.postal_code", "")
   }
 
   const addProductAction = useMemo(() => {
@@ -160,15 +185,63 @@ const OrderCrateIndex = () => {
     let content = ""
     let icon = null
     let action = null
-    if (!selectedCustomer && !customerId?.value) {
+    if (
+      !selectedCustomer &&
+      !customerId?.value &&
+      is_new_customer_form_saved === false &&
+      isNullishObject(shipping_address) &&
+      !email &&
+      isNullishObject(billing_address)
+    ) {
+      content = "Add new customer"
+      icon = <PlusIcon size={20} />
+      action = () => setOpenCreateCustomerModal(true)
+    } else if (
+      is_new_customer_form_saved === false &&
+      email &&
+      !customerId?.value &&
+      !selectedCustomer
+    ) {
+      content = "Add new customer"
+      icon = <PlusIcon size={20} />
+      action = () => setOpenCreateCustomerModal(true)
+    } else if (
+      is_new_customer_form_saved === true &&
+      !isNullishObject(shipping_address) &&
+      email
+    ) {
+      icon = <CrossIcon />
+      action = () => {
+        resetForm()
+        form.setValue("is_new_customer_form_saved", false)
+      }
+    } else if (email && customerId?.value && !selectedCustomer) {
+      icon = <CrossIcon />
+      action = () => {
+        resetForm()
+        form.setValue("is_new_customer_form_saved", false)
+      }
+    } else if (
+      is_new_customer_form_saved === false &&
+      isNullishObject(shipping_address)
+    ) {
       content = "Add new customer"
       icon = <PlusIcon size={20} />
       action = () => setOpenCreateCustomerModal(true)
     } else {
-      content = "Edit"
-      icon = <Pencil />
-      action = () => setShowAddedCustomerDetailsModal(true)
+      if (is_new_customer_form_saved === false) {
+        content = "Add new customer"
+        icon = <PlusIcon size={20} />
+        action = () => setOpenCreateCustomerModal(true)
+      } else {
+        icon = <CrossIcon />
+        action = () => {
+          resetForm()
+          form.setValue("is_new_customer_form_saved", false)
+        }
+      }
     }
+
     return (
       <div className="flex space-x-2">
         <Button
@@ -183,7 +256,13 @@ const OrderCrateIndex = () => {
         </Button>
       </div>
     )
-  }, [selectedCustomer])
+  }, [
+    selectedCustomer,
+    shipping_address,
+    email,
+    customerId?.value,
+    is_new_customer_form_saved,
+  ])
 
   const options =
     customers &&
@@ -192,7 +271,6 @@ const OrderCrateIndex = () => {
       value: customer.email,
       id: customer.id,
     }))
-
   return (
     <div className="gap-y-xsmall flex h-full grow flex-col">
       <div className="flex items-center justify-between">
@@ -215,8 +293,8 @@ const OrderCrateIndex = () => {
           />
         )
       })}
-      <div className="grid grid-cols-12  gap-4">
-        <div className="col-span-8">
+      <div className="grid grid-cols-12 gap-4">
+        <div className="medium:col-span-8 col-span-12">
           <div className="h-full w-full">
             <BodyCard
               compact={true}
@@ -243,7 +321,7 @@ const OrderCrateIndex = () => {
                   </Button>
                 </div>
               </div>
-              <MsItemsInformationTable items={selectedProducts || []} />
+              <MsItemsInformationTable />
             </BodyCard>
             <BodyCard
               compact={true}
@@ -254,7 +332,7 @@ const OrderCrateIndex = () => {
             </BodyCard>
           </div>
         </div>
-        <div className="col-span-4">
+        <div className="medium:col-span-4 col-span-12">
           <BodyCard
             compact={true}
             title={"Customer Information"}
@@ -270,7 +348,7 @@ const OrderCrateIndex = () => {
             customActionable={addCustomerActions}
             className="h-fit rounded-t-none pb-4"
           >
-            {!customer ? (
+            {!customer && is_new_customer_form_saved === false ? (
               <Controller
                 control={form.control}
                 name="customer_id"
