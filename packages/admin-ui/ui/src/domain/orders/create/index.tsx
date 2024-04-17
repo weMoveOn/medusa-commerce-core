@@ -164,7 +164,7 @@ const OrderCrateIndex = () => {
 
   const addProductAction = useMemo(() => {
     return [
-      <div className="flex space-x-2">
+      <div key="addProductAction" className="flex space-x-2">
         <Button
           className={"border-0"}
           key="order_create"
