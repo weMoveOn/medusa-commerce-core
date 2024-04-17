@@ -53,7 +53,7 @@ type TableType = {
   Cell: TableElement<TableCellProps>
 } & TableElement<TableProps>
 
-const MsTable = React.forwardRef<HTMLTableElement, TableProps>(
+const MsTableMobile = React.forwardRef<HTMLTableElement, TableProps>(
   (
     {
       className,
@@ -80,14 +80,15 @@ const MsTable = React.forwardRef<HTMLTableElement, TableProps>(
 
     return (
       <div className={`flex flex-col ${containerClassName}`}>
+        {/* Needs to work on this start */}
         <div
           className={clsx(
-            "relative my-3 flex w-full justify-between px-4",
+            "",
             filteringDivClassName
           )}
         >
           {filteringOptions && (
-            <div className="mb-2 flex self-end">
+            <div className="">
               {Array.isArray(filteringOptions)
                 ? filteringOptions.map((fo, idx) => (
                     <FilteringOptions {...fo} key={idx} />
@@ -95,7 +96,12 @@ const MsTable = React.forwardRef<HTMLTableElement, TableProps>(
                 : filteringOptions}
             </div>
           )}
-          <div className={clsx("gap-x-xsmall flex w-full place-content-end", searchDivClassName)}>
+          <div
+            className={clsx(
+              "",
+              searchDivClassName
+            )}
+          >
             {tableActions && <div>{tableActions}</div>}
             {enableSearch && (
               <TableSearch
@@ -108,6 +114,8 @@ const MsTable = React.forwardRef<HTMLTableElement, TableProps>(
             )}
           </div>
         </div>
+        {/* Needs to work on this end */}
+
         <div className={clsx("relative", tableHeight)}>
           <table
             ref={ref}
@@ -122,7 +130,7 @@ const MsTable = React.forwardRef<HTMLTableElement, TableProps>(
   }
 ) as TableType
 
-MsTable.Head = React.forwardRef<
+MsTableMobile.Head = React.forwardRef<
   HTMLTableSectionElement,
   React.HTMLAttributes<HTMLTableSectionElement>
 >(({ className, children, ...props }, ref) => (
@@ -138,7 +146,7 @@ MsTable.Head = React.forwardRef<
   </thead>
 ))
 
-MsTable.HeadRow = React.forwardRef<
+MsTableMobile.HeadRow = React.forwardRef<
   HTMLTableRowElement,
   React.HTMLAttributes<HTMLTableRowElement>
 >(({ className, children, ...props }, ref) => (
@@ -147,7 +155,7 @@ MsTable.HeadRow = React.forwardRef<
   </tr>
 ))
 
-MsTable.HeadCell = React.forwardRef<
+MsTableMobile.HeadCell = React.forwardRef<
   HTMLTableCellElement,
   React.HTMLAttributes<HTMLTableCellElement>
 >(({ className, children, ...props }, ref) => (
@@ -156,7 +164,7 @@ MsTable.HeadCell = React.forwardRef<
   </th>
 ))
 
-MsTable.SortingHeadCell = React.forwardRef<
+MsTableMobile.SortingHeadCell = React.forwardRef<
   HTMLTableCellElement,
   SortingHeadCellProps
 >(
@@ -201,7 +209,7 @@ MsTable.SortingHeadCell = React.forwardRef<
   }
 )
 
-MsTable.Body = React.forwardRef<
+MsTableMobile.Body = React.forwardRef<
   HTMLTableSectionElement,
   React.HTMLAttributes<HTMLTableSectionElement>
 >(({ className, children, ...props }, ref) => (
@@ -210,7 +218,7 @@ MsTable.Body = React.forwardRef<
   </tbody>
 ))
 
-MsTable.Cell = React.forwardRef<HTMLTableCellElement, TableCellProps>(
+MsTableMobile.Cell = React.forwardRef<HTMLTableCellElement, TableCellProps>(
   ({ className, linkTo, children, ...props }, ref) => {
     const navigate = useNavigate()
     return (
@@ -231,7 +239,7 @@ MsTable.Cell = React.forwardRef<HTMLTableCellElement, TableCellProps>(
   }
 )
 
-MsTable.Row = React.forwardRef<HTMLTableRowElement, TableRowProps>(
+MsTableMobile.Row = React.forwardRef<HTMLTableRowElement, TableRowProps>(
   (
     {
       className,
@@ -264,16 +272,16 @@ MsTable.Row = React.forwardRef<HTMLTableRowElement, TableRowProps>(
       >
         {children}
         {actions && (
-          <MsTable.Cell
+          <MsTableMobile.Cell
             onClick={(e) => e.stopPropagation()}
             className="w-[32px]"
           >
             <Actionables forceDropdown={forceDropdown} actions={actions} />
-          </MsTable.Cell>
+          </MsTableMobile.Cell>
         )}
       </tr>
     )
   }
 )
 
-export default MsTable
+export default MsTableMobile

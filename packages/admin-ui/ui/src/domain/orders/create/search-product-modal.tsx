@@ -13,6 +13,7 @@ import { Product, Region } from "@medusajs/medusa"
 import MsTable from "../../../components/molecules/ms-table"
 import { useNewOrderForm } from "../new/form"
 import { extractUnitPrice } from "../../../utils/prices"
+import useViewportSize from "../../../hooks/use-view-port-size"
 
 type SearchProductModalProps = {
   openSearchProductModal: boolean
@@ -95,8 +96,8 @@ const SearchProductModal = ({
         accessor: "status",
         Cell: ({ row: { original } }) => (
           <div className="pr-2 text-right">
-            {/* {original.product.unit_price } */}
-            500 BDT
+            {original.product.unit_price}
+            BDT
           </div>
         ),
       },
@@ -197,156 +198,289 @@ const SearchProductModal = ({
     setOpenSearchProductModal(false)
   }
 
+  const { isMobile } = useViewportSize()
+
   return (
     <>
-      <Modal
-        open={openSearchProductModal}
-        handleClose={() => setOpenSearchProductModal(false)}
-        handleSkip={() => false}
-        isLargeModal={true}
-      >
-        <Modal.Header
-          className="h-[56px]"
-          iconClass="self-center"
+      {!isMobile ? (
+        <Modal
+          open={openSearchProductModal}
           handleClose={() => setOpenSearchProductModal(false)}
+          handleSkip={() => false}
+          isLargeModal={true}
         >
-          <div className="flex items-end justify-center gap-2 ">
-            <UsersIcon size={20} />
-            <p className="font-bold">{title}</p>
-          </div>
-        </Modal.Header>
-        <Modal.Body className="w-[812px] overflow-y-auto">
-          <TableContainer hasPagination={false} pagingState={undefined}>
-            <MsTable
-              immediateSearchFocus
-              enableSearch
-              searchPlaceholder={"Find items from inventory"}
-              searchValue={query}
-              handleSearch={handleSearch}
-              {...getTableProps()}
-              searchClassName="!w-full mb-2 !h-[44px] bg-[#F3F3F3]"
-              tableHeight="h-[450px] overflow-auto"
-            >
-              <MsTable.Body {...getTableBodyProps()}>
-                {isLoading ? (
-                  <MsTable.Row>
-                    <MsTable.Cell
-                      colSpan={columns.length}
-                      className="flex items-center justify-center"
-                    >
-                      <Spinner size="large" variant="secondary" />
-                    </MsTable.Cell>
-                  </MsTable.Row>
-                ) : (
-                  rows.map((row, i) => {
-                    prepareRow(row)
-                    let addMargin = true
-                    if (i > 0) {
-                      addMargin =
-                        row.cells[0].row.original.product_id !==
-                        rows[i - 1].cells[0].row.original.product_id
-                    }
+          <Modal.Header
+            className="h-[56px]"
+            iconClass="self-center"
+            handleClose={() => setOpenSearchProductModal(false)}
+          >
+            <div className="flex items-end justify-center gap-2 ">
+              <UsersIcon size={20} />
+              <p className="font-bold">{title}</p>
+            </div>
+          </Modal.Header>
+          <Modal.Body className="w-[812px] overflow-y-auto">
+            <TableContainer hasPagination={false} pagingState={undefined}>
+              <MsTable
+                immediateSearchFocus
+                enableSearch
+                searchPlaceholder={"Find items from inventory"}
+                searchValue={query}
+                handleSearch={handleSearch}
+                {...getTableProps()}
+                searchClassName="!w-full mb-2 !h-[44px] bg-[#F3F3F3]"
+                tableHeight="h-[450px] overflow-auto"
+              >
+                <MsTable.Body {...getTableBodyProps()}>
+                  {isLoading ? (
+                    <MsTable.Row>
+                      <MsTable.Cell
+                        colSpan={columns.length}
+                        className="flex items-center justify-center"
+                      >
+                        <Spinner size="large" variant="secondary" />
+                      </MsTable.Cell>
+                    </MsTable.Row>
+                  ) : (
+                    rows.map((row, i) => {
+                      prepareRow(row)
+                      let addMargin = true
+                      if (i > 0) {
+                        addMargin =
+                          row.cells[0].row.original.product_id !==
+                          rows[i - 1].cells[0].row.original.product_id
+                      }
 
-                    let productNameRow = null
-                    if (addMargin && products) {
-                      const product = products.find(
-                        (product) =>
-                          product.id === row.cells[0].row.original.product_id
-                      )
-                      let shouldChecked = false
-                      products.forEach((product) => {
-                        product.variants.forEach((variant) => {
-                          // if variant.id exists row.cells[0].row.original then shouldChecked = true
-                          // if (variant.id === row.cells[0].row.original.id) {
-                          //   shouldChecked = true
-                          // }
+                      let productNameRow = null
+                      if (addMargin && products) {
+                        const product = products.find(
+                          (product) =>
+                            product.id === row.cells[0].row.original.product_id
+                        )
+                        let shouldChecked = false
+                        products.forEach((product) => {
+                          product.variants.forEach((variant) => {
+                            // console.log("variant :>>", variant)
+                            // if variant.id exists row.cells[0].row.original then shouldChecked = true
+                            // if (variant.id === row.cells[0].row.original.id) {
+                            //   shouldChecked = true
+                            // }
+                          })
                         })
-                      })
-                      productNameRow = (
-                        <>
-                          <MsTable.Row
-                            key={i}
-                            className="border border-[#EFEFEF] bg-[#F4F4F4]"
-                          >
-                            <MsTable.Cell
-                              colSpan={columns.length}
-                              className="pl-4 font-bold"
+                        productNameRow = (
+                          <>
+                            <MsTable.Row
+                              key={i}
+                              className="border border-[#EFEFEF] bg-[#F4F4F4]"
                             >
-                              <div className="flex items-center gap-4">
-                                {shouldChecked ? (
-                                  <IndeterminateCheckbox checked={true} />
-                                ) : (
-                                  <IndeterminateCheckbox />
-                                )}
-                                {product?.thumbnail ? (
-                                  <img
-                                    src={product.thumbnail}
-                                    className="rounded-soft h-8 w-8 object-cover"
-                                  />
-                                ) : (
-                                  <ImagePlaceholder />
-                                )}
-                                <h2>
-                                  {product ? product.title : "Unknown Product"}
-                                </h2>
-                              </div>
-                            </MsTable.Cell>
-                            <MsTable.Cell
-                              colSpan={columns.length}
-                            ></MsTable.Cell>
+                              <MsTable.Cell
+                                colSpan={columns.length}
+                                className="pl-4 font-bold"
+                              >
+                                <div className="flex items-center gap-4">
+                                  {shouldChecked ? (
+                                    <IndeterminateCheckbox checked={true} />
+                                  ) : (
+                                    <IndeterminateCheckbox />
+                                  )}
+                                  {product?.thumbnail ? (
+                                    <img
+                                      src={product.thumbnail}
+                                      className="rounded-soft h-8 w-8 object-cover"
+                                    />
+                                  ) : (
+                                    <ImagePlaceholder />
+                                  )}
+                                  <h2>
+                                    {product
+                                      ? product.title
+                                      : "Unknown Product"}
+                                  </h2>
+                                </div>
+                              </MsTable.Cell>
+                              <MsTable.Cell
+                                colSpan={columns.length}
+                              ></MsTable.Cell>
+                            </MsTable.Row>
+                          </>
+                        )
+                      }
+
+                      const isAdded =
+                        fields.findIndex(
+                          (item) => item.variant_id === row.original.id
+                        ) > -1
+                      return (
+                        <>
+                          {productNameRow}
+                          <MsTable.Row
+                            {...row.getRowProps()}
+                            className={`${isAdded && "bg-[#EFEFEF]"}`}
+                          >
+                            {row.cells.map((cell) => {
+                              return (
+                                <MsTable.Cell {...cell.getCellProps()}>
+                                  {cell.render("Cell")}
+                                </MsTable.Cell>
+                              )
+                            })}
                           </MsTable.Row>
                         </>
                       )
-                    }
+                    })
+                  )}
+                </MsTable.Body>
+              </MsTable>
+            </TableContainer>
+          </Modal.Body>
+          <Modal.Footer>
+            <div className="gap-x-xsmall flex w-full justify-end">
+              <Button
+                variant="secondary"
+                className="px-6 py-2"
+                size="small"
+                onClick={() => setOpenSearchProductModal(false)}
+              >
+                Cancel
+              </Button>
+              <Button
+                variant="primary"
+                className="px-6 py-2"
+                size="small"
+                onClick={handleAddButtonClick}
+              >
+                Add
+              </Button>
+            </div>
+          </Modal.Footer>
+        </Modal>
+      ) : (
+        <>
+          <div className="h-[70vh] overflow-y-auto bg-white p-3">
+            <TableContainer hasPagination={false} pagingState={undefined}>
+              <MsTable
+                immediateSearchFocus
+                enableSearch
+                searchPlaceholder={"Find items from inventory"}
+                searchValue={query}
+                handleSearch={handleSearch}
+                {...getTableProps()}
+                searchClassName="!w-full mb-2 !h-[44px] bg-[#F3F3F3]"
+                tableHeight=""
+              >
+                <MsTable.Body {...getTableBodyProps()}>
+                  {isLoading ? (
+                    <MsTable.Row>
+                      <MsTable.Cell
+                        colSpan={columns.length}
+                        className="flex items-center justify-center"
+                      >
+                        <Spinner size="large" variant="secondary" />
+                      </MsTable.Cell>
+                    </MsTable.Row>
+                  ) : (
+                    rows.map((row, i) => {
+                      prepareRow(row)
+                      let addMargin = true
+                      if (i > 0) {
+                        addMargin =
+                          row.cells[0].row.original.product_id !==
+                          rows[i - 1].cells[0].row.original.product_id
+                      }
 
-                    const isAdded =
-                      fields.findIndex(
-                        (item) => item.variant_id === row.original.id
-                      ) > -1
-                    return (
-                      <>
-                        {productNameRow}
-                        <MsTable.Row
-                          {...row.getRowProps()}
-                          className={`${isAdded && "bg-[#EFEFEF]"}`}
-                        >
-                          {row.cells.map((cell) => {
-                            return (
-                              <MsTable.Cell {...cell.getCellProps()}>
-                                {cell.render("Cell")}
+                      let productNameRow = null
+                      if (addMargin && products) {
+                        const product = products.find(
+                          (product) =>
+                            product.id === row.cells[0].row.original.product_id
+                        )
+                        let shouldChecked = false
+                        products.forEach((product) => {
+                          product.variants.forEach((variant) => {
+                            // if variant.id exists row.cells[0].row.original then shouldChecked = true
+                            // if (variant.id === row.cells[0].row.original.id) {
+                            //   shouldChecked = true
+                            // }
+                          })
+                        })
+                        productNameRow = (
+                          <>
+                            <MsTable.Row
+                              key={i}
+                              className="border border-[#EFEFEF] bg-[#F4F4F4]"
+                            >
+                              <MsTable.Cell
+                                colSpan={columns.length}
+                                className="pl-4 font-bold"
+                              >
+                                <div className="flex items-center gap-4">
+                                  {shouldChecked ? (
+                                    <IndeterminateCheckbox checked={true} />
+                                  ) : (
+                                    <IndeterminateCheckbox />
+                                  )}
+                                  {product?.thumbnail ? (
+                                    <img
+                                      src={product.thumbnail}
+                                      className="rounded-soft h-8 w-8 object-cover"
+                                    />
+                                  ) : (
+                                    <ImagePlaceholder />
+                                  )}
+                                  <h2>
+                                    {product
+                                      ? product.title
+                                      : "Unknown Product"}
+                                  </h2>
+                                </div>
                               </MsTable.Cell>
-                            )
-                          })}
-                        </MsTable.Row>
-                      </>
-                    )
-                  })
-                )}
-              </MsTable.Body>
-            </MsTable>
-          </TableContainer>
-        </Modal.Body>
-        <Modal.Footer>
-          <div className="gap-x-xsmall flex w-full justify-end">
-            <Button
-              variant="secondary"
-              className="px-6 py-2"
-              size="small"
-              onClick={() => setOpenSearchProductModal(false)}
-            >
-              Cancel
-            </Button>
+                              <MsTable.Cell
+                                colSpan={columns.length}
+                              ></MsTable.Cell>
+                            </MsTable.Row>
+                          </>
+                        )
+                      }
+
+                      const isAdded =
+                        fields.findIndex(
+                          (item) => item.variant_id === row.original.id
+                        ) > -1
+                      return (
+                        <>
+                          {productNameRow}
+                          <MsTable.Row
+                            {...row.getRowProps()}
+                            className={`${isAdded && "bg-[#EFEFEF]"}`}
+                          >
+                            {row.cells.map((cell) => {
+                              return (
+                                <MsTable.Cell {...cell.getCellProps()}>
+                                  {cell.render("Cell")}
+                                </MsTable.Cell>
+                              )
+                            })}
+                          </MsTable.Row>
+                        </>
+                      )
+                    })
+                  )}
+                </MsTable.Body>
+              </MsTable>
+            </TableContainer>
+          </div>
+          <div className="my-2 w-full px-4">
             <Button
               variant="primary"
-              className="px-6 py-2"
-              size="small"
+              className="w-full"
+              size="medium"
               onClick={handleAddButtonClick}
             >
-              Add
+              Add Item
             </Button>
           </div>
-        </Modal.Footer>
-      </Modal>
+        </>
+      )}
     </>
   )
 }

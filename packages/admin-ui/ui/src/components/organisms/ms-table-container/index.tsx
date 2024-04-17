@@ -24,7 +24,7 @@ const MsTableContainer = <T extends boolean>({
   const minHeight = (numberOfRows + 1) * ROW_HEIGHT
 
   return (
-    <div className="border-grey-20 rounded-rounded border bg-white  shadow-sm">
+    <div className="border-grey-20 rounded-rounded border bg-white shadow-sm">
       <div
         className="rounded-t-rounded relative overflow-hidden border bg-white pt-2"
         style={{

@@ -7799,7 +7799,7 @@ __metadata:
     "@medusajs/icons": ^1.1.0
     "@medusajs/medusa": ^1.19.1
     "@medusajs/types": ^1.11.10
-    "@medusajs/ui": ^2.2.4
+    "@medusajs/ui": "workspace:^"
     "@medusajs/ui-preset": ^1.0.2
     "@pmmmwh/react-refresh-webpack-plugin": ^0.5.10
     "@radix-ui/react-accordion": ^1.0.1
@@ -7832,6 +7832,7 @@ __metadata:
     css-loader: ^6.8.1
     duplicate-dependencies-webpack-plugin: ^1.0.2
     emoji-picker-react: ^4.4.3
+    file-loader: ^6.2.0
     framer-motion: ^9.1.6
     html-webpack-plugin: ^5.5.1
     i18next: ^22.5.0
@@ -7884,6 +7885,7 @@ __metadata:
     tsup: 6.7.0
     type-fest: ^3.6.0
     typescript: ^4.9.3
+    vaul: ^0.9.0
     webpack: ^5.84.1
     webpack-bundle-analyzer: ^4.9.0
     webpack-cli: ^5.1.1
@@ -8672,7 +8674,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@medusajs/ui@^2.2.4, @medusajs/ui@workspace:^, @medusajs/ui@workspace:packages/design-system/ui":
+"@medusajs/ui@workspace:^, @medusajs/ui@workspace:packages/design-system/ui":
   version: 0.0.0-use.local
   resolution: "@medusajs/ui@workspace:packages/design-system/ui"
   dependencies:
@@ -50568,6 +50570,18 @@ __metadata:
   version: 1.1.2
   resolution: "vary@npm:1.1.2"
   checksum: f15d588d79f3675135ba783c91a4083dcd290a2a5be9fcb6514220a1634e23df116847b1cc51f66bfb0644cf9353b2abb7815ae499bab06e46dd33c1a6bf1f4f
+  languageName: node
+  linkType: hard
+
+"vaul@npm:^0.9.0":
+  version: 0.9.0
+  resolution: "vaul@npm:0.9.0"
+  dependencies:
+    "@radix-ui/react-dialog": ^1.0.4
+  peerDependencies:
+    react: ^16.8 || ^17.0 || ^18.0
+    react-dom: ^16.8 || ^17.0 || ^18.0
+  checksum: 3b4290f7bbc984c7ab3784e6b5a16f6cd2f380798d8c0d1a01818f215f473ecefc6a3f5ccf6724107282a9ceb1a7f8fce8f841ae3eb70cc63b23776bd42fd9e7
   languageName: node
   linkType: hard
 

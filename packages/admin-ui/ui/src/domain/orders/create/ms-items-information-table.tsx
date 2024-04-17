@@ -8,42 +8,76 @@ import TrashIcon from "../../../components/fundamentals/icons/trash-icon"
 import { useTranslation } from "react-i18next"
 import { useNewOrderForm } from "../new/form"
 import { useState } from "react"
+import { useMedusa } from "medusa-react"
+import { Product, ProductVariant, Region } from "@medusajs/medusa"
+import { displayAmount, extractUnitPrice, getNativeSymbol, persistedPrice } from "../../../utils/prices"
+import InputField from "../../../components/molecules/input"
+import { Controller } from "react-hook-form"
 
 
-type MsItemsInformationTableProps = {
-  items: any[]
-}
 
-const MsItemsInformationTable = ({
-  items: addedItems,
-}: MsItemsInformationTableProps) => {
-  const { t } = useTranslation()
-  // const {register} = useForm()
+const MsItemsInformationTable = () => {
 
-  const {
-    context: { region, items },
-    form: { control, register, setValue },
-  } = useNewOrderForm()
+ const {
+   context: { region, items },
+   form: { control, register, setValue },
+ } = useNewOrderForm()
 
-  // console.log("Added Items :>>", addedItems)s
+ const { client } = useMedusa()
 
-  const { fields, append, remove, update } = items
+ const { fields, append, remove, update } = items
 
-  // console.log("Fields :>>", fields)
+ const [editQuantity, setEditQuantity] = useState(-1)
+ const [editPrice, setEditPrice] = useState(-1)
 
-  const [editQuantity, setEditQuantity] = useState(-1)
+ const addItem = async (variants: ProductVariant[]) => {
+   const ids = fields.map((field) => field.variant_id)
 
-  const handleEditQuantity = (index: number, value: number) => {
-    if (editQuantity !== -1) {
-      setValue(`items.${editQuantity}.quantity`, fields[editQuantity].quantity)
-    }
-    const field = fields[index]
-    field.quantity = field.quantity + value
+   const itemsToAdd = variants.filter((v) => !ids.includes(v.id))
 
-    if (field.quantity > 0) {
-      update(index, field)
-    }
-  }
+   const variantIds = itemsToAdd.map((v) => v.id)
+
+   const { variants: newVariants } = await client.admin.variants.list({
+     id: variantIds,
+     region_id: region?.id,
+   })
+   append(
+     newVariants.map((item) => ({
+       quantity: 1,
+       variant_id: item.id,
+       title: item.title as string,
+       unit_price: extractUnitPrice(item, region as Region, false),
+       product_title: (item.product as Product)?.title,
+       thumbnail: (item.product as Product)?.thumbnail,
+     }))
+   )
+ }
+
+ const handleEditQuantity = (index: number, value: number) => {
+   const field = fields[index]
+   field.quantity = field.quantity + value
+
+   if (field.quantity > 0) {
+     update(index, field)
+   }
+ }
+
+ const handlePriceChange = (index: number, value: number, currency: string) => {
+   const dbPrice = persistedPrice(currency, value)
+   setValue(`items.${index}.unit_price`, dbPrice)
+ }
+
+ const addCustomItem = (title: string, quantity: number, amount: number) => {
+   append({
+     title,
+     unit_price: amount,
+     quantity: quantity,
+   })
+ }
+
+ const removeItem = (index: number) => {
+   remove(index)
+ }
 
   return (
     <>
@@ -98,38 +132,91 @@ const MsItemsInformationTable = ({
                   </div>
                 </Table.Cell>
                 <Table.Cell className="w-32 pr-8 text-right">
-                  <div className="text-grey-50 flex w-full justify-end text-right ">
-                    <span
-                      onClick={() => handleEditQuantity(index, -1)}
-                      className="hover:bg-grey-20 mr-2 flex h-5 w-5 cursor-pointer items-center justify-center rounded"
-                    >
-                      <MinusIcon size={16} />
-                    </span>
-                    <button
-                      type="button"
-                      className="hover:bg-grey-20 cursor-pointer rounded px-1"
-                      onClick={() => setEditQuantity(index)}
-                    >
-                      <input
-                        type="number"
-                        {...register(`items.${index}.quantity`, {
-                          valueAsNumber: true,
-                        })}
-                        className="text-grey-90 w-full bg-transparent text-center"
-                        disabled
-                      />
-                    </button>
-                    <span
-                      onClick={() => handleEditQuantity(index, 1)}
-                      className={clsx(
-                        "hover:bg-grey-20 ml-2 flex h-5 w-5 cursor-pointer items-center justify-center rounded"
-                      )}
-                    >
-                      <PlusIcon size={16} />
-                    </span>
-                  </div>
+                  {editQuantity === index ? (
+                    <InputField
+                      type="number"
+                      {...register(`items.${index}.quantity`, {
+                        valueAsNumber: true,
+                      })}
+                      onBlur={() => setEditQuantity(-1)}
+                    />
+                  ) : (
+                    <div className="text-grey-50 flex w-full justify-end text-right ">
+                      <span
+                        onClick={() => handleEditQuantity(index, -1)}
+                        className="hover:bg-grey-20 mr-2 flex h-5 w-5 cursor-pointer items-center justify-center rounded"
+                      >
+                        <MinusIcon size={16} />
+                      </span>
+                      <button
+                        type="button"
+                        className="hover:bg-grey-20 cursor-pointer rounded px-1"
+                        onClick={() => setEditQuantity(index)}
+                      >
+                        <input
+                          type="number"
+                          {...register(`items.${index}.quantity`, {
+                            valueAsNumber: true,
+                          })}
+                          className="text-grey-90 w-full bg-transparent text-center"
+                          disabled
+                        />
+                      </button>
+                      <span
+                        onClick={() => handleEditQuantity(index, 1)}
+                        className={clsx(
+                          "hover:bg-grey-20 ml-2 flex h-5 w-5 cursor-pointer items-center justify-center rounded"
+                        )}
+                      >
+                        <PlusIcon size={16} />
+                      </span>
+                    </div>
+                  )}
                 </Table.Cell>
-                <Table.Cell className="pr-2 text-right">500 BDT</Table.Cell>
+                <Table.Cell className="pr-2 text-right">
+                  {editPrice === index ? (
+                    <Controller
+                      control={control}
+                      name={`items.${index}.unit_price`}
+                      render={({ field: { value } }) => {
+                        return (
+                          <InputField
+                            type="number"
+                            value={displayAmount(region.currency_code, value)}
+                            onBlur={() => {
+                              setEditPrice(-1)
+                            }}
+                            prefix={getNativeSymbol(region.currency_code)}
+                            onChange={(e) => {
+                              handlePriceChange(
+                                index,
+                                +e.target.value,
+                                region.currency_code
+                              )
+                            }}
+                          />
+                        )
+                      }}
+                    />
+                  ) : (
+                    <Controller
+                      name={`items.${index}.unit_price`}
+                      control={control}
+                      render={({ field: { value } }) => {
+                        return (
+                          <span
+                            className="cursor-pointer"
+                            onClick={() => {
+                              setEditPrice(index)
+                            }}
+                          >
+                            {displayAmount(region!.currency_code, value)}
+                          </span>
+                        )
+                      }}
+                    />
+                  )}
+                </Table.Cell>
                 {/* <Table.Cell className="text-grey-40 pr-1 text-right">
                   BDT
                 </Table.Cell> */}
@@ -138,7 +225,7 @@ const MsItemsInformationTable = ({
                     variant="ghost"
                     size="small"
                     className="mt-6"
-                    // onClick={() => remove(item.id)}
+                    onClick={() => remove(index)}
                   >
                     <TrashIcon size={20} className="text-grey-50" />
                   </Button>

@@ -1,9 +1,9 @@
-import { Button } from "@medusajs/ui"
 import UsersIcon from "../../../components/fundamentals/icons/users-icon"
 import Modal from "../../../components/molecules/modal"
 import AddCustomerForm from "../new/components/add-customer"
 import { useNewOrderForm } from "../new/form"
 import { useWatch } from "react-hook-form"
+import Button from "../../../components/fundamentals/button"
 
 type CreateNewCustomerModalProps = {
   openCreateCustomerModal: boolean
@@ -56,13 +56,7 @@ const CreateNewCustomerModal = ({
   })
 
   const shouldButtonDisabled =
-    !email ||
-    !shippingAddress ||
-    !firstName ||
-    !city ||
-    !postalCode ||
-    !country ||
-    !billing_address
+    !email || !shippingAddress || !firstName || !city || !postalCode || !country || !billing_address
 
   const handleSaveCustomer = () => {
     if (!shouldButtonDisabled) {

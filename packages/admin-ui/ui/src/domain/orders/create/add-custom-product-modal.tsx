@@ -1,3 +1,4 @@
+import React from "react"
 import { useForm } from "react-hook-form"
 import Button from "../../../components/fundamentals/button"
 import ProductLoadingIcon from "../../../components/fundamentals/icons/product-loading"
@@ -90,11 +91,7 @@ const AddCustomProductModal = ({
             >
               Cancel
             </Button>
-            <Button
-              className="h-[40px]"
-              variant="primary"
-              onClick={onSubmit}
-            >
+            <Button className="h-[40px]" variant="primary" onClick={onSubmit}>
               Add product
             </Button>
           </div>
@@ -105,3 +102,68 @@ const AddCustomProductModal = ({
 }
 
 export default AddCustomProductModal
+
+export const AddCustomProductModalMobile = () => {
+  const {
+    context: { region, items },
+  } = useNewOrderForm()
+
+  const { append } = items
+
+  const addCustomItem = (title: string, quantity: number, amount: number) => {
+    append({
+      title,
+      unit_price: amount,
+      quantity: quantity,
+    })
+  }
+
+  const { register, handleSubmit } = useForm()
+
+  const onSubmit = handleSubmit((data) => {
+    addCustomItem(data.title, data.quantity, data.unit_price)
+    // setOpenAddCustomProductModal(false)
+  })
+
+  return (
+    <>
+      <div className="mb-4 grid gap-6">
+        <InputField
+          title="Title/Product Name"
+          label="Title/Product Name"
+          placeholder="MoveOn Sweatshirt"
+          required
+          {...register("title", { required: true })}
+        />
+      </div>
+
+      <div className="grid grid-cols-2 gap-6">
+        <InputField
+          title="Unit Price (BDT)"
+          label="Unit Price (BDT)"
+          placeholder="50)"
+          className="col-span-1"
+          required
+          {...register("unit_price", { required: true })}
+        />
+        <InputField
+          title="Quantity"
+          label="Quantity"
+          placeholder="50"
+          className="col-span-1"
+          required
+          {...register("quantity", { required: true })}
+        />
+      </div>
+      <div>
+        <Button
+          className="mb-2 mt-24 h-[40px] w-full"
+          variant="primary"
+          onClick={onSubmit}
+        >
+          Add product
+        </Button>
+      </div>
+    </>
+  )
+}

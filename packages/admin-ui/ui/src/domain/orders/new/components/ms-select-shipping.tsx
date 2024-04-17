@@ -10,6 +10,7 @@ import { extractOptionPrice } from "../../../../utils/prices"
 import { useNewOrderForm } from "../form"
 import TruckIcon from "../../../../components/fundamentals/icons/truck-icon"
 import RadioGroup from "../../../../components/organisms/ms-radio-group"
+import useViewportSize from "../../../../hooks/use-view-port-size"
 
 const MsSelectShippingMethod = () => {
   const { t } = useTranslation()
@@ -64,6 +65,15 @@ const MsSelectShippingMethod = () => {
     }
   }
 
+  const { isMobile } = useViewportSize()
+
+  let radioDivClass=""
+  if (isMobile) {
+    radioDivClass = "flex flex-col gap-1"
+  } else {
+    radioDivClass = "grid grid-cols-3 gap-6 "
+  }
+
   return (
     <div className="pb-8">
       {!shippingOptions?.length && !region ? (
@@ -86,13 +96,10 @@ const MsSelectShippingMethod = () => {
         <div className="mt-4">
           <div>
             <h2 className="mb-2 text-lg font-bold">Most Popular</h2>
-            <RadioGroup.Root
-              onValueChange={handleChange}
-              className="grid grid-cols-3 gap-6"
-            >
+            <RadioGroup.Root onValueChange={handleChange} className={radioDivClass}>
               {shippingOptions.map((r, index) => {
                 return (
-                  <div key={r.id}>
+                  <div key={index}>
                     <RadioGroup.Item
                       label={r.name}
                       description={r.name}
