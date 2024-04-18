@@ -21,6 +21,7 @@ import StoreIcon from "../../fundamentals/icons/store-icon"
 import AppIcon from "../../fundamentals/icons/app-icon"
 
 import HelpIcon from "../../fundamentals/icons/help-icon"
+import EyeIcon from "../../fundamentals/icons/eye-icon"
 
 const ICON_SIZE = 28
 
@@ -50,7 +51,7 @@ const Sidebar: React.FC = () => {
 
   return (
     // min-w-sidebar max-w-sidebar  medium:block bg-gray-0 border-grey-20 py-base px-base hidden h-screen min-w-[232px]
-    <div className=" h-screen overflow-y-auto border p-6 bg-grey-0">
+    <div className=" bg-grey-0 h-screen overflow-y-auto border p-6">
       <div className="">
         <div className="">
           <div className="medium:gap-5 flex flex-col gap-3 ">
@@ -84,11 +85,17 @@ const Sidebar: React.FC = () => {
               ]}
             />
             <SidebarMenuItem
+              pageLink={"/a/site"}
+              icon={<EyeIcon />}
+              triggerHandler={() => {}}
+              text={t("site", "Site")}
+            />
+
+            <SidebarMenuItem
               pageLink={"/a/collections"}
               icon={<CollectionsIcon />}
               text={t("sidebar-collections", "Collections")}
-              triggerHandler={() => {
-              }}
+              triggerHandler={() => {}}
               subItems={[{ pageLink: "/a/overview", text: "Overview" }]}
             />
             <SidebarMenuItem

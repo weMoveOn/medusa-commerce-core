@@ -25,6 +25,7 @@ import { useRoutes } from "../providers/route-provider"
 import { isRoute } from "../utils/extensions"
 import Home from "../domain/home"
 import CreateOrder from "../domain/orders/create"
+import SiteRoute from "../domain/site"
 
 const IndexPage = () => {
   const navigate = useNavigate()
@@ -59,6 +60,7 @@ const DashboardRoutes = () => {
           {/* end */}
           <Route path="oauth/:app_name" element={<Oauth />} />
           <Route path="products/*" element={<ProductsRoute />} />
+          <Route path="site" element={<SiteRoute />} />
           <Route path="product-categories/*" element={<ProductCategories />} />
           <Route path="collections/*" element={<Collections />} />
           <Route path="gift-cards/*" element={<GiftCards />} />
