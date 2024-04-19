@@ -60,7 +60,7 @@ const DashboardRoutes = () => {
           {/* end */}
           <Route path="oauth/:app_name" element={<Oauth />} />
           <Route path="products/*" element={<ProductsRoute />} />
-          <Route path="site" element={<SiteRoute />} />
+          <Route path="site/*" element={<SiteRoute />} />
           <Route path="product-categories/*" element={<ProductCategories />} />
           <Route path="collections/*" element={<Collections />} />
           <Route path="gift-cards/*" element={<GiftCards />} />
