@@ -30,6 +30,7 @@ import isNullishObject from "../../../utils/is-nullish-object"
 import { Drawer } from "vaul"
 import AddCustomerFormMobile from "../new/components/add-customer-mobile"
 import MsItemsInformationMobile from "./ms-items-information-table-mobile"
+import SelectRegionMobileDrawer from "./select-region-mobile-drawer"
 
 type ProductVariant = {
   quantity: number
@@ -47,6 +48,7 @@ const OrderCrateIndex = () => {
 
   const [items, setItems] = useState<ProductVariant>([])
 
+  const [openRegionDrawer, setOpenRegionDrawer] = useState(false)
   const [openCreateCustomerModal, setOpenCreateCustomerModal] = useState(false)
   const [showAddedCustomerDetailsModal, setShowAddedCustomerDetailsModal] =
     useState(false)
@@ -466,6 +468,10 @@ const OrderCrateIndex = () => {
                 insideClass="py-2"
               >
                 <SelectRegionScreen />
+                <SelectRegionMobileDrawer
+                  openRegionDrawer={openRegionDrawer}
+                  setOpenRegionDrawer={setOpenRegionDrawer}
+                />
               </BodyCard>
               <BodyCard
                 compact={true}
