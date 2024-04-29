@@ -39,6 +39,7 @@ import storeRoutes from "./store"
 import swapRoutes from "./swaps"
 import taxRateRoutes from "./tax-rates"
 import uploadRoutes from "./uploads"
+import adminBuilderRoute from "./admin-builder"
 import userRoutes, { unauthenticatedUserRoutes } from "./users"
 import variantRoutes from "./variants"
 
@@ -115,6 +116,7 @@ export default (app, container, config) => {
   paymentCollectionRoutes(route)
   paymentRoutes(route)
   productCategoryRoutes(route)
+  adminBuilderRoute(route)
 
   return app
 }

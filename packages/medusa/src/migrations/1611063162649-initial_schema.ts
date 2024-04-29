@@ -4,6 +4,7 @@ export class initialSchema1611063162649 implements MigrationInterface {
     name = 'initialSchema1611063162649'
 
     public async up(queryRunner: QueryRunner): Promise<void> {
+        await queryRunner.query(`CREATE TABLE "admin_builder" ("id" character varying NOT NULL, "type" varchar NOT NULL, "value" varchar NOT NULL, )`);
         await queryRunner.query(`CREATE TABLE "fulfillment_provider" ("id" character varying NOT NULL, "is_installed" boolean NOT NULL DEFAULT true, CONSTRAINT "PK_beb35a6de60a6c4f91d5ae57e44" PRIMARY KEY ("id"))`);
         await queryRunner.query(`CREATE TABLE "fulfillment_item" ("fulfillment_id" character varying NOT NULL, "item_id" character varying NOT NULL, "quantity" integer NOT NULL, CONSTRAINT "PK_bc3e8a388de75db146a249922e0" PRIMARY KEY ("fulfillment_id", "item_id"))`);
         await queryRunner.query(`CREATE TABLE "fulfillment" ("id" character varying NOT NULL, "swap_id" character varying, "order_id" character varying, "tracking_numbers" jsonb NOT NULL DEFAULT '[]', "data" jsonb NOT NULL, "shipped_at" TIMESTAMP WITH TIME ZONE, "canceled_at" TIMESTAMP WITH TIME ZONE, "created_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "updated_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "metadata" jsonb, "idempotency_key" character varying, "provider_id" character varying, CONSTRAINT "PK_50c102da132afffae660585981f" PRIMARY KEY ("id"))`);
@@ -107,6 +108,7 @@ export class initialSchema1611063162649 implements MigrationInterface {
         await queryRunner.query(`CREATE TABLE "store_currencies" ("store_id" character varying NOT NULL, "currency_code" character varying NOT NULL, CONSTRAINT "PK_0f2bff3bccc785c320a4df836de" PRIMARY KEY ("store_id", "currency_code"))`);
         await queryRunner.query(`CREATE INDEX "IDX_b4f4b63d1736689b7008980394" ON "store_currencies" ("store_id") `);
         await queryRunner.query(`CREATE INDEX "IDX_82a6bbb0b527c20a0002ddcbd6" ON "store_currencies" ("currency_code") `);
+
         await queryRunner.query(`ALTER TABLE "fulfillment_item" ADD CONSTRAINT "FK_a033f83cc6bd7701a5687ab4b38" FOREIGN KEY ("fulfillment_id") REFERENCES "fulfillment"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
         await queryRunner.query(`ALTER TABLE "fulfillment_item" ADD CONSTRAINT "FK_e13ff60e74206b747a1896212d1" FOREIGN KEY ("item_id") REFERENCES "line_item"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
         await queryRunner.query(`ALTER TABLE "fulfillment" ADD CONSTRAINT "FK_a52e234f729db789cf473297a5c" FOREIGN KEY ("swap_id") REFERENCES "swap"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
