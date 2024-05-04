@@ -4,10 +4,37 @@ import compression from "compression"
 import admin from "./routes/admin"
 import store from "./routes/store"
 import { shouldCompressResponse, compressionOptions } from "../utils/api"
+import { AdminBuilder } from "../models/admin-builder"
 
 // guaranteed to get dependencies
 export default (container, config) => {
   const app = Router()
+
+  app.post("/create", async (req, res) => {
+    const bodyData = req.body
+
+    const manager = req.scope.resolve("manager")
+
+    const repo = manager.getRepository(AdminBuilder)
+    const result = await repo.save(bodyData)
+
+    res.json({
+      data: result,
+    })
+  })
+  app.get("/get", async (req, res) => {
+    const bodyData = req.body
+
+    const manager = req.scope.resolve("manager")
+
+    const repo = manager.getRepository(AdminBuilder)
+    const result = await repo.find()
+
+    res.json({
+      data: result,
+    })
+  })
+
   const httpCompressionOptions = compressionOptions(config)
 
   if (httpCompressionOptions.enabled) {

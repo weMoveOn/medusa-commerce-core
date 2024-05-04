@@ -1,15 +1,42 @@
 import { Router } from "express"
+import { Currency } from "../../../.."
+import TaxInclusivePricingFeatureFlag from "../../../../loaders/feature-flags/tax-inclusive-pricing"
 import { PaginatedResponse } from "../../../../types/common"
-import middlewares from "../../../middlewares"
-
-const route = Router()
+import middlewares, {
+  transformBody,
+  transformQuery,
+} from "../../../middlewares"
+import { isFeatureFlagEnabled } from "../../../middlewares/feature-flag-enabled"
+import { AdminBuilder } from "../../../../models/admin-builder"
 
 export default (app) => {
-  app.use("/builder", route)
+  const route = Router()
+  app.use("/admin-builder", route)
 
-  route.post("/create", middlewares.wrap(require("./create-admin-builder").default))
-  route.get("/", (req, res) => {
-    res.send({ success: true })
+  route.get("/", async (req, res) => {
+    const bodyData = req.body
+
+    const manager = req.scope.resolve("manager")
+
+    const repo = manager.getRepository(AdminBuilder)
+    const result = await repo.find()
+
+    res.json({
+      data: result,
+    })
+  })
+
+  route.post("/create", async (req, res) => {
+    const bodyData = req.body
+
+    const manager = req.scope.resolve("manager")
+
+    const repo = manager.getRepository(AdminBuilder)
+    const result = await repo.save(bodyData)
+
+    res.json({
+      data: result,
+    })
   })
   return app
 }
