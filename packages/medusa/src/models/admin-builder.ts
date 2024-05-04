@@ -1,15 +1,6 @@
-import {
-  BeforeInsert,
-  Column,
-  Entity,
-  Index,
-  JoinColumn,
-  ManyToOne,
-} from "typeorm"
-
+import { BeforeInsert, Column, Entity, Index } from "typeorm"
 import { BaseEntity } from "../interfaces"
 import { generateEntityId } from "../utils"
-
 @Entity()
 export class AdminBuilder extends BaseEntity {
   @Index()
@@ -21,9 +12,10 @@ export class AdminBuilder extends BaseEntity {
 
   @Column({ type: "varchar", nullable: true })
   value: string
+
   @BeforeInsert()
   generateId() {
     // Generate the id using the generateEntityId function
-    this.id = generateEntityId(this.id, "page")
+    this.id = generateEntityId(this.id, "adminBuilder")
   }
 }

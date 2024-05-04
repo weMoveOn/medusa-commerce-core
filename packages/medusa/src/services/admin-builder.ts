@@ -14,15 +14,11 @@ class AdminBuilderService extends TransactionBaseService {
   }
 
   async create(createData: IAdminBuildersCreate) {
-    // console.log(createData)
     const adminBuilderRepository =
       this.activeManager_.getRepository(AdminBuilder)
-    // console.log(createData, "22 line")
     try {
-      // @ts-ignore
       const data = adminBuilderRepository.create(createData)
       const result = await adminBuilderRepository.save(data)
-      console.log(result, "--------")
       return result
     } catch (error: any) {
       if (error.detail?.includes("already exists")) {
@@ -37,7 +33,6 @@ class AdminBuilderService extends TransactionBaseService {
       }
     }
   }
-
   // Reusable error handling function
   private handleErrorResponse(error: any): never {
     if (error.type === "not_found") {

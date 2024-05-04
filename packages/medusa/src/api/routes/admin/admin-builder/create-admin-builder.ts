@@ -36,10 +36,20 @@ export default async (req, res) => {
   const AdminBuilder: AdminBuilderService = req.scope.resolve(
     "adminBuilderService"
   )
-  // console.log("--------39--------")
-  const result = await AdminBuilder.create(validated)
-  // console.log(result)
-  res.status(201).json({ result })
+
+  try {
+    const result = await AdminBuilder.create(validated)
+    res.status(201).json({
+      success: true,
+      data: result,
+      message: "Data is successfully created",
+    })
+  } catch (error) {
+    res.status(201).json({
+      success: true,
+      message: "Failed to create",
+    })
+  }
 }
 // Boolean
 export class AdminBuilderBooleanPostReq {
