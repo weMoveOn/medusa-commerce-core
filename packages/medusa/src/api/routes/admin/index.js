@@ -8,6 +8,7 @@ import authRoutes from "./auth"
 import batchRoutes from "./batch"
 import collectionRoutes from "./collections"
 import currencyRoutes from "./currencies"
+import adminBuilderRoutes from "./admin-builder"
 import customerGroupRoutes from "./customer-groups"
 import customerRoutes from "./customers"
 import discountRoutes from "./discounts"
@@ -83,6 +84,7 @@ export default (app, container, config) => {
   customerGroupRoutes(route)
   customerRoutes(route)
   currencyRoutes(route)
+  adminBuilderRoutes(route)
   discountRoutes(route)
   draftOrderRoutes(route)
   giftCardRoutes(route)
