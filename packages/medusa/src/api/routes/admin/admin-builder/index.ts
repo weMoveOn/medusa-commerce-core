@@ -21,6 +21,11 @@ export default (app) => {
     "/create",
     middlewares.wrap(require("./create-admin-builder").default)
   )
+  route.get("/", middlewares.wrap(require("./retrieve-admin-builder").default))
+  route.get(
+    "/:property_id",
+    middlewares.wrap(require("./retrieve-by-property-id-admin-builder").default)
+  )
 
   return app
 }

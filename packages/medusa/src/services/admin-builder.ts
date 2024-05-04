@@ -2,7 +2,7 @@ import { EntityManager } from "typeorm"
 import { AdminBuilder } from "../models/admin-builder"
 import { IAdminBuildersCreate } from "../interfaces/admin-builder"
 import { TransactionBaseService } from "../interfaces"
-
+import { buildQuery } from "../utils"
 type InjectedDependencies = {
   manager: EntityManager
   adminBuilderRepository: typeof AdminBuilder
@@ -19,6 +19,7 @@ class AdminBuilderService extends TransactionBaseService {
     try {
       const data = adminBuilderRepository.create(createData)
       const result = await adminBuilderRepository.save(data)
+
       return result
     } catch (error: any) {
       if (error.detail?.includes("already exists")) {
@@ -33,6 +34,48 @@ class AdminBuilderService extends TransactionBaseService {
       }
     }
   }
+  async get() {
+    const adminBuilderRepository =
+      this.activeManager_.getRepository(AdminBuilder)
+    try {
+      const result = await adminBuilderRepository.find()
+
+      return result
+    } catch (error: any) {
+      if (error.detail?.includes("already exists")) {
+        throw {
+          status: 422,
+          data: {
+            errors: [],
+          },
+        }
+      } else {
+        this.handleErrorResponse(error)
+      }
+    }
+  }
+  async getByPropertyId(id: string) {
+    const adminBuilderRepository =
+      this.activeManager_.getRepository(AdminBuilder)
+    try {
+      const query = buildQuery({ property_id: id })
+      const result = await adminBuilderRepository.findOne(query)
+
+      return result
+    } catch (error: any) {
+      if (error.detail?.includes("already exists")) {
+        throw {
+          status: 422,
+          data: {
+            errors: [],
+          },
+        }
+      } else {
+        this.handleErrorResponse(error)
+      }
+    }
+  }
+
   // Reusable error handling function
   private handleErrorResponse(error: any): never {
     if (error.type === "not_found") {
