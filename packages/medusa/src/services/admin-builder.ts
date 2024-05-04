@@ -5,7 +5,7 @@ import { TransactionBaseService } from "../interfaces"
 
 type InjectedDependencies = {
   manager: EntityManager
-  priceRoleRepository: typeof AdminBuilder
+  adminBuilderRepository: typeof AdminBuilder
 }
 
 class AdminBuilderService extends TransactionBaseService {
@@ -13,13 +13,17 @@ class AdminBuilderService extends TransactionBaseService {
     super(container)
   }
 
-  async create(createData: IAdminBuildersCreate): Promise<AdminBuilder> {
+  async create(createData: IAdminBuildersCreate) {
+    // console.log(createData)
     const adminBuilderRepository =
       this.activeManager_.getRepository(AdminBuilder)
+    // console.log(createData, "22 line")
     try {
       // @ts-ignore
       const data = adminBuilderRepository.create(createData)
-      return await adminBuilderRepository.save(data)
+      const result = await adminBuilderRepository.save(data)
+      console.log(result, "--------")
+      return result
     } catch (error: any) {
       if (error.detail?.includes("already exists")) {
         throw {

@@ -8,6 +8,7 @@ import {
 } from "typeorm"
 
 import { BaseEntity } from "../interfaces"
+import { generateEntityId } from "../utils"
 
 @Entity()
 export class AdminBuilder extends BaseEntity {
@@ -20,4 +21,9 @@ export class AdminBuilder extends BaseEntity {
 
   @Column({ type: "varchar", nullable: true })
   value: string
+  @BeforeInsert()
+  generateId() {
+    // Generate the id using the generateEntityId function
+    this.id = generateEntityId(this.id, "page")
+  }
 }

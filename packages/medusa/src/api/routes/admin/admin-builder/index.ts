@@ -1,34 +1,26 @@
 import { Router } from "express"
-import { AdminBuilder } from "../../../../models/admin-builder"
+import middlewares from "../../../middlewares"
 
 export default (app) => {
   const route = Router()
   app.use("/admin-builder", route)
 
-  route.get("/", async (req, res) => {
-    const bodyData = req.body
+  // route.get("/", async (req, res) => {
+  //   const AdminBuilder: AdminBuilderService = req.scope.resolve(
+  //     "adminBuilderService"
+  //   )
 
-    const manager = req.scope.resolve("manager")
+  //   const bodyData = req.body
+  //   const result = AdminBuilder.create(bodyData)
 
-    const repo = manager.getRepository(AdminBuilder)
-    const result = await repo.find()
+  //   res.json({
+  //     data: result,
+  //   })
+  // })
+  route.post(
+    "/create",
+    middlewares.wrap(require("./create-admin-builder").default)
+  )
 
-    res.json({
-      data: result,
-    })
-  })
-
-  route.post("/create", async (req, res) => {
-    const bodyData = req.body
-
-    const manager = req.scope.resolve("manager")
-
-    const repo = manager.getRepository(AdminBuilder)
-    const result = await repo.save(bodyData)
-
-    res.json({
-      data: result,
-    })
-  })
   return app
 }

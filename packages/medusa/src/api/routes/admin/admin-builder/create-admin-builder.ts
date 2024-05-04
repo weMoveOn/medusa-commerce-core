@@ -1,16 +1,7 @@
-import {
-  IsBoolean,
-  IsEmail,
-  IsNumber,
-  IsObject,
-  IsOptional,
-  IsString,
-} from "class-validator"
+import { IsBoolean, IsNumber, IsString } from "class-validator"
 
-import { CustomerService } from "../../../../services"
 import { validator } from "../../../../utils/validator"
-import { EntityManager } from "typeorm"
-
+import AdminBuilderService from "../../../../services/admin-builder"
 
 export default async (req, res) => {
   let validated
@@ -18,75 +9,70 @@ export default async (req, res) => {
   if (req.body.type === "checkbox") {
     validated = await validator(AdminBuilderBooleanPostReq, req.body)
   }
-      // Validation for Number
-      else if (req.body.type === "range") {
-        validated = await validator(AdminBuilderNumberPostReq, req.body)
+  // Validation for Number
+  else if (req.body.type === "range") {
+    validated = await validator(AdminBuilderNumberPostReq, req.body)
   }
-      // Validation for String
-      else if (
-        req.body.type === "text" ||
-        req.body.type === "textarea" ||
-        req.body.type === "color" ||
-        req.body.type === "url" ||
-        req.body.type === "select" ||
-        req.body.type === "font_picker" ||
-        req.body.type === "image_picker"
-      ) {
-        validated = await validator(AdminBuilderStringPostReq, req.body)
-  }
-  else{
-    res.status(201).json({ data: {
+  // Validation for String
+  else if (
+    req.body.type === "text" ||
+    req.body.type === "textarea" ||
+    req.body.type === "color" ||
+    req.body.type === "url" ||
+    req.body.type === "select" ||
+    req.body.type === "font_picker" ||
+    req.body.type === "image_picker"
+  ) {
+    validated = await validator(AdminBuilderStringPostReq, req.body)
+  } else {
+    res.status(201).json({
+      data: {
         success: false,
-        message: "Type does't exist"
-      } })
+        message: "Type does't exist",
+      },
+    })
   }
 
-
-
-  // const customerService: CustomerService = req.scope.resolve("customerService")
-  // const manager: EntityManager = req.scope.resolve("manager")
-  // const customer = await manager.transaction(async (transactionManager) => {
-  //   return await customerService
-  //     .withTransaction(transactionManager)
-  //     .create(validated)
-  // })
-  res.status(201).json({ data: {
-    success: true,
-      data:validated
-    } })
+  const AdminBuilder: AdminBuilderService = req.scope.resolve(
+    "adminBuilderService"
+  )
+  // console.log("--------39--------")
+  const result = await AdminBuilder.create(validated)
+  // console.log(result)
+  res.status(201).json({ result })
 }
 // Boolean
 export class AdminBuilderBooleanPostReq {
-  @IsBoolean({ message: 'Value must be a boolean' })
+  @IsBoolean({ message: "Value must be a boolean" })
   value: boolean
 
-  @IsString({ message: 'Type must be a string' })
+  @IsString({ message: "Type must be a string" })
   type: string
 
-  @IsString({ message: 'ID must be a string' })
-  id: string
+  @IsString({ message: "ID must be a string" })
+  property_id: string
 }
 
 // Number
 export class AdminBuilderNumberPostReq {
-  @IsNumber({}, { message: 'Value must be a number' })
-  value: number;
+  @IsNumber({}, { message: "Value must be a number" })
+  value: number
 
-  @IsString({ message: 'Type must be a string' })
+  @IsString({ message: "Type must be a string" })
   type: string
 
-  @IsString({ message: 'ID must be a string' })
-  id: string
+  @IsString({ message: "ID must be a string" })
+  property_id: string
 }
 
 // String
 export class AdminBuilderStringPostReq {
-  @IsString({ message: 'Value must be a string' })
+  @IsString({ message: "Value must be a string" })
   value: string
 
-  @IsString({ message: 'Type must be a string' })
+  @IsString({ message: "Type must be a string" })
   type: string
 
-  @IsString({ message: 'ID must be a string' })
-  id: string
+  @IsString({ message: "ID must be a string" })
+  property_id: string
 }
