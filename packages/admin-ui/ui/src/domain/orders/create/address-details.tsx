@@ -1,42 +1,136 @@
 import { Customer } from "@medusajs/medusa"
 import AddressDetailsCard from "./address-details-card"
 import React from "react"
+import { useNewOrderForm } from "../new/form"
+import { useWatch } from "react-hook-form"
 
 interface AddressDetailsCardProps {
-  customer: Customer | undefined
+  customer?: Customer | undefined
+  className?: string
 }
 
-const AddressDetails: React.FC<AddressDetailsCardProps> = ({ customer }) => {
-  console.log("customer from address-details.tsx: ", customer)
-  
+const AddressDetails: React.FC<AddressDetailsCardProps> = ({ customer,className }) => {
+  const {
+    form,
+    context: { items, region: regionObj, selectedShippingOption },
+  } = useNewOrderForm()
+
+  const shipping = useWatch({
+    defaultValue: undefined,
+    control: form.control,
+    name: "shipping_address",
+  })
+  const billing = useWatch({
+    defaultValue: undefined,
+    control: form.control,
+    name: "billing_address",
+  })
+  const customerName = useWatch({
+    defaultValue: undefined,
+    control: form.control,
+    name: "shipping_address.first_name",
+  })
+
+  // console.log("shipping from address details :>>", shipping)
   return (
-    <div className="">
+    <div className={className}>
       <AddressDetailsCard
         title="Contact Details"
         content={[
-          { label: "Name", value: customer?.first_name + " " + customer?.last_name},
-          { label: "Company", value: "Company not provided."},
-          { label: "Email", value: customer?.email! },
-          { label: "Phone", value: customer?.phone || "Phone Number not provided." },
+          {
+            label: "Name",
+            value: customerName || "Name not provided.",
+            register: "shipping_address.first_name",
+          },
+          {
+            label: "Company",
+            value: shipping?.company || "Company not provided.",
+            register: "shipping_address.company",
+          },
+          { label: "Email", value: customer?.email!, register: "email" },
+          {
+            label: "Phone",
+            value:
+              shipping?.phone ||
+              customer?.phone ||
+              "Phone Number not provided.",
+            register: "shipping_address.phone",
+          },
         ]}
       />
       <AddressDetailsCard
         title="Shipping Details"
         content={[
-          { label: "Address", value: customer?.shipping_addresses[0]?.address_1 || "Address not provided."},
-          { label: "City", value: customer?.shipping_addresses[0]?.city || "City not provided." },
-          { label: "Postal", value: customer?.shipping_addresses[0]?.postal_code || "Postal Code not provided."},
-          { label: "Country", value: customer?.shipping_addresses[0]?.country_code || "Country not provided."},
+          {
+            label: "Address",
+            value:
+              shipping?.address_1 ||
+              customer?.shipping_addresses[0]?.address_1 ||
+              "Address not provided.",
+            register: "shipping_address.address_1",
+          },
+          {
+            label: "City",
+            value:
+              shipping?.city ||
+              customer?.shipping_addresses[0]?.city ||
+              "City not provided.",
+            register: "shipping_address.city",
+          },
+          {
+            label: "Postal",
+            value:
+              shipping?.postal_code ||
+              customer?.shipping_addresses[0]?.postal_code ||
+              "Postal Code not provided.",
+            register: "shipping_address.postal_code",
+          },
+          {
+            label: "Country",
+            value:
+              shipping?.country_code?.value ||
+              customer?.shipping_addresses[0]?.country_code ||
+              "Country not provided.",
+            register: "shipping_address.country_code",
+          },
         ]}
       />
 
       <AddressDetailsCard
         title="Billing Details"
         content={[
-          { label: "Address", value: "Mirpur DOHS" },
-          { label: "City", value: "Dhaka" },
-          { label: "Postal", value: "1234" },
-          { label: "Country", value: "Bangladesh" },
+          {
+            label: "Address",
+            value:
+              billing?.address_1 ||
+              customer?.billing_address?.address_1 ||
+              "Address not provided.",
+            register: "billing_address.address_1",
+          },
+          {
+            label: "City",
+            value:
+              billing?.city ||
+              customer?.billing_address?.city ||
+              "City not provided.",
+            register: "billing_address.city",
+          },
+          {
+            label: "Postal",
+            value:
+              billing?.postal_code ||
+              customer?.billing_address?.postal_code ||
+              "Postal Code not provided.",
+            register: "billing_address.postal_code",
+          },
+          {
+            label: "Country",
+            value:
+              billing?.country_code?.value ||
+              customer?.billing_address?.country_code ||
+              "Country not provided.",
+            register: "billing_address.country_code",
+          },
         ]}
       />
     </div>

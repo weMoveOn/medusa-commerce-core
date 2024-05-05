@@ -1,10 +1,7 @@
 import moment from "moment"
 import { useMemo } from "react"
-import ReactCountryFlag from "react-country-flag"
 import { useTranslation } from "react-i18next"
 import { getColor } from "../../../utils/color"
-import { isoAlpha2Countries } from "../../../utils/countries"
-import { formatAmountWithSymbol } from "../../../utils/prices"
 import Tooltip from "../../atoms/tooltip"
 import StatusDot from "../../fundamentals/status-indicator"
 import CustomerAvatarItem from "../../molecules/customer-avatar-item"
@@ -13,7 +10,7 @@ import { Order } from "@medusajs/medusa"
 import { createColumnHelper } from "@tanstack/react-table"
 import { Checkbox } from "@medusajs/ui"
 
-const useOrderTableColums = () => {
+const useOrderTableColumsMobile = () => {
   const { t } = useTranslation()
   const columnHelper = createColumnHelper<Order>()
 
@@ -167,4 +164,4 @@ const useOrderTableColums = () => {
   return [columns]
 }
 
-export default useOrderTableColums
+export default useOrderTableColumsMobile

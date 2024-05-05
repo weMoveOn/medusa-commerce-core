@@ -39,22 +39,19 @@ export const DisplayTotalAmount = ({
   currency,
 }) => (
   <div className="flex">
-    <div
-      className={clsx(totalColor, {
-        "inter-small-regular mr-3": variant === "regular",
-        "inter-large-semibold": variant === "bold",
-        "inter-xlarge-semibold": variant === "large",
-      })}
-    >
-      {formatAmountWithSymbol({
-        amount: totalAmount,
-        currency,
-      })}
-    </div>
     {variant === "regular" && (
       <div className="inter-small-regular text-grey-50">
         {currency.toUpperCase()}
       </div>
     )}
+    <div
+      className={clsx(totalColor, {
+        "inter-small-regular ml-3": variant === "regular",
+        "inter-large-semibold": variant === "bold",
+        "inter-xlarge-semibold": variant === "large",
+      })}
+    >
+      {totalAmount}
+    </div>
   </div>
 )

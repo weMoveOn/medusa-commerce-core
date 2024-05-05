@@ -8,6 +8,7 @@ import authRoutes from "./auth"
 import batchRoutes from "./batch"
 import collectionRoutes from "./collections"
 import currencyRoutes from "./currencies"
+import adminBuilderRoutes from "./admin-builder"
 import customerGroupRoutes from "./customer-groups"
 import customerRoutes from "./customers"
 import discountRoutes from "./discounts"
@@ -39,6 +40,7 @@ import storeRoutes from "./store"
 import swapRoutes from "./swaps"
 import taxRateRoutes from "./tax-rates"
 import uploadRoutes from "./uploads"
+import adminBuilderRoute from "./admin-builder"
 import userRoutes, { unauthenticatedUserRoutes } from "./users"
 import variantRoutes from "./variants"
 
@@ -83,6 +85,7 @@ export default (app, container, config) => {
   customerGroupRoutes(route)
   customerRoutes(route)
   currencyRoutes(route)
+  adminBuilderRoutes(route)
   discountRoutes(route)
   draftOrderRoutes(route)
   giftCardRoutes(route)
@@ -115,6 +118,7 @@ export default (app, container, config) => {
   paymentCollectionRoutes(route)
   paymentRoutes(route)
   productCategoryRoutes(route)
+  adminBuilderRoute(route)
 
   return app
 }

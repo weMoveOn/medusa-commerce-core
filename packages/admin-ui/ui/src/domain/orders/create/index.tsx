@@ -2,10 +2,8 @@ import { useEffect, useMemo, useState } from "react"
 import { Route, Routes, useNavigate } from "react-router-dom"
 import { useTranslation } from "react-i18next"
 import Spacer from "../../../components/atoms/spacer"
-import WidgetContainer from "../../../components/extensions/widget-container"
 import PlusIcon from "../../../components/fundamentals/icons/plus-icon"
 import BodyCard from "../../../components/organisms/body-card"
-import { useWidgets } from "../../../providers/widget-provider"
 import Button from "../../../components/fundamentals/button"
 import BackButton from "../../../components/atoms/back-button"
 import SelectRegionScreen from "../new/components/ms-select-region"
@@ -13,24 +11,26 @@ import NewOrderFormProvider, { useNewOrderForm } from "../new/form"
 import Select from "../../../components/molecules/select"
 import { Option } from "../../../types/shared"
 import { Controller, useWatch } from "react-hook-form"
-import {
-  useAdminCustomer,
-  useAdminCustomers,
-} from "medusa-react"
+import { useAdminCustomer, useAdminCustomers } from "medusa-react"
 import Medusa from "../../../services/api"
 import qs from "qs"
-import AddCustomProductModal from "./add-custom-product-modal"
+import AddCustomProductModal, {
+  AddCustomProductModalMobile,
+} from "./add-custom-product-modal"
 import CreateNewCustomerModal from "./create-new-customer-modal"
 import { Customer } from "@medusajs/medusa"
 import AddressDetails from "./address-details"
 import InputField from "../../../components/molecules/input"
 import MsSummaryCard from "../ms-details/detail-cards/ms-summary"
 import SearchProductModal from "./search-product-modal"
-import useNotification from "../../../hooks/use-notification"
 import MsSelectShippingMethod from "../new/components/ms-select-shipping"
 import MsItemsInformationTable from "./dupli"
 import CrossIcon from "../../../components/fundamentals/icons/cross-icon"
 import isNullishObject from "../../../utils/is-nullish-object"
+import { Drawer } from "vaul"
+import AddCustomerFormMobile from "../new/components/add-customer-mobile"
+import MsItemsInformationMobile from "./ms-items-information-table-mobile"
+import SelectRegionMobileDrawer from "./select-region-mobile-drawer"
 
 type ProductVariant = {
   quantity: number
@@ -48,6 +48,7 @@ const OrderCrateIndex = () => {
 
   const [items, setItems] = useState<ProductVariant>([])
 
+  const [openRegionDrawer, setOpenRegionDrawer] = useState(false)
   const [openCreateCustomerModal, setOpenCreateCustomerModal] = useState(false)
   const [showAddedCustomerDetailsModal, setShowAddedCustomerDetailsModal] =
     useState(false)
@@ -57,10 +58,10 @@ const OrderCrateIndex = () => {
   const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(
     null
   )
-  const notification = useNotification()
   const [showProductSearchModal, setShowProductSearchModal] = useState(false)
+  const [findExistingCustomerModal, setFindExistingCustomerModal] =
+    useState(false)
 
-  const { getWidgets } = useWidgets()
   const {
     context: { validCountries },
     form,
@@ -68,8 +69,6 @@ const OrderCrateIndex = () => {
 
   const { billing_address, shipping_address } = form.getValues()
 
-  const { context } = useNewOrderForm()
-  const { fields: selectedProducts } = context.items
   const {
     form: { handleSubmit, reset },
     context: { region },
@@ -162,11 +161,12 @@ const OrderCrateIndex = () => {
     form.setValue("shipping_address.country_code", null)
     form.setValue("shipping_address.province", "")
     form.setValue("shipping_address.postal_code", "")
+    form.setValue("shipping_address.company", "")
   }
 
   const addProductAction = useMemo(() => {
     return [
-      <div className="flex space-x-2">
+      <div key="addProductAction" className="flex space-x-2">
         <Button
           className={"border-0"}
           key="order_create"
@@ -271,160 +271,378 @@ const OrderCrateIndex = () => {
       value: customer.email,
       id: customer.id,
     }))
+
+  /* Mobile Layout start */
+
+  const [width, setWidth] = useState(window.innerWidth)
+  const [isMobile, setIsMobile] = useState(false)
+
+  useEffect(() => {
+    if (width < 640) {
+      setIsMobile(true)
+    } else {
+      setIsMobile(false)
+    }
+
+    const handleResize = () => {
+      setWidth(window.innerWidth)
+    }
+
+    window.addEventListener("resize", handleResize)
+
+    return () => {
+      window.removeEventListener("resize", handleResize)
+    }
+  }, [width])
+
+  const [searchTerm, setSearchTerm] = useState<string>("")
+
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value)
+  }
+
+  const filteredCustomers =
+    customers &&
+    customers.filter((customer: Customer) =>
+      Object.values(customer).some(
+        (value) =>
+          typeof value === "string" &&
+          value.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+    )
+  /* Mobile Layout end */
+
   return (
-    <div className="gap-y-xsmall flex h-full grow flex-col">
-      <div className="flex items-center justify-between">
-        <BackButton
-          path="/a/orders"
-          label="Create Manual Order"
-          className="mb-xsmall text-large"
-        />
-        <Button type="submit" variant="primary" onClick={onSubmit}>
-          Create Order
-        </Button>
-      </div>
-      {getWidgets("draft_order.list.before").map((Widget, i) => {
-        return (
-          <WidgetContainer
-            key={i}
-            entity={null}
-            injectionZone="draft_order.list.before"
-            widget={Widget}
-          />
-        )
-      })}
-      <div className="grid grid-cols-12 gap-4">
-        <div className="medium:col-span-8 col-span-12">
-          <div className="h-full w-full">
+    <>
+      {!isMobile ? (
+        <>
+          <div className="gap-y-xsmall flex h-full grow flex-col">
+            <div className="flex items-center justify-between">
+              <BackButton
+                path="/a/orders"
+                label="Create Manual Order"
+                className="mb-xsmall text-large"
+              />
+              <Button type="submit" variant="primary" onClick={onSubmit}>
+                Create Order
+              </Button>
+            </div>
+            <div className="grid grid-cols-12 gap-4">
+              <div className="medium:col-span-8 col-span-12">
+                <div className="h-full w-full">
+                  <BodyCard
+                    compact={true}
+                    title={"Products"}
+                    customActionable={addProductAction}
+                    className="h-fit"
+                  >
+                    <div className="flex w-full items-center justify-between gap-4">
+                      <div
+                        className="w-5/6"
+                        onClick={() => setShowProductSearchModal(true)}
+                      >
+                        <InputField
+                          className=""
+                          placeholder="Find products from inventory..."
+                        />
+                      </div>
+                      <div>
+                        <Button
+                          variant="primary"
+                          onClick={() => setShowProductSearchModal(true)}
+                        >
+                          Find Products
+                        </Button>
+                      </div>
+                    </div>
+                    <MsItemsInformationTable />
+                  </BodyCard>
+                  <BodyCard
+                    compact={true}
+                    title={"Shipping method"}
+                    className="my-4 h-fit"
+                  >
+                    <MsSelectShippingMethod />
+                  </BodyCard>
+                </div>
+              </div>
+              <div className="medium:col-span-4 col-span-12">
+                <BodyCard
+                  compact={true}
+                  title={"Customer Information"}
+                  className="h-fit rounded-b-none pb-4"
+                >
+                  <SelectRegionScreen />
+                </BodyCard>
+
+                <BodyCard
+                  compact={true}
+                  title={customer ? "Added Customer" : "Add Customer"}
+                  customActionable={addCustomerActions}
+                  className="h-fit rounded-t-none pb-4"
+                >
+                  {!customer && is_new_customer_form_saved === false ? (
+                    <Controller
+                      control={form.control}
+                      name="customer_id"
+                      render={({ field: { value, onChange } }) => {
+                        return (
+                          <Select
+                            className="mt-4"
+                            label={t(
+                              "components-find-existing-customer",
+                              "Find existing customer"
+                            )}
+                            options={options || []}
+                            enableSearch
+                            value={value || null}
+                            onChange={(val) => {
+                              onCustomerSelect(val)
+                              onChange(val)
+                            }}
+                            filterOptions={debouncedFetch as any}
+                            clearSelected
+                          />
+                        )
+                      }}
+                    />
+                  ) : (
+                    <AddressDetails customer={customer} />
+                  )}
+                </BodyCard>
+                <MsSummaryCard />
+              </div>
+            </div>
+            <Spacer />
+            {showProductSearchModal && (
+              <>
+                <SearchProductModal
+                  openSearchProductModal={showProductSearchModal}
+                  setOpenSearchProductModal={setShowProductSearchModal}
+                  title="Search Product"
+                  setItems={setItems}
+                />
+              </>
+            )}
+            {openCreateCustomerModal && (
+              <CreateNewCustomerModal
+                title="Create New Customer"
+                openCreateCustomerModal={openCreateCustomerModal}
+                setOpenCreateCustomerModal={setOpenCreateCustomerModal}
+                openWithBillingAddress={false}
+              />
+            )}
+            {showAddedCustomerDetailsModal && (
+              <CreateNewCustomerModal
+                title="Customer Details"
+                openCreateCustomerModal={showAddedCustomerDetailsModal}
+                setOpenCreateCustomerModal={setShowAddedCustomerDetailsModal}
+                openWithBillingAddress={true}
+              />
+            )}
+            {openAddCustomProductModal && (
+              <AddCustomProductModal
+                openAddCustomProductModal={openAddCustomProductModal}
+                setOpenAddCustomProductModal={setOpenAddCustomProductModal}
+              />
+            )}
+          </div>
+        </>
+      ) : (
+        <div>
+          <div className="flex items-center justify-between">
+            <BackButton
+              path="/a/orders"
+              label="Create Manual Order"
+              className="mb-xsmall text-xl font-bold text-black"
+            />
+          </div>
+          <div className="flex flex-grow flex-col gap-3">
+            <div>
+              <BodyCard
+                compact={true}
+                title={"Customer Information"}
+                className="h-fit rounded-b-none pb-4"
+                childrenClass="px-2"
+                insidePadding={false}
+                insideClass="py-2"
+              >
+                <SelectRegionScreen />
+                <SelectRegionMobileDrawer
+                  openRegionDrawer={openRegionDrawer}
+                  setOpenRegionDrawer={setOpenRegionDrawer}
+                />
+              </BodyCard>
+              <BodyCard
+                compact={true}
+                title={customer ? "Added Customer" : "Add Customer"}
+                customActionable={addCustomerActions}
+                className="h-fit rounded-t-none pb-4"
+                childrenClass="px-2"
+                insidePadding={false}
+                insideClass="py-2"
+              >
+                {customer || is_new_customer_form_saved ? (
+                  <AddressDetails customer={customer} />
+                ) : (
+                  <Button
+                    className="w-full"
+                    variant="primary"
+                    onClick={() => setFindExistingCustomerModal(true)}
+                  >
+                    Find Existing Customer
+                  </Button>
+                )}
+              </BodyCard>
+            </div>
             <BodyCard
               compact={true}
               title={"Products"}
               customActionable={addProductAction}
-              className="h-fit"
+              className="h-fit px-1 pb-4"
+              childrenClass="px-1"
+              insidePadding={false}
+              insideClass="py-2"
             >
-              <div className="flex w-full items-center justify-between gap-4">
-                <div
-                  className="w-5/6"
-                  onClick={() => setShowProductSearchModal(true)}
-                >
-                  <InputField
-                    className=""
-                    placeholder="Find products from inventory..."
-                  />
-                </div>
-                <div>
-                  <Button
-                    variant="primary"
-                    onClick={() => setShowProductSearchModal(true)}
-                  >
-                    Find Products
-                  </Button>
-                </div>
-              </div>
-              <MsItemsInformationTable />
+              {items.length > 0 && <MsItemsInformationMobile />}
+              <Button
+                className="w-full"
+                variant="primary"
+                onClick={() => setShowProductSearchModal(true)}
+              >
+                Find Products
+              </Button>
             </BodyCard>
             <BodyCard
               compact={true}
               title={"Shipping method"}
-              className="my-4 h-fit"
+              childrenClass="px-1"
+              className="h-fit px-1 pb-4"
+              insidePadding={false}
+              insideClass="py-2"
             >
               <MsSelectShippingMethod />
             </BodyCard>
+            <MsSummaryCard className="my-0" />
+            {openCreateCustomerModal && (
+              <Drawer.Root dismissible={false} open={openCreateCustomerModal}>
+                <Drawer.Portal>
+                  <Drawer.Overlay className="fixed inset-0 bg-black/40" />
+                  <Drawer.Content className="fixed bottom-0 left-0 right-0 mt-24 flex flex-col rounded-t-[10px] bg-zinc-100">
+                    <div className="mt-2 flex items-center justify-between px-4">
+                      <h2 className="text-sm font-bold">Create New Customer</h2>
+                      <Button
+                        className=""
+                        variant="ghost"
+                        onClick={() => setOpenCreateCustomerModal(false)}
+                      >
+                        <CrossIcon size={20} />
+                      </Button>
+                    </div>
+                    <div className="h-[90vh] overflow-y-auto">
+                      <AddCustomerFormMobile
+                        setOpenCreateCustomerModal={setOpenCreateCustomerModal}
+                      />
+                    </div>
+                  </Drawer.Content>
+                </Drawer.Portal>
+              </Drawer.Root>
+            )}
+            {findExistingCustomerModal && (
+              <Drawer.Root dismissible={false} open={findExistingCustomerModal}>
+                <Drawer.Portal>
+                  <Drawer.Overlay className="fixed inset-0 bg-black/40" />
+                  <Drawer.Content className="fixed bottom-0 left-0 right-0 mt-24 flex flex-col rounded-t-[10px] bg-zinc-100">
+                    <div className="mt-2 flex items-center justify-between px-4">
+                      <h2 className="text-sm font-bold">
+                        Find Existing Customer
+                      </h2>
+                      <Button
+                        className=""
+                        variant="ghost"
+                        onClick={() => setFindExistingCustomerModal(false)}
+                      >
+                        <CrossIcon size={20} />
+                      </Button>
+                    </div>
+                    <div className="h-[80vh] overflow-y-auto">
+                      {!customer && is_new_customer_form_saved === false && (
+                        <div>
+                          <input
+                            type="text"
+                            placeholder="Search by name"
+                            value={searchTerm}
+                            onChange={handleSearch}
+                          />
+                          <ul>
+                            {filteredCustomers &&
+                              filteredCustomers.map((customer) => (
+                                <li key={customer.id}>
+                                  <div>Name: {customer.email}</div>
+                                  <div>Phone: {customer.phone}</div>
+                                </li>
+                              ))}
+                          </ul>
+                        </div>
+                      )}
+                    </div>
+                  </Drawer.Content>
+                </Drawer.Portal>
+              </Drawer.Root>
+            )}
+            {openAddCustomProductModal && (
+              <Drawer.Root dismissible={false} open={openAddCustomProductModal}>
+                <Drawer.Portal>
+                  <Drawer.Overlay className="fixed inset-0 bg-black/40" />
+                  <Drawer.Content className="fixed bottom-0 left-0 right-0 mt-24 flex flex-col rounded-t-[10px] bg-zinc-100">
+                    <div className="my-2 flex items-center justify-between px-4">
+                      <h2 className="text-sm font-bold">Add Custom Product</h2>
+                      <Button
+                        className=""
+                        variant="ghost"
+                        onClick={() => setOpenAddCustomProductModal(false)}
+                      >
+                        <CrossIcon size={20} />
+                      </Button>
+                    </div>
+                    <div className="h-[368px] overflow-y-auto bg-white p-3">
+                      <AddCustomProductModalMobile />
+                    </div>
+                  </Drawer.Content>
+                </Drawer.Portal>
+              </Drawer.Root>
+            )}
+            {showProductSearchModal && (
+              <Drawer.Root dismissible={false} open={showProductSearchModal}>
+                <Drawer.Portal>
+                  <Drawer.Overlay className="fixed inset-0 bg-black/40" />
+                  <Drawer.Content className="fixed bottom-0 left-0 right-0 mt-24 flex flex-col rounded-t-[10px] bg-zinc-100">
+                    <div className="my-2 flex items-center justify-between px-4">
+                      <h2 className="text-sm font-bold">Search Product</h2>
+                      <Button
+                        className=""
+                        variant="ghost"
+                        onClick={() => setShowProductSearchModal(false)}
+                      >
+                        <CrossIcon size={20} />
+                      </Button>
+                    </div>
+                    {/* <div className="h-[70vh] overflow-y-auto bg-white p-3"> */}
+                    <SearchProductModal
+                      openSearchProductModal={showProductSearchModal}
+                      title="Search Product"
+                      setItems={setItems}
+                      setOpenSearchProductModal={setShowProductSearchModal}
+                    />
+                    {/* </div> */}
+                  </Drawer.Content>
+                </Drawer.Portal>
+              </Drawer.Root>
+            )}
           </div>
         </div>
-        <div className="medium:col-span-4 col-span-12">
-          <BodyCard
-            compact={true}
-            title={"Customer Information"}
-            actionables={[]}
-            className="h-fit rounded-b-none pb-4"
-          >
-            <SelectRegionScreen />
-          </BodyCard>
-
-          <BodyCard
-            compact={true}
-            title={customer ? "Added Customer" : "Add Customer"}
-            customActionable={addCustomerActions}
-            className="h-fit rounded-t-none pb-4"
-          >
-            {!customer && is_new_customer_form_saved === false ? (
-              <Controller
-                control={form.control}
-                name="customer_id"
-                render={({ field: { value, onChange } }) => {
-                  return (
-                    <Select
-                      className="mt-4"
-                      label={t(
-                        "components-find-existing-customer",
-                        "Find existing customer"
-                      )}
-                      options={options || []}
-                      enableSearch
-                      value={value || null}
-                      onChange={(val) => {
-                        onCustomerSelect(val)
-                        onChange(val)
-                      }}
-                      filterOptions={debouncedFetch as any}
-                      clearSelected
-                    />
-                  )
-                }}
-              />
-            ) : (
-              <AddressDetails customer={customer} />
-            )}
-          </BodyCard>
-          <MsSummaryCard />
-        </div>
-      </div>
-      {getWidgets("draft_order.list.after").map((Widget, i) => {
-        return (
-          <WidgetContainer
-            key={i}
-            entity={null}
-            injectionZone="draft_order.list.after"
-            widget={Widget}
-          />
-        )
-      })}
-      <Spacer />
-      {showProductSearchModal && (
-        <>
-          <SearchProductModal
-            openSearchProductModal={showProductSearchModal}
-            setOpenSearchProductModal={setShowProductSearchModal}
-            title="Search Product"
-            setItems={setItems}
-          />
-        </>
       )}
-      {openCreateCustomerModal && (
-        <CreateNewCustomerModal
-          title="Create New Customer"
-          openCreateCustomerModal={openCreateCustomerModal}
-          setOpenCreateCustomerModal={setOpenCreateCustomerModal}
-          openWithBillingAddress={false}
-        />
-      )}
-      {showAddedCustomerDetailsModal && (
-        <CreateNewCustomerModal
-          title="Customer Details"
-          openCreateCustomerModal={showAddedCustomerDetailsModal}
-          setOpenCreateCustomerModal={setShowAddedCustomerDetailsModal}
-          openWithBillingAddress={true}
-        />
-      )}
-
-      {openAddCustomProductModal && (
-        <AddCustomProductModal
-          openAddCustomProductModal={openAddCustomProductModal}
-          setOpenAddCustomProductModal={setOpenAddCustomProductModal}
-        />
-      )}
-    </div>
+    </>
   )
 }
 

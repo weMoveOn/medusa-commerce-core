@@ -24,20 +24,20 @@ const Layout: React.FC<React.PropsWithChildren> = ({ children }) => {
         <div className="medium:block ">
           <Navbar />
         </div>
-
-        <div className="flex w-full bg-[#F2F4F6]">
+        {/* bg-[#F2F4F6] */}
+        <div className="flex w-full ">
           <div className="medium:block hidden">
             <Sidebar />
           </div>
           <div className="flex h-screen flex-1 flex-col">
             <div className="overflow-y-auto">
-              <main className="h-full w-full p-6">{children}</main>
+              <main className="small:p-6 h-full w-full p-2">{children}</main>
             </div>
           </div>
         </div>
       </div>
 
-      <BottomMenu />
+      {/* <BottomMenu /> */}
     </>
   )
 }

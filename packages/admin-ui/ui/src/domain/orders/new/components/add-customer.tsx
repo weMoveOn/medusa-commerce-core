@@ -1,18 +1,11 @@
-import qs from "query-string"
-import { useContext, useEffect, useMemo, useState } from "react"
+import {  useState } from "react"
 import { Controller, useWatch } from "react-hook-form"
 import { useTranslation } from "react-i18next"
-
-import { useAdminCustomer } from "medusa-react"
-import Medusa from "../../../../services/api"
 import InputField from "../../../../components/molecules/input"
 import { Option } from "../../../../types/shared"
-import mapAddressToForm from "../../../../utils/map-address-to-form"
 import { useNewOrderForm } from "../form"
-import Checkbox from "../../../../components/atoms/checkbox"
 import PlusIcon from "../../../../components/fundamentals/icons/plus-icon"
 import { NextSelect } from "../../../../components/molecules/select/next-select"
-import FormValidator from "../../../../utils/form-validator"
 import CheckIcon from "../../../../components/fundamentals/icons/check-icon"
 
 type AddCustomerFormProps = {
@@ -21,7 +14,6 @@ type AddCustomerFormProps = {
 
 const AddCustomerForm = ({ openWithBillingAddress }: AddCustomerFormProps) => {
   const { t } = useTranslation()
-  const [addNew, setAddNew] = useState(false)
   const [showBillingAddress, setShowBillingAddress] = useState(
     openWithBillingAddress
   )
@@ -37,48 +29,7 @@ const AddCustomerForm = ({ openWithBillingAddress }: AddCustomerFormProps) => {
     formState: { errors },
   } = form
 
-  const debouncedFetch = async (filter: string): Promise<Option[]> => {
-    const prepared = qs.stringify(
-      {
-        q: filter,
-        offset: 0,
-        limit: 10,
-      },
-      { skipNull: true, skipEmptyString: true }
-    )
 
-    return await Medusa.customers
-      .list(`?${prepared}`)
-      .then(({ data }) =>
-        data.customers.map(({ id, first_name, last_name, email }) => ({
-          label: `${first_name || ""} ${last_name || ""} (${email})`,
-          value: id,
-        }))
-      )
-      .catch(() => [])
-  }
-
-  const customerId = useWatch({
-    control: form.control,
-    name: "customer_id",
-  })
-
-  const { customer } = useAdminCustomer(customerId?.value!, {
-    enabled: !!customerId?.value,
-  })
-
-  const validAddresses = useMemo(() => {
-    if (!customer) {
-      return []
-    }
-
-    const validCountryCodes = validCountries.map(({ value }) => value)
-
-    return customer.shipping_addresses.filter(
-      ({ country_code }) =>
-        !country_code || validCountryCodes.includes(country_code)
-    )
-  }, [customer, validCountries])
 
   const onCustomerSelect = (val: Option) => {
     const email = /\(([^()]*)\)$/.exec(val?.label)
@@ -87,23 +38,6 @@ const AddCustomerForm = ({ openWithBillingAddress }: AddCustomerFormProps) => {
       form.setValue("email", email[1])
     } else {
       form.setValue("email", "")
-    }
-  }
-
-  const onCreateNew = () => {
-    form.setValue("shipping_address_id", undefined)
-    setAddNew(true)
-  }
-
-  const onSelectExistingAddress = (id: string) => {
-    if (!customer) {
-      return
-    }
-
-    const address = customer.shipping_addresses?.find((a) => a.id === id)
-
-    if (address) {
-      form.setValue("shipping_address", mapAddressToForm(address))
     }
   }
 
@@ -139,16 +73,6 @@ const AddCustomerForm = ({ openWithBillingAddress }: AddCustomerFormProps) => {
     form.setValue("same_as_shipping", !sameAsShipping)
   }
 
-  useEffect(() => {
-    // reset shipping address info when a different customer is selected
-    // or when "Create new" is clicked
-    form.setValue("shipping_address.first_name", "")
-  }, [customerId?.value, addNew])
-
-  useEffect(() => {
-    setAddNew(false)
-  }, [customerId?.value])
-
   return (
     <div className="min-h-auto flex w-[812px] flex-col gap-y-8 p-6">
       <div className="flex flex-col gap-y-6 border-b-2 border-dotted pb-5">
@@ -157,6 +81,7 @@ const AddCustomerForm = ({ openWithBillingAddress }: AddCustomerFormProps) => {
             {...register("shipping_address.first_name")}
             label={t("full-name", "Full Name")}
             placeholder="Full Name"
+            required
           />
           <InputField
             {...register("shipping_address.company")}
@@ -169,6 +94,7 @@ const AddCustomerForm = ({ openWithBillingAddress }: AddCustomerFormProps) => {
             {...register("email")}
             label={t("components-email", "Email")}
             placeholder="lebron@james.com"
+            required
           />
           <InputField
             {...register("shipping_address.phone")}
@@ -186,11 +112,13 @@ const AddCustomerForm = ({ openWithBillingAddress }: AddCustomerFormProps) => {
             {...register("shipping_address.address_1")}
             label={t("address", "Address")}
             placeholder="Mirpur DOHS, Ave 9"
+            required
           />
           <InputField
             {...register("shipping_address.city")}
             label={t("city", "City")}
             placeholder="Dhaka"
+            required
           />
         </div>
         <div className="grid grid-cols-2 gap-6">
@@ -198,12 +126,13 @@ const AddCustomerForm = ({ openWithBillingAddress }: AddCustomerFormProps) => {
             {...register("shipping_address.postal_code")}
             label={t("postal-code", "Postal Code")}
             placeholder="5525"
+            required
           />
           <Controller
             control={control}
             name="shipping_address.country_code"
             rules={{
-              required: true ? FormValidator.required("Country") : false,
+              required: true 
             }}
             render={({ field: { value, onChange } }) => {
               return (
@@ -265,26 +194,30 @@ const AddCustomerForm = ({ openWithBillingAddress }: AddCustomerFormProps) => {
           </span>
           <div className="grid grid-cols-2 gap-6">
             <InputField
-              //   {...register("email")}
+              {...register("billing_address.address_1")}
               label={t("address", "Address")}
               placeholder="Mirpur DOHS, Ave 9"
+              required
             />
             <InputField
-              //   {...register("email")}
+              {...register("billing_address.city")}
               label={t("city", "City")}
               placeholder="Dhaka"
+              required
             />
           </div>
           <div className="grid grid-cols-2 gap-6">
             <InputField
-              //   {...register("email")}
+              {...register("billing_address.postal_code")}
               label={t("postal-code", "Postal Code")}
               placeholder="5525"
+              required
             />
             <InputField
-              //   {...register("email")}
-              label={t("country", "Bangladesh")}
+              {...register("billing_address.country_code")}
+              label={t("country", "Country")}
               placeholder="Bangladesh"
+              required
             />
           </div>
         </div>

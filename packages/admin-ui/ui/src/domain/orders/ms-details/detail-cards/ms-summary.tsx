@@ -8,8 +8,13 @@ import InputField from "../../../../components/molecules/input"
 import CrossIcon from "../../../../components/fundamentals/icons/cross-icon"
 import Button from "../../../../components/fundamentals/button"
 import { useNewOrderForm } from "../../new/form"
+import { clx } from "../../../../utils/clx"
 
-const MsSummaryCard: React.FC = () => {
+type MsSummaryCardProps = {
+  className?: string
+}
+
+const MsSummaryCard: React.FC<MsSummaryCardProps> = ({ className }) => {
   const { t } = useTranslation()
 
   const { context } = useNewOrderForm()
@@ -30,7 +35,10 @@ const MsSummaryCard: React.FC = () => {
   const [showDiscountField, setShowDiscountField] = useState(false)
 
   return (
-    <BodyCard className={"my-4 h-auto min-h-0 w-full"} title="Payment Details">
+    <BodyCard
+      className={clx("my-4 h-auto min-h-0 w-full", className)}
+      title="Payment Details"
+    >
       <div className="pb-4">
         <div className="flex h-12 items-center justify-between rounded-md bg-[#F5F5F5] text-xl font-bold">
           <h2 className="pl-2">Info</h2>

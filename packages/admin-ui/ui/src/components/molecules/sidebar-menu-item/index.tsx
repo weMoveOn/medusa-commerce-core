@@ -45,6 +45,7 @@ const SidebarMenuItem: React.FC<SidebarMenuItemProps> & {
   const isExpandIcon =
     !pageLink.includes("home") &&
     !pageLink.includes("customers") &&
+    !pageLink.includes("site") &&
     !pageLink.includes("settings") &&
     !pageLink.includes("help")
 
