@@ -26,6 +26,10 @@ export default (app) => {
     "/:property_id",
     middlewares.wrap(require("./retrieve-by-property-id-admin-builder").default)
   )
+  route.put(
+    "/update",
+    middlewares.wrap(require("./update-admin-builder").default)
+  )
 
   return app
 }

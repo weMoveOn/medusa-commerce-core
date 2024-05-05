@@ -17,21 +17,40 @@ class AdminBuilderService extends TransactionBaseService {
     const adminBuilderRepository =
       this.activeManager_.getRepository(AdminBuilder)
     try {
-      const data = adminBuilderRepository.create(createData)
-      const result = await adminBuilderRepository.save(data)
-
-      return result
-    } catch (error: any) {
-      if (error.detail?.includes("already exists")) {
-        throw {
-          status: 422,
-          data: {
-            errors: [],
-          },
-        }
+      // Exist
+      const exist = await this.update(createData, createData.property_id)
+      if (exist) {
+        exist.property_id = createData.property_id
+        exist.type = createData.type
+        exist.value = createData.value
+        const result = await adminBuilderRepository.save(exist)
+        return result
       } else {
-        this.handleErrorResponse(error)
+        const data = adminBuilderRepository.create(createData)
+        const result = await adminBuilderRepository.save(data)
+        return result
       }
+    } catch (error: any) {
+      throw error
+    }
+  }
+  async update(createData: IAdminBuildersCreate, property_id: string) {
+    const adminBuilderRepository =
+      this.activeManager_.getRepository(AdminBuilder)
+    try {
+      const exist = await this.getByPropertyId(property_id)
+      if (exist) {
+        exist.property_id = createData.property_id
+        exist.type = createData.type
+        exist.value = createData.value
+        const result = await adminBuilderRepository.save(exist)
+        return result
+      } else {
+        // TODO: need to handle later
+        return null
+      }
+    } catch (error: any) {
+      throw error
     }
   }
   async get() {
@@ -42,16 +61,7 @@ class AdminBuilderService extends TransactionBaseService {
 
       return result
     } catch (error: any) {
-      if (error.detail?.includes("already exists")) {
-        throw {
-          status: 422,
-          data: {
-            errors: [],
-          },
-        }
-      } else {
-        this.handleErrorResponse(error)
-      }
+      throw error
     }
   }
   async getByPropertyId(id: string) {
@@ -63,41 +73,7 @@ class AdminBuilderService extends TransactionBaseService {
 
       return result
     } catch (error: any) {
-      if (error.detail?.includes("already exists")) {
-        throw {
-          status: 422,
-          data: {
-            errors: [],
-          },
-        }
-      } else {
-        this.handleErrorResponse(error)
-      }
-    }
-  }
-
-  // Reusable error handling function
-  private handleErrorResponse(error: any): never {
-    if (error.type === "not_found") {
-      throw {
-        status: 404,
-        data: error,
-      }
-    } else if (error.response) {
-      throw {
-        status: error.response.status,
-        data: error,
-      }
-    } else if (error.request) {
-      throw {
-        status: 500,
-        data: error,
-      }
-    } else {
-      throw {
-        status: 500,
-        data: error,
-      }
+      throw error
     }
   }
 }
