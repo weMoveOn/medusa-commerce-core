@@ -45,9 +45,10 @@ export default async (req, res) => {
       message: "Data is successfully created",
     })
   } catch (error) {
-    res.status(201).json({
+    res.status(406).json({
       success: false,
       message: "Failed to create",
+      error: error,
     })
   }
 }

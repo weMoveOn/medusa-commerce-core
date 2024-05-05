@@ -17,7 +17,7 @@ export default async (req, res) => {
       message: "Data is successfully retrieve",
     })
   } catch (error) {
-    res.status(201).json({
+    res.status(404).json({
       success: false,
       message: "Failed to retrieve",
     })

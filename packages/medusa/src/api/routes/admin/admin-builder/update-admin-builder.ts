@@ -16,7 +16,7 @@ export default async (req, res) => {
       message: "Data is successfully updated",
     })
   } catch (error) {
-    res.status(201).json({
+    res.status(406).json({
       success: false,
       message: "Failed to update",
     })
