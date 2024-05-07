@@ -1,25 +1,29 @@
 import {
-    BaseEntity,
     Column,
     Entity,
     PrimaryGeneratedColumn,
     CreateDateColumn,
     UpdateDateColumn,
     DeleteDateColumn,
-    ManyToOne
+    ManyToOne, BeforeInsert, JoinColumn,
 } from "typeorm"
 import { Store } from "./store"
+import { generateEntityId } from "../utils/generate-entity-id"
+import { BaseEntity } from "../interfaces/models/base-entity"
 
 @Entity()
 export class StoreTheme extends BaseEntity {
-    @PrimaryGeneratedColumn()
-    id: number
+    // new added filed
+    @Column({ type: "text", nullable: true })
+    store_id: string | null
 
+    @ManyToOne(() => Store, { onDelete: "CASCADE" })
+    @JoinColumn({ name: "store_id" })
+    store: Store
+    // new added filed end
+    @Column()
     @Column({ length: 255 })
     name: string
-
-    @ManyToOne(() => Store)
-    store: Store
 
     @Column()
     is_published: boolean
@@ -41,4 +45,12 @@ export class StoreTheme extends BaseEntity {
 
     @DeleteDateColumn()
     deleted_at: Date
+
+    /**
+     * @apiIgnore
+     */
+    @BeforeInsert()
+    private beforeInsert(): void {
+        this.id = generateEntityId(this.id, "sthe")
+    }
 }
