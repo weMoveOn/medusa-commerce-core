@@ -11,10 +11,10 @@ const route = Router()
 const upload = multer({ dest: "uploads/" })
 
 export default (app) => {
-  app.use("/uploads", route)
+  app.use("/store-theme", route)
 
   route.post(
-    "/",
+    "/create",
     upload.array("files"),
     middlewares.wrap(require("./create-upload").default)
   )

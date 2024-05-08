@@ -1,5 +1,8 @@
 import { promiseAll } from "@medusajs/utils"
 import fs from "fs"
+import {ReturnReasonService} from "../../../../services";
+import StoreThemeService from "../../../../services/store-theme";
+import {EntityManager} from "typeorm";
 
 /**
  * @oas [post] /admin/uploads
@@ -94,8 +97,19 @@ export default async (req, res) => {
       })
     })
   )
+  const storeThemeService: StoreThemeService = req.scope.resolve(
+      "StoreThemeService"
+  )
+  const manager: EntityManager = req.scope.resolve("manager")
 
-  res.status(200).json({ uploads: result })
+
+  const results = await manager.transaction(async (transactionManager) => {
+    return await storeThemeService
+        .withTransaction(transactionManager)
+        .create({result})
+  })
+
+  res.status(200).json({ uploads: results })
 }
 
 export class IAdminPostUploadsFileReq {
