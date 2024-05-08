@@ -1,72 +1,111 @@
 import { isDefined, MedusaError } from "medusa-core-utils"
 import { EntityManager } from "typeorm"
 import { TransactionBaseService } from "../interfaces"
-import { ReturnReason } from "../models"
-import { ReturnReasonRepository } from "../repositories/return-reason"
+import { StoreTheme } from "../models"
+import { StoreThemeRepository } from "../repositories/store_theme"
+import { ListBucketsCommand, PutObjectCommand, S3Client } from "@aws-sdk/client-s3"
+
 import { FindConfig, Selector } from "../types/common"
-import { CreateReturnReason, UpdateReturnReason } from "../types/return-reason"
 import { buildQuery } from "../utils"
 import {CreateStoreTheme} from "../types/store-theme";
+import { IAdminStoreThemeCreate } from "../interfaces/store-theme"
 
 type InjectedDependencies = {
   manager: EntityManager
-  returnReasonRepository: typeof ReturnReasonRepository
+  storeThemeRepository: typeof StoreThemeRepository
 }
+const client = new S3Client({});
 
-class ReturnReasonService extends TransactionBaseService {
-  protected readonly retReasonRepo_: typeof ReturnReasonRepository
+class StoreThemeService extends TransactionBaseService {
+  protected readonly storeThemeRepo_: typeof StoreThemeRepository
 
-  constructor({ returnReasonRepository }: InjectedDependencies) {
+  constructor({ storeThemeRepository }: InjectedDependencies) {
     // eslint-disable-next-line prefer-rest-params
     super(arguments[0])
 
-    this.retReasonRepo_ = returnReasonRepository
+    this.storeThemeRepo_ = storeThemeRepository
   }
 
-  async create(data: CreateStoreTheme): Promise<ReturnReason | never> {
-    return await this.atomicPhase_(async (manager) => {
-      const rrRepo = manager.withRepository(this.retReasonRepo_)
 
-      const created = rrRepo.create(data)
+  async create(req: any) {
+    const adminBuilderRepository = this.activeManager_.withRepository(
+      this.storeThemeRepo_
+    )
 
-      return await rrRepo.save(created)
-    })
+
+
+    const command = new ListBucketsCommand({});
+
+    const { Buckets } = await client.send(command);
+    console.log("Buckets: ");
+    console.log(Buckets.map((bucket) => bucket.Name).join("\n"));
+
+
+
+    const createData: any = {};
+    createData.store_id = "store_01HRC4WRAD4GVW41YVSEB00RNM"
+    createData.name = "My New Shop"
+    createData.is_published = false
+    createData.serving_type = "bucket-only"
+    createData.archive_path = "/theme/sp_01G1G5V239ENSZ5MV4JAR737BM.zip"
+    createData.serving_path = "/theme/temp/sp_01G1G5V239ENSZ5MV4JAR737BM"
+    try {
+      console.log(createData,"createData")
+        const data = adminBuilderRepository.create(createData)
+        console.log(data, " = Service 42")
+        const result = await adminBuilderRepository.save(data)
+        console.log(result, " = Service 44")
+        return result
+    } catch (error: any) {
+      throw error
+    }
   }
 
-  async update(storeId: string, id: string, data: UpdateReturnReason): Promise<ReturnReason> {
-    return await this.atomicPhase_(async (manager) => {
-      const rrRepo = manager.withRepository(this.retReasonRepo_)
-      const reason = await this.retrieve(storeId, id)
 
-      for (const key of Object.keys(data).filter(
-        (k) => typeof data[k] !== `undefined`
-      )) {
-        reason[key] = data[key]
-      }
+  // async create(data: IAdminStoreThemeCreate): Promise<StoreTheme | never> {
+  //   return await this.atomicPhase_(async (manager) => {
+  //     const rrRepo = manager.withRepository(this.storeThemeRepo_)
+  //
+  //     const created = rrRepo.create(data)
+  //
+  //     return await rrRepo.save(created)
+  //   })
+  // }
 
-      await rrRepo.save(reason)
-
-      return reason
-    })
-  }
+  // async update(storeId: string, id: string, data: UpdateReturnReason): Promise<StoreTheme> {
+  //   return await this.atomicPhase_(async (manager) => {
+  //     const rrRepo = manager.withRepository(this.storeThemeRepo_)
+  //     const reason = await this.retrieve(storeId, id)
+  //
+  //     for (const key of Object.keys(data).filter(
+  //       (k) => typeof data[k] !== `undefined`
+  //     )) {
+  //       reason[key] = data[key]
+  //     }
+  //
+  //     await rrRepo.save(reason)
+  //
+  //     return reason
+  //   })
+  // }
 
   /**
    * @param {Object} selector - the query object for find
    * @param {Object} config - config object
    * @return {Promise} the result of the find operation
    */
-  async list(
-    selector: Selector<ReturnReason>,
-    config: FindConfig<ReturnReason> = {
-      skip: 0,
-      take: 50,
-      order: { created_at: "DESC" },
-    }
-  ): Promise<ReturnReason[]> {
-    const rrRepo = this.activeManager_.withRepository(this.retReasonRepo_)
-    const query = buildQuery(selector, config)
-    return rrRepo.find(query)
-  }
+  // async list(
+  //   selector: Selector<StoreTheme>,
+  //   config: FindConfig<StoreTheme> = {
+  //     skip: 0,
+  //     take: 50,
+  //     order: { created_at: "DESC" },
+  //   }
+  // ): Promise<StoreTheme[]> {
+  //   const rrRepo = this.activeManager_.withRepository(this.storeThemeRepo_)
+  //   const query = buildQuery(selector, config)
+  //   return rrRepo.find(query)
+  // }
 
   /**
    * Gets an order by id.
@@ -74,51 +113,51 @@ class ReturnReasonService extends TransactionBaseService {
    * @param {Object} config - config object
    * @return {Promise<Order>} the order document
    */
-  async retrieve(
-    storeId: string,
-    returnReasonId: string,
-    config: FindConfig<ReturnReason> = {}
-  ): Promise<ReturnReason | never> {
-    if (!isDefined(returnReasonId)) {
-      throw new MedusaError(
-        MedusaError.Types.NOT_FOUND,
-        `"returnReasonId" must be defined`
-      )
-    }
+  // async retrieve(
+  //   storeId: string,
+  //   returnReasonId: string,
+  //   config: FindConfig<StoreTheme> = {}
+  // ): Promise<StoreTheme | never> {
+  //   if (!isDefined(returnReasonId)) {
+  //     throw new MedusaError(
+  //       MedusaError.Types.NOT_FOUND,
+  //       `"returnReasonId" must be defined`
+  //     )
+  //   }
+  //
+  //   const rrRepo = this.activeManager_.withRepository(this.storeThemeRepo_)
+  //
+  //   const query = buildQuery({ id: returnReasonId, store_id: storeId }, config)
+  //   const item = await rrRepo.findOne(query)
+  //
+  //   if (!item) {
+  //     throw new MedusaError(
+  //       MedusaError.Types.NOT_FOUND,
+  //       `Return Reason with id: ${returnReasonId} was not found.`
+  //     )
+  //   }
+  //
+  //   return item
+  // }
 
-    const rrRepo = this.activeManager_.withRepository(this.retReasonRepo_)
-
-    const query = buildQuery({ id: returnReasonId, store_id: storeId }, config)
-    const item = await rrRepo.findOne(query)
-
-    if (!item) {
-      throw new MedusaError(
-        MedusaError.Types.NOT_FOUND,
-        `Return Reason with id: ${returnReasonId} was not found.`
-      )
-    }
-
-    return item
-  }
-
-  async delete(storeId: string, returnReasonId: string): Promise<void> {
-    return this.atomicPhase_(async (manager) => {
-      const rrRepo = manager.withRepository(this.retReasonRepo_)
-
-      // We include the relation 'return_reason_children' to enable cascading deletes of return reasons if a parent is removed
-      const reason = await this.retrieve(storeId, returnReasonId, {
-        relations: ["return_reason_children"],
-      })
-
-      if (!reason) {
-        return Promise.resolve()
-      }
-
-      await rrRepo.softRemove(reason)
-
-      return Promise.resolve()
-    })
-  }
+  // async delete(storeId: string, returnReasonId: string): Promise<void> {
+  //   return this.atomicPhase_(async (manager) => {
+  //     const rrRepo = manager.withRepository(this.storeThemeRepo_)
+  //
+  //     // We include the relation 'return_reason_children' to enable cascading deletes of return reasons if a parent is removed
+  //     const reason = await this.retrieve(storeId, returnReasonId, {
+  //       relations: ["return_reason_children"],
+  //     })
+  //
+  //     if (!reason) {
+  //       return Promise.resolve()
+  //     }
+  //
+  //     await rrRepo.softRemove(reason)
+  //
+  //     return Promise.resolve()
+  //   })
+  // }
 }
 
-export default ReturnReasonService
+export default StoreThemeService

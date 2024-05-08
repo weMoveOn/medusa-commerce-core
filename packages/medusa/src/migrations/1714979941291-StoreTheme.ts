@@ -6,7 +6,7 @@ export class StoreTheme1714979941291 implements MigrationInterface {
         // Step 1: Create the store_theme table
         await queryRunner.query(`
             CREATE TABLE "store_theme" (
-                "id" SERIAL PRIMARY KEY,
+                "id" character varying NOT NULL,
                 "name" character varying(255) NOT NULL,
                 "store_id" character varying, -- Use character varying for store_id
                 "is_published" boolean,
