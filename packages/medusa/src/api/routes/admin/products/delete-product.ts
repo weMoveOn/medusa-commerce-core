@@ -83,11 +83,12 @@ import { ProductService } from "../../../../services"
  */
 export default async (req, res) => {
   const { id } = req.params
+  const { store_id } = req.query as { store_id: string }
 
   const productService: ProductService = req.scope.resolve("productService")
   const manager: EntityManager = req.scope.resolve("manager")
   await manager.transaction(async (transactionManager) => {
-    return await productService.withTransaction(transactionManager).delete(id)
+    return await productService.withTransaction(transactionManager).delete(store_id, id)
   })
 
   res.json({

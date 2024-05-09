@@ -191,6 +191,7 @@ class LineItemService extends TransactionBaseService {
    * @param regionIdOrContext
    * @param quantity
    * @param context
+   * @param storeId - string
    */
   async generate<
     T = string | GenerateInputData | GenerateInputData[],
@@ -243,6 +244,7 @@ class LineItemService extends TransactionBaseService {
         // Retrieve variants
         const variants = await this.productVariantService_.list(
           {
+            store_id: storeId,
             id: resolvedData.map((d) => d.variantId),
           },
           {

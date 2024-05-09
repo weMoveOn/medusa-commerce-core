@@ -212,9 +212,10 @@ class ProductVariantInventoryService extends TransactionBaseService {
   /**
    * lists variant by inventory item id
    * @param itemId item id
+   * @param storeId string
    * @returns a list of product variants that are associated with the item id
    */
-  async listVariantsByItem(itemId: string): Promise<ProductVariant[]> {
+  async listVariantsByItem(storeId:string, itemId: string): Promise<ProductVariant[]> {
     if (!this.inventoryService_) {
       return []
     }
@@ -222,6 +223,7 @@ class ProductVariantInventoryService extends TransactionBaseService {
     const variantInventory = await this.listByItem([itemId])
     const items = await this.productVariantService_.list({
       id: variantInventory.map((i) => i.variant_id),
+      store_id: storeId
     })
 
     return items
@@ -267,11 +269,14 @@ class ProductVariantInventoryService extends TransactionBaseService {
       requiredQuantity?: number
     }[]
   ): Promise<ProductVariantInventoryItem[]>
+
   async attachInventoryItem(
     variantId: string,
     inventoryItemId: string,
     requiredQuantity?: number
   ): Promise<ProductVariantInventoryItem[]>
+
+
   async attachInventoryItem(
     variantIdOrAttachments:
       | string
@@ -283,6 +288,7 @@ class ProductVariantInventoryService extends TransactionBaseService {
     inventoryItemId?: string,
     requiredQuantity?: number
   ): Promise<ProductVariantInventoryItem[]> {
+
     const data = Array.isArray(variantIdOrAttachments)
       ? variantIdOrAttachments
       : [
@@ -311,7 +317,7 @@ class ProductVariantInventoryService extends TransactionBaseService {
       .withTransaction(this.activeManager_)
       .list(
         {
-          id: data.map((d) => d.variantId),
+          id: data.map((d) => d.variantId)
         },
         {
           select: ["id"],

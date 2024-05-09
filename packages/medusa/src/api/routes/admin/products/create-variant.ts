@@ -169,6 +169,7 @@ export default async (req, res) => {
     AdminPostProductsProductVariantsReq,
     req.body
   )
+  console.log(validated,"validated",  req.body)
 
   const manager: EntityManager = req.scope.resolve("manager")
   const featureFlagRouter: FlagRouter = req.scope.resolve("featureFlagRouter")
