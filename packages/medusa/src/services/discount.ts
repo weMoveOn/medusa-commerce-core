@@ -190,7 +190,7 @@ class DiscountService extends TransactionBaseService {
       const ruleToCreate = omit(discount.rule, ["conditions"])
       const validatedRule: Omit<CreateDiscountRuleInput, "conditions"> =
         this.validateDiscountRule_(ruleToCreate)
-      console.log(discount, "discount")
+
       if (
         discount?.regions &&
         discount?.regions.length > 1 &&

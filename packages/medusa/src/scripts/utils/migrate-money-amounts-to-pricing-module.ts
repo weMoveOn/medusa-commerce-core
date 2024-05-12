@@ -30,14 +30,14 @@ export const migrateProductVariantPricing = async function (
   }
 
   const [_, totalCount] = await variantService.listAndCount(
-    {},
+    { store_id:"1" },
     { take: BATCH_SIZE, order: { id: "ASC" }, relations: ["prices"] }
   )
 
   let processedCount = 0
   while (processedCount < totalCount) {
     const [variants] = await variantService.listAndCount(
-      {},
+      { store_id:"1" },
       {
         skip: processedCount,
         take: BATCH_SIZE,

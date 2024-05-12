@@ -27,13 +27,13 @@ export class enforceUniqueness1631261634964 implements MigrationInterface {
     await queryRunner.query(
       `CREATE UNIQUE INDEX "IDX_aa16f61348be02dd07ce3fc54e" ON "product_variant" ("upc") WHERE deleted_at IS NULL`
     )
-    await queryRunner.query(
-      `CREATE UNIQUE INDEX "IDX_f65bf52e2239ace276ece2b2f4" ON "discount" ("code") WHERE deleted_at IS NULL`
-    )
+    // await queryRunner.query(
+    //   `CREATE UNIQUE INDEX "IDX_f65bf52e2239ace276ece2b2f4" ON "discount" ("code") WHERE deleted_at IS NULL`
+    // )
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.query(`DROP INDEX "IDX_f65bf52e2239ace276ece2b2f4"`)
+    // await queryRunner.query(`DROP INDEX "IDX_f65bf52e2239ace276ece2b2f4"`)
     await queryRunner.query(`DROP INDEX "IDX_aa16f61348be02dd07ce3fc54e"`)
     await queryRunner.query(`DROP INDEX "IDX_b5b6225539ee8501082fbc0714"`)
     await queryRunner.query(`DROP INDEX "IDX_045d4a149c09f4704e0bc08dd4"`)

@@ -93,8 +93,7 @@ import { cleanResponseData } from "../../../../utils/clean-response-data"
  */
 export default async (req, res) => {
   const { id } = req.params
-  const {store_id} = req.query
-
+  const { store_id } = req.query
   const validated = req.validatedBody
 
   const manager: EntityManager = req.scope.resolve("manager")
@@ -105,8 +104,7 @@ export default async (req, res) => {
   await manager.transaction(async (m) => {
     const txCartService = cartService.withTransaction(m)
 
-    await txCartService.addShippingMethod(id, validated.option_id, validated.data)
-
+    await txCartService.addShippingMethod(store_id, id, validated.option_id, validated.data)
       const updated = await txCartService.retrieve(store_id,id,{
       select: ["id"],
       relations: ["payment_sessions"],
@@ -150,4 +148,8 @@ export class StorePostCartsCartShippingMethodReq {
 
   @IsOptional()
   data?: Record<string, any> = {}
+
+  @IsString()
+  store_id?: string
+
 }

@@ -113,6 +113,9 @@ export type UpdateVariantCurrencyPriceData = {
 }
 
 export class FilterableProductVariantProps {
+  @IsString()
+  store_id?: string
+
   @ValidateNested()
   @IsType([String, [String], StringComparisonOperator])
   id?: string | string[] | StringComparisonOperator

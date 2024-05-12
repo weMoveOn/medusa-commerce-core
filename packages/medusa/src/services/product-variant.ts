@@ -916,9 +916,10 @@ class ProductVariantService extends TransactionBaseService {
     }
 
     const query = buildQuery<FindOptionsSelect<ProductVariant>, ProductVariant>(
-      selector as FindOptionsSelect<ProductVariant>,
+      selector  as FindOptionsSelect<ProductVariant>,
       config
     )
+
     query.relationLoadStrategy = "query"
 
     if (q) {
@@ -948,7 +949,6 @@ class ProductVariantService extends TransactionBaseService {
         },
       ]
     }
-
     return await variantRepo.findAndCount(query)
   }
 

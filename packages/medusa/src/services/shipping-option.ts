@@ -293,16 +293,18 @@ class ShippingOptionService extends TransactionBaseService {
    * Creates a shipping method for a given cart.
    * @param {string} optionId - the id of the option to use for the method.
    * @param {object} data - the optional provider data to use.
+   * @param {object} storeId -
    * @param {object} config - the cart to create the shipping method for.
    * @return {ShippingMethod} the resulting shipping method.
    */
   async createShippingMethod(
+    storeId:string,
     optionId: string | undefined | unknown,
     data: Record<string, unknown> ,
     config: CreateShippingMethodDto
   ): Promise<ShippingMethod> {
     return await this.atomicPhase_(async (manager) => {
-      const option = await this.retrieve(optionId, {
+      const option = await this.retrieve(storeId, optionId, {
         relations: ["requirements"],
       })
 

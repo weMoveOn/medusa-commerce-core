@@ -138,6 +138,9 @@ export default async (req, res) => {
             variant_id: validated.variant_id,
           }
 
+
+
+console.log(store_id,"store_id kkkk")
           await addOrUpdateLineItem({
             storeId: store_id,
             cartId,
@@ -152,6 +155,7 @@ export default async (req, res) => {
               recovery_point: CreateLineItemSteps.SET_PAYMENT_SESSIONS,
             })
         } catch (e) {
+
           inProgress = false
           err = e
         }

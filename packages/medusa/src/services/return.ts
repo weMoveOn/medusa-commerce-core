@@ -478,6 +478,7 @@ class ReturnService extends TransactionBaseService {
         const shippingMethod = await this.shippingOptionService_
           .withTransaction(manager)
           .createShippingMethod(
+            storeId,
             method.option_id,
             {},
             {

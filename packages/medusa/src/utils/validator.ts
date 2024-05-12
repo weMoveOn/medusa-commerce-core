@@ -59,7 +59,6 @@ export async function validator<T, V>(
     forbidNonWhitelisted: true,
     ...config,
   })
-
   const errorMessages = reduceErrorMessages(errors)
 
   if (errors?.length) {

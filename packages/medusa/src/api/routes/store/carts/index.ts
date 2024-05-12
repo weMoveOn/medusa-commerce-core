@@ -16,7 +16,6 @@ import { StorePostCartsCartShippingMethodReq } from "./add-shipping-method"
 import { StorePostCartsCartPaymentSessionReq } from "./set-payment-session"
 import { StorePostCartsCartLineItemsItemReq } from "./update-line-item"
 import { StorePostCartsCartPaymentSessionUpdateReq } from "./update-payment-session"
-import { processIdentifierMiddleware } from "../../../middlewares/validators/identifier-existence"
 import { MedusaV2Flag } from "@medusajs/utils"
 
 const route = Router()
@@ -185,11 +184,13 @@ export default (app, container) => {
 
   route.post(
     "/:id/payment-session",
+
     transformStoreQuery(FindParams, {
       defaultRelations: defaultStoreCartRelations,
       defaultFields: defaultStoreCartFields,
       isList: false,
     }),
+
     transformBody(StorePostCartsCartPaymentSessionReq),
     middlewares.wrap(require("./set-payment-session").default)
   )
@@ -237,7 +238,7 @@ export const defaultStoreCartRelations = [
   "payment_sessions",
   "shipping_methods.shipping_option",
   "discounts",
-  "discounts.rule",
+  "discounts.rule"
 ]
 
 /**

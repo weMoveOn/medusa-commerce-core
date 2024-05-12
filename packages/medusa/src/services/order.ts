@@ -1078,7 +1078,7 @@ class OrderService extends TransactionBaseService {
   }
 
   async addShippingMethod(
-      storeId: string,
+    storeId: string,
     orderId: string,
     optionId: string,
     data?: Record<string, unknown>,
@@ -1103,7 +1103,7 @@ class OrderService extends TransactionBaseService {
 
       const newMethod = await this.shippingOptionService_
         .withTransaction(manager)
-        .createShippingMethod(optionId, data ?? {}, { order, ...config })
+        .createShippingMethod(storeId,optionId, data ?? {}, { order, ...config })
 
       const shippingOptionServiceTx =
         this.shippingOptionService_.withTransaction(manager)

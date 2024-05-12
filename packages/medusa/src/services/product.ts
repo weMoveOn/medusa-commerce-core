@@ -790,15 +790,17 @@ class ProductService extends TransactionBaseService {
    * variants will also be deleted.
    * @param productId - the id of the product to delete. Must be
    *   castable as an ObjectId
+   *   @param storeId - string type.
    * @return empty promise
    */
-  async delete(productId: string): Promise<void> {
+  async delete(storeId:string, productId: string): Promise<void> {
     return await this.atomicPhase_(async (manager) => {
       const productRepo = manager.withRepository(this.productRepository_)
 
+
       // Should not fail, if product does not exist, since delete is idempotent
       const product = await productRepo.findOne({
-        where: { id: productId },
+        where: { id: productId , store_id: storeId},
         relations: {
           variants: {
             prices: true,
@@ -806,7 +808,6 @@ class ProductService extends TransactionBaseService {
           },
         },
       })
-
       if (!product) {
         return
       }

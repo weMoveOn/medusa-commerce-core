@@ -152,7 +152,7 @@ export default async (req, res) => {
       .create({ ...validated, store_id })
   })
 
-  const data = await optionService.retrieve(result.id, {
+  const data = await optionService.retrieve(store_id, result.id, {
     select: shippingOptionsDefaultFields,
     relations: shippingOptionsDefaultRelations,
   })

@@ -142,4 +142,7 @@ export class AdminDeleteProductsFromCollectionReq {
   @ArrayNotEmpty()
   @IsString({ each: true })
   product_ids: string[]
+
+  @IsString()
+  store_id: string
 }

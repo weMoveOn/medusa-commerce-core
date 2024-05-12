@@ -434,6 +434,7 @@ class CartService extends TransactionBaseService {
           if (region.countries.length === 1) {
             rawCart.shipping_address = addressRepo.create({
               country_code: regCountries[0],
+              store_id:  rawCart.store_id,
             })
           }
         } else {
@@ -1926,7 +1927,7 @@ class CartService extends TransactionBaseService {
           this.paymentSessionRepository_
         )
 
-        const cart = await this.retrieveWithTotals(cartId, storeId, {
+        const cart = await this.retrieveWithTotals(storeId, cartId,{
           relations: [
             "items.variant.product.profiles",
             "customer",
@@ -2351,7 +2352,11 @@ class CartService extends TransactionBaseService {
         const cartCustomShippingOptions =
           await this.customShippingOptionService_
             .withTransaction(transactionManager)
-            .list({ cart_id: cart.id })
+            .list({ cart_id: cart.id},{
+              skip: 0,
+              take: 50,
+              relations: [],
+            })
 
         const customShippingOption = this.findCustomShippingOption(
           cartCustomShippingOptions,
@@ -2366,13 +2371,18 @@ class CartService extends TransactionBaseService {
          * if requirements are met, hence we are not passing the entire cart, but
          * just the id.
          */
+
         const shippingMethodConfig = customShippingOption
           ? { cart_id: cart.id, price: customShippingOption.price }
           : { cart }
 
+        console.log(shippingMethodConfig,'shippingMethodConfig')
+
         const newShippingMethod = await this.shippingOptionService_
           .withTransaction(transactionManager)
-          .createShippingMethod(optionId, data, shippingMethodConfig)
+          .createShippingMethod(storeId, optionId, data, shippingMethodConfig)
+
+        console.log(newShippingMethod,'newShippingMethod')
 
         const methods = [newShippingMethod]
         if (shipping_methods?.length) {
