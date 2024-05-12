@@ -24,7 +24,6 @@ export default (app, featureFlagRouter: FlagRouter) => {
 
   app.use(
     "/products",
-    processIdentifierMiddleware,
     extendRequestParams,
     validateSalesChannelParam,
     route

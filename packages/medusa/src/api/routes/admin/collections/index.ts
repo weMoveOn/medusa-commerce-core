@@ -15,17 +15,15 @@ import {processIdentifierMiddleware} from "../../../middlewares/validators/ident
 
 export default (app) => {
   const route = Router()
-  app.use("/collections", route)
+  app.use("/collections", processIdentifierMiddleware, route)
 
   route.post(
     "/",
-      processIdentifierMiddleware,
     transformBody(AdminPostCollectionsReq),
     middlewares.wrap(require("./create-collection").default)
   )
   route.get(
     "/",
-      processIdentifierMiddleware,
     transformQuery(AdminGetCollectionsParams, {
       defaultRelations: defaultAdminCollectionsRelations,
       defaultFields: defaultAdminCollectionsFields,
@@ -35,7 +33,7 @@ export default (app) => {
   )
 
   const collectionRouter = Router({ mergeParams: true })
-  route.use("/:id", processIdentifierMiddleware, collectionRouter)
+  route.use("/:id", collectionRouter)
   collectionRouter.post(
     "/",
     transformBody(AdminPostCollectionsCollectionReq),

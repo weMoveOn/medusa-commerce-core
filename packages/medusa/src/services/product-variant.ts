@@ -949,7 +949,6 @@ class ProductVariantService extends TransactionBaseService {
         },
       ]
     }
-console.log(query,"queryquery")
     return await variantRepo.findAndCount(query)
   }
 

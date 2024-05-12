@@ -95,9 +95,6 @@ export class initialSchema1611063162649 implements MigrationInterface {
       `CREATE TABLE "discount" ("id" character varying NOT NULL, "code" character varying NOT NULL, "is_dynamic" boolean NOT NULL, "rule_id" character varying, "is_disabled" boolean NOT NULL, "parent_discount_id" character varying, "starts_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP, "ends_at" TIMESTAMP WITH TIME ZONE, "created_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "updated_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "deleted_at" TIMESTAMP WITH TIME ZONE, "metadata" jsonb, CONSTRAINT "PK_d05d8712e429673e459e7f1cddb" PRIMARY KEY ("id"))`
     )
     await queryRunner.query(
-      `CREATE UNIQUE INDEX "IDX_087926f6fec32903be3c8eedfa" ON "discount" ("code") `
-    )
-    await queryRunner.query(
       `CREATE TYPE "payment_session_status_enum" AS ENUM('authorized', 'pending', 'requires_more', 'error', 'canceled')`
     )
     await queryRunner.query(

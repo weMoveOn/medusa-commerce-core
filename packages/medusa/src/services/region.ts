@@ -123,8 +123,6 @@ class RegionService extends TransactionBaseService {
           regionObject.includes_tax = includes_tax
         }
       }
-      console.log("validated",validated)
-      console.log("data",data)
       if (currency_code) {
         // will throw if currency is not added to store currencies
         await this.validateCurrency(data.store_id, currency_code)
@@ -585,15 +583,13 @@ class RegionService extends TransactionBaseService {
       const regionRepo = manager.withRepository(this.regionRepository_)
       const countryRepo = manager.withRepository(this.countryRepository_)
 
-      const region = await this.retrieve(storeId, regionId, {
-        relations: ["countries"],
-      })
+      const region = await this.retrieve(storeId, regionId, {})
 
       if (!region) {
         return Promise.resolve()
       }
 
-      await regionRepo.softRemove(region)
+      await regionRepo.remove(region)
       // await countryRepo.update({ region_id: "A" }, { region_id: null })
 
       await this.eventBus_

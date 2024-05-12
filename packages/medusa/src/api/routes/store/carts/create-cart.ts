@@ -110,7 +110,7 @@ import { FeatureFlagDecorators } from "../../../../utils/feature-flag-decorators
  */
 export default async (req, res) => {
   const { store_id } = req.query
-  req.body.store_id=store_id
+  req.body.store_id = store_id
   const entityManager: EntityManager = req.scope.resolve("manager")
   const featureFlagRouter: FlagRouter = req.scope.resolve("featureFlagRouter")
   const cartService: CartService = req.scope.resolve("cartService")

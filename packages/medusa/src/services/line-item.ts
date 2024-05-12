@@ -251,7 +251,7 @@ class LineItemService extends TransactionBaseService {
             relations: ["product"],
           }
         )
-
+console.log(variants, 'variants')
         // Validate that all variants has been found
         const inputDataVariantId = new Set(resolvedData.map((d) => d.variantId))
         const foundVariants = new Set(variants.map((v) => v.id))
@@ -289,6 +289,7 @@ class LineItemService extends TransactionBaseService {
             })
           }
         }
+        console.log(variantsToCalculatePricingFor,"variantsToCalculatePricingFor")
 
         let variantsPricing = {}
 
@@ -300,6 +301,7 @@ class LineItemService extends TransactionBaseService {
               customer_id: context?.customer_id,
               include_discount_prices: true,
             })
+          console.log(variantsPricing,"variantsPricing")
         }
 
         // Generate line items

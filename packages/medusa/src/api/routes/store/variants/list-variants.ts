@@ -167,7 +167,6 @@ export default async (req, res) => {
     req.scope.resolve("productVariantInventoryService")
   const regionService: RegionService = req.scope.resolve("regionService")
   const featureFlagRouter = req.scope.resolve("featureFlagRouter")
-
   const variants = await variantService.list(filterableFields, req.listConfig)
 
   let regionId = validated.region_id

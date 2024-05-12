@@ -66,7 +66,6 @@ class CustomShippingOptionService extends TransactionBaseService {
     const customShippingOptionRepo = this.activeManager_.withRepository(
       this.customShippingOptionRepository_
     )
-
     const query = buildQuery(selector, config)
 
     return await customShippingOptionRepo.find(query)
