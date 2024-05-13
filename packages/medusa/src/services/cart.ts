@@ -1305,13 +1305,13 @@ class CartService extends TransactionBaseService {
 
         const billingAddress = data.billing_address_id ?? data.billing_address
         if (billingAddress !== undefined) {
-          await this.updateBillingAddress_(cart, billingAddress, addrRepo)
+          await this.updateBillingAddress_(storeId, cart, billingAddress, addrRepo)
         }
 
-        const shippingAddress =
+        const shippingAddress=
           data.shipping_address_id ?? data.shipping_address
         if (shippingAddress !== undefined) {
-          await this.updateShippingAddress_(cart, shippingAddress, addrRepo)
+          await this.updateShippingAddress_(storeId, cart, shippingAddress, addrRepo)
         }
 
         if (
@@ -1528,11 +1528,13 @@ class CartService extends TransactionBaseService {
   /**
    * Updates the cart's billing address.
    * @param cart - the cart to update
+   * @param storeId - the storeId to update
    * @param addressOrId - the value to set the billing address to
    * @param addrRepo - the repository to use for address updates
    * @return the result of the update operation
    */
   protected async updateBillingAddress_(
+    storeId:string,
     cart: Cart,
     addressOrId: AddressPayload | Partial<Address> | string,
     addrRepo: typeof AddressRepository
@@ -1540,10 +1542,10 @@ class CartService extends TransactionBaseService {
     let address: Address
     if (typeof addressOrId === `string`) {
       address = (await addrRepo.findOne({
-        where: { id: addressOrId },
+        where: { id: addressOrId, store_id: storeId },
       })) as Address
     } else {
-      address = addressOrId as Address
+      address = {...addressOrId, store_id: storeId} as Address
     }
 
     if (address.id) {
@@ -1551,13 +1553,15 @@ class CartService extends TransactionBaseService {
     } else {
       if (cart.billing_address_id) {
         const addr = await addrRepo.findOne({
-          where: { id: cart.billing_address_id },
+          where: { id: cart.billing_address_id , store_id: storeId},
         })
+        address.store_id = storeId
 
-        await addrRepo.save({ ...addr, ...address })
+        await addrRepo.save({ ...addr, ...address})
       } else {
         cart.billing_address = addrRepo.create({
           ...address,
+          store_id: storeId
         })
       }
     }
@@ -1566,17 +1570,18 @@ class CartService extends TransactionBaseService {
   /**
    * Updates the cart's shipping address.
    * @param cart - the cart to update
+   * @param storeId - the storeId to update
    * @param addressOrId - the value to set the shipping address to
    * @param addrRepo - the repository to use for address updates
    * @return the result of the update operation
    */
   protected async updateShippingAddress_(
+    storeId: string,
     cart: Cart,
     addressOrId: AddressPayload | Partial<Address> | string,
     addrRepo: typeof AddressRepository
   ): Promise<void> {
     let address: Address
-
     if (addressOrId === null) {
       cart.shipping_address = null
       return
@@ -1584,10 +1589,11 @@ class CartService extends TransactionBaseService {
 
     if (typeof addressOrId === `string`) {
       address = (await addrRepo.findOne({
-        where: { id: addressOrId },
+        where: { id: addressOrId , store_id: storeId },
       })) as Address
     } else {
-      address = addressOrId as Address
+      address = {...addressOrId, store_id: storeId} as Address
+
     }
 
     if (
@@ -1614,6 +1620,7 @@ class CartService extends TransactionBaseService {
       } else {
         cart.shipping_address = addrRepo.create({
           ...address,
+          store_id :storeId
         })
       }
     }
@@ -2565,6 +2572,7 @@ class CartService extends TransactionBaseService {
    * Set's the region of a cart.
    * @param cart - the cart to set region on
    * @param regionId - the id of the region to set the region to
+   * @param storeId - the id of the region to set the region to
    * @param countryCode - the country code to set the country to
    * @return the result of the update operation
    */
@@ -2601,9 +2609,11 @@ class CartService extends TransactionBaseService {
     let shippingAddress: Partial<Address> = {}
     if (cart.shipping_address_id) {
       shippingAddress = (await addrRepo.findOne({
-        where: { id: cart.shipping_address_id },
+        where: { id: cart.shipping_address_id, store_id: storeId },
       })) as Address
     }
+
+    shippingAddress.store_id = storeId
 
     /*
      * If the client has specified which country code we are updating to check
@@ -2627,7 +2637,7 @@ class CartService extends TransactionBaseService {
       })
 
       await addrRepo.save(updated)
-      await this.updateShippingAddress_(cart, updated, addrRepo)
+      await this.updateShippingAddress_(storeId, cart, updated, addrRepo)
     } else {
       /*
        * In the case where the country code is not specified we need to check
@@ -2656,7 +2666,7 @@ class CartService extends TransactionBaseService {
         }
       }
 
-      await this.updateShippingAddress_(cart, updated, addrRepo)
+      await this.updateShippingAddress_(storeId, cart, updated, addrRepo)
     }
 
     // Shipping methods are determined by region so the user needs to find a

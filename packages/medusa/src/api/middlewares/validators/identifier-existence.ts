@@ -6,7 +6,7 @@ export function processIdentifierMiddleware(
   res: Response,
   next: NextFunction
 ): void {
-  // req.query.identifier='1'
+   req.query.identifier='1'
   const identifier = req.query.identifier as string
 
   if (identifier) {

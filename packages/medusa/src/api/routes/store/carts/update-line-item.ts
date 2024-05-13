@@ -2,7 +2,7 @@ import {
   CartService,
   ProductVariantInventoryService,
 } from "../../../../services"
-import { IsInt, IsOptional } from "class-validator"
+import { IsInt, IsOptional, IsString } from "class-validator";
 import { defaultStoreCartFields, defaultStoreCartRelations } from "."
 
 import { EntityManager } from "typeorm"
@@ -183,4 +183,7 @@ export class StorePostCartsCartLineItemsItemReq {
 
   @IsOptional()
   metadata?: Record<string, unknown> | undefined
+
+  @IsString()
+  store_id: number
 }
