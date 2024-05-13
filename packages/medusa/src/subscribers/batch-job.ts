@@ -52,7 +52,7 @@ class BatchJobSubscriber {
 
         await batchJobStrategy
           .withTransaction(manager)
-          .preProcessBatchJob(batchJob.id)
+          .preProcessBatchJob(data.store_id, batchJob.id)
         await batchJobServiceTx.setPreProcessingDone(batchJob.id)
       })
     } catch (e) {
@@ -72,7 +72,9 @@ class BatchJobSubscriber {
         )
 
         await batchJobServiceTx.setProcessing(batchJob.id)
-        await batchJobStrategy.withTransaction(manager).processJob(batchJob.id)
+        await batchJobStrategy
+          .withTransaction(manager)
+          .processJob(data.storeId, batchJob.id)
         await batchJobServiceTx.complete(batchJob.id)
       })
     } catch (e) {

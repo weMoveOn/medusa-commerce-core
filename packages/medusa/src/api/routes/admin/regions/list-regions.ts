@@ -1,5 +1,7 @@
+
+import _, { identity } from "lodash"
 import { Type } from "class-transformer"
-import { IsOptional, IsString, ValidateNested } from "class-validator"
+import { IsNotEmpty, IsOptional, IsString, ValidateNested } from "class-validator"
 import RegionService from "../../../../services/region"
 import {
   DateComparisonOperator,
@@ -192,6 +194,10 @@ export class AdminGetRegionsParams extends extendedFindParamsMixin({
   limit: 50,
   offset: 0,
 }) {
+
+  @IsString()
+  @IsNotEmpty()
+  store_id: string
   /**
    * Search parameter for regions.
    */

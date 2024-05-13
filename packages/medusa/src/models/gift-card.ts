@@ -12,9 +12,15 @@ import { Order } from "./order"
 import { Region } from "./region"
 import { SoftDeletableEntity } from "../interfaces/models/soft-deletable-entity"
 import { generateEntityId } from "../utils/generate-entity-id"
+import {Store} from "./store";
 
 @Entity()
 export class GiftCard extends SoftDeletableEntity {
+  @Column()
+  store_id: string
+  @ManyToOne(()=> Store)
+  @JoinColumn({name:"store_id", referencedColumnName:"id"})
+
   @Index({ unique: true })
   @Column()
   code: string

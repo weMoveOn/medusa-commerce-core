@@ -98,7 +98,7 @@ import { EntityManager } from "typeorm"
  */
 export default async (req, res) => {
   const { id } = req.params
-
+  const { store_id } = req.query
   const validated = await validator(AdminPostNotesNoteReq, req.body)
 
   const noteService: NoteService = req.scope.resolve("noteService")
@@ -106,7 +106,7 @@ export default async (req, res) => {
   const note = await manager.transaction(async (transactionManager) => {
     return await noteService
       .withTransaction(transactionManager)
-      .update(id, validated.value)
+      .update(store_id,id, validated.value)
   })
 
   res.status(200).json({ note })

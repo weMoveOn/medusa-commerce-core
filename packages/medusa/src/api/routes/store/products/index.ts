@@ -21,7 +21,12 @@ export default (app, featureFlagRouter: FlagRouter) => {
     allowedStoreProductsRelations.push("categories")
   }
 
-  app.use("/products", extendRequestParams, validateSalesChannelParam, route)
+  app.use(
+    "/products",
+    extendRequestParams,
+    validateSalesChannelParam,
+    route
+  )
 
   route.use("/:id", validateProductSalesChannelAssociation)
 

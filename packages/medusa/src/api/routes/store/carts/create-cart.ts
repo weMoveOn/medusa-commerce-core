@@ -109,23 +109,21 @@ import { FeatureFlagDecorators } from "../../../../utils/feature-flag-decorators
  *     $ref: "#/components/responses/500_error"
  */
 export default async (req, res) => {
+  const { store_id } = req.query
+  req.body.store_id = store_id
   const entityManager: EntityManager = req.scope.resolve("manager")
   const featureFlagRouter: FlagRouter = req.scope.resolve("featureFlagRouter")
   const cartService: CartService = req.scope.resolve("cartService")
   const productVariantInventoryService: ProductVariantInventoryService =
     req.scope.resolve("productVariantInventoryService")
-
-  const validated = req.validatedBody as StorePostCartReq
-
+  const validated = req.validatedBody as StorePostCartReq & { store_id: string }
   const reqContext = {
     ip: reqIp.getClientIp(req),
     user_agent: req.get("user-agent"),
   }
-
   const isWorkflowEnabled = featureFlagRouter.isFeatureEnabled({
     workflows: Workflows.CreateCart,
   })
-
   let cart
 
   if (isWorkflowEnabled) {
@@ -145,7 +143,6 @@ export default async (req, res) => {
       },
       throwOnError: false,
     })
-
     if (Array.isArray(errors)) {
       if (isDefined(errors[0])) {
         throw errors[0].error
@@ -157,13 +154,11 @@ export default async (req, res) => {
     const lineItemService: LineItemService =
       req.scope.resolve("lineItemService")
     const regionService: RegionService = req.scope.resolve("regionService")
-
     let regionId!: string
     if (isDefined(validated.region_id)) {
       regionId = validated.region_id as string
     } else {
-      const regions = await regionService.list({})
-
+      const regions = await regionService.list({store_id})
       if (!regions?.length) {
         throw new MedusaError(
           MedusaError.Types.INVALID_DATA,
@@ -173,7 +168,6 @@ export default async (req, res) => {
 
       regionId = regions[0].id
     }
-
     const toCreate: Partial<CartCreateProps> = {
       region_id: regionId,
       sales_channel_id: validated.sales_channel_id,
@@ -185,17 +179,15 @@ export default async (req, res) => {
 
     if (req.user && req.user.customer_id) {
       const customerService = req.scope.resolve("customerService")
-      const customer = await customerService.retrieve(req.user.customer_id)
+      const customer = await customerService.retrieve(store_id,req.user.customer_id)
       toCreate["customer_id"] = customer.id
       toCreate["email"] = customer.email
     }
-
     if (validated.country_code) {
       toCreate["shipping_address"] = {
         country_code: validated.country_code.toLowerCase(),
       }
     }
-
     if (
       !toCreate.sales_channel_id &&
       req.publishableApiKeyScopes?.sales_channel_ids.length
@@ -210,13 +202,11 @@ export default async (req, res) => {
       toCreate.sales_channel_id =
         req.publishableApiKeyScopes.sales_channel_ids[0]
     }
-
     cart = await entityManager.transaction(async (manager) => {
       const cartServiceTx = cartService.withTransaction(manager)
       const lineItemServiceTx = lineItemService.withTransaction(manager)
 
-      const createdCart = await cartServiceTx.create(toCreate)
-
+      const createdCart = await cartServiceTx.create({ ...toCreate, store_id })
       if (validated.items?.length) {
         const generateInputData = validated.items.map((item) => {
           return {
@@ -225,14 +215,15 @@ export default async (req, res) => {
           }
         })
         const generatedLineItems: LineItem[] = await lineItemServiceTx.generate(
+          store_id,
           generateInputData,
           {
             region_id: regionId,
             customer_id: req.user?.customer_id,
           }
         )
-
         await cartServiceTx.addOrUpdateLineItems(
+          store_id,
           createdCart.id,
           generatedLineItems,
           {
@@ -241,12 +232,11 @@ export default async (req, res) => {
           }
         )
       }
-
       return createdCart
     })
   }
 
-  cart = await cartService.retrieveWithTotals(cart!.id, {
+  cart = await cartService.retrieveWithTotals(store_id,cart!.id, {
     select: defaultStoreCartFields,
     relations: defaultStoreCartRelations,
   })
@@ -274,6 +264,9 @@ export class Item {
  * type: object
  * description: "The details of the cart to be created."
  * properties:
+ *   store_id:
+ *   type: string
+ *   description: "The ID of the Store to create the Cart in. This store_id needed to make multi-tenant store. If this parameter is not provided, it will show error."
  *   region_id:
  *     type: string
  *     description: "The ID of the Region to create the Cart in. Setting the cart's region can affect the pricing of the items in the cart as well as the used currency.
@@ -316,6 +309,10 @@ export class Item {
  *       user_agent: "Chrome"
  */
 export class StorePostCartReq {
+
+  @IsString()
+  store_id?: string
+
   @IsOptional()
   @IsString()
   region_id?: string

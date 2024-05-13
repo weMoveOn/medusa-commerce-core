@@ -99,6 +99,7 @@ import { validator } from "../../../../utils/validator"
 
 export default async (req: Request, res: Response) => {
   const { id } = req.params
+  const store_id = req.query.store_id as string
 
   const validatedBody = await validator(
     AdminPostCustomerGroupsGroupReq,
@@ -114,7 +115,7 @@ export default async (req: Request, res: Response) => {
   await manager.transaction(async (transactionManager) => {
     return await customerGroupService
       .withTransaction(transactionManager)
-      .update(id, validatedBody)
+      .update(store_id,id, validatedBody)
   })
 
   let expandFields: string[] = []
@@ -128,7 +129,7 @@ export default async (req: Request, res: Response) => {
       : defaultAdminCustomerGroupsRelations,
   }
 
-  const customerGroup = await customerGroupService.retrieve(id, findConfig)
+  const customerGroup = await customerGroupService.retrieve(store_id,id, findConfig)
 
   res.json({ customer_group: customerGroup })
 }

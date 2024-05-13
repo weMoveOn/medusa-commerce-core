@@ -3,11 +3,12 @@ import { Note } from "../../../.."
 import { DeleteResponse, PaginatedResponse } from "../../../../types/common"
 import middlewares from "../../../middlewares"
 import "reflect-metadata"
+import {processIdentifierMiddleware} from "../../../middlewares/validators/identifier-existence";
 
 const route = Router()
 
 export default (app) => {
-  app.use("/notes", route)
+  app.use("/notes", processIdentifierMiddleware, route)
 
   route.get("/:id", middlewares.wrap(require("./get-note").default))
 

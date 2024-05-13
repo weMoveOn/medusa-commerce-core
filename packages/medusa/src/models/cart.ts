@@ -266,6 +266,7 @@ import { PaymentSession } from "./payment-session"
 import { Region } from "./region"
 import { SalesChannel } from "./sales-channel"
 import { ShippingMethod } from "./shipping-method"
+import {Store} from "./store";
 import {
   FeatureFlagColumn,
   FeatureFlagDecorators,
@@ -285,6 +286,14 @@ export class Cart extends SoftDeletableEntity {
    * @apiIgnore
    */
   readonly object = "cart"
+
+  @Index()
+  @Column({unique: true})
+  store_id: string
+
+  @ManyToOne(() => Store, (store) => store.carts)
+  @JoinColumn({ name: "store_id" })
+  store: Store;
 
   @Column({ nullable: true })
   email: string

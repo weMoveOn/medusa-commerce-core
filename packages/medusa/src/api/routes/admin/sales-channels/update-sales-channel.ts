@@ -101,6 +101,7 @@ import { EntityManager } from "typeorm"
  */
 export default async (req: Request, res: Response) => {
   const { id } = req.params
+  const { store_id } = req.query as { store_id: string }
   const { validatedBody } = req as {
     validatedBody: AdminPostSalesChannelsSalesChannelReq
   }
@@ -113,7 +114,7 @@ export default async (req: Request, res: Response) => {
     async (transactionManager) => {
       return await salesChannelService
         .withTransaction(transactionManager)
-        .update(id, validatedBody)
+        .update(store_id, id, validatedBody)
     }
   )
 
@@ -136,6 +137,9 @@ export default async (req: Request, res: Response) => {
  *     description: Whether the Sales Channel is disabled.
  */
 export class AdminPostSalesChannelsSalesChannelReq {
+  @IsString()
+  store_id: string
+
   @IsOptional()
   @IsString()
   name?: string

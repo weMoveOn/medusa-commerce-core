@@ -21,7 +21,7 @@ import { IsGreaterThan } from "../../../../utils/validators/greater-than"
 import { IsISO8601Duration } from "../../../../utils/validators/iso8601-duration"
 import { Type } from "class-transformer"
 import { FindParams } from "../../../../types/common"
-
+import { validator } from "../../../../utils/validator"
 /**
  * @oas [post] /admin/discounts/{id}
  * operationId: "PostDiscountsDiscount"
@@ -114,6 +114,8 @@ import { FindParams } from "../../../../types/common"
  */
 export default async (req: Request, res: Response) => {
   const { discount_id } = req.params
+  const { store_id } = await validator(AdminUpdateDiscountQuery, req.query)
+
 
   const discountService: DiscountService = req.scope.resolve("discountService")
 
@@ -121,15 +123,25 @@ export default async (req: Request, res: Response) => {
   await manager.transaction(async (transactionManager) => {
     return await discountService
       .withTransaction(transactionManager)
-      .update(discount_id, req.validatedBody as AdminPostDiscountsDiscountReq)
+      .update(
+        store_id,
+        discount_id,
+        req.validatedBody as AdminPostDiscountsDiscountReq
+      )
   })
 
   const discount = await discountService.retrieve(
+    store_id,
     discount_id,
     req.retrieveConfig
   )
 
   res.status(200).json({ discount })
+}
+
+export class AdminUpdateDiscountQuery {
+  @IsString()
+  store_id: string
 }
 
 /**
@@ -234,6 +246,10 @@ export default async (req: Request, res: Response) => {
  *        url: "https://docs.medusajs.com/development/entities/overview#metadata-attribute"
  */
 export class AdminPostDiscountsDiscountReq {
+  @IsString()
+  @IsNotEmpty()
+  store_id: string
+
   @IsString()
   @IsOptional()
   code?: string
@@ -340,4 +356,8 @@ export class AdminUpsertCondition extends AdminUpsertConditionsReq {
   operator: DiscountConditionOperator
 }
 
-export class AdminPostDiscountsDiscountParams extends FindParams {}
+export class AdminPostDiscountsDiscountParams extends FindParams {
+    @IsString()
+    @IsNotEmpty()
+    store_id: string
+}

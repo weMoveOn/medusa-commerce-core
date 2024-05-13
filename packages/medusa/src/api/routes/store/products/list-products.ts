@@ -249,13 +249,13 @@ export default async (req, res) => {
   const validated = req.validatedQuery as StoreGetProductsParams
 
   let {
+    store_id,
     cart_id,
     region_id: regionId,
     currency_code: currencyCode,
     ...filterableFields
   } = req.filterableFields
   const listConfig = req.listConfig
-
   // get only published products for store endpoint
   filterableFields["status"] = ["published"]
   // store APIs only receive active and public categories to query from
@@ -293,7 +293,7 @@ export default async (req, res) => {
 
   if (validated.cart_id) {
     promises.push(
-      cartService.retrieve(validated.cart_id, {
+      cartService.retrieve(store_id ,validated.cart_id,{
         select: ["id", "region_id"] as any,
         relations: ["region"],
       })
@@ -322,7 +322,7 @@ export default async (req, res) => {
 
   if (shouldSetPricing) {
     decoratePromises.push(
-      pricingService.setProductPrices(computedProducts, {
+      pricingService.setProductPrices(store_id, computedProducts, {
         cart_id: cart_id,
         region_id: regionId,
         currency_code: currencyCode,
@@ -474,6 +474,8 @@ export class StoreGetProductsPaginationParams extends PriceSelectionParams {
  * Parameters used to filter and configure the pagination of the retrieved products.
  */
 export class StoreGetProductsParams extends StoreGetProductsPaginationParams {
+  @IsString()
+  store_id?: string
   /**
    * {@inheritDoc FilterableProductProps.id}
    */

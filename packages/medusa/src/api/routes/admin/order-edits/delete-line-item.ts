@@ -94,6 +94,7 @@ import {
  */
 export default async (req: Request, res: Response) => {
   const { id, item_id } = req.params
+  const  store_id  = req.query.store_id as string
 
   const orderEditService: OrderEditService =
     req.scope.resolve("orderEditService")
@@ -103,14 +104,14 @@ export default async (req: Request, res: Response) => {
   await manager.transaction(async (transactionManager) => {
     await orderEditService
       .withTransaction(transactionManager)
-      .removeLineItem(id, item_id)
+      .removeLineItem(store_id as string, id, item_id)
   })
 
   let orderEdit = await orderEditService.retrieve(id, {
     select: defaultOrderEditFields,
     relations: defaultOrderEditRelations,
   })
-  orderEdit = await orderEditService.decorateTotals(orderEdit)
+  orderEdit = await orderEditService.decorateTotals(store_id,orderEdit)
 
   res.status(200).send({
     order_edit: orderEdit,

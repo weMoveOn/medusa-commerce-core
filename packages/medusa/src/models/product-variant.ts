@@ -16,9 +16,16 @@ import { Product } from "./product"
 import { ProductOptionValue } from "./product-option-value"
 import { ProductVariantInventoryItem } from "./product-variant-inventory-item"
 import { SoftDeletableEntity } from "../interfaces"
+import {Store} from "./store";
 
 @Entity()
 export class ProductVariant extends SoftDeletableEntity {
+  @Index()
+  @Column()
+  store_id: string
+  @ManyToOne(()=> Store)
+  @JoinColumn({name:"store_id", referencedColumnName:"id"})
+
   @Column()
   title: string
 

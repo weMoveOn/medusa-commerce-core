@@ -7,7 +7,7 @@ import { StoreGetCollectionsParams } from "./list-collections"
 const route = Router()
 
 export default (app) => {
-  app.use("/collections", route)
+  app.use("/collections" ,route)
 
   route.get(
     "/",

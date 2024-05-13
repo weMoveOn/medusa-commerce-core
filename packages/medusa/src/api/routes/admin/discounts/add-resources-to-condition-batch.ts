@@ -6,9 +6,9 @@ import {
   DiscountConditionInput,
   DiscountConditionMapTypeToProperty,
 } from "../../../../types/discount"
-import { IsArray } from "class-validator"
+import { IsArray, IsString } from "class-validator"
 import { FindParams } from "../../../../types/common"
-
+import { validator } from "../../../../utils/validator"
 /**
  * @oas [post] /admin/discounts/{discount_id}/conditions/{condition_id}/batch
  * operationId: "PostDiscountsDiscountConditionsConditionBatch"
@@ -122,7 +122,7 @@ export default async (req: Request, res: Response) => {
   const { discount_id, condition_id } = req.params
   const validatedBody =
     req.validatedBody as AdminPostDiscountsDiscountConditionsConditionBatchReq
-
+  const { store_id } = await validator(AdminPostDiscountConditionBatchQuery, req.query)
   const conditionService: DiscountConditionService = req.scope.resolve(
     "discountConditionService"
   )
@@ -147,6 +147,7 @@ export default async (req: Request, res: Response) => {
 
   const discountService: DiscountService = req.scope.resolve("discountService")
   const discount = await discountService.retrieve(
+    store_id,
     discount_id,
     req.retrieveConfig
   )
@@ -154,6 +155,10 @@ export default async (req: Request, res: Response) => {
   res.status(200).json({ discount })
 }
 
+export class AdminPostDiscountConditionBatchQuery {
+  @IsString()
+  store_id: string
+}
 /**
  * @schema AdminPostDiscountsDiscountConditionsConditionBatchReq
  * type: object
@@ -179,4 +184,4 @@ export class AdminPostDiscountsDiscountConditionsConditionBatchReq {
 }
 
 // eslint-disable-next-line max-len
-export class AdminPostDiscountsDiscountConditionsConditionBatchParams extends FindParams {}
+export class AdminPostDiscountsDiscountConditionsConditionBatchParams extends FindParams { }

@@ -51,9 +51,13 @@ class ProductSearchSubscriber {
   }
 
   handleProductCreation = async (data) => {
-    const product = await this.productService_.retrieve(data.id, {
-      relations: defaultSearchIndexingProductRelations,
-    })
+    const product = await this.productService_.retrieve(
+      data.id,
+      data.store_id,
+      {
+        relations: defaultSearchIndexingProductRelations,
+      }
+    )
     await this.searchService_.addDocuments(
       ProductService.IndexName,
       [product],
@@ -62,9 +66,13 @@ class ProductSearchSubscriber {
   }
 
   handleProductUpdate = async (data) => {
-    const product = await this.productService_.retrieve(data.id, {
-      relations: defaultSearchIndexingProductRelations,
-    })
+    const product = await this.productService_.retrieve(
+      data.id,
+      data.store_id,
+      {
+        relations: defaultSearchIndexingProductRelations,
+      }
+    )
     await this.searchService_.addDocuments(
       ProductService.IndexName,
       [product],
@@ -77,9 +85,13 @@ class ProductSearchSubscriber {
   }
 
   handleProductVariantChange = async (data) => {
-    const product = await this.productService_.retrieve(data.product_id, {
-      relations: defaultSearchIndexingProductRelations,
-    })
+    const product = await this.productService_.retrieve(
+      data.product_id,
+      data.store_id,
+      {
+        relations: defaultSearchIndexingProductRelations,
+      }
+    )
     await this.searchService_.addDocuments(
       ProductService.IndexName,
       [product],

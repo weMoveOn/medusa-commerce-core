@@ -90,8 +90,9 @@ import { defaultAdminCollectionsRelations } from "."
  *    $ref: "#/components/responses/500_error"
  */
 export default async (req: Request, res: Response) => {
+  const { store_id } = req.params
   const { validatedBody } = req as { validatedBody: AdminPostCollectionsReq }
-
+  validatedBody.store_id = req.query.store_id as string
   const productCollectionService: ProductCollectionService = req.scope.resolve(
     "productCollectionService"
   )
@@ -103,7 +104,7 @@ export default async (req: Request, res: Response) => {
       .create(validatedBody)
   })
 
-  const collection = await productCollectionService.retrieve(created.id, {
+  const collection = await productCollectionService.retrieve(created.id, store_id,{
     relations: defaultAdminCollectionsRelations,
   })
 
@@ -134,6 +135,10 @@ export class AdminPostCollectionsReq {
   @IsString()
   @IsNotEmpty()
   title: string
+
+  @IsString()
+  @IsNotEmpty()
+  store_id: string
 
   @IsString()
   @IsOptional()

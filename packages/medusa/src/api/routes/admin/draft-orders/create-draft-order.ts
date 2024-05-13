@@ -147,6 +147,7 @@ import { cleanResponseData } from "../../../../utils/clean-response-data"
  */
 
 export default async (req, res) => {
+  const store_id = req.query.store_id
   const validated = await validator(AdminPostDraftOrdersReq, req.body)
 
   const { shipping_address, billing_address, ...rest } = validated
@@ -173,7 +174,7 @@ export default async (req, res) => {
     async (transactionManager) => {
       return await draftOrderService
         .withTransaction(transactionManager)
-        .create(draftOrderDataToCreate)
+        .create(store_id, draftOrderDataToCreate)
     }
   )
 
@@ -186,7 +187,7 @@ export default async (req, res) => {
 
   draftOrder.cart = await cartService
     .withTransaction(manager)
-    .retrieveWithTotals(draftOrder.cart_id, {
+    .retrieveWithTotals( store_id,draftOrder.cart_id,{
       relations: defaultAdminDraftOrdersCartRelations,
       select: defaultAdminDraftOrdersCartFields,
     })
@@ -298,9 +299,14 @@ enum Status {
  *       url: "https://docs.medusajs.com/development/entities/overview#metadata-attribute"
  */
 export class AdminPostDraftOrdersReq {
+  @IsString()
+  @IsNotEmpty()
+  store_id:string
+
   @IsEnum(Status)
   @IsOptional()
   status?: string
+
 
   @IsEmail()
   email: string

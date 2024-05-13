@@ -85,7 +85,7 @@ export function prepareListQuery<
   T extends RequestQueryFields,
   TEntity extends BaseEntity
 >(validated: T, queryConfig?: QueryConfig<TEntity>) {
-  const { order, fields, expand, limit, offset } = validated
+  const { order, fields, expand, limit, offset, store_id } = validated
 
   let expandRelations: string[] | undefined = undefined
   if (isDefined(expand)) {

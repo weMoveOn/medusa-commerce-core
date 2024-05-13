@@ -89,6 +89,7 @@ import { ProductCategoryService } from "../../../../services"
 
 export default async (req: Request, res: Response) => {
   const { id } = req.params
+  const store_id = req.query.store_id as string
 
   const productCategoryService: ProductCategoryService = req.scope.resolve(
     "productCategoryService"
@@ -99,7 +100,7 @@ export default async (req: Request, res: Response) => {
   await manager.transaction(async (transactionManager) => {
     return await productCategoryService
       .withTransaction(transactionManager)
-      .delete(id)
+      .delete(store_id,id)
   })
 
   res.json({

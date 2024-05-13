@@ -61,17 +61,17 @@ import { validator } from "../../../../utils/validator"
 export default async (req: Request, res: Response) => {
   const { id } = req.params
 
-  const { expand, fields, limit, offset } = await validator(
+  const { expand, fields, limit, offset,store_id } = await validator(
     AdminGetProductsVariantsParams,
     req.query
   )
 
   const queryConfig = getRetrieveConfig<ProductVariant>(
-    defaultAdminGetProductsVariantsFields as (keyof ProductVariant)[],
+    Object.keys(ProductVariant) as (keyof ProductVariant)[],
     [],
     [
       ...new Set([
-        ...defaultAdminGetProductsVariantsFields,
+        ... Object.keys(ProductVariant),
         ...(fields?.split(",") ?? []),
       ]),
     ] as (keyof ProductVariant)[],
@@ -81,12 +81,15 @@ export default async (req: Request, res: Response) => {
   const productVariantService: ProductVariantService = req.scope.resolve(
     "productVariantService"
   )
+
+const {select, ...rest} = queryConfig
   const [variants, count] = await productVariantService.listAndCount(
     {
+      store_id,
       product_id: id,
     },
     {
-      ...queryConfig,
+      ...rest,
       skip: offset,
       take: limit,
     }
@@ -101,6 +104,10 @@ export default async (req: Request, res: Response) => {
 }
 
 export class AdminGetProductsVariantsParams {
+
+  @IsString()
+  store_id: string
+
   @IsString()
   @IsOptional()
   fields?: string

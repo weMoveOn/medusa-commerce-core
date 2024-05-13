@@ -11,10 +11,11 @@ import { AdminPostCollectionsReq } from "./create-collection"
 import { AdminPostCollectionsCollectionReq } from "./update-collection"
 import { AdminPostProductsToCollectionReq } from "./add-products"
 import { AdminDeleteProductsFromCollectionReq } from "./remove-products"
+import {processIdentifierMiddleware} from "../../../middlewares/validators/identifier-existence";
 
 export default (app) => {
   const route = Router()
-  app.use("/collections", route)
+  app.use("/collections", processIdentifierMiddleware, route)
 
   route.post(
     "/",

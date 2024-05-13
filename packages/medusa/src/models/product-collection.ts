@@ -1,17 +1,25 @@
-import { BeforeInsert, Column, Entity, Index, OneToMany } from "typeorm"
+import { BeforeInsert, Column, Entity, Index, JoinColumn, ManyToOne, OneToMany } from "typeorm"
 
 import { DbAwareColumn } from "../utils/db-aware-column"
 import { Product } from "./product"
 import { SoftDeletableEntity } from "../interfaces/models/soft-deletable-entity"
 import _ from "lodash"
 import { generateEntityId } from "../utils/generate-entity-id"
+import {Store} from "./store";
 
 @Entity()
 export class ProductCollection extends SoftDeletableEntity {
   @Column()
   title: string
 
-  @Index({ unique: true, where: "deleted_at IS NULL" })
+  @Column()
+  store_id: string
+
+  @ManyToOne(() => Store, (store) => store.product_collections)
+  @JoinColumn({ name: "store_id" })
+  store: Store
+
+  @Index()
   @Column({ nullable: true })
   handle: string
 

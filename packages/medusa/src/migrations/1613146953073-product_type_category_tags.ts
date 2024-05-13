@@ -6,10 +6,23 @@ export class productTypeCategoryTags1613146953073
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(
-      `CREATE TABLE "product_collection" ("id" character varying NOT NULL, "title" character varying NOT NULL, "handle" character varying, "created_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "updated_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "deleted_at" TIMESTAMP WITH TIME ZONE, "metadata" jsonb, CONSTRAINT "PK_49d419fc77d3aed46c835c558ac" PRIMARY KEY ("id"))`
-    )
-    await queryRunner.query(
-      `CREATE UNIQUE INDEX "IDX_6910923cb678fd6e99011a21cc" ON "product_collection" ("handle") `
+      `
+CREATE TABLE "product_collection" 
+(
+  "id" character varying NOT NULL, 
+  "title" character varying NOT NULL, 
+  "handle" character varying, 
+  "store_id" character varying NOT NULL,
+  "created_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), 
+  "updated_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), 
+  "deleted_at" TIMESTAMP WITH TIME ZONE, 
+  "metadata" jsonb, 
+  CONSTRAINT "PK_49d419fc77d3aed46c835c558ac" PRIMARY KEY ("id"),
+  CONSTRAINT "UQ_PC_49d419fc77d3aed46c835c558ac" UNIQUE ("store_id", "handle"),
+  CONSTRAINT "FK_f552bbf2bdc983b83e0b396b429" FOREIGN KEY ("store_id") REFERENCES "store"("id") ON DELETE CASCADE ON UPDATE NO ACTION
+)
+
+        `
     )
     await queryRunner.query(
       `CREATE TABLE "product_tag" ("id" character varying NOT NULL, "value" character varying NOT NULL, "created_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "updated_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "deleted_at" TIMESTAMP WITH TIME ZONE, "metadata" jsonb, CONSTRAINT "PK_1439455c6528caa94fcc8564fda" PRIMARY KEY ("id"))`
@@ -65,12 +78,15 @@ export class productTypeCategoryTags1613146953073
     await queryRunner.query(
       `ALTER TABLE "product" ADD "tags" character varying`
     )
+    //Drop constraints
+    await queryRunner.query(`DROP CONSTRAINT "UQ_PC_49d419fc77d3aed46c835c558ac"`)
+    await queryRunner.query(`DROP CONSTRAINT "FK_f552bbf2bdc983b83e0b396b429"`)
     await queryRunner.query(`DROP INDEX "IDX_21683a063fe82dafdf681ecc9c"`)
     await queryRunner.query(`DROP INDEX "IDX_5b0c6fc53c574299ecc7f9ee22"`)
     await queryRunner.query(`DROP TABLE "product_tags"`)
     await queryRunner.query(`DROP TABLE "product_type"`)
     await queryRunner.query(`DROP TABLE "product_tag"`)
-    await queryRunner.query(`DROP INDEX "IDX_6910923cb678fd6e99011a21cc"`)
     await queryRunner.query(`DROP TABLE "product_collection"`)
+
   }
 }

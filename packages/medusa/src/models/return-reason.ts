@@ -11,9 +11,18 @@ import {
 import { DbAwareColumn } from "../utils/db-aware-column"
 import { SoftDeletableEntity } from "../interfaces/models/soft-deletable-entity"
 import { generateEntityId } from "../utils/generate-entity-id"
+import { Store } from "./store"
 
 @Entity()
 export class ReturnReason extends SoftDeletableEntity {
+
+  @Column({ type: "text", nullable: true })
+  store_id: string | null
+
+  @ManyToOne(() => Store, { onDelete: "CASCADE" })
+  @JoinColumn({ name: "store_id" })
+  store: Store
+
   @Index({ unique: true, where: "deleted_at IS NULL" })
   @Column()
   value: string

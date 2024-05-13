@@ -7,11 +7,12 @@ import {
   defaultAdminOrdersFields,
   defaultAdminOrdersRelations,
 } from "../../../../types/orders"
+import { processIdentifierMiddleware } from "../../../middlewares/validators/identifier-existence"
 
 const route = Router()
 
 export default (app) => {
-  app.use("/returns", route)
+  app.use("/returns", processIdentifierMiddleware, route)
 
   /**
    * List returns

@@ -151,9 +151,11 @@ import { transformOptionalDate } from "../../../../utils/validators/date-transfo
  *     $ref: "#/components/responses/500_error"
  */
 export default async (req: Request, res) => {
+  const itemData = req.validatedBody as CreatePriceListInput & {
+    store_id: string
+  }
   const priceListService: PriceListService =
     req.scope.resolve("priceListService")
-
   const manager: EntityManager = req.scope.resolve("manager")
   const featureFlagRouter: FlagRouter = req.scope.resolve("featureFlagRouter")
   let priceList
@@ -164,7 +166,7 @@ export default async (req: Request, res) => {
 
   if (isMedusaV2FlagEnabled) {
     const createPriceListWorkflow = createPriceLists(req.scope)
-    const validatedInput = req.validatedBody as CreatePriceListInput
+    const validatedInput = itemData
     const rules: PricingTypes.CreatePriceListRules = {}
     const customerGroups = validatedInput?.customer_groups || []
     delete validatedInput.customer_groups
@@ -191,20 +193,28 @@ export default async (req: Request, res) => {
 
     priceList = result[0]!.priceList
 
-    priceList = await getPriceListPricingModule(priceList.id, {
-      container: req.scope as MedusaContainer,
-    })
+    priceList = await getPriceListPricingModule(
+      itemData.store_id,
+      priceList.id,
+      {
+        container: req.scope as MedusaContainer,
+      }
+    )
   } else {
     priceList = await manager.transaction(async (transactionManager) => {
       return await priceListService
         .withTransaction(transactionManager)
-        .create(req.validatedBody as CreatePriceListInput)
+        .create(itemData.store_id,itemData)
     })
 
-    priceList = await priceListService.retrieve(priceList.id, {
-      select: defaultAdminPriceListFields as (keyof PriceList)[],
-      relations: defaultAdminPriceListRelations,
-    })
+    priceList = await priceListService.retrieve(
+      itemData.store_id,
+      priceList.id,
+      {
+        select: defaultAdminPriceListFields as (keyof PriceList)[],
+        relations: defaultAdminPriceListRelations,
+      }
+    )
   }
 
   res.json({ price_list: priceList })
@@ -299,6 +309,9 @@ class CustomerGroup {
  *      type: boolean
  */
 export class AdminPostPriceListsPriceListReq {
+  @IsString()
+  store_id: string
+
   @IsString()
   name: string
 

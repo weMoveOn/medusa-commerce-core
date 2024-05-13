@@ -1,12 +1,30 @@
-import { BeforeInsert, Column, CreateDateColumn, Entity, Index } from "typeorm"
+import {
+  BeforeInsert,
+  Column,
+  CreateDateColumn,
+  Entity,
+  Index,
+  JoinColumn,
+  ManyToOne,
+} from "typeorm"
 import { DbAwareColumn, resolveDbType } from "../utils/db-aware-column"
 
 import { SoftDeletableEntity } from "../interfaces/models/soft-deletable-entity"
 import { UserRoles } from "./user"
 import { generateEntityId } from "../utils/generate-entity-id"
+import { Store } from "./store"
 
 @Entity()
 export class Invite extends SoftDeletableEntity {
+  // new added filed
+
+  @Column({ type: "text", nullable: true })
+  store_id: string | null
+
+  @ManyToOne(() => Store, { onDelete: "CASCADE" })
+  @JoinColumn({ name: "store_id" })
+  store: Store
+
   @Index({ unique: true, where: "deleted_at IS NULL" })
   @Column()
   user_email: string

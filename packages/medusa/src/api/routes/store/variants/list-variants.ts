@@ -136,6 +136,7 @@ import { promiseAll } from "@medusajs/utils"
  *     $ref: "#/components/responses/500_error"
  */
 export default async (req, res) => {
+  const { store_id } = req.query
   const validated = await validator(StoreGetVariantsParams, req.query)
 
   const customer_id = req.user?.customer_id
@@ -166,16 +167,15 @@ export default async (req, res) => {
     req.scope.resolve("productVariantInventoryService")
   const regionService: RegionService = req.scope.resolve("regionService")
   const featureFlagRouter = req.scope.resolve("featureFlagRouter")
-
   const variants = await variantService.list(filterableFields, req.listConfig)
 
   let regionId = validated.region_id
   let currencyCode = validated.currency_code
   if (validated.cart_id) {
-    const cart = await cartService.retrieve(validated.cart_id, {
+    const cart = await cartService.retrieve( store_id,validated.cart_id,{
       select: ["id", "region_id"],
     })
-    const region = await regionService.retrieve(cart.region_id, {
+    const region = await regionService.retrieve(store_id, cart.region_id, {
       select: ["id", "currency_code"],
     })
     regionId = region.id
@@ -185,7 +185,7 @@ export default async (req, res) => {
   const decoratePromises: Promise<any>[] = []
 
   decoratePromises.push(
-    (await pricingService.setVariantPrices(variants, {
+    (await pricingService.setVariantPrices(store_id, variants, {
       cart_id: validated.cart_id,
       region_id: regionId,
       currency_code: currencyCode,

@@ -23,9 +23,11 @@ export default async ({
         passReqToCallback: true,
       },
       async (req: MedusaRequest, email, password, done) => {
+        const { store_id } = req.query as { store_id: string }
         const authService = req.scope.resolve<AuthService>("authService")
         try {
           const { success, user } = await authService.authenticate(
+            store_id,
             email,
             password
           )

@@ -39,6 +39,7 @@ import deleteProductsBatch, {
 } from "./delete-products-batch"
 
 import { ProductCategory } from "../../../../models"
+import { processIdentifierMiddleware } from "../../../middlewares/validators/identifier-existence"
 
 const route = Router()
 
@@ -58,6 +59,7 @@ export default (app) => {
   app.use(
     "/product-categories",
     isFeatureFlagEnabled("product_categories"),
+    processIdentifierMiddleware,
     route
   )
 

@@ -2,6 +2,7 @@ import CustomerService from "../../../../services/customer"
 import { FindParams } from "../../../../types/common"
 import { defaultAdminCustomersRelations } from "."
 import { validator } from "../../../../utils/validator"
+import { IsString } from "class-validator"
 
 /**
  * @oas [get] /admin/customers/{id}
@@ -83,8 +84,9 @@ import { validator } from "../../../../utils/validator"
  */
 export default async (req, res) => {
   const { id } = req.params
+  const {store_id} = req.query
 
-  const validated = await validator(FindParams, req.query)
+  const validated = await validator(AdminGetCustomerReq, req.query)
 
   const customerService: CustomerService = req.scope.resolve("customerService")
 
@@ -99,7 +101,14 @@ export default async (req, res) => {
       : defaultAdminCustomersRelations,
   }
 
-  const customer = await customerService.retrieve(id, findConfig)
+  const customer = await customerService.retrieve(store_id,id, findConfig)
 
   res.json({ customer })
+}
+
+
+// custom type
+class AdminGetCustomerReq extends FindParams{
+  @IsString()
+  store_id: string
 }

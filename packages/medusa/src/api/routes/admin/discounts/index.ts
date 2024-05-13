@@ -38,11 +38,12 @@ import {
   AdminDeleteDiscountsDiscountConditionsConditionBatchParams,
   AdminDeleteDiscountsDiscountConditionsConditionBatchReq,
 } from "./delete-resources-from-condition-batch"
+import { processIdentifierMiddleware } from "../../../middlewares/validators/identifier-existence"
 
 const route = Router()
 
 export default (app) => {
-  app.use("/discounts", route)
+  app.use("/discounts", processIdentifierMiddleware, route)
 
   route.get(
     "/",

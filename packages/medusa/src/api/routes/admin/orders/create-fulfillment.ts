@@ -20,7 +20,7 @@ import { Fulfillment, LineItem } from "../../../../models"
 import { FindParams } from "../../../../types/common"
 import { cleanResponseData } from "../../../../utils/clean-response-data"
 import { promiseAll } from "@medusajs/utils"
-
+import { validator } from "../../../../utils/validator"
 /**
  * @oas [post] /admin/orders/{id}/fulfillment
  * operationId: "PostOrdersOrderFulfillments"
@@ -141,10 +141,10 @@ import { promiseAll } from "@medusajs/utils"
  */
 export default async (req, res) => {
   const { id } = req.params
-
   const { validatedBody } = req as {
     validatedBody: AdminPostOrdersOrderFulfillmentsReq
   }
+  const { store_id } = await validator(AdminCreateFulfillmentQuery, req.query)
 
   const orderService: OrderService = req.scope.resolve("orderService")
   const pvInventoryService: ProductVariantInventoryService = req.scope.resolve(
@@ -156,21 +156,21 @@ export default async (req, res) => {
     const orderServiceTx = orderService.withTransaction(transactionManager)
 
     const { fulfillments: existingFulfillments } =
-      await orderServiceTx.retrieve(id, {
+      await orderServiceTx.retrieve(store_id,id, {
         relations: ["fulfillments"],
       })
     const existingFulfillmentSet = new Set(
       existingFulfillments.map((fulfillment) => fulfillment.id)
     )
 
-    await orderServiceTx.createFulfillment(id, validatedBody.items, {
+    await orderServiceTx.createFulfillment(store_id, id, validatedBody.items, {
       metadata: validatedBody.metadata,
       no_notification: validatedBody.no_notification,
       location_id: validatedBody.location_id,
     })
 
     if (validatedBody.location_id) {
-      const { fulfillments } = await orderServiceTx.retrieve(id, {
+      const { fulfillments } = await orderServiceTx.retrieve(store_id,id, {
         relations: [
           "fulfillments",
           "fulfillments.items",
@@ -191,7 +191,7 @@ export default async (req, res) => {
     }
   })
 
-  const order = await orderService.retrieveWithTotals(id, req.retrieveConfig, {
+  const order = await orderService.retrieveWithTotals(store_id,id, req.retrieveConfig, {
     includes: req.includes,
   })
 
@@ -240,6 +240,11 @@ export const updateInventoryAndReservations = async (
       )
     })
   )
+}
+
+export class AdminCreateFulfillmentQuery {
+  @IsString()
+  store_id: string
 }
 
 /**

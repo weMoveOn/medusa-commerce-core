@@ -10,11 +10,12 @@ import { PricedProduct } from "../../../../types/pricing"
 import { validateSalesChannelsExist } from "../../../middlewares/validators/sales-channel-existence"
 import { AdminGetProductParams } from "./get-product"
 import { AdminGetProductsParams } from "./list-products"
+import { processIdentifierMiddleware } from "../../../middlewares/validators/identifier-existence"
 
 const route = Router()
 
 export default (app, featureFlagRouter: FlagRouter) => {
-  app.use("/products", route)
+  app.use("/products", processIdentifierMiddleware, route)
 
   if (featureFlagRouter.isFeatureEnabled("sales_channels")) {
     defaultAdminProductRelations.push("sales_channels")
@@ -135,6 +136,7 @@ export const defaultAdminProductFields: (keyof Product)[] = [
   "updated_at",
   "deleted_at",
   "metadata",
+  "store_id",
 ]
 
 export const defaultAdminGetProductsVariantsFields = ["id", "product_id"]

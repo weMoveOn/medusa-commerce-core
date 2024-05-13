@@ -254,16 +254,20 @@ class DraftOrderService extends TransactionBaseService {
 
   /**
    * Creates a draft order.
+   * @param storeId
    * @param data - data to create draft order from
    * @return the created draft order
    */
-  async create(data: DraftOrderCreateProps): Promise<DraftOrder> {
+  async create(
+    storeId: string,
+    data: DraftOrderCreateProps
+  ): Promise<DraftOrder> {
     return await this.atomicPhase_(
       async (transactionManager: EntityManager) => {
         const draftOrderRepo = transactionManager.withRepository(
           this.draftOrderRepository_
         )
-
+        console.log("1", storeId)
         if (!data.region_id) {
           throw new MedusaError(
             MedusaError.Types.INVALID_DATA,
@@ -271,6 +275,13 @@ class DraftOrderService extends TransactionBaseService {
           )
         }
 
+        if(!storeId){
+            throw new MedusaError(
+                MedusaError.Types.INVALID_DATA,
+                `store_id is required to create a draft order`
+            )
+        }
+        console.log("2", storeId)
         const {
           shipping_methods,
           no_notification_order,
@@ -279,32 +290,34 @@ class DraftOrderService extends TransactionBaseService {
           discounts,
           ...rawCart
         } = data
-
+        console.log("3", storeId)
         const cartServiceTx =
           this.cartService_.withTransaction(transactionManager)
-
+        console.log("4", storeId)
         let createdCart = await cartServiceTx.create({
           type: CartType.DRAFT_ORDER,
           ...rawCart,
+          store_id: storeId,
         })
-
+        console.log("5", storeId)
         const draftOrder = draftOrderRepo.create({
+          store_id: storeId,
           cart_id: createdCart.id,
           no_notification_order,
           idempotency_key,
         })
-
+        console.log("6", storeId)
         const result = await draftOrderRepo.save(draftOrder)
-
+        console.log("7", storeId)
         await this.eventBus_
           .withTransaction(transactionManager)
           .emit(DraftOrderService.Events.CREATED, {
             id: result.id,
           })
-
+        console.log("8", storeId)
         const lineItemServiceTx =
           this.lineItemService_.withTransaction(transactionManager)
-
+        console.log("9", storeId)
         const itemsToGenerate: GenerateInputData[] = []
         const itemsToCreate: Partial<LineItem>[] = []
 
@@ -338,22 +351,24 @@ class DraftOrderService extends TransactionBaseService {
           })
         })
 
+        console.log("10", storeId)
         const promises: Promise<any>[] = []
 
         // generate line item link to a variant
         if (itemsToGenerate.length) {
           const generatedLines = await lineItemServiceTx.generate(
+            storeId,
             itemsToGenerate,
             {
               region_id: data.region_id,
             }
           )
-
+            console.log("11", storeId)
           const toCreate = generatedLines.map((line) => ({
             ...line,
             cart_id: createdCart.id,
           }))
-
+            console.log("12", storeId)
           promises.push(lineItemServiceTx.create(toCreate))
         }
 
@@ -361,7 +376,7 @@ class DraftOrderService extends TransactionBaseService {
         if (itemsToCreate.length) {
           promises.push(lineItemServiceTx.create(itemsToCreate))
         }
-
+        console.log("13", storeId)
         const shippingMethodToCreate: Partial<ShippingMethod>[] = []
 
         shipping_methods.forEach((method) => {
@@ -374,14 +389,18 @@ class DraftOrderService extends TransactionBaseService {
             return
           }
         })
+        console.log("14", storeId) //ok
+        // if (shippingMethodToCreate.length) {
+        //   console.log("14.1", storeId)
+        //   console.log("14.2", shippingMethodToCreate)
+        //   await this.customShippingOptionService_
+        //     .withTransaction(transactionManager)
+        //     .create(shippingMethodToCreate)
+        // }
 
-        if (shippingMethodToCreate.length) {
-          await this.customShippingOptionService_
-            .withTransaction(transactionManager)
-            .create(shippingMethodToCreate)
-        }
+        console.log("15", storeId)
 
-        createdCart = await cartServiceTx.retrieveWithTotals(createdCart.id, {
+        createdCart = await cartServiceTx.retrieveWithTotals( storeId,createdCart.id,{
           relations: [
             "shipping_methods",
             "shipping_methods.shipping_option",
@@ -389,23 +408,24 @@ class DraftOrderService extends TransactionBaseService {
             "payment_sessions",
           ],
         })
-
+          console.log("16", storeId)
+        // #TODO: should remove any type
         shipping_methods.forEach((method) => {
           promises.push(
             cartServiceTx.addShippingMethod(
+              storeId,
               createdCart,
-              method.option_id,
+              method.option_id as any,
               method.data
             )
           )
         })
-
         await promiseAll(promises)
 
         if (discounts?.length) {
-          await cartServiceTx.update(createdCart.id, { discounts })
+          await cartServiceTx.update(storeId, createdCart.id, { discounts })
         }
-
+        console.log("17", storeId)
         return result
       }
     )

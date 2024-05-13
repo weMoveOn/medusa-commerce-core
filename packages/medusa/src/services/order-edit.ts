@@ -310,6 +310,7 @@ export default class OrderEditService extends TransactionBaseService {
    * @param data
    */
   async updateLineItem(
+    storeId: string,
     orderEditId: string,
     itemId: string,
     data: { quantity: number }
@@ -376,13 +377,13 @@ export default class OrderEditService extends TransactionBaseService {
         quantity: data.quantity,
       })
 
-      await this.refreshAdjustments(orderEditId, {
+      await this.refreshAdjustments(storeId, orderEditId, {
         preserveCustomAdjustments: true,
       })
     })
   }
 
-  async removeLineItem(orderEditId: string, lineItemId: string): Promise<void> {
+  async removeLineItem(storeId: string, orderEditId: string, lineItemId: string): Promise<void> {
     return await this.atomicPhase_(async (manager) => {
       const orderEdit = await this.retrieve(orderEditId, {
         select: [
@@ -429,7 +430,7 @@ export default class OrderEditService extends TransactionBaseService {
         .withTransaction(manager)
         .deleteWithTaxLines(lineItem.id)
 
-      await this.refreshAdjustments(orderEditId)
+      await this.refreshAdjustments(storeId, orderEditId)
 
       await this.orderEditItemChangeService_.withTransaction(manager).create({
         original_line_item_id: lineItem.original_item_id,
@@ -440,6 +441,7 @@ export default class OrderEditService extends TransactionBaseService {
   }
 
   async refreshAdjustments(
+    storeId: string,
     orderEditId: string,
     config = { preserveCustomAdjustments: false }
   ) {
@@ -487,10 +489,10 @@ export default class OrderEditService extends TransactionBaseService {
       items: orderEdit.items,
     } as unknown as Cart
 
-    await lineItemAdjustmentServiceTx.createAdjustments(localCart)
+    await lineItemAdjustmentServiceTx.createAdjustments(storeId, localCart)
   }
 
-  async decorateTotals(orderEdit: OrderEdit): Promise<OrderEdit> {
+  async decorateTotals(storeId:string,orderEdit: OrderEdit): Promise<OrderEdit> {
     const { order_id, items } = await this.retrieve(orderEdit.id, {
       select: ["id", "order_id", "items"],
       relations: [
@@ -505,7 +507,7 @@ export default class OrderEditService extends TransactionBaseService {
       this.activeManager_
     )
 
-    const order = await orderServiceTx.retrieve(order_id, {
+    const order = await orderServiceTx.retrieve(storeId,order_id, {
       relations: [
         "discounts",
         "discounts.rule",
@@ -542,6 +544,7 @@ export default class OrderEditService extends TransactionBaseService {
   }
 
   async addLineItem(
+    storeId: string,
     orderEditId: string,
     data: AddOrderEditLineItemInput
   ): Promise<void> {
@@ -566,6 +569,7 @@ export default class OrderEditService extends TransactionBaseService {
        */
 
       const lineItemData = await lineItemServiceTx.generate(
+        storeId,
         data.variant_id,
         regionId,
         data.quantity,
@@ -581,7 +585,7 @@ export default class OrderEditService extends TransactionBaseService {
         relations: ["variant.product.profiles"],
       })
 
-      await this.refreshAdjustments(orderEditId)
+      await this.refreshAdjustments(storeId, orderEditId)
 
       /**
        * Generate a change record

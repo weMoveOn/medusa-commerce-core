@@ -31,6 +31,7 @@ export class AdminListCustomerSelector {
 }
 
 export type CreateCustomerInput = {
+  store_id: string
   email: string
   password?: string
   password_hash?: string
@@ -43,6 +44,7 @@ export type CreateCustomerInput = {
 }
 
 export type UpdateCustomerInput = {
+  store_id: string
   password?: string
   metadata?: Record<string, unknown>
   billing_address?: AddressPayload | string

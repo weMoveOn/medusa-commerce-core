@@ -137,6 +137,7 @@ import { cleanResponseData } from "../../../../utils/clean-response-data"
  */
 export default async (req, res) => {
   const { id } = req.params
+  const { store_id } = req.query as { store_id: string }
 
   const validated = req.validatedBody
 
@@ -178,7 +179,7 @@ export default async (req, res) => {
               .workStage(idempotencyKey.idempotency_key, async (manager) => {
                 const order = await orderService
                   .withTransaction(manager)
-                  .retrieveWithTotals(id, {
+                  .retrieveWithTotals(store_id, id, {
                     relations: [
                       "cart",
                       "items",
@@ -194,6 +195,7 @@ export default async (req, res) => {
                 const swap = await swapService
                   .withTransaction(manager)
                   .create(
+                    store_id,
                     order,
                     validated.return_items,
                     validated.additional_items,
@@ -208,9 +210,14 @@ export default async (req, res) => {
 
                 await swapService
                   .withTransaction(manager)
-                  .createCart(swap.id, validated.custom_shipping_options, {
-                    sales_channel_id: validated.sales_channel_id,
-                  })
+                  .createCart(
+                    store_id,
+                    swap.id,
+                    validated.custom_shipping_options,
+                    {
+                      sales_channel_id: validated.sales_channel_id,
+                    }
+                  )
 
                 const returnOrder = await returnService
                   .withTransaction(manager)
@@ -218,7 +225,7 @@ export default async (req, res) => {
 
                 await returnService
                   .withTransaction(manager)
-                  .fulfill(returnOrder.id)
+                  .fulfill(store_id, returnOrder.id)
 
                 return {
                   recovery_point: "swap_created",
@@ -253,7 +260,7 @@ export default async (req, res) => {
 
                 const order = await orderService
                   .withTransaction(transactionManager)
-                  .retrieveWithTotals(id, req.retrieveConfig, {
+                  .retrieveWithTotals(store_id, id, req.retrieveConfig, {
                     includes: req.includes,
                   })
 
@@ -484,4 +491,4 @@ class AdditionalItem {
   quantity: number
 }
 
-export class AdminPostOrdersOrderSwapsParams extends FindParams {}
+export class AdminPostOrdersOrderSwapsParams extends FindParams { }

@@ -9,7 +9,7 @@ import { EntityManager } from "typeorm"
 import { FindParams } from "../../../../types/common"
 import { cleanResponseData } from "../../../../utils/clean-response-data"
 import { updateInventoryAndReservations } from "./create-fulfillment"
-
+import { validator } from "../../../../utils/validator"
 /**
  * @oas [post] /admin/orders/{id}/claims/{claim_id}/fulfillments
  * operationId: "PostOrdersOrderClaimsClaimFulfillments"
@@ -107,6 +107,10 @@ import { updateInventoryAndReservations } from "./create-fulfillment"
  */
 export default async (req, res) => {
   const { id, claim_id } = req.params
+  const { store_id } = await validator(
+    AdminPostOrdersOrderClaimsClaimFulfillmentsQuery,
+    req.query
+  )
 
   const validated = req.validatedBody
 
@@ -121,7 +125,7 @@ export default async (req, res) => {
     const claimServiceTx = claimService.withTransaction(manager)
 
     const { fulfillments: existingFulfillments } =
-      await claimServiceTx.retrieve(claim_id, {
+      await claimServiceTx.retrieve(store_id,claim_id, {
         relations: [
           "fulfillments",
           "fulfillments.items",
@@ -133,14 +137,14 @@ export default async (req, res) => {
       existingFulfillments.map((fulfillment) => fulfillment.id)
     )
 
-    await claimServiceTx.createFulfillment(claim_id, {
+    await claimServiceTx.createFulfillment(store_id, claim_id, {
       metadata: validated.metadata,
       no_notification: validated.no_notification,
       location_id: validated.location_id,
     })
 
     if (validated.location_id) {
-      const { fulfillments } = await claimServiceTx.retrieve(claim_id, {
+      const { fulfillments } = await claimServiceTx.retrieve(store_id,claim_id, {
         relations: [
           "fulfillments",
           "fulfillments.items",
@@ -160,7 +164,7 @@ export default async (req, res) => {
     }
   })
 
-  const order = await orderService.retrieveWithTotals(id, req.retrieveConfig, {
+  const order = await orderService.retrieveWithTotals(store_id,id, req.retrieveConfig, {
     includes: req.includes,
   })
 
@@ -201,3 +205,8 @@ export class AdminPostOrdersOrderClaimsClaimFulfillmentsReq {
 
 // eslint-disable-next-line max-len
 export class AdminPostOrdersOrderClaimsClaimFulfillmentsParams extends FindParams {}
+
+export class AdminPostOrdersOrderClaimsClaimFulfillmentsQuery {
+  @IsString()
+  store_id: string
+}

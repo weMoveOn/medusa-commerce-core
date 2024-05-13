@@ -3,11 +3,12 @@ import "reflect-metadata"
 import { ShippingProfile } from "../../../.."
 import { DeleteResponse } from "../../../../types/common"
 import middlewares from "../../../middlewares"
+import { processIdentifierMiddleware } from "../../../middlewares/validators/identifier-existence"
 
 const route = Router()
 
 export default (app) => {
-  app.use("/shipping-profiles", route)
+  app.use("/shipping-profiles", processIdentifierMiddleware, route)
 
   route.get("/", middlewares.wrap(require("./list-shipping-profiles").default))
   route.post(

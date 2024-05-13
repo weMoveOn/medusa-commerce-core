@@ -4,7 +4,6 @@ import compression from "compression"
 import admin from "./routes/admin"
 import store from "./routes/store"
 import { shouldCompressResponse, compressionOptions } from "../utils/api"
-
 // guaranteed to get dependencies
 export default (container, config) => {
   const app = Router()

@@ -103,6 +103,7 @@ import {
  */
 export default async (req: Request, res: Response) => {
   const { id } = req.params
+  const { store_id } = req.query as { store_id: string }
   const { validatedBody } = req as {
     validatedBody: AdminPostSalesChannelsChannelStockLocationsReq
   }
@@ -118,10 +119,10 @@ export default async (req: Request, res: Response) => {
   await manager.transaction(async (transactionManager) => {
     return await channelLocationService
       .withTransaction(transactionManager)
-      .associateLocation(id, validatedBody.location_id)
+      .associateLocation(store_id, id, validatedBody.location_id)
   })
 
-  const channel = await salesChannelService.retrieve(id)
+  const channel = await salesChannelService.retrieve(store_id, id)
 
   res.status(200).json({ sales_channel: channel })
 }
@@ -138,6 +139,9 @@ export default async (req: Request, res: Response) => {
  */
 
 export class AdminPostSalesChannelsChannelStockLocationsReq {
+  @IsString()
+  store_id: string
+
   @IsString()
   location_id: string
 }

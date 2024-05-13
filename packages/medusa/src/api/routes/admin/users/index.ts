@@ -2,12 +2,13 @@ import { PaginatedResponse } from "@medusajs/types"
 import { Router } from "express"
 import { User } from "../../../../models/user"
 import { DeleteResponse } from "../../../../types/common"
+import {processIdentifierMiddleware} from "../../../middlewares/validators/identifier-existence";
 import middlewares, { transformQuery } from "../../../middlewares"
 import { AdminGetUsersParams } from "./list-users"
 
 export const unauthenticatedUserRoutes = (app) => {
   const route = Router()
-  app.use("/users", route)
+  app.use("/users",processIdentifierMiddleware, route)
 
   route.post(
     "/password-token",
@@ -22,7 +23,7 @@ export const unauthenticatedUserRoutes = (app) => {
 
 export default (app) => {
   const route = Router()
-  app.use("/users", route)
+  app.use("/users", processIdentifierMiddleware, route)
 
   route.get("/:user_id", middlewares.wrap(require("./get-user").default))
 

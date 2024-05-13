@@ -1,7 +1,7 @@
-import {
-  shippingOptionsDefaultFields,
-  shippingOptionsDefaultRelations,
-} from "."
+import { IsNotEmpty, IsString } from "class-validator"
+import { validator } from "../../../../utils/validator"
+import { shippingOptionsDefaultFields, shippingOptionsDefaultRelations } from "."
+
 
 /**
  * @oas [get] /admin/shipping-options/{id}
@@ -85,11 +85,19 @@ import {
 export default async (req, res) => {
   const { option_id } = req.params
   const optionService = req.scope.resolve("shippingOptionService")
+  const { store_id } = await validator(AdminGetShippingOptionParams, req.query)
 
-  const data = await optionService.retrieve(option_id, {
+  const data = await optionService.retrieve(store_id, option_id, {
     select: shippingOptionsDefaultFields,
     relations: shippingOptionsDefaultRelations,
   })
 
   res.status(200).json({ shipping_option: data })
+}
+
+
+export class AdminGetShippingOptionParams {
+  @IsString()
+  @IsNotEmpty()
+  store_id: string
 }

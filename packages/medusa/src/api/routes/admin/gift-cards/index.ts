@@ -8,11 +8,12 @@ import middlewares, {
 } from "../../../middlewares"
 import { AdminGetGiftCardsParams } from "./list-gift-cards"
 import { AdminPostGiftCardsReq } from "./create-gift-card"
+import {processIdentifierMiddleware} from "../../../middlewares/validators/identifier-existence";
 
 const route = Router()
 
 export default (app) => {
-  app.use("/gift-cards", route)
+  app.use("/gift-cards", processIdentifierMiddleware, route)
 
   route.get(
     "/",

@@ -11,7 +11,7 @@ import {
 import { isDefined, MedusaError } from "medusa-core-utils"
 import { EntityManager, In } from "typeorm"
 
-import { ProductVariantService, SearchService } from "."
+import { ProductVariantService, SalesChannelService, SearchService } from "."
 import { TransactionBaseService } from "../interfaces"
 import SalesChannelFeatureFlag from "../loaders/feature-flags/sales-channels"
 import {
@@ -46,7 +46,7 @@ import {
 import { CreateProductVariantInput } from "../types/product-variant"
 import { buildQuery, isString, setMetadata } from "../utils"
 import EventBusService from "./event-bus"
-import SalesChannelService from "./sales-channel"
+import { store } from "./__mocks__/store"
 
 type InjectedDependencies = {
   manager: EntityManager
@@ -176,7 +176,6 @@ class ProductService extends TransactionBaseService {
     /**
      * TODO: The below code is a temporary fix for the issue with the typeorm idle transaction in query strategy mode
      */
-
     const manager = this.activeManager_
     const productRepo = manager.withRepository(this.productRepository_)
 
@@ -235,12 +234,14 @@ class ProductService extends TransactionBaseService {
    * Gets a product by id.
    * Throws in case of DB Error and if product was not found.
    * @param productId - id of the product to get.
+   * @param storeId - id of the store to get the product from
    * @param config - object that defines what should be included in the
    *   query response
    * @return the result of the find one operation.
    */
   async retrieve(
     productId: string,
+    storeId: string,
     config: FindProductConfig = {
       include_discount_prices: false,
     }
@@ -251,19 +252,27 @@ class ProductService extends TransactionBaseService {
         `"productId" must be defined`
       )
     }
+    if (!isDefined(storeId)) {
+      throw new MedusaError(
+        MedusaError.Types.NOT_FOUND,
+        `"Store id " must be defined`
+      )
+    }
 
-    return await this.retrieve_({ id: productId }, config)
+    return await this.retrieve_({ id: productId, store_id: storeId }, config)
   }
 
   /**
    * Gets a product by handle.
    * Throws in case of DB Error and if product was not found.
    * @param productHandle - handle of the product to get.
+   * @param storeId
    * @param config - details about what to get from the product
    * @return the result of the find one operation.
    */
   async retrieveByHandle(
     productHandle: string,
+    storeId: string,
     config: FindProductConfig = {}
   ): Promise<Product> {
     if (!isDefined(productHandle)) {
@@ -273,7 +282,17 @@ class ProductService extends TransactionBaseService {
       )
     }
 
-    return await this.retrieve_({ handle: productHandle }, config)
+    if (!isDefined(storeId)) {
+      throw new MedusaError(
+        MedusaError.Types.NOT_FOUND,
+        `"Store id " must be defined`
+      )
+    }
+
+    return await this.retrieve_(
+      { handle: productHandle, store_id: storeId },
+      config
+    )
   }
 
   /**
@@ -333,6 +352,7 @@ class ProductService extends TransactionBaseService {
     /**
      * TODO: The below code is a temporary fix for the issue with the typeorm idle transaction in query strategy mode
      */
+
     const manager = this.activeManager_
     const productRepo = manager.withRepository(this.productRepository_)
 
@@ -347,7 +367,6 @@ class ProductService extends TransactionBaseService {
     }
 
     const { relations, ...query } = buildQuery(selector, config)
-
     const product = await productRepo.findOneWithRelations(
       objectToStringPath(relations),
       query as FindWithoutRelationsOptions
@@ -380,6 +399,7 @@ class ProductService extends TransactionBaseService {
    */
   async retrieveVariants(
     productId: string,
+    store_id: string,
     config: FindProductConfig = {
       skip: 0,
       take: 50,
@@ -389,7 +409,7 @@ class ProductService extends TransactionBaseService {
     const requiredRelations = ["variants"]
     const relationsSet = new Set([...givenRelations, ...requiredRelations])
 
-    const product = await this.retrieve(productId, {
+    const product = await this.retrieve(productId, store_id, {
       ...config,
       relations: [...relationsSet],
     })
@@ -398,6 +418,7 @@ class ProductService extends TransactionBaseService {
 
   async filterProductsBySalesChannel(
     productIds: string[],
+    storeId: string,
     salesChannelId: string,
     config: FindProductConfig = {
       skip: 0,
@@ -410,6 +431,7 @@ class ProductService extends TransactionBaseService {
 
     const products = await this.list(
       {
+        store_id: storeId,
         id: productIds,
       },
       {
@@ -508,15 +530,21 @@ class ProductService extends TransactionBaseService {
       }
 
       if (images?.length) {
-        product.images = await imageRepo.upsertImages(images)
+        product.images = await imageRepo.upsertImages(images, rest.store_id)
       }
 
       if (tags?.length) {
-        product.tags = await productTagRepo.upsertTags(tags)
+        product.tags = await productTagRepo.upsertTags(tags, rest.store_id)
       }
 
       if (typeof type !== `undefined`) {
-        product.type_id = (await productTypeRepo.upsertType(type))?.id || null
+        product.type_id =
+          (
+            await productTypeRepo.upsertType({
+              ...type,
+              store_id: rest.store_id,
+            })
+          )?.id || null
       }
 
       if (
@@ -557,7 +585,7 @@ class ProductService extends TransactionBaseService {
           await Promise.all(
             salesChannels?.map(
               async (sc) =>
-                await this.salesChannelService_.addProducts(sc.id, [product.id])
+                await this.salesChannelService_.addProducts(productObject.store_id, sc.id, [product.id])
             )
           )
         }
@@ -595,7 +623,7 @@ class ProductService extends TransactionBaseService {
           )
       }
 
-      const result = await this.withTransaction(manager).retrieve(product.id, {
+      const result = await this.withTransaction(manager).retrieve(product.id, rest.store_id, {
         relations: ["options"],
       })
 
@@ -619,6 +647,7 @@ class ProductService extends TransactionBaseService {
    */
   async update(
     productId: string,
+    storeId: string,
     update: UpdateProductInput
   ): Promise<Product> {
     return await this.atomicPhase_(async (manager) => {
@@ -646,7 +675,7 @@ class ProductService extends TransactionBaseService {
         }
       }
 
-      const product = await this.withTransaction(manager).retrieve(productId, {
+      const product = await this.withTransaction(manager).retrieve(productId, storeId, {
         relations,
       })
 
@@ -673,7 +702,7 @@ class ProductService extends TransactionBaseService {
       if (images) {
         promises.push(
           imageRepo
-            .upsertImages(images)
+            .upsertImages(images, storeId)
             .then((image) => (product.images = image))
         )
       }
@@ -685,14 +714,16 @@ class ProductService extends TransactionBaseService {
       if (isDefined(type)) {
         promises.push(
           productTypeRepo
-            .upsertType(type)
+            .upsertType({ ...type, store_id: storeId })
             .then((type) => (product.type_id = type?.id ?? null))
         )
       }
 
       if (tags) {
         promises.push(
-          productTagRepo.upsertTags(tags).then((tags) => (product.tags = tags))
+          productTagRepo
+            .upsertTags(tags, storeId)
+            .then((tags) => (product.tags = tags))
         )
       }
 
@@ -737,7 +768,7 @@ class ProductService extends TransactionBaseService {
           await promiseAll(
             salesChannels?.map(
               async (sc) =>
-                await this.salesChannelService_.addProducts(sc.id, [product.id])
+                await this.salesChannelService_.addProducts( storeId, sc.id, [product.id])
             )
           )
         }
@@ -759,15 +790,17 @@ class ProductService extends TransactionBaseService {
    * variants will also be deleted.
    * @param productId - the id of the product to delete. Must be
    *   castable as an ObjectId
+   *   @param storeId - string type.
    * @return empty promise
    */
-  async delete(productId: string): Promise<void> {
+  async delete(storeId:string, productId: string): Promise<void> {
     return await this.atomicPhase_(async (manager) => {
       const productRepo = manager.withRepository(this.productRepository_)
 
+
       // Should not fail, if product does not exist, since delete is idempotent
       const product = await productRepo.findOne({
-        where: { id: productId },
+        where: { id: productId , store_id: storeId},
         relations: {
           variants: {
             prices: true,
@@ -775,7 +808,6 @@ class ProductService extends TransactionBaseService {
           },
         },
       })
-
       if (!product) {
         return
       }
@@ -800,13 +832,17 @@ class ProductService extends TransactionBaseService {
    * @param optionTitle - the display title of the option, e.g. "Size"
    * @return the result of the model update operation
    */
-  async addOption(productId: string, optionTitle: string): Promise<Product> {
+  async addOption(
+    productId: string,
+    storeId: string,
+    optionTitle: string
+  ): Promise<Product> {
     return await this.atomicPhase_(async (manager) => {
       const productOptionRepo = manager.withRepository(
         this.productOptionRepository_
       )
 
-      const product = await this.withTransaction(manager).retrieve(productId, {
+      const product = await this.withTransaction(manager).retrieve(productId, storeId,{
         relations: ["options", "variants"],
       })
 
@@ -834,7 +870,7 @@ class ProductService extends TransactionBaseService {
         )
       }
 
-      const result = await this.withTransaction(manager).retrieve(productId)
+      const result = await this.withTransaction(manager).retrieve(storeId, productId)
 
       await this.eventBus_
         .withTransaction(manager)
@@ -845,12 +881,13 @@ class ProductService extends TransactionBaseService {
 
   async reorderVariants(
     productId: string,
+    storeId: string,
     variantOrder: string[]
   ): Promise<Product> {
     return await this.atomicPhase_(async (manager) => {
       const productRepo = manager.withRepository(this.productRepository_)
 
-      const product = await this.withTransaction(manager).retrieve(productId, {
+      const product = await this.withTransaction(manager).retrieve(productId, storeId, {
         relations: ["variants"],
       })
 
@@ -891,6 +928,7 @@ class ProductService extends TransactionBaseService {
    */
   async updateOption(
     productId: string,
+    storeId: string,
     optionId: string,
     data: ProductOptionInput
   ): Promise<Product> {
@@ -899,7 +937,7 @@ class ProductService extends TransactionBaseService {
         this.productOptionRepository_
       )
 
-      const product = await this.withTransaction(manager).retrieve(productId, {
+      const product = await this.withTransaction(manager).retrieve(productId,storeId, {
         relations: ["options"],
       })
 
@@ -969,6 +1007,7 @@ class ProductService extends TransactionBaseService {
    */
   async deleteOption(
     productId: string,
+    storeId: string,
     optionId: string
   ): Promise<Product | void> {
     return await this.atomicPhase_(async (manager) => {
@@ -976,7 +1015,7 @@ class ProductService extends TransactionBaseService {
         this.productOptionRepository_
       )
 
-      const product = await this.withTransaction(manager).retrieve(productId, {
+      const product = await this.withTransaction(manager).retrieve(productId, storeId, {
         relations: ["variants", "variants.options"],
       })
 
@@ -1040,6 +1079,7 @@ class ProductService extends TransactionBaseService {
    */
   async updateShippingProfile(
     productIds: string | string[],
+    storeId: string,
     profileId: string | null
   ): Promise<Product[]> {
     return await this.atomicPhase_(async (manager) => {
@@ -1049,7 +1089,7 @@ class ProductService extends TransactionBaseService {
 
       let products = (
         await this.list(
-          { id: In(ids) },
+          { id: In(ids), store_id: storeId },
           { relations: ["profiles"], select: ["id"] }
         )
       ).map((product) => {
@@ -1088,7 +1128,6 @@ class ProductService extends TransactionBaseService {
       q = selector.q
       delete selector.q
     }
-
     const query = buildQuery(selector, config)
     query.order = config.order
 

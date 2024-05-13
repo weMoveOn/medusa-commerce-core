@@ -706,13 +706,14 @@ class ProductVariantService extends TransactionBaseService {
    * @return the price specific to the region
    */
   async getRegionPrice(
+    storeId: string,
     variantId: string,
     context: GetRegionPriceContext
   ): Promise<number | null> {
     return await this.atomicPhase_(async (manager: EntityManager) => {
       const region = await this.regionService_
         .withTransaction(manager)
-        .retrieve(context.regionId)
+        .retrieve(storeId, context.regionId)
 
       const prices = await this.priceSelectionStrategy_
         .withTransaction(manager)
@@ -915,9 +916,10 @@ class ProductVariantService extends TransactionBaseService {
     }
 
     const query = buildQuery<FindOptionsSelect<ProductVariant>, ProductVariant>(
-      selector as FindOptionsSelect<ProductVariant>,
+      selector  as FindOptionsSelect<ProductVariant>,
       config
     )
+
     query.relationLoadStrategy = "query"
 
     if (q) {
@@ -947,7 +949,6 @@ class ProductVariantService extends TransactionBaseService {
         },
       ]
     }
-
     return await variantRepo.findAndCount(query)
   }
 

@@ -173,7 +173,8 @@ import { IsType } from "../../../../utils"
  *   "500":
  *     $ref: "#/components/responses/500_error"
  */
-export default async (req: Request, res: Response) => {
+export default async (req, res) => {
+  const {store_id} = req.query
   const userService: UserService = req.scope.resolve("userService")
 
   const listConfig = req.listConfig

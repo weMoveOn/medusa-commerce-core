@@ -1,5 +1,4 @@
-import { BeforeInsert, Column, JoinTable, ManyToMany, OneToMany } from "typeorm"
-
+import { BeforeInsert, Column, Index, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany } from "typeorm"
 import {
   FeatureFlagDecorators,
   FeatureFlagEntity,
@@ -8,6 +7,7 @@ import { MedusaV2Flag } from "@medusajs/utils"
 import { SoftDeletableEntity } from "../interfaces"
 import { DbAwareColumn, generateEntityId } from "../utils"
 import { SalesChannelLocation } from "./sales-channel-location"
+import { Store } from "./store"
 import { Product } from "./product"
 import { Cart } from "./cart"
 import { Order } from "./order"
@@ -15,6 +15,15 @@ import { PublishableApiKey } from "./publishable-api-key"
 
 @FeatureFlagEntity("sales_channels")
 export class SalesChannel extends SoftDeletableEntity {
+  // new filed added start
+  @Index({ where: "deleted_at IS NULL" })
+  @Column({ nullable: false })
+  store_id: string
+
+  @ManyToOne(() => Store, (store) => store.salesChannel)
+  @JoinColumn({ name: "store_id", referencedColumnName: "id" })
+  store: Store
+
   @Column()
   name: string
 

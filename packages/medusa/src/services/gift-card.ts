@@ -68,11 +68,13 @@ class GiftCardService extends TransactionBaseService {
   }
 
   /**
+   * @param storeId
    * @param selector - the query object for find
    * @param config - the configuration used to find the objects. contains relations, skip, and take.
    * @return the result of the find operation
    */
   async listAndCount(
+    storeId: string,
     selector: QuerySelector<GiftCard> = {},
     config: FindConfig<GiftCard> = { relations: [], skip: 0, take: 10 }
   ): Promise<[GiftCard[], number]> {
@@ -88,19 +90,21 @@ class GiftCardService extends TransactionBaseService {
 
     const query = buildQuery(selector, config)
 
-    return await giftCardRepo.listGiftCardsAndCount(query, q)
+    return await giftCardRepo.listGiftCardsAndCount({...query, where:{store_id:storeId}}, q)
   }
 
   /**
+   * @param storeId - the store id
    * @param selector - the query object for find
    * @param config - the configuration used to find the objects. contains relations, skip, and take.
    * @return the result of the find operation
    */
   async list(
+    storeId: string,
     selector: QuerySelector<GiftCard> = {},
     config: FindConfig<GiftCard> = { relations: [], skip: 0, take: 10 }
   ): Promise<GiftCard[]> {
-    const [cards] = await this.listAndCount(selector, config)
+    const [cards] = await this.listAndCount(storeId,selector, config)
     return cards
   }
 
@@ -117,17 +121,21 @@ class GiftCardService extends TransactionBaseService {
 
   /**
    * Creates a gift card with provided data given that the data is validated.
+   * @param storeId - the store id
    * @param giftCard - the gift card data to create
    * @return the result of the create operation
    */
-  async create(giftCard: CreateGiftCardInput): Promise<GiftCard> {
+  async create(
+    storeId: string,
+    giftCard: CreateGiftCardInput & { store_id?: string }
+  ): Promise<GiftCard> {
     return await this.atomicPhase_(async (manager) => {
       const giftCardRepo = manager.withRepository(this.giftCardRepository_)
 
       // Will throw if region does not exist
       const region = await this.regionService_
         .withTransaction(manager)
-        .retrieve(giftCard.region_id)
+        .retrieve(storeId, giftCard.region_id)
 
       const code = GiftCardService.generateCode()
       const taxRate = GiftCardService.resolveTaxRate(
@@ -139,6 +147,7 @@ class GiftCardService extends TransactionBaseService {
         ...giftCard,
         region_id: region.id,
         tax_rate: taxRate,
+        store_id: storeId,
       }
 
       const created = giftCardRepo.create(toCreate)
@@ -207,11 +216,13 @@ class GiftCardService extends TransactionBaseService {
 
   /**
    * Gets a gift card by id.
-   * @param giftCardId - id of gift card to retrieve
-   * @param config - optional values to include with gift card query
    * @return the gift card
+   * @param storeId - the store id
+   * @param giftCardId
+   * @param config
    */
   async retrieve(
+    storeId: string,
     giftCardId: string,
     config: FindConfig<GiftCard> = {}
   ): Promise<GiftCard> {
@@ -222,7 +233,7 @@ class GiftCardService extends TransactionBaseService {
       )
     }
 
-    return await this.retrieve_({ id: giftCardId }, config)
+    return await this.retrieve_({ id: giftCardId, store_id:storeId }, config)
   }
 
   async retrieveByCode(
@@ -241,25 +252,27 @@ class GiftCardService extends TransactionBaseService {
 
   /**
    * Updates a giftCard.
+   * @param storeId - the store id
    * @param giftCardId - giftCard id of giftCard to update
    * @param update - the data to update the giftCard with
    * @return the result of the update operation
    */
   async update(
+    storeId: string,
     giftCardId: string,
     update: UpdateGiftCardInput
   ): Promise<GiftCard> {
     return await this.atomicPhase_(async (manager) => {
       const giftCardRepo = manager.withRepository(this.giftCardRepository_)
 
-      const giftCard = await this.retrieve(giftCardId)
+      const giftCard = await this.retrieve(storeId,giftCardId)
 
       const { region_id, metadata, balance, ...rest } = update
 
       if (region_id && region_id !== giftCard.region_id) {
         const region = await this.regionService_
           .withTransaction(manager)
-          .retrieve(region_id)
+          .retrieve(storeId, region_id)
         giftCard.region_id = region.id
       }
 
@@ -288,15 +301,16 @@ class GiftCardService extends TransactionBaseService {
 
   /**
    * Deletes a gift card idempotently
+   * @param storeId - the store id
    * @param giftCardId - id of gift card to delete
    * @return the result of the delete operation
    */
-  async delete(giftCardId: string): Promise<GiftCard | void> {
+  async delete(storeId:string,giftCardId: string): Promise<GiftCard | void> {
     const giftCardRepo = this.activeManager_.withRepository(
       this.giftCardRepository_
     )
 
-    const giftCard = await giftCardRepo.findOne({ where: { id: giftCardId } })
+    const giftCard = await giftCardRepo.findOne({ where: { id: giftCardId, store_id: storeId } })
 
     if (!giftCard) {
       return

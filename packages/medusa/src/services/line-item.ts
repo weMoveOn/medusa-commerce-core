@@ -191,15 +191,17 @@ class LineItemService extends TransactionBaseService {
    * @param regionIdOrContext
    * @param quantity
    * @param context
+   * @param storeId - string
    */
   async generate<
     T = string | GenerateInputData | GenerateInputData[],
     TResult = T extends string
-      ? LineItem
-      : T extends LineItem
-      ? LineItem
-      : LineItem[]
+    ? LineItem
+    : T extends LineItem
+    ? LineItem
+    : LineItem[]
   >(
+    storeId: string,
     variantIdOrData: T,
     regionIdOrContext: T extends string ? string : GenerateLineItemContext,
     quantity?: number,
@@ -216,9 +218,9 @@ class LineItemService extends TransactionBaseService {
         // Resolve data
         const data = isString(variantIdOrData)
           ? {
-              variantId: variantIdOrData,
-              quantity: quantity as number,
-            }
+            variantId: variantIdOrData,
+            quantity: quantity as number,
+          }
           : variantIdOrData
 
         const resolvedContext = isString(variantIdOrData)
@@ -242,13 +244,14 @@ class LineItemService extends TransactionBaseService {
         // Retrieve variants
         const variants = await this.productVariantService_.list(
           {
+            store_id: storeId,
             id: resolvedData.map((d) => d.variantId),
           },
           {
             relations: ["product"],
           }
         )
-
+console.log(variants, 'variants')
         // Validate that all variants has been found
         const inputDataVariantId = new Set(resolvedData.map((d) => d.variantId))
         const foundVariants = new Set(variants.map((v) => v.id))
@@ -286,17 +289,19 @@ class LineItemService extends TransactionBaseService {
             })
           }
         }
+        console.log(variantsToCalculatePricingFor,"variantsToCalculatePricingFor")
 
         let variantsPricing = {}
 
         if (variantsToCalculatePricingFor.length) {
           variantsPricing = await this.pricingService_
             .withTransaction(transactionManager)
-            .getProductVariantsPricing(variantsToCalculatePricingFor, {
+            .getProductVariantsPricing(storeId, variantsToCalculatePricingFor, {
               region_id: regionId,
               customer_id: context?.customer_id,
               include_discount_prices: true,
             })
+          console.log(variantsPricing,"variantsPricing")
         }
 
         // Generate line items
@@ -322,7 +327,7 @@ class LineItemService extends TransactionBaseService {
           if (resolvedContext.cart) {
             const adjustments = await this.lineItemAdjustmentService_
               .withTransaction(transactionManager)
-              .generateAdjustments(resolvedContext.cart, lineItem, { variant })
+              .generateAdjustments(storeId, resolvedContext.cart, lineItem, { variant })
             lineItem.adjustments =
               adjustments as unknown as LineItemAdjustment[]
           }
@@ -369,8 +374,7 @@ class LineItemService extends TransactionBaseService {
     if (unit_price == null) {
       throw new MedusaError(
         MedusaError.Types.INVALID_DATA,
-        `Cannot generate line item for variant "${
-          variant.title ?? variant.product.title ?? variant.id
+        `Cannot generate line item for variant "${variant.title ?? variant.product.title ?? variant.id
         }" without a price`
       )
     }
@@ -619,10 +623,10 @@ class LineItemService extends TransactionBaseService {
   protected validateGenerateArguments<
     T = string | GenerateInputData | GenerateInputData[],
     TResult = T extends string
-      ? LineItem
-      : T extends LineItem
-      ? LineItem
-      : LineItem[]
+    ? LineItem
+    : T extends LineItem
+    ? LineItem
+    : LineItem[]
   >(
     variantIdOrData: string | T,
     regionIdOrContext: T extends string ? string : GenerateLineItemContext,

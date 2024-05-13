@@ -95,6 +95,7 @@ class SalesChannelService extends TransactionBaseService {
    * @returns a sales channel
    */
   async retrieve(
+    storeId: string,
     salesChannelId: string,
     config: FindConfig<SalesChannel> = {}
   ): Promise<SalesChannel | never> {
@@ -105,7 +106,10 @@ class SalesChannelService extends TransactionBaseService {
       )
     }
 
-    return await this.retrieve_({ id: salesChannelId }, config)
+    return await this.retrieve_(
+      { id: salesChannelId, store_id: storeId },
+      config
+    )
   }
 
   /**
@@ -116,6 +120,7 @@ class SalesChannelService extends TransactionBaseService {
    * @return a sales channel with matching name
    */
   async retrieveByName(
+    storeId: string,
     name: string,
     config: FindConfig<SalesChannel> = {}
   ): Promise<SalesChannel | unknown> {
@@ -126,7 +131,7 @@ class SalesChannelService extends TransactionBaseService {
       )
     }
 
-    return await this.retrieve_({ name }, config)
+    return await this.retrieve_({ name, store_id: storeId }, config)
   }
 
   /**
@@ -203,11 +208,12 @@ class SalesChannelService extends TransactionBaseService {
    * To use this feature please enable the corresponding feature flag in your medusa backend project.
    * @returns the created channel
    */
-  async create(data: CreateSalesChannelInput): Promise<SalesChannel | never> {
+  async create(
+    data: CreateSalesChannelInput & { store_id: string }
+  ): Promise<SalesChannel | never> {
     return await this.atomicPhase_(async (manager) => {
       const salesChannelRepo: typeof SalesChannelRepository =
         manager.withRepository(this.salesChannelRepository_)
-
       const salesChannel = salesChannelRepo.create(data)
 
       await this.eventBusService_
@@ -221,6 +227,7 @@ class SalesChannelService extends TransactionBaseService {
   }
 
   async update(
+    storeId: string,
     salesChannelId: string,
     data: UpdateSalesChannelInput
   ): Promise<SalesChannel | never> {
@@ -228,7 +235,7 @@ class SalesChannelService extends TransactionBaseService {
       const salesChannelRepo: typeof SalesChannelRepository =
         transactionManager.withRepository(this.salesChannelRepository_)
 
-      const salesChannel = await this.retrieve(salesChannelId)
+      const salesChannel = await this.retrieve(storeId, salesChannelId)
 
       for (const key of Object.keys(data)) {
         if (typeof data[key] !== `undefined`) {
@@ -252,20 +259,24 @@ class SalesChannelService extends TransactionBaseService {
    * Deletes a sales channel from
    * @experimental This feature is under development and may change in the future.
    * To use this feature please enable the corresponding feature flag in your medusa backend project.
+   * @param storeId - the id of the store to delete the sales channel from
    * @param salesChannelId - the id of the sales channel to delete
    */
-  async delete(salesChannelId: string): Promise<void> {
+  async delete(storeId: string, salesChannelId: string): Promise<void> {
     return await this.atomicPhase_(async (transactionManager) => {
       const salesChannelRepo = transactionManager.withRepository(
         this.salesChannelRepository_
       )
 
-      const salesChannel = await this.retrieve(salesChannelId, {
+      const salesChannel = await this.retrieve(storeId, salesChannelId, {
         relations: ["locations"],
       }).catch(() => void 0)
 
       if (!salesChannel) {
-        return
+        throw new MedusaError(
+          MedusaError.Types.NOT_FOUND,
+          `${salesChannelId}  not found`
+        )
       }
 
       const store = await this.storeService_.retrieve({
@@ -306,12 +317,14 @@ class SalesChannelService extends TransactionBaseService {
       }
 
       const defaultSalesChannel = await this.create({
-        description: "Created by Medusa",
-        name: "Default Sales Channel",
+        description:
+          "This is sales channel created default. By default your product assign this sales channel",
+        name: "Online store",
         is_disabled: false,
+        store_id: store.id,
       })
 
-      await this.storeService_.withTransaction(transactionManager).update({
+      await this.storeService_.withTransaction(transactionManager).update(store.id,{
         default_sales_channel_id: defaultSalesChannel.id,
       })
 
@@ -363,6 +376,7 @@ class SalesChannelService extends TransactionBaseService {
    * @return the sales channel on which the products have been removed
    */
   async removeProducts(
+    storeId: string,
     salesChannelId: string,
     productIds: string[]
   ): Promise<SalesChannel | never> {
@@ -373,17 +387,19 @@ class SalesChannelService extends TransactionBaseService {
 
       await salesChannelRepo.removeProducts(salesChannelId, productIds)
 
-      return await this.retrieve(salesChannelId)
+      return await this.retrieve(storeId, salesChannelId)
     })
   }
 
   /**
    * Add a batch of product to a sales channel
+   * @param storeId
    * @param salesChannelId - The id of the sales channel on which to add the products
    * @param productIds - The products ids to attach to the sales channel
    * @return the sales channel on which the products have been added
    */
   async addProducts(
+    storeId: string,
     salesChannelId: string,
     productIds: string[]
   ): Promise<SalesChannel | never> {
@@ -402,7 +418,7 @@ class SalesChannelService extends TransactionBaseService {
         isMedusaV2Enabled
       )
 
-      return await this.retrieve(salesChannelId)
+      return await this.retrieve(storeId, salesChannelId)
     })
   }
 }

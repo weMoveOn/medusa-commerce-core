@@ -102,6 +102,7 @@ import { validator } from "../../../../utils/validator"
  */
 export default async (req, res) => {
   const { id } = req.params
+  const { store_id } = req.query
 
   const validated = await validator(
     AdminPostProductsProductOptionsReq,
@@ -115,15 +116,17 @@ export default async (req, res) => {
   await manager.transaction(async (transactionManager) => {
     return await productService
       .withTransaction(transactionManager)
-      .addOption(id, validated.title)
+      .addOption(id, store_id, validated.title)
   })
 
-  const rawProduct = await productService.retrieve(id, {
+  const rawProduct = await productService.retrieve(id, store_id, {
     select: defaultAdminProductFields,
     relations: defaultAdminProductRelations,
   })
 
-  const [product] = await pricingService.setAdminProductPricing([rawProduct])
+  const [product] = await pricingService.setAdminProductPricing(store_id, [
+    rawProduct,
+  ])
 
   res.json({ product })
 }

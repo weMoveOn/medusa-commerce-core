@@ -97,8 +97,9 @@ import { EntityManager } from "typeorm"
  *
  */
 export default async (req, res) => {
+  const { store_id } = req.query
+  req.body.store_id = store_id
   const validated = await validator(AdminPostNotesReq, req.body)
-
   const userId: string = req.user.id || req.user.userId
 
   const noteService: NoteService = req.scope.resolve("noteService")
@@ -110,6 +111,7 @@ export default async (req, res) => {
       resource_type: validated.resource_type,
       value: validated.value,
       author_id: userId,
+      store_id: validated.store_id,
     })
   })
 
@@ -136,6 +138,9 @@ export default async (req, res) => {
  *     description: The content of the Note to create.
  */
 export class AdminPostNotesReq {
+  @IsString()
+  store_id: string
+
   @IsString()
   @IsNotEmpty()
   resource_id: string

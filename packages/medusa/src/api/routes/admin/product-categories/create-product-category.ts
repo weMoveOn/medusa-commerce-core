@@ -99,14 +99,13 @@ import { FindParams } from "../../../../types/common"
  *    $ref: "#/components/responses/500_error"
  */
 export default async (req: Request, res: Response) => {
+  const store_id = req.query.store_id as string
   const { validatedBody } = req as {
     validatedBody: AdminPostProductCategoriesReq
   }
-
   const productCategoryService: ProductCategoryService = req.scope.resolve(
     "productCategoryService"
   )
-
   const manager: EntityManager = req.scope.resolve("manager")
   const created = await manager.transaction(async (transactionManager) => {
     return await productCategoryService
@@ -115,6 +114,7 @@ export default async (req: Request, res: Response) => {
   })
 
   const productCategory = await productCategoryService.retrieve(
+    store_id,
     created.id,
     req.retrieveConfig
   )
@@ -162,9 +162,20 @@ export class AdminPostProductCategoriesReq extends AdminProductCategoriesReqBase
   @IsNotEmpty()
   name: string
 
+  @IsString()
+  @IsNotEmpty()
+  store_id: string
+
   @IsObject()
   @IsOptional()
   metadata?: Record<string, unknown>
 }
+export class AdminPostProductCategoriesParams extends FindParams {
+  // @IsString()
+  // @IsNotEmpty()
+  // identifier: string
 
-export class AdminPostProductCategoriesParams extends FindParams {}
+  @IsString()
+  @IsNotEmpty()
+  store_id: string
+}

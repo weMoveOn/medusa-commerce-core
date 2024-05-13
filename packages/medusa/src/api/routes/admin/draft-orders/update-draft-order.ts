@@ -117,6 +117,7 @@ import { cleanResponseData } from "../../../../utils/clean-response-data"
 
 export default async (req, res) => {
   const { id } = req.params
+  const { store_id } = req.query
 
   const validated = await validator(AdminPostDraftOrdersDraftOrderReq, req.body)
 
@@ -161,10 +162,10 @@ export default async (req, res) => {
       cartDataToUpdate.billing_address = billing_address
     }
 
-    await cartService.update(draftOrder.cart_id, cartDataToUpdate)
+    await cartService.update(store_id, draftOrder.cart_id, cartDataToUpdate)
   })
 
-  draftOrder.cart = await cartService.retrieveWithTotals(draftOrder.cart_id, {
+  draftOrder.cart = await cartService.retrieveWithTotals(store_id,draftOrder.cart_id,{
     relations: defaultAdminDraftOrdersCartRelations,
     select: defaultAdminDraftOrdersCartFields,
   })

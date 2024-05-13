@@ -1,11 +1,12 @@
 import { Router } from "express"
 import { User } from "../../../.."
 import middlewares from "../../../middlewares"
+import {processIdentifierMiddleware} from "../../../middlewares/validators/identifier-existence";
 
 const route = Router()
 
 export default (app) => {
-  app.use("/auth", route)
+  app.use("/auth", processIdentifierMiddleware, route)
 
   route.get(
     "/",

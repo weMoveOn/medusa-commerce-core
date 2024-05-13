@@ -104,6 +104,7 @@ import {
  */
 export default async (req: Request, res: Response) => {
   const { id } = req.params
+  const { store_id } = req.query as { store_id: string }
   const { validatedBody } = req as {
     validatedBody: AdminPostOrderEditsOrderEditReq
   }
@@ -125,7 +126,7 @@ export default async (req: Request, res: Response) => {
     select: defaultOrderEditFields,
     relations: defaultOrderEditRelations,
   })
-  orderEdit = await orderEditService.decorateTotals(orderEdit)
+  orderEdit = await orderEditService.decorateTotals(store_id,orderEdit)
 
   res.status(200).json({ order_edit: orderEdit })
 }

@@ -125,7 +125,9 @@ class OrderExportStrategy extends AbstractBatchJobStrategy {
     return batchJob
   }
 
-  async preProcessBatchJob(batchJobId: string): Promise<void> {
+  //#TODO: remove ts-ignore
+    // @ts-ignore
+  async preProcessBatchJob(storeId:string,batchJobId: string): Promise<void> {
     return await this.atomicPhase_(async (transactionManager) => {
       const batchJob = (await this.batchJobService_
         .withTransaction(transactionManager)
@@ -141,7 +143,7 @@ class OrderExportStrategy extends AbstractBatchJobStrategy {
       if (!count) {
         const [, orderCount] = await this.orderService_
           .withTransaction(transactionManager)
-          .listAndCount(filterable_fields, {
+          .listAndCount(storeId,filterable_fields, {
             ...(list_config ?? {}),
             skip: offset as number,
             order: { created_at: "DESC" },
@@ -166,7 +168,7 @@ class OrderExportStrategy extends AbstractBatchJobStrategy {
     })
   }
 
-  async processJob(batchJobId: string): Promise<void> {
+  async processJob(storeId:string,batchJobId: string): Promise<void> {
     let offset = 0
     let limit = this.DEFAULT_LIMIT
     let advancementCount = 0
@@ -192,7 +194,7 @@ class OrderExportStrategy extends AbstractBatchJobStrategy {
         limit = batchJob.context?.list_config?.take ?? limit
 
         const { list_config = {}, filterable_fields = {} } = batchJob.context
-        const [, count] = await this.orderService_.listAndCount(
+        const [, count] = await this.orderService_.listAndCount(storeId,
           filterable_fields,
           {
             ...list_config,
@@ -226,7 +228,7 @@ class OrderExportStrategy extends AbstractBatchJobStrategy {
         while (offset < orderCount) {
           orders = await this.orderService_
             .withTransaction(transactionManager)
-            .list(filterable_fields, {
+            .list(storeId,filterable_fields, {
               ...list_config,
               skip: offset,
               take: Math.min(orderCount - offset, limit),

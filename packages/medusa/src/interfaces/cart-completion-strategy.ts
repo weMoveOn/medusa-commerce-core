@@ -22,7 +22,7 @@ export interface ICartCompletionStrategy {
   complete(
     cartId: string,
     idempotencyKey: IdempotencyKey,
-    context: RequestContext
+    context: RequestContext & { store_id: string }
   ): Promise<CartCompletionResponse>
 }
 
@@ -39,6 +39,6 @@ export abstract class AbstractCartCompletionStrategy
   abstract complete(
     cartId: string,
     idempotencyKey: IdempotencyKey,
-    context: RequestContext
+    context: RequestContext  & { store_id: string }
   ): Promise<CartCompletionResponse>
 }

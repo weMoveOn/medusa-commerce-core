@@ -6,6 +6,7 @@ import {
   JoinTable,
   ManyToMany,
   ManyToOne,
+  OneToMany,
   OneToOne,
 } from "typeorm"
 import {
@@ -18,9 +19,66 @@ import { Currency } from "./currency"
 import { DbAwareColumn } from "../utils/db-aware-column"
 import { SalesChannel } from "./sales-channel"
 import { generateEntityId } from "../utils/generate-entity-id"
+import { ProductCategory } from "./product-category"
+import { Product } from "./product"
+import { Region } from "./region"
+import { User } from "./user"
+import {Cart} from "./cart";
+import { ProductCollection } from "./product-collection"
+import {Customer} from "./customer";
+import {CustomerGroup} from "./customer-group";
+import {Order} from "./order";
 
 @Entity()
 export class Store extends BaseEntity {
+  // new filed added start
+
+  @OneToMany(() => Product, (product) => product.store, {
+    cascade: true,
+  })
+  products: Product[]
+
+  @OneToMany(() => Cart, (cart) => cart.store,{
+    cascade: true,
+  })
+  carts: Cart[];
+  @OneToMany(() => Order, (order) => order.store, {
+    cascade: true,
+  })
+  orders: Order[]
+
+  @OneToMany(() => SalesChannel, (salesChannel) => salesChannel.store, {
+    cascade: true,
+  })
+  salesChannel: SalesChannel[]
+
+  @OneToMany(() => Region, (region) => region.store, {
+    cascade: true,
+  })
+  regions: Region[]
+
+  @OneToMany(() => User, (user) => user.store)
+  members: User[]
+
+  @OneToMany(() => ProductCategory, (productCategory) => productCategory.store)
+  products_category: ProductCategory[]
+
+  @OneToMany(
+    () => ProductCollection,
+    (productCollection) => productCollection.store
+  )
+  product_collections: ProductCollection[]
+
+  @OneToMany(
+      () => Customer,
+      (customer) => customer.store
+  )
+  customers: Customer[]
+
+  @OneToMany(()=> CustomerGroup, (customerGroup) => customerGroup.store)
+  customer_groups: CustomerGroup[]
+
+  // new filed added end
   @Column({ default: "Medusa Store" })
   name: string
 

@@ -1,4 +1,4 @@
-import { IsOptional, ValidateNested } from "class-validator"
+import { IsOptional, IsString, ValidateNested } from "class-validator"
 
 import { Type } from "class-transformer"
 import RegionService from "../../../../services/region"
@@ -139,9 +139,13 @@ export default async (req, res) => {
 }
 
 export class StoreGetRegionsParams extends extendedFindParamsMixin({
+
   limit: 100,
   offset: 0,
 }) {
+  @IsString()
+  store_id: string
+
   @IsOptional()
   @ValidateNested()
   @Type(() => DateComparisonOperator)

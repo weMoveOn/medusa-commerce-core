@@ -1,5 +1,5 @@
 import { Type } from "class-transformer"
-import { ValidateNested } from "class-validator"
+import { ValidateNested, IsString } from "class-validator"
 import { EntityManager } from "typeorm"
 import { defaultStoreCustomersFields, defaultStoreCustomersRelations } from "."
 import CustomerService from "../../../../services/customer"
@@ -84,23 +84,23 @@ import { validator } from "../../../../utils/validator"
  *    $ref: "#/components/responses/500_error"
  */
 export default async (req, res) => {
+  const { store_id } = req.query
   const id = req.user.customer_id
-
+  req.body.address.store_id = store_id
   const validated = await validator(
     StorePostCustomersCustomerAddressesReq,
     req.body
   )
-
   const customerService: CustomerService = req.scope.resolve("customerService")
 
   const manager: EntityManager = req.scope.resolve("manager")
   await manager.transaction(async (transactionManager) => {
     return await customerService
       .withTransaction(transactionManager)
-      .addAddress(id, validated.address)
+      .addAddress(store_id,id, validated.address)
   })
 
-  const customer = await customerService.retrieve(id, {
+  const customer = await customerService.retrieve(store_id,id, {
     relations: defaultStoreCustomersRelations,
     select: defaultStoreCustomersFields,
   })

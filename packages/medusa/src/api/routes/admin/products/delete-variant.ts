@@ -94,6 +94,7 @@ import { EntityManager } from "typeorm"
  */
 export default async (req, res) => {
   const { id, variant_id } = req.params
+  const { store_id } = req.query
 
   const productVariantService: ProductVariantService = req.scope.resolve(
     "productVariantService"
@@ -108,12 +109,14 @@ export default async (req, res) => {
       .delete(variant_id)
   })
 
-  const data = await productService.retrieve(id, {
+  const data = await productService.retrieve(id, store_id, {
     select: defaultAdminProductFields,
     relations: defaultAdminProductRelations,
   })
 
-  const [product] = await pricingService.setAdminProductPricing([data])
+  const [product] = await pricingService.setAdminProductPricing(store_id, [
+    data,
+  ])
 
   res.json({
     variant_id,

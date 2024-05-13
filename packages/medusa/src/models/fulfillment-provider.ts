@@ -1,7 +1,16 @@
-import { Column, Entity, PrimaryColumn } from "typeorm"
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from "typeorm"
+import { Store } from "./store"
 
 @Entity()
 export class FulfillmentProvider {
+  // new added filed
+
+  @Column({ type: "text", nullable: true })
+  store_id: string | null
+
+  @ManyToOne(() => Store, { onDelete: "CASCADE" })
+  @JoinColumn({ name: "store_id" })
+  store: Store
   @PrimaryColumn()
   id: string
 

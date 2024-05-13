@@ -3,7 +3,8 @@ import { DiscountService } from "../../../../services"
 import { EntityManager } from "typeorm"
 import { MedusaError } from "medusa-core-utils"
 import { FindParams } from "../../../../types/common"
-
+import { IsString } from "class-validator"
+import { validator } from "../../../../utils/validator"
 /**
  * @oas [delete] /admin/discounts/{discount_id}/conditions/{condition_id}
  * operationId: "DeleteDiscountsDiscountConditionsCondition"
@@ -94,7 +95,7 @@ import { FindParams } from "../../../../types/common"
  */
 export default async (req, res) => {
   const { discount_id, condition_id } = req.params
-
+  const { store_id } = await validator(AdminDeleteConditionQuery, req.query)
   const conditionService: DiscountConditionService = req.scope.resolve(
     "discountConditionService"
   )
@@ -118,7 +119,7 @@ export default async (req, res) => {
     })
   }
 
-  let discount = await discountService.retrieve(discount_id, {
+  let discount = await discountService.retrieve(store_id,discount_id, {
     select: ["id", "rule_id"],
   })
 
@@ -147,3 +148,9 @@ export default async (req, res) => {
 }
 
 export class AdminDeleteDiscountsDiscountConditionsConditionParams extends FindParams {}
+
+
+export class AdminDeleteConditionQuery {
+  @IsString()
+  store_id: string
+}

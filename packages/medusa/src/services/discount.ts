@@ -178,7 +178,9 @@ class DiscountService extends TransactionBaseService {
    * @param {Discount} discount - the discount data to create
    * @return {Promise} the result of the create operation
    */
-  async create(discount: CreateDiscountInput): Promise<Discount> {
+  async create(
+    discount: CreateDiscountInput & { store_id: string }
+  ): Promise<Discount> {
     return await this.atomicPhase_(async (manager: EntityManager) => {
       const discountRepo = manager.withRepository(this.discountRepository_)
       const ruleRepo = manager.withRepository(this.discountRuleRepository_)
@@ -202,7 +204,9 @@ class DiscountService extends TransactionBaseService {
       if (discount.regions) {
         discount.regions = (await promiseAll(
           discount.regions.map(async (regionId) =>
-            this.regionService_.withTransaction(manager).retrieve(regionId)
+            this.regionService_
+              .withTransaction(manager)
+              .retrieve(discount.store_id, regionId)
           )
         )) as Region[]
       }
@@ -249,6 +253,7 @@ class DiscountService extends TransactionBaseService {
    * @return {Promise<Discount>} the discount
    */
   async retrieve(
+    storeId: string,
     discountId: string,
     config: FindConfig<Discount> = {}
   ): Promise<Discount> {
@@ -263,7 +268,7 @@ class DiscountService extends TransactionBaseService {
       this.discountRepository_
     )
 
-    const query = buildQuery({ id: discountId }, config)
+    const query = buildQuery({ id: discountId, store_id: storeId }, config)
     const discount = await discountRepo.findOne(query)
 
     if (!discount) {
@@ -283,6 +288,7 @@ class DiscountService extends TransactionBaseService {
    * @return the discount
    */
   async retrieveByCode(
+    storeId: string,
     discountCode: string,
     config: FindConfig<Discount> = {}
   ): Promise<Discount> {
@@ -292,7 +298,7 @@ class DiscountService extends TransactionBaseService {
 
     const normalizedCode = discountCode.toUpperCase().trim()
 
-    const query = buildQuery({ code: normalizedCode }, config)
+    const query = buildQuery({ code: normalizedCode, store_id: storeId }, config)
     const discount = await discountRepo.findOne(query)
 
     if (!discount) {
@@ -312,6 +318,7 @@ class DiscountService extends TransactionBaseService {
    * @return the discounts
    */
   async listByCodes(
+    storeId: string,
     discountCodes: string[],
     config: FindConfig<Discount> = {}
   ): Promise<Discount[]> {
@@ -323,7 +330,7 @@ class DiscountService extends TransactionBaseService {
       code.toUpperCase().trim()
     )
 
-    const query = buildQuery({ code: In(normalizedCodes) }, config)
+    const query = buildQuery({ code: In(normalizedCodes), store_id: storeId }, config)
     const discounts = await discountRepo.find(query)
 
     if (discounts?.length !== discountCodes.length) {
@@ -343,6 +350,7 @@ class DiscountService extends TransactionBaseService {
    * @return {Promise} the result of the update operation
    */
   async update(
+    storeId: string,
     discountId: string,
     update: UpdateDiscountInput
   ): Promise<Discount> {
@@ -350,7 +358,7 @@ class DiscountService extends TransactionBaseService {
       const discountRepo = manager.withRepository(this.discountRepository_)
       const ruleRepo = manager.withRepository(this.discountRuleRepository_)
 
-      const discount = await this.retrieve(discountId, {
+      const discount = await this.retrieve(storeId, discountId, {
         relations: ["rule"],
       })
 
@@ -392,7 +400,7 @@ class DiscountService extends TransactionBaseService {
       if (regions) {
         discount.regions = await promiseAll(
           regions.map(async (regionId) =>
-            this.regionService_.retrieve(regionId)
+            this.regionService_.retrieve(storeId, regionId)
           )
         )
       }
@@ -436,13 +444,14 @@ class DiscountService extends TransactionBaseService {
    * @return {Promise} the newly created dynamic code
    */
   async createDynamicCode(
+    storeId: string,
     discountId: string,
     data: CreateDynamicDiscountInput
   ): Promise<Discount> {
     return await this.atomicPhase_(async (manager) => {
       const discountRepo = manager.withRepository(this.discountRepository_)
 
-      const discount = await this.retrieve(discountId)
+      const discount = await this.retrieve(storeId, discountId)
 
       if (!discount.is_dynamic) {
         throw new MedusaError(
@@ -507,11 +516,15 @@ class DiscountService extends TransactionBaseService {
    * @param {string} regionId - id of region to add
    * @return {Promise} the result of the update operation
    */
-  async addRegion(discountId: string, regionId: string): Promise<Discount> {
+  async addRegion(
+    storeId: string,
+    discountId: string,
+    regionId: string
+  ): Promise<Discount> {
     return await this.atomicPhase_(async (manager) => {
       const discountRepo = manager.withRepository(this.discountRepository_)
 
-      const discount = await this.retrieve(discountId, {
+      const discount = await this.retrieve(storeId, discountId, {
         relations: ["regions", "rule"],
       })
 
@@ -528,7 +541,7 @@ class DiscountService extends TransactionBaseService {
         )
       }
 
-      const region = await this.regionService_.retrieve(regionId)
+      const region = await this.regionService_.retrieve(storeId, regionId)
 
       discount.regions = [...discount.regions, region]
 
@@ -542,11 +555,11 @@ class DiscountService extends TransactionBaseService {
    * @param {string} regionId - id of region to remove
    * @return {Promise} the result of the update operation
    */
-  async removeRegion(discountId: string, regionId: string): Promise<Discount> {
+  async removeRegion(storeId: string, discountId: string, regionId: string): Promise<Discount> {
     return await this.atomicPhase_(async (manager) => {
       const discountRepo = manager.withRepository(this.discountRepository_)
 
-      const discount = await this.retrieve(discountId, {
+      const discount = await this.retrieve(storeId, discountId, {
         relations: ["regions"],
       })
 
@@ -567,11 +580,11 @@ class DiscountService extends TransactionBaseService {
    * @param {string} discountId - id of discount to delete
    * @return {Promise} the result of the delete operation
    */
-  async delete(discountId: string): Promise<void> {
+  async delete(storeId: string, discountId: string): Promise<void> {
     return await this.atomicPhase_(async (manager) => {
       const discountRepo = manager.withRepository(this.discountRepository_)
 
-      const discount = await discountRepo.findOne({ where: { id: discountId } })
+      const discount = await discountRepo.findOne({ where: { id: discountId, store_id: storeId } })
 
       if (!discount) {
         return
@@ -604,6 +617,7 @@ class DiscountService extends TransactionBaseService {
   }
 
   async calculateDiscountForLineItem(
+    storeId: string,
     discountId: string,
     lineItem: LineItem,
     calculationContextData: CalculationContextData
@@ -615,7 +629,7 @@ class DiscountService extends TransactionBaseService {
         return adjustment
       }
 
-      const discount = await this.retrieve(discountId, { relations: ["rule"] })
+      const discount = await this.retrieve(storeId, discountId, { relations: ["rule"] })
 
       const { type, value, allocation } = discount.rule
 
@@ -677,6 +691,7 @@ class DiscountService extends TransactionBaseService {
   }
 
   async validateDiscountForCartOrThrow(
+      storeId: string,
     cart: Cart,
     discount: Discount | Discount[]
   ): Promise<void> {
@@ -720,6 +735,7 @@ class DiscountService extends TransactionBaseService {
           }
 
           const isValidForRegion = await this.isValidForRegion(
+            storeId,
             disc,
             cart.region_id
           )
@@ -732,6 +748,7 @@ class DiscountService extends TransactionBaseService {
 
           if (cart.customer_id) {
             const canApplyForCustomer = await this.canApplyForCustomer(
+                storeId,
               disc.rule.id,
               cart.customer_id
             )
@@ -777,6 +794,7 @@ class DiscountService extends TransactionBaseService {
   }
 
   async isValidForRegion(
+    storeId: string,
     discount: Discount,
     region_id: string
   ): Promise<boolean> {
@@ -784,7 +802,7 @@ class DiscountService extends TransactionBaseService {
       let regions = discount.regions
 
       if (discount.parent_discount_id) {
-        const parent = await this.retrieve(discount.parent_discount_id, {
+        const parent = await this.retrieve(storeId, discount.parent_discount_id, {
           relations: ["rule", "regions"],
         })
 
@@ -796,6 +814,7 @@ class DiscountService extends TransactionBaseService {
   }
 
   async canApplyForCustomer(
+      storeId: string,
     discountRuleId: string,
     customerId: string | undefined
   ): Promise<boolean> {
@@ -811,7 +830,7 @@ class DiscountService extends TransactionBaseService {
 
       const customer = await this.customerService_
         .withTransaction(manager)
-        .retrieve(customerId, {
+        .retrieve(storeId,customerId, {
           relations: ["groups"],
         })
 

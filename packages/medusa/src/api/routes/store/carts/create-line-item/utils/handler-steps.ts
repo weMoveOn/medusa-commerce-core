@@ -15,6 +15,7 @@ export const CreateLineItemSteps = {
 }
 
 export async function addOrUpdateLineItem({
+  storeId,
   cartId,
   container,
   manager,
@@ -23,13 +24,13 @@ export async function addOrUpdateLineItem({
   const cartService: CartService = container.resolve("cartService")
   const lineItemService: LineItemService = container.resolve("lineItemService")
 
-  const cart = await cartService.retrieve(cartId, {
+  const cart = await cartService.retrieve(storeId,cartId, {
     select: ["id", "region_id", "customer_id"],
   })
 
   const line = await lineItemService
     .withTransaction(manager)
-    .generate(data.variant_id, cart.region_id, data.quantity, {
+    .generate(storeId, data.variant_id, cart.region_id, data.quantity, {
       customer_id: data.customer_id || cart.customer_id,
       metadata: data.metadata,
     })
@@ -37,14 +38,14 @@ export async function addOrUpdateLineItem({
   await manager.transaction(async (transactionManager) => {
     const txCartService = cartService.withTransaction(transactionManager)
 
-    await txCartService.addOrUpdateLineItems(cart.id, line, {
+    await txCartService.addOrUpdateLineItems(storeId,cart.id, line, {
       validateSalesChannels:
         featureFlagRouter.isFeatureEnabled("sales_channels"),
     })
   })
 }
 
-export async function setPaymentSessions({ cart, container, manager }) {
+export async function setPaymentSessions({ storeId,cart, container, manager }) {
   const cartService: CartService = container.resolve("cartService")
 
   const txCartService = cartService.withTransaction(manager)
@@ -54,6 +55,7 @@ export async function setPaymentSessions({ cart, container, manager }) {
   }
 
   return await txCartService.setPaymentSessions(
+    storeId,
     cart as WithRequiredProperty<Cart, "total">
   )
 }

@@ -2,11 +2,12 @@ import { Router } from "express"
 import { Customer } from "../../../.."
 import { PaginatedResponse } from "../../../../types/common"
 import middlewares from "../../../middlewares"
+import {processIdentifierMiddleware} from "../../../middlewares/validators/identifier-existence";
 
 const route = Router()
 
 export default (app) => {
-  app.use("/customers", route)
+  app.use("/customers", processIdentifierMiddleware, route)
 
   route.get(
     "/",

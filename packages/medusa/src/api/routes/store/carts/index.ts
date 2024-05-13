@@ -81,6 +81,7 @@ export default (app, container) => {
 
   route.post(
     "/:id/complete",
+
     transformStoreQuery(FindParams, {
       defaultRelations: defaultStoreCartRelations,
       defaultFields: defaultStoreCartFields,
@@ -184,11 +185,13 @@ export default (app, container) => {
 
   route.post(
     "/:id/payment-session",
+
     transformStoreQuery(FindParams, {
       defaultRelations: defaultStoreCartRelations,
       defaultFields: defaultStoreCartFields,
       isList: false,
     }),
+
     transformBody(StorePostCartsCartPaymentSessionReq),
     middlewares.wrap(require("./set-payment-session").default)
   )
@@ -236,7 +239,7 @@ export const defaultStoreCartRelations = [
   "payment_sessions",
   "shipping_methods.shipping_option",
   "discounts",
-  "discounts.rule",
+  "discounts.rule"
 ]
 
 /**

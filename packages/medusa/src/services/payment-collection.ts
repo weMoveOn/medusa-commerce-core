@@ -218,12 +218,11 @@ export default class PaymentCollectionService extends TransactionBaseService {
 
   /**
    * Manages multiple payment sessions of a payment collection.
-   * @param paymentCollectionOrId - the id of the payment collection
-   * @param sessionsInput - array containing payment session info
-   * @param customerId - the id of the customer
    * @return the payment collection and its payment sessions.
+   * @param storeId - the id of the store
    */
   async setPaymentSessionsBatch(
+      storeId: string,
     paymentCollectionOrId: string | PaymentCollection,
     sessionsInput: PaymentCollectionsSessionsBatchInput[],
     customerId: string
@@ -271,7 +270,7 @@ export default class PaymentCollectionService extends TransactionBaseService {
         ? null
         : await this.customerService_
             .withTransaction(manager)
-            .retrieve(customerId, {
+            .retrieve(storeId,customerId, {
               select: ["id", "email", "metadata"],
             })
             .catch(() => null)
@@ -313,11 +312,12 @@ export default class PaymentCollectionService extends TransactionBaseService {
 
         if (existingSession) {
           paymentSession = await paymentProviderTx.updateSession(
+              storeId,
             existingSession,
             inputData
           )
         } else {
-          paymentSession = await paymentProviderTx.createSession(inputData)
+          paymentSession = await paymentProviderTx.createSession(storeId,inputData)
         }
 
         selectedSessionIds.push(paymentSession.id)
@@ -339,7 +339,7 @@ export default class PaymentCollectionService extends TransactionBaseService {
 
           await promiseAll(
             removeSessions.map(async (sess) =>
-              paymentProviderTx.deleteSession(sess)
+              paymentProviderTx.deleteSession(storeId,sess)
             )
           ).catch(() => void 0)
         }
@@ -353,12 +353,14 @@ export default class PaymentCollectionService extends TransactionBaseService {
 
   /**
    * Manages a single payment sessions of a payment collection.
+   * @param storeId
    * @param paymentCollectionId - the id of the payment collection
    * @param sessionInput - object containing payment session info
    * @param customerId - the id of the customer
    * @return the payment collection and its payment session.
    */
   async setPaymentSession(
+      storeId: string,
     paymentCollectionId: string,
     sessionInput: PaymentCollectionsSessionsInput,
     customerId: string
@@ -384,6 +386,7 @@ export default class PaymentCollectionService extends TransactionBaseService {
       )
 
       return await this.setPaymentSessionsBatch(
+          storeId,
         payCol,
         [
           {
@@ -405,6 +408,7 @@ export default class PaymentCollectionService extends TransactionBaseService {
    * @return the new payment session created.
    */
   async refreshPaymentSession(
+    storeId: string,
     paymentCollectionId: string,
     sessionId: string,
     customerId: string
@@ -449,7 +453,7 @@ export default class PaymentCollectionService extends TransactionBaseService {
         ? null
         : await this.customerService_
             .withTransaction(manager)
-            .retrieve(customerId, {
+            .retrieve(sessionId,customerId, {
               select: ["id", "email", "metadata"],
             })
             .catch(() => null)
@@ -473,7 +477,7 @@ export default class PaymentCollectionService extends TransactionBaseService {
 
       const sessionRefreshed = await this.paymentProviderService_
         .withTransaction(manager)
-        .refreshSession(session, inputData)
+        .refreshSession(sessionId,session, inputData)
 
       payCol.payment_sessions = payCol.payment_sessions.map((sess) => {
         if (sess.id === sessionId) {
@@ -521,12 +525,11 @@ export default class PaymentCollectionService extends TransactionBaseService {
 
   /**
    * Authorizes the payment sessions of a payment collection.
-   * @param paymentCollectionId - the id of the payment collection
-   * @param sessionIds - array of payment session ids to be authorized
-   * @param context - additional data required by payment providers
    * @return the payment collection and its payment session.
+   * @param storeId - the id of the store
    */
   async authorizePaymentSessions(
+    storeId: string,
     paymentCollectionId: string,
     sessionIds: string[],
     context: Record<string, unknown> = {}
@@ -574,6 +577,7 @@ export default class PaymentCollectionService extends TransactionBaseService {
         }
 
         const paymentSession = await paymentProviderTx.authorizePayment(
+            storeId,
           session,
           context
         )
