@@ -160,4 +160,7 @@ export class StoreGetShippingOptionsParams {
   @IsOptional()
   @IsBooleanString()
   is_return?: string
+
+  @IsString()
+  store_id?: string
 }
