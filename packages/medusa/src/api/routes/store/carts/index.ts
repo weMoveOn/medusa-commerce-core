@@ -81,6 +81,7 @@ export default (app, container) => {
 
   route.post(
     "/:id/complete",
+
     transformStoreQuery(FindParams, {
       defaultRelations: defaultStoreCartRelations,
       defaultFields: defaultStoreCartFields,

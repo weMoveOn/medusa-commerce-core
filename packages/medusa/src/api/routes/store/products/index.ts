@@ -13,7 +13,6 @@ import { validateSalesChannelParam } from "../../../middlewares/publishable-api-
 import { withDefaultSalesChannel } from "../../../middlewares/with-default-sales-channel"
 import { StoreGetProductsProductParams } from "./get-product"
 import { StoreGetProductsParams } from "./list-products"
-import { processIdentifierMiddleware } from "../../../middlewares/validators/identifier-existence"
 
 const route = Router()
 

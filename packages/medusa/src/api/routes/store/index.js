@@ -25,7 +25,7 @@ import { processIdentifierMiddleware } from "../../middlewares/validators/identi
 const route = Router()
 
 export default (app, container, config) => {
-  app.use("/store", processIdentifierMiddleware, route)
+  app.use("/store",processIdentifierMiddleware, route)
 
   const featureFlagRouter = container.resolve("featureFlagRouter")
   const storeCors = config.store_cors || ""

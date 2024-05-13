@@ -6,9 +6,11 @@ export function processIdentifierMiddleware(
   res: Response,
   next: NextFunction
 ): void {
-  // req.query.identifier='store_1'
+  // req.query.identifier='1'
   const identifier = req.query.identifier as string
-  // console.log("identifier", identifier)
+
+  console.log("identifiers",  req.query)
+
   if (identifier) {
     // Modify query to use store_id instead of identifier
     req.query.store_id = identifier
@@ -20,6 +22,8 @@ export function processIdentifierMiddleware(
     res.status(422).json({
       code: 422,
       type: "invalid_request_error",
+      key:"identifier",
+      valueType:"string",
       message: "Identifier is required in the query parameters.",
     })
   }
