@@ -9,8 +9,6 @@ export function processIdentifierMiddleware(
   // req.query.identifier='1'
   const identifier = req.query.identifier as string
 
-  console.log("identifiers",  req.query)
-
   if (identifier) {
     // Modify query to use store_id instead of identifier
     req.query.store_id = identifier
