@@ -119,7 +119,7 @@ export default async (req, res) => {
   const { response_code, response_body } = await completionStrat.complete(
     id,
     idempotencyKey,
-    req.request_context
+    {...req.request_context , store_id: req.query.store_id }
   )
 
   if (response_body.data) {

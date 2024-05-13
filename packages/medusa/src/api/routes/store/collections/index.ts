@@ -3,12 +3,11 @@ import { PaginatedResponse } from "../../../../types/common"
 import { ProductCollection } from "../../../../"
 import middlewares, { transformStoreQuery } from "../../../middlewares"
 import { StoreGetCollectionsParams } from "./list-collections"
-import {processIdentifierMiddleware} from "../../../middlewares/validators/identifier-existence";
 
 const route = Router()
 
 export default (app) => {
-  app.use("/collections", processIdentifierMiddleware ,route)
+  app.use("/collections" ,route)
 
   route.get(
     "/",

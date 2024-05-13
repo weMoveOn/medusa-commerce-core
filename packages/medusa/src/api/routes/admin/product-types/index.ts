@@ -9,7 +9,7 @@ import { processIdentifierMiddleware } from "../../../middlewares/validators/ide
 const route = Router()
 
 export default (app) => {
-  app.use("/product-types", processIdentifierMiddleware, route)
+  app.use("/product-types", route)
 
   route.get(
     "/",
