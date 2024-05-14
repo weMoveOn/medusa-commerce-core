@@ -244,6 +244,7 @@ class CartService extends TransactionBaseService {
     options: FindConfig<Cart> = {},
     totalsConfig: TotalsConfig = {}
   ): Promise<Cart> {
+
     if (!isDefined(cartId)) {
       throw new MedusaError(
         MedusaError.Types.NOT_FOUND,
@@ -886,13 +887,13 @@ class CartService extends TransactionBaseService {
       }
     }
 
+
     return await this.atomicPhase_(
       async (transactionManager: EntityManager) => {
         let cart = await this.retrieve(storeId, cartId, {
           select:fields ,
           relations: ["shipping_methods"],
         })
-
         if (this.featureFlagRouter_.isFeatureEnabled("sales_channels")) {
           if (config.validateSalesChannels) {
             const areValid = await promiseAll(
@@ -907,13 +908,11 @@ class CartService extends TransactionBaseService {
                 return true
               })
             )
-
             const invalidProducts = areValid
               .map((valid, index) => {
                 return !valid ? { title: items[index].title } : undefined
               })
               .filter((v): v is { title: string } => !!v)
-
             if (invalidProducts.length) {
               throw new MedusaError(
                 MedusaError.Types.INVALID_DATA,
@@ -926,14 +925,12 @@ class CartService extends TransactionBaseService {
             }
           }
         }
-
         const lineItemServiceTx =
           this.lineItemService_.withTransaction(transactionManager)
         const productVariantInventoryServiceTx =
           this.productVariantInventoryService_.withTransaction(
             transactionManager
           )
-
         const existingItems = await lineItemServiceTx.list(
           {
             cart_id: cart.id,
@@ -942,7 +939,6 @@ class CartService extends TransactionBaseService {
           },
           { select: ["id", "metadata", "quantity", "variant_id"] }
         )
-
         const existingItemsVariantMap = new Map()
         existingItems.forEach((item) => {
           existingItemsVariantMap.set(item.variant_id, item)
@@ -2382,14 +2378,9 @@ class CartService extends TransactionBaseService {
         const shippingMethodConfig = customShippingOption
           ? { cart_id: cart.id, price: customShippingOption.price }
           : { cart }
-
-        console.log(shippingMethodConfig,'shippingMethodConfig')
-
         const newShippingMethod = await this.shippingOptionService_
           .withTransaction(transactionManager)
           .createShippingMethod(storeId, optionId, data, shippingMethodConfig)
-
-        console.log(newShippingMethod,'newShippingMethod')
 
         const methods = [newShippingMethod]
         if (shipping_methods?.length) {

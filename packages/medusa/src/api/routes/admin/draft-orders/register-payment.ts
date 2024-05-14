@@ -101,7 +101,6 @@ import { promiseAll } from "@medusajs/utils"
 export default async (req, res) => {
   const { id } = req.params
   const { store_id } = req.query
-
   const draftOrderService: DraftOrderService =
     req.scope.resolve("draftOrderService")
   const paymentProviderService: PaymentProviderService = req.scope.resolve(
@@ -126,19 +125,12 @@ export default async (req, res) => {
     await paymentProviderService
       .withTransaction(manager)
       .createSession(store_id,"system", cart)
-
     await cartServiceTx.setPaymentSession(store_id,cart.id, "system")
-
     await cartServiceTx.createTaxLines(cart.id,store_id)
-
     await cartServiceTx.authorizePayment(store_id,cart.id)
-
     let order = await orderServiceTx.createFromCart(store_id, cart.id)
-
     await draftOrderServiceTx.registerCartCompletion(draftOrder.id, order.id)
-
     await orderServiceTx.capturePayment(store_id,order.id)
-
     order = await orderService
       .withTransaction(manager)
       .retrieveWithTotals(store_id,order.id, {

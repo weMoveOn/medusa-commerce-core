@@ -117,12 +117,13 @@ import { validator } from "../../../../utils/validator"
 
 export default async (req, res) => {
   const { id } = req.params
-  const { store_id } = req.query.store_id
+  const  store_id = req.query.store_id
 
   const validated = await validator(
     AdminPostDraftOrdersDraftOrderLineItemsReq,
     req.body
   )
+
 
   const draftOrderService: DraftOrderService =
     req.scope.resolve("draftOrderService")
@@ -137,6 +138,8 @@ export default async (req, res) => {
         select: defaultAdminDraftOrdersFields,
         relations: ["cart"],
       })
+
+
 
     if (draftOrder.status === "completed") {
       throw new MedusaError(
@@ -159,12 +162,15 @@ export default async (req, res) => {
           }
         )
 
+
+
       await cartService
         .withTransaction(manager)
         .addOrUpdateLineItems(store_id, draftOrder.cart_id, line, {
           validateSalesChannels: false,
         })
     } else {
+
       // custom line items can be added to a draft order
       await lineItemService.withTransaction(manager).create({
         cart_id: draftOrder.cart_id,

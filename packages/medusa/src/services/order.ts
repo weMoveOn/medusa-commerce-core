@@ -700,6 +700,7 @@ class OrderService extends TransactionBaseService {
       })
 
       const toCreate = {
+        store_id: storeId,
         payment_status: "awaiting",
         discounts: cart.discounts,
         gift_cards: cart.gift_cards,
