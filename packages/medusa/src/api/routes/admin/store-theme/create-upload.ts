@@ -1,12 +1,10 @@
 import { promiseAll } from "@medusajs/utils"
 import fs from "fs"
-import {ReturnReasonService} from "../../../../services";
 import { StoreThemeService } from "../../../../services";
 import {EntityManager} from "typeorm";
 
 export default async (req, res) => {
   const fileService = req.scope.resolve("fileService")
-  console.log("result")
 
   const result = await promiseAll(
     req.files.map(async (f) => {
@@ -20,10 +18,7 @@ export default async (req, res) => {
       "storeThemeService"
   )
   const manager: EntityManager = req.scope.resolve("manager")
-  console.log(result,"result")
 
-  // res.status(200).json({ uploads: result })
-  //
   const created = await manager.transaction(async (transactionManager) => {
     return await storeThemeService
         .withTransaction(transactionManager)
