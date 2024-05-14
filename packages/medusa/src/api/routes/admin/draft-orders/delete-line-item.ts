@@ -104,7 +104,7 @@ export default async (req, res) => {
   await entityManager.transaction(async (manager) => {
     const draftOrder: DraftOrder = await draftOrderService
       .withTransaction(manager)
-      .retrieve(id, { select: defaultAdminDraftOrdersFields })
+      .retrieve(store_id, id, { select: defaultAdminDraftOrdersFields })
 
     if (draftOrder.status === "completed") {
       throw new MedusaError(
@@ -119,7 +119,7 @@ export default async (req, res) => {
 
     draftOrder.cart = await cartService
       .withTransaction(manager)
-      .retrieveWithTotals( store_id,draftOrder.cart_id,{
+      .retrieveWithTotals(store_id,draftOrder.cart_id,{
         relations: defaultAdminDraftOrdersCartRelations,
         select: defaultAdminDraftOrdersCartFields,
       })

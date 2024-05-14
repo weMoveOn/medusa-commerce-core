@@ -101,7 +101,7 @@ export default async (req, res) => {
 
   const validated = await validator(AdminGetDraftOrdersParams, req.query)
 
-  const selector: DraftOrderListSelector = {}
+  const selector: DraftOrderListSelector = { }
 
   if (validated.q) {
     selector.q = validated.q
@@ -116,7 +116,7 @@ export default async (req, res) => {
   }
 
   const [draftOrders, count] = await draftOrderService.listAndCount(
-    selector,
+    {...selector, store_id },
     listConfig
   )
 

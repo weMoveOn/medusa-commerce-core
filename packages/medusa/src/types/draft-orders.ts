@@ -17,6 +17,7 @@ export type DraftOrderCreateProps = {
   shipping_methods: ShippingMethod[]
   metadata?: Record<string, unknown>
   idempotency_key?: string
+  store_id?: string
 }
 
 type ShippingMethod = {

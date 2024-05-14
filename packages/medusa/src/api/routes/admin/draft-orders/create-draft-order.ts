@@ -178,7 +178,7 @@ export default async (req, res) => {
     }
   )
 
-  draftOrder = await draftOrderService.retrieve(draftOrder.id, {
+  draftOrder = await draftOrderService.retrieve(store_id, draftOrder.id, {
     relations: defaultAdminDraftOrdersRelations,
     select: defaultAdminDraftOrdersFields,
   })
@@ -299,9 +299,9 @@ enum Status {
  *       url: "https://docs.medusajs.com/development/entities/overview#metadata-attribute"
  */
 export class AdminPostDraftOrdersReq {
-  @IsString()
-  @IsNotEmpty()
-  store_id:string
+  // @IsString()
+  // @IsNotEmpty()
+  // store_id:string
 
   @IsEnum(Status)
   @IsOptional()

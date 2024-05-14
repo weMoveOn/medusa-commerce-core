@@ -96,7 +96,7 @@ export default async (req, res) => {
     req.scope.resolve("draftOrderService")
   const cartService: CartService = req.scope.resolve("cartService")
 
-  const draftOrder: DraftOrder = await draftOrderService.retrieve(id, {
+  const draftOrder: DraftOrder = await draftOrderService.retrieve(store_id, id, {
     select: defaultAdminDraftOrdersFields,
     relations: defaultAdminDraftOrdersRelations,
   })
