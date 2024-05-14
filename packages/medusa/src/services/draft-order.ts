@@ -92,10 +92,12 @@ class DraftOrderService extends TransactionBaseService {
   /**
    * Retrieves a draft order with the given id.
    * @param draftOrderId - id of the draft order to retrieve
+   * @param storeId - id of the draft order to retrieve
    * @param config - query object for findOne
    * @return the draft order
    */
   async retrieve(
+    storeId:string,
     draftOrderId: string,
     config: FindConfig<DraftOrder> = {}
   ): Promise<DraftOrder | never> {
@@ -110,12 +112,12 @@ class DraftOrderService extends TransactionBaseService {
       this.draftOrderRepository_
     )
 
-    const query = buildQuery({ id: draftOrderId }, config)
+    const query = buildQuery({ id: draftOrderId, store_id: storeId }, config)
     const draftOrder = await draftOrderRepo.findOne(query)
     if (!draftOrder) {
       throw new MedusaError(
         MedusaError.Types.NOT_FOUND,
-        `Draft order with ${draftOrderId} was not found`
+        `Draft order with ${draftOrderId} and  store ${storeId} was not found`
       )
     }
 
@@ -151,16 +153,17 @@ class DraftOrderService extends TransactionBaseService {
   /**
    * Deletes draft order idempotently.
    * @param {string} draftOrderId - id of draft order to delete
+   * @param {string} storeId - id of draft order to delete
    * @return {Promise<DraftOrder | undefined>} empty promise
    */
-  async delete(draftOrderId: string): Promise<DraftOrder | undefined> {
+  async delete(storeId:string, draftOrderId: string): Promise<DraftOrder | undefined> {
     return await this.atomicPhase_(
       async (transactionManager: EntityManager) => {
         const draftOrderRepo = transactionManager.withRepository(
           this.draftOrderRepository_
         )
         const draftOrder = await draftOrderRepo.findOne({
-          where: { id: draftOrderId },
+          where: { id: draftOrderId, store_id: storeId },
         })
 
         if (!draftOrder) {
@@ -267,7 +270,6 @@ class DraftOrderService extends TransactionBaseService {
         const draftOrderRepo = transactionManager.withRepository(
           this.draftOrderRepository_
         )
-        console.log("1", storeId)
         if (!data.region_id) {
           throw new MedusaError(
             MedusaError.Types.INVALID_DATA,
@@ -281,7 +283,6 @@ class DraftOrderService extends TransactionBaseService {
                 `store_id is required to create a draft order`
             )
         }
-        console.log("2", storeId)
         const {
           shipping_methods,
           no_notification_order,
@@ -290,34 +291,27 @@ class DraftOrderService extends TransactionBaseService {
           discounts,
           ...rawCart
         } = data
-        console.log("3", storeId)
         const cartServiceTx =
           this.cartService_.withTransaction(transactionManager)
-        console.log("4", storeId)
         let createdCart = await cartServiceTx.create({
           type: CartType.DRAFT_ORDER,
           ...rawCart,
           store_id: storeId,
         })
-        console.log("5", storeId)
         const draftOrder = draftOrderRepo.create({
           store_id: storeId,
           cart_id: createdCart.id,
           no_notification_order,
           idempotency_key,
         })
-        console.log("6", storeId)
         const result = await draftOrderRepo.save(draftOrder)
-        console.log("7", storeId)
         await this.eventBus_
           .withTransaction(transactionManager)
           .emit(DraftOrderService.Events.CREATED, {
             id: result.id,
           })
-        console.log("8", storeId)
         const lineItemServiceTx =
           this.lineItemService_.withTransaction(transactionManager)
-        console.log("9", storeId)
         const itemsToGenerate: GenerateInputData[] = []
         const itemsToCreate: Partial<LineItem>[] = []
 
@@ -351,7 +345,6 @@ class DraftOrderService extends TransactionBaseService {
           })
         })
 
-        console.log("10", storeId)
         const promises: Promise<any>[] = []
 
         // generate line item link to a variant
@@ -363,12 +356,10 @@ class DraftOrderService extends TransactionBaseService {
               region_id: data.region_id,
             }
           )
-            console.log("11", storeId)
           const toCreate = generatedLines.map((line) => ({
             ...line,
             cart_id: createdCart.id,
           }))
-            console.log("12", storeId)
           promises.push(lineItemServiceTx.create(toCreate))
         }
 
@@ -376,7 +367,6 @@ class DraftOrderService extends TransactionBaseService {
         if (itemsToCreate.length) {
           promises.push(lineItemServiceTx.create(itemsToCreate))
         }
-        console.log("13", storeId)
         const shippingMethodToCreate: Partial<ShippingMethod>[] = []
 
         shipping_methods.forEach((method) => {
@@ -389,7 +379,6 @@ class DraftOrderService extends TransactionBaseService {
             return
           }
         })
-        console.log("14", storeId) //ok
         // if (shippingMethodToCreate.length) {
         //   console.log("14.1", storeId)
         //   console.log("14.2", shippingMethodToCreate)
@@ -398,7 +387,6 @@ class DraftOrderService extends TransactionBaseService {
         //     .create(shippingMethodToCreate)
         // }
 
-        console.log("15", storeId)
 
         createdCart = await cartServiceTx.retrieveWithTotals( storeId,createdCart.id,{
           relations: [
@@ -408,7 +396,6 @@ class DraftOrderService extends TransactionBaseService {
             "payment_sessions",
           ],
         })
-          console.log("16", storeId)
         // #TODO: should remove any type
         shipping_methods.forEach((method) => {
           promises.push(
@@ -425,7 +412,6 @@ class DraftOrderService extends TransactionBaseService {
         if (discounts?.length) {
           await cartServiceTx.update(storeId, createdCart.id, { discounts })
         }
-        console.log("17", storeId)
         return result
       }
     )
@@ -463,10 +449,12 @@ class DraftOrderService extends TransactionBaseService {
   /**
    * Updates a draft order with the given data
    * @param id - id of the draft order
+   * @param storeId - id of the draft order
    * @param data - values to update the order with
    * @return the updated draft order
    */
   async update(
+    storeId:string,
     id: string,
     data: { no_notification_order: boolean }
   ): Promise<DraftOrder> {
@@ -475,7 +463,7 @@ class DraftOrderService extends TransactionBaseService {
         const draftOrderRepo = transactionManager.withRepository(
           this.draftOrderRepository_
         )
-        const draftOrder = await this.retrieve(id)
+        const draftOrder = await this.retrieve(storeId, id)
 
         if (draftOrder.status === DraftOrderStatus.COMPLETED) {
           throw new MedusaError(

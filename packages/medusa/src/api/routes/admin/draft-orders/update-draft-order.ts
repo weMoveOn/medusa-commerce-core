@@ -126,7 +126,7 @@ export default async (req, res) => {
 
   const cartService: CartService = req.scope.resolve("cartService")
 
-  const draftOrder = await draftOrderService.retrieve(id)
+  const draftOrder = await draftOrderService.retrieve(store_id, id)
 
   if (draftOrder.status === DraftOrderStatus.COMPLETED) {
     throw new MedusaError(
@@ -140,7 +140,7 @@ export default async (req, res) => {
     if (validated.no_notification_order !== undefined) {
       await draftOrderService
         .withTransaction(transactionManager)
-        .update(draftOrder.id, {
+        .update(store_id, draftOrder.id, {
           no_notification_order: validated.no_notification_order,
         })
       delete validated.no_notification_order

@@ -125,7 +125,7 @@ export default async (req, res) => {
   await entityManager.transaction(async (manager) => {
     const draftOrder: DraftOrder = await draftOrderService
       .withTransaction(manager)
-      .retrieve(id, {
+      .retrieve(store_id, id, {
         select: defaultAdminDraftOrdersFields,
         relations: ["cart", "cart.items"],
       })

@@ -119,7 +119,7 @@ export default async (req, res) => {
     const orderServiceTx = orderService.withTransaction(manager)
     const cartServiceTx = cartService.withTransaction(manager)
 
-    const draftOrder = await draftOrderServiceTx.retrieve(id)
+    const draftOrder = await draftOrderServiceTx.retrieve(store_id, id)
 
     const cart = await cartServiceTx.retrieveWithTotals(store_id,draftOrder.cart_id)
 
