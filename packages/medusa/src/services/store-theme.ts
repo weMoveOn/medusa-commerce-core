@@ -13,11 +13,19 @@ type InjectedDependencies = {
   manager: EntityManager
   storeThemeRepository: typeof StoreThemeRepository
 }
+const region = process.env.AWS_DEFAULT_REGION;
+const accessKeyId = process.env.AWS_ACCESS_KEY_ID;
+const secretAccessKey = process.env.AWS_SECRET_ACCESS_KEY;
+
+if (!region || !accessKeyId || !secretAccessKey) {
+  throw new Error("AWS credentials and region must be defined");
+}
+
 let client = new S3Client({
-  region: 'ap-southeast-1',
+  region: region,
   credentials: {
-    accessKeyId: 'AKIARNLKGPWUEQMDNZWS',
-    secretAccessKey: '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'
+    accessKeyId: accessKeyId,
+    secretAccessKey: secretAccessKey
   },
 });
 
@@ -41,7 +49,7 @@ class StoreThemeService extends TransactionBaseService {
 
     const data = {
       "Body": fileStream,
-      "Bucket": "moveshop-test-bucket-234234234234",
+      "Bucket": process.env.AWS_BUCKET,
       "Key": `theme/${req[0].key}`,
     };
     const puts3object = new PutObjectCommand(data);
