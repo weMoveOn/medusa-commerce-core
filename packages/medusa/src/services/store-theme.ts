@@ -8,36 +8,32 @@ import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3"
 
 import { FindConfig } from "../types/common"
 import { buildQuery } from "../utils"
+const dotenv = require("dotenv");
 
 type InjectedDependencies = {
   manager: EntityManager
   storeThemeRepository: typeof StoreThemeRepository
 }
-const region = process.env.AWS_DEFAULT_REGION;
-const accessKeyId = process.env.AWS_ACCESS_KEY_ID;
-const secretAccessKey = process.env.AWS_SECRET_ACCESS_KEY;
-const bucket = process.env.AWS_BUCKET;
 
-if (!region || !accessKeyId || !secretAccessKey || bucket) {
-  throw new Error("AWS credentials must be defined");
-}
+// const region = process.env.AWS_DEFAULT_REGION;
+// const accessKeyId = process.env.AWS_ACCESS_KEY_ID;
+// const secretAccessKey = process.env.AWS_SECRET_ACCESS_KEY;
+// const bucket = process.env.AWS_BUCKET;
+//
+// if (!region || !accessKeyId || !secretAccessKey || bucket) {
+//   throw new Error("AWS credentials must be defined");
+// }
+//
 
-let client = new S3Client({
-  region: region,
-  credentials: {
-    accessKeyId: accessKeyId,
-    secretAccessKey: secretAccessKey
-  },
-});
 
 class StoreThemeService extends TransactionBaseService {
   protected readonly storeThemeRepo_: typeof StoreThemeRepository
-
-  constructor({ storeThemeRepository }: InjectedDependencies) {
+  private readonly options: any;
+  constructor({ storeThemeRepository }: InjectedDependencies,options) {
     // eslint-disable-next-line prefer-rest-params
-    super(arguments[0])
-
+    super(arguments[0],options)
     this.storeThemeRepo_ = storeThemeRepository
+    this.options = options.projectConfig;
   }
 
 
@@ -45,12 +41,18 @@ class StoreThemeService extends TransactionBaseService {
     const adminStoreThemeRepository = this.activeManager_.withRepository(
       this.storeThemeRepo_
     )
+    let client = new S3Client({
+      region: this.options.awsS3Region,
+      credentials: {
+        accessKeyId: this.options.accessKeyId,
+        secretAccessKey: this.options.secretAccessKey
+      },
+    });
     const filePath = `./uploads/${req[0].key}`;
     const fileStream = fs.createReadStream(filePath);
-
     const data = {
       "Body": fileStream,
-      "Bucket": bucket,
+      "Bucket": this.options.bucket,
       "Key": `theme/${req[0].key}`,
     };
     const puts3object = new PutObjectCommand(data);
@@ -93,6 +95,13 @@ class StoreThemeService extends TransactionBaseService {
   }
 
   async duplicate(storeId: string, id: string): Promise<StoreTheme> {
+    let client = new S3Client({
+      region: this.options.awsS3Region,
+      credentials: {
+        accessKeyId: this.options.accessKeyId,
+        secretAccessKey: this.options.secretAccessKey
+      },
+    });
     return await this.atomicPhase_(async (manager) => {
       const stRepo = manager.withRepository(this.storeThemeRepo_)
       const theme = await this.retrieve(storeId, id)
@@ -101,6 +110,7 @@ class StoreThemeService extends TransactionBaseService {
         if (duplicatedTheme.is_published === true){
           duplicatedTheme.is_published = false
         }
+
 
         const originalKey = duplicatedTheme.archive_path;
         const lastIndex = originalKey.lastIndexOf('.');
@@ -111,7 +121,7 @@ class StoreThemeService extends TransactionBaseService {
 
         const param = {
           "CopySource": sourcePath,
-          "Bucket": bucket,
+          "Bucket": this.options.bucket,
           "Key": newKey,
         };
         const copys3object = new PutObjectCommand(param);
