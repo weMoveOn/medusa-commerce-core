@@ -16,9 +16,10 @@ type InjectedDependencies = {
 const region = process.env.AWS_DEFAULT_REGION;
 const accessKeyId = process.env.AWS_ACCESS_KEY_ID;
 const secretAccessKey = process.env.AWS_SECRET_ACCESS_KEY;
+const bucket = process.env.AWS_BUCKET;
 
-if (!region || !accessKeyId || !secretAccessKey) {
-  throw new Error("AWS credentials and region must be defined");
+if (!region || !accessKeyId || !secretAccessKey || bucket) {
+  throw new Error("AWS credentials must be defined");
 }
 
 let client = new S3Client({
@@ -49,7 +50,7 @@ class StoreThemeService extends TransactionBaseService {
 
     const data = {
       "Body": fileStream,
-      "Bucket": process.env.AWS_BUCKET,
+      "Bucket": bucket,
       "Key": `theme/${req[0].key}`,
     };
     const puts3object = new PutObjectCommand(data);
@@ -110,7 +111,7 @@ class StoreThemeService extends TransactionBaseService {
 
         const param = {
           "CopySource": sourcePath,
-          "Bucket": "moveshop-test-bucket-234234234234",
+          "Bucket": bucket,
           "Key": newKey,
         };
         const copys3object = new PutObjectCommand(param);
